@@ -1,27 +1,8 @@
 services:
   api:
     build:
-      context: ./services/api
+      context: .
       dockerfile: Dockerfile
-    networks:
-      - backend
-
-  auth:
-    build:
-      context: ./services/auth
-      dockerfile: Dockerfile
-    networks:
-      - backend
-
-  gateway:
-    build:
-      context: ./services/gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - api
-      - auth
     networks:
       - backend
 
