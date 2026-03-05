@@ -46,11 +46,11 @@
 Назначение: специфичные для тренера поля (опыт, разряд, образование). Существует только для пользователей с ролью trainer.
 - trainer_user_id (PK, FK -> user.user_id): идентификатор тренера
 - education_degree: образование
-- total_experience_years: общий стаж работы
+- career_since_date: общий стаж работы
 
 **Функциональные зависимости:**
 
-{trainer_user_id} -> education_degree, total_experience_years
+{trainer_user_id} -> education_degree, career_since_date
 
 ### 5. Детали клиента (client_details)
 
@@ -96,16 +96,18 @@ PK(trainer_id, sport_type_id)
 - description: Описание тарифа
 - price_currency: Валюта (например, RUB)
 - price_value: мантисса
-- price_factor: порядок (по основанию 10)
+- price_exponent: порядок (по основанию 10)
 - level_rank: Ранг уровня доступа
+- is_archived: Флаг. Мягкое удаление
+- archived_at: Дата и время архивации
 
 **Функциональные зависимости:**
 
-{subscription_tier_id} -> trainer_id, title, description, price_currency, price_value, price_factor,
-level_rank
+{subscription_tier_id} -> trainer_id, title, description, price_currency, price_value, price_exponent,
+level_rank, is_archived, archived_at
 
 {trainer_id, level_rank} -> subscription_tier_id, title, description, price_currency, price_value,
-price_factor
+price_exponent, is_archived, archived_at
 
 ### 9. Справочник функций платформы (feature_dictionary)
 
