@@ -32,6 +32,8 @@
 
 {user_id} -> username, first_name, last_name, bio, avatar_url
 
+{username} -> user_id, first_name, last_name, bio, avatar_url
+
 ### 3. Профили, являющиеся админами (admin_profile)
 
 Назначение: хранит факт, что пользователь является администратором платформы.
