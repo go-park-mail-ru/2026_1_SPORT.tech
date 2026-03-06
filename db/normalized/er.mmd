@@ -44,6 +44,7 @@ erDiagram
 
     user_profile {
         bigint user_id PK, FK "-> user.user_id"
+        text username UK "NOT NULL"
         text first_name "NOT NULL"
         text last_name "NOT NULL"
         text bio "NULL"

@@ -22,6 +22,7 @@
 
 Назначение: общие данные профиля, которые нужны и тренеру, и клиенту (имя, фамилия, аватар, био).
 - user_id (PK, FK -> user.user_id): Идентификатор пользователя
+- username - псевдоним
 - first_name - имя
 - last_name - фамилия
 - bio - био
@@ -29,7 +30,7 @@
 
 **Функциональные зависимости:**
 
-{user_id} -> first_name, last_name, bio, avatar_url
+{user_id} -> username, first_name, last_name, bio, avatar_url
 
 ### 3. Профили, являющиеся админами (admin_profile)
 

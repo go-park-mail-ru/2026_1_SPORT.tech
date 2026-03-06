@@ -11,6 +11,7 @@ CREATE TABLE "user" (
 
 CREATE TABLE user_profile (
   user_id    bigint PRIMARY KEY REFERENCES "user"(user_id) ON DELETE CASCADE,
+  username   citext NOT NULL UNIQUE;
   first_name text NOT NULL,
   last_name  text NOT NULL,
   bio        text,
