@@ -8,12 +8,12 @@ type healthReponse struct {
 
 func NewRouter() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", handleHealthz)
+	mux.HandleFunc("GET /health", handleHealth)
 
 	return mux
 }
 
-func handleHealthz(writer http.ResponseWriter, request *http.Request) {
+func handleHealth(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusOK, healthReponse{
 		Status: "ok",
 	})
