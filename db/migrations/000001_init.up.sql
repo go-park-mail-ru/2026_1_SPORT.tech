@@ -88,7 +88,8 @@ CREATE TABLE subscription_tier (
   created_at           timestamptz NOT NULL DEFAULT now(),
   updated_at           timestamptz NOT NULL DEFAULT now(),
 
-  UNIQUE (trainer_id, level_rank)
+  UNIQUE (trainer_id, level_rank),
+  UNIQUE (trainer_id, subscription_tier_id)
 );
 
 CREATE TABLE feature_dictionary (
