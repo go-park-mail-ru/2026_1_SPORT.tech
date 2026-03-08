@@ -1,0 +1,857 @@
+openapi: 3.0.3
+info:
+  title: SPORT.tech API
+  version: 0.1.0
+
+tags:
+  - name: auth
+    description: Авторизация
+  - name: profile
+    description: Профиль пользователя
+  - name: post
+    description: Посты
+  - name: sport
+    description: Виды спорта
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sid
+
+  responses:
+    BadRequest:
+      description: Запрос не удалось обработать из-за некорректного формата.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            bad_request:
+              value:
+                error:
+                  code: bad_request
+                  message: Некорректный запрос
+    ValidationError:
+      description: Запрос обработан, но входные данные не прошли валидацию.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            validation_error:
+              value:
+                error:
+                  code: validation_error
+                  message: Некорректные данные
+                  fields:
+                    - field: username
+                      message: Username должен содержать от 3 до 30 символов и только буквы, цифры или _
+                    - field: email
+                      message: Неверный формат email
+                    - field: password
+                      message: Пароль должен содержать минимум 8 символов
+                    - field: password_repeat
+                      message: Пароли не совпадают
+
+  schemas:
+    ValidationErrorField:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            fields:
+              type: array
+              nullable: true
+              items:
+                $ref: "#/components/schemas/ValidationErrorField"
+
+    UserProfile:
+      type: object
+      required: [username, first_name, last_name]
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+        avatar_url:
+          type: string
+          nullable: true
+
+    User:
+      type: object
+      required: [user_id, username, email, created_at, updated_at, is_trainer, is_admin, profile]
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 123
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+          example: user@example.com
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        is_trainer:
+          type: boolean
+          description: true, если у пользователя есть trainer_details
+          example: false
+        is_admin:
+          type: boolean
+          description: true, если у пользователя есть admin_profile
+          example: false
+        profile:
+          $ref: "#/components/schemas/UserProfile"
+
+    TrainerRegisterSport:
+      type: object
+      required: [sport_type_id, experience_years]
+      properties:
+        sport_type_id:
+          type: integer
+          format: int64
+        experience_years:
+          type: integer
+          minimum: 0
+        sports_rank:
+          type: string
+          nullable: true
+          maxLength: 100
+
+    TrainerRegisterDetails:
+      type: object
+      required: [career_since_date, sports]
+      properties:
+        education_degree:
+          type: string
+          nullable: true
+          maxLength: 255
+        career_since_date:
+          type: string
+          format: date
+        sports:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/TrainerRegisterSport"
+
+    ClientRegisterRequest:
+      type: object
+      required: [username, email, password, password_repeat, first_name, last_name]
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+        password:
+          type: string
+          minLength: 8
+        password_repeat:
+          type: string
+          minLength: 8
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      example:
+        username: john_doe
+        email: user@example.com
+        password: supersecret123
+        password_repeat: supersecret123
+        first_name: John
+        last_name: Doe
+
+    TrainerRegisterRequest:
+      type: object
+      required: [username, email, password, password_repeat, first_name, last_name, trainer_details]
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+        password:
+          type: string
+          minLength: 8
+        password_repeat:
+          type: string
+          minLength: 8
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        trainer_details:
+          $ref: "#/components/schemas/TrainerRegisterDetails"
+      example:
+        username: ricardo
+        email: ricardo@example.com
+        password: supersecret123
+        password_repeat: supersecret123
+        first_name: Ricardo
+        last_name: Milos
+        trainer_details:
+          education_degree: Bachelor of Sports Science
+          career_since_date: "2020-01-01"
+          sports:
+            - sport_type_id: 1
+              experience_years: 5
+              sports_rank: КМС
+
+    SportType:
+      type: object
+      required: [sport_type_id, name]
+      properties:
+        sport_type_id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    SportTypesResponse:
+      type: object
+      required: [sport_types]
+      properties:
+        sport_types:
+          type: array
+          items:
+            $ref: "#/components/schemas/SportType"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+        password:
+          type: string
+          minLength: 1
+
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+
+    ProfileResponse:
+      type: object
+      required: [user_id, is_me, is_trainer, profile]
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        is_me:
+          type: boolean
+          description: true, если профиль принадлежит текущему авторизованному пользователю
+        is_trainer:
+          type: boolean
+          description: true, если у пользователя есть trainer_details
+        profile:
+          $ref: "#/components/schemas/UserProfile"
+
+    PostListItem:
+      type: object
+      required: [post_id, trainer_id, title, created_at, min_tier_id, can_view]
+      properties:
+        post_id:
+          type: integer
+          format: int64
+        trainer_id:
+          type: integer
+          format: int64
+        min_tier_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Если NULL — пост бесплатный
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+        can_view:
+          type: boolean
+          description: Есть ли у текущего пользователя доступ к полному посту
+
+    ProfilePostsResponse:
+      type: object
+      required: [user_id, posts]
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostListItem"
+
+    PostAttachment:
+      type: object
+      required: [post_attachment_id, kind, file_url]
+      properties:
+        post_attachment_id:
+          type: integer
+          format: int64
+        kind:
+          type: string
+          enum: [image, video, document]
+        file_url:
+          type: string
+
+    PostResponse:
+      type: object
+      required: [post_id, trainer_id, title, text_content, created_at, updated_at, min_tier_id, attachments]
+      properties:
+        post_id:
+          type: integer
+          format: int64
+        trainer_id:
+          type: integer
+          format: int64
+        min_tier_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Если NULL — пост бесплатный
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        text_content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostAttachment"
+
+paths:
+  /sport-types:
+    get:
+      tags: [sport]
+      summary: Список видов спорта
+      description: Список видов спорта.
+      responses:
+        "200":
+          description: Список видов спорта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SportTypesResponse"
+              examples:
+                success:
+                  value:
+                    sport_types:
+                      - sport_type_id: 1
+                        name: Бег
+                      - sport_type_id: 2
+                        name: Плавание
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /auth/register/client:
+    post:
+      tags: [auth]
+      summary: Регистрация клиента
+      description: Регистрация клиента.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientRegisterRequest"
+            examples:
+              client_register:
+                value:
+                  username: john_doe
+                  email: user@example.com
+                  password: supersecret123
+                  password_repeat: supersecret123
+                  first_name: John
+                  last_name: Doe
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "201":
+          description: Пользователь зарегистрирован
+          headers:
+            Set-Cookie:
+              description: Cookie сессии sid
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+              examples:
+                success:
+                  value:
+                    user:
+                      user_id: 123
+                      username: john_doe
+                      email: user@example.com
+                      created_at: "2026-03-06T12:00:00Z"
+                      updated_at: "2026-03-06T12:00:00Z"
+                      is_trainer: false
+                      is_admin: false
+                      profile:
+                        username: john_doe
+                        first_name: John
+                        last_name: Doe
+                        bio: null
+                        avatar_url: null
+        "409":
+          description: Email или username уже существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                email_exists:
+                  value:
+                    error:
+                      code: email_exists
+                      message: Email уже существует
+                username_exists:
+                  value:
+                    error:
+                      code: username_exists
+                      message: Username уже существует
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /auth/register/trainer:
+    post:
+      tags: [auth]
+      summary: Регистрация тренера
+      description: Регистрация тренера.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainerRegisterRequest"
+            examples:
+              trainer_register:
+                value:
+                  username: ricardo
+                  email: ricardo@example.com
+                  password: supersecret123
+                  password_repeat: supersecret123
+                  first_name: Ricardo
+                  last_name: Milos
+                  trainer_details:
+                    education_degree: Bachelor of Sports Science
+                    career_since_date: "2020-01-01"
+                    sports:
+                      - sport_type_id: 1
+                        experience_years: 5
+                        sports_rank: КМС
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "201":
+          description: Пользователь зарегистрирован
+          headers:
+            Set-Cookie:
+              description: Cookie сессии sid
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+              examples:
+                success:
+                  value:
+                    user:
+                      user_id: 123
+                      username: ricardo
+                      email: ricardo@example.com
+                      created_at: "2026-03-06T12:00:00Z"
+                      updated_at: "2026-03-06T12:00:00Z"
+                      is_trainer: true
+                      is_admin: false
+                      profile:
+                        username: ricardo
+                        first_name: Ricardo
+                        last_name: Milos
+                        bio: null
+                        avatar_url: null
+        "409":
+          description: Email или username уже существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                email_exists:
+                  value:
+                    error:
+                      code: email_exists
+                      message: Email уже существует
+                username_exists:
+                  value:
+                    error:
+                      code: username_exists
+                      message: Username уже существует
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Вход
+      description: Вход пользователя.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Успешный вход
+          headers:
+            Set-Cookie:
+              description: Cookie сессии sid
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+              examples:
+                success:
+                  value:
+                    user:
+                      user_id: 123
+                      username: john_doe
+                      email: user@example.com
+                      created_at: "2026-03-06T12:00:00Z"
+                      updated_at: "2026-03-06T12:00:00Z"
+                      is_trainer: false
+                      is_admin: false
+                      profile:
+                        username: john_doe
+                        first_name: John
+                        last_name: Doe
+                        bio: null
+                        avatar_url: null
+        "401":
+          description: Неверный email или пароль
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid_credentials:
+                  value:
+                    error:
+                      code: invalid_credentials
+                      message: Неверный email или пароль
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Текущий пользователь
+      description: Текущий пользователь.
+      security:
+        - cookieAuth: []
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Текущий пользователь
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+              examples:
+                success:
+                  value:
+                    user:
+                      user_id: 123
+                      username: john_doe
+                      email: user@example.com
+                      created_at: "2026-03-06T12:00:00Z"
+                      updated_at: "2026-03-06T12:00:00Z"
+                      is_trainer: false
+                      is_admin: false
+                      profile:
+                        username: john_doe
+                        first_name: John
+                        last_name: Doe
+                        bio: null
+                        avatar_url: null
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  value:
+                    error:
+                      code: unauthorized
+                      message: Не авторизован
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Выход
+      description: Выход пользователя.
+      security:
+        - cookieAuth: []
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "204":
+          description: Успешный выход
+          headers:
+            Set-Cookie:
+              description: Очистка cookie sid
+              schema:
+                type: string
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  value:
+                    error:
+                      code: unauthorized
+                      message: Не авторизован
+
+  /profiles/{user_id}:
+    get:
+      tags: [profile]
+      summary: Профиль пользователя
+      description: Профиль пользователя.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+              examples:
+                success:
+                  value:
+                    user_id: 123
+                    is_me: false
+                    is_trainer: true
+                    profile:
+                      username: john_doe
+                      first_name: John
+                      last_name: Doe
+                      bio: Тренер по бегу
+                      avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                user_not_found:
+                  value:
+                    error:
+                      code: not_found
+                      message: Пользователь не найден
+
+  /profiles/{user_id}/posts:
+    get:
+      tags: [profile]
+      summary: Посты пользователя
+      description: Список постов пользователя.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Список постов пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfilePostsResponse"
+              examples:
+                success:
+                  value:
+                    user_id: 123
+                    posts:
+                      - post_id: 101
+                        trainer_id: 12
+                        min_tier_id: null
+                        title: План тренировок на неделю
+                        created_at: "2026-03-05T10:00:00Z"
+                        can_view: true
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                user_not_found:
+                  value:
+                    error:
+                      code: not_found
+                      message: Пользователь не найден
+
+  /posts/{post_id}:
+    get:
+      tags: [post]
+      summary: Полный пост
+      description: Полный пост.
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Полный пост
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+              examples:
+                success:
+                  value:
+                    post_id: 101
+                    trainer_id: 12
+                    min_tier_id: null
+                    title: План тренировок на неделю
+                    text_content: Три силовые и две кардио тренировки.
+                    created_at: "2026-03-05T10:00:00Z"
+                    updated_at: "2026-03-05T10:00:00Z"
+                    attachments:
+                      - post_attachment_id: 501
+                        kind: image
+                        file_url: "https://cdn.example.com/posts/101/cover.jpg"
+        "403":
+          description: Нет доступа к посту
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                no_access:
+                  value:
+                    error:
+                      code: forbidden
+                      message: Нет доступа к этому посту
+        "404":
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                post_not_found:
+                  value:
+                    error:
+                      code: not_found
+                      message: Пост не найден
