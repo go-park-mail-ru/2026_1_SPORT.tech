@@ -3,8 +3,14 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
+
+	"github.com/lib/pq"
 )
+
+var ErrEmailExists = errors.New("email exists")
+var ErrUsernameExists = errors.New("username exists")
 
 type UserProfile struct {
 	Username  string
@@ -27,6 +33,14 @@ type User struct {
 
 type UserRepository struct {
 	db *sql.DB
+}
+
+type CreateClientParams struct {
+	Username     string
+	Email        string
+	PasswordHash string
+	FirstName    string
+	LastName     string
 }
 
 func NewUserRepository(db *sql.DB) *UserRepository {
@@ -88,4 +102,66 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (Us
 	}
 
 	return user, nil
+}
+
+func (repository *UserRepository) CreateClient(ctx context.Context, params CreateClientParams) (int64, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	const createUserQuery = `
+		INSERT INTO "user" (email, password_hash)
+		VALUES ($1, $2)
+		RETURNING user_id
+	`
+
+	var userID int64
+	if err := tx.QueryRowContext(
+		ctx,
+		createUserQuery,
+		params.Email,
+		params.PasswordHash,
+	).Scan(&userID); err != nil {
+		return 0, mapUserConflictError(err)
+	}
+
+	const createUserProfileQuery = `
+		INSERT INTO user_profile (user_id, username, first_name, last_name)
+		VALUES ($1, $2, $3, $4)
+	`
+
+	if _, err := tx.ExecContext(
+		ctx,
+		createUserProfileQuery,
+		userID,
+		params.Username,
+		params.FirstName,
+		params.LastName,
+	); err != nil {
+		return 0, mapUserConflictError(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return userID, nil
+}
+
+func mapUserConflictError(err error) error {
+	var pqError *pq.Error
+	if !errors.As(err, &pqError) || pqError.Code != "23505" {
+		return err
+	}
+
+	switch pqError.Constraint {
+	case "user_email_key":
+		return ErrEmailExists
+	case "user_profile_username_key":
+		return ErrUsernameExists
+	default:
+		return err
+	}
 }
