@@ -17,7 +17,6 @@ const userIDContextKey contextKey = "user_id"
 
 var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 var emailPattern = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
-var allowCrossSiteCookies = true
 
 type sessionService interface {
 	CreateSession(ctx context.Context, userID int64) (string, error)
@@ -121,7 +120,7 @@ func (handler *Handler) setSessionCookie(writer nethttp.ResponseWriter, sessionI
 		Value:    sessionID,
 		Path:     "/",
 		HttpOnly: true,
-		SameSite: sessionCookieSameSite(),
+		SameSite: nethttp.SameSiteLaxMode,
 	})
 }
 
@@ -131,18 +130,10 @@ func (handler *Handler) clearSessionCookie(writer nethttp.ResponseWriter) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		SameSite: sessionCookieSameSite(),
+		SameSite: nethttp.SameSiteLaxMode,
 		Expires:  time.Unix(0, 0),
 		MaxAge:   -1,
 	})
-}
-
-func sessionCookieSameSite() nethttp.SameSite {
-	if allowCrossSiteCookies {
-		return nethttp.SameSiteNoneMode
-	}
-
-	return nethttp.SameSiteLaxMode
 }
 
 func userIDFromContext(ctx context.Context) (int64, bool) {
