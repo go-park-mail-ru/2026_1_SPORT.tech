@@ -17,5 +17,6 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
 WORKDIR /app
 
 COPY --from=builder /app/server /app/server
+COPY --from=builder /app/config.yml /app/config.yml
 
 CMD ["/app/server"]
