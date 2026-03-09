@@ -46,7 +46,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 	mux.Handle("GET /auth/me", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handleGetAuthMe)))
 	mux.Handle("POST /auth/logout", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handlePostAuthLogout)))
 
-	return mux
+	return handler.corsMiddleware(mux)
 }
 
 func (handler *Handler) handleHealth(writer nethttp.ResponseWriter, request *nethttp.Request) {
