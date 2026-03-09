@@ -36,6 +36,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 	mux := nethttp.NewServeMux()
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
+	mux.Handle("POST /auth/logout", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handlePostAuthLogout)))
 
 	return mux
 }
