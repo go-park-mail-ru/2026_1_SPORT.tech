@@ -151,20 +151,6 @@ func (repository *UserRepository) CreateClient(ctx context.Context, params Creat
 	return userID, nil
 }
 
-func mapUserConflictError(err error) error {
-	var pqError *pq.Error
-	if !errors.As(err, &pqError) || pqError.Code != "23505" {
-		return err
-	}
-
-	switch pqError.Constraint {
-	case "user_email_key":
-		return ErrEmailExists
-	case "user_profile_username_key":
-		return ErrUsernameExists
-	default:
-		return err
-	}
 func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (User, error) {
 	const query = `
 		SELECT
@@ -220,4 +206,20 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	}
 
 	return user, nil
+}
+
+func mapUserConflictError(err error) error {
+	var pqError *pq.Error
+	if !errors.As(err, &pqError) || pqError.Code != "23505" {
+		return err
+	}
+
+	switch pqError.Constraint {
+	case "user_email_key":
+		return ErrEmailExists
+	case "user_profile_username_key":
+		return ErrUsernameExists
+	default:
+		return err
+	}
 }

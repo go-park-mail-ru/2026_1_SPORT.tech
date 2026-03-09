@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	nethttp "net/http"
+	"regexp"
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
@@ -13,6 +14,21 @@ import (
 type contextKey string
 
 const userIDContextKey contextKey = "user_id"
+
+var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
+var emailPattern = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
+
+type sessionService interface {
+	CreateSession(ctx context.Context, userID int64) (string, error)
+	GetUserIDBySessionID(ctx context.Context, sessionID string) (int64, error)
+	RevokeSession(ctx context.Context, sessionID string) error
+}
+
+type userService interface {
+	GetByID(ctx context.Context, userID int64) (service.User, error)
+	RegisterClient(ctx context.Context, params service.RegisterClientParams) (service.User, error)
+	Authenticate(ctx context.Context, email string, password string) (service.User, error)
+}
 
 type userProfileResponse struct {
 	Username  string  `json:"username"`
@@ -44,6 +60,8 @@ type clientRegisterRequest struct {
 	PasswordRepeat string `json:"password_repeat"`
 	FirstName      string `json:"first_name"`
 	LastName       string `json:"last_name"`
+}
+
 type loginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -135,12 +153,28 @@ func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWrit
 			writeInternalError(writer)
 			return
 		}
+	}
+
+	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	if err != nil {
+		writeInternalError(writer)
+		return
+	}
+
+	handler.setSessionCookie(writer, sessionID)
+	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
+}
+
 func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, request *nethttp.Request) {
 	var loginRequest loginRequest
-	if err := json.NewDecoder(request.Body).Decode(&loginRequest); err != nil {
+
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&loginRequest); err != nil {
 		writeBadRequest(writer)
 		return
 	}
+
 	if loginRequest.Email == "" || loginRequest.Password == "" {
 		writeBadRequest(writer)
 		return
@@ -164,25 +198,7 @@ func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, reque
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
-	writeJSON(writer, nethttp.StatusOK, authResponse{
-		User: userResponse{
-			UserID:    user.ID,
-			Username:  user.Username,
-			Email:     user.Email,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-			IsTrainer: user.IsTrainer,
-			IsAdmin:   user.IsAdmin,
-			Profile: userProfileResponse{
-				Username:  user.Profile.Username,
-				FirstName: user.Profile.FirstName,
-				LastName:  user.Profile.LastName,
-				Bio:       user.Profile.Bio,
-				AvatarURL: user.Profile.AvatarURL,
-			},
-		},
-	})
+	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
 }
 
 func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *nethttp.Request) {
@@ -199,6 +215,13 @@ func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *
 			return
 		}
 
+		writeInternalError(writer)
+		return
+	}
+
+	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
+}
+
 func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, request *nethttp.Request) {
 	cookie, err := request.Cookie(handler.authCookieName)
 	if err != nil {
@@ -211,7 +234,8 @@ func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, requ
 		return
 	}
 
-	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
+	handler.clearSessionCookie(writer)
+	writeNoContent(writer)
 }
 
 func newAuthResponse(user service.User) authResponse {
@@ -281,6 +305,4 @@ func validateClientRegisterRequest(request clientRegisterRequest) []validationEr
 	}
 
 	return validationErrors
-	handler.clearSessionCookie(writer)
-	writeNoContent(writer)
 }
