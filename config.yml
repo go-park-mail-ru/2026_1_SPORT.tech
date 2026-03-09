@@ -6,3 +6,7 @@ postgres:
   port: 5432
   user: postgres
   db_name: postgres
+
+auth:
+  cookie_name: sid
+  session_ttl: 720h
