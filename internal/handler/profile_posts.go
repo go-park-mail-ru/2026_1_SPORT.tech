@@ -12,6 +12,7 @@ import (
 
 type postService interface {
 	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]service.PostListItem, error)
+	GetByID(ctx context.Context, postID int64, currentUserID int64) (service.Post, error)
 }
 
 type profilePostsResponse struct {
