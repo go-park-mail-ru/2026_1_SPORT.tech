@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPORT.tech API Smoke</title>
+  <style>
+    :root {
+      --bg: #f3f0e8;
+      --panel: #fffdf8;
+      --text: #1f1c17;
+      --muted: #6c6359;
+      --line: #d5c9b8;
+      --accent: #c24f2f;
+      --accent-dark: #8f371f;
+      --ok: #246b3f;
+      --err: #8f1f2d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #f8e5d8 0, transparent 28%),
+        radial-gradient(circle at bottom right, #e7efe4 0, transparent 30%),
+        var(--bg);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    .subhead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .meta {
+      margin-bottom: 24px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 253, 248, 0.8);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 8px 24px rgba(31, 28, 23, 0.05);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    .row {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font: inherit;
+    }
+
+    input,
+    textarea {
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 12px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff7f2;
+      border-color: var(--accent);
+      transition: background 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+    }
+
+    .stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .status {
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.err {
+      color: var(--err);
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      overflow: auto;
+      border-radius: 12px;
+      background: #201d19;
+      color: #f9f3e8;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>SPORT.tech API Smoke</h1>
+    <p class="subhead">Small local page for checking CORS, cookies and the main backend endpoints.</p>
+
+    <div class="meta">
+      <div><strong>Page origin:</strong> <span id="page-origin"></span></div>
+      <div><strong>Note:</strong> open this page through a local HTTP server, not via <code>file://</code>.</div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Connection</h2>
+        <div class="row">
+          <label for="api-base">API base URL</label>
+          <input id="api-base" value="http://212.233.99.79:8080">
+        </div>
+        <div class="stack">
+          <button data-method="GET" data-path="/health">GET /health</button>
+          <button data-method="GET" data-path="/sport-types">GET /sport-types</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Auth</h2>
+        <div class="row">
+          <label for="login-email">Email</label>
+          <input id="login-email" value="mamapapaya@example.com">
+        </div>
+        <div class="row">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" value="password123">
+        </div>
+        <div class="stack">
+          <button id="login-btn">POST /auth/login</button>
+          <button id="me-btn">GET /auth/me</button>
+          <button id="logout-btn">POST /auth/logout</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Profile</h2>
+        <div class="row">
+          <label for="profile-user-id">User ID</label>
+          <input id="profile-user-id" value="1">
+        </div>
+        <div class="stack">
+          <button id="profile-btn">GET /profiles/{user_id}</button>
+          <button id="profile-posts-btn">GET /profiles/{user_id}/posts</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Post</h2>
+        <div class="row">
+          <label for="post-id">Post ID</label>
+          <input id="post-id" value="1">
+        </div>
+        <div class="stack">
+          <button id="post-btn">GET /posts/{post_id}</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="result">
+      <div id="status" class="status">No requests yet.</div>
+      <pre id="output">{}</pre>
+    </section>
+  </div>
+
+  <script>
+    const pageOrigin = document.getElementById("page-origin");
+    const apiBaseInput = document.getElementById("api-base");
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+
+    pageOrigin.textContent = window.location.origin;
+
+    function setResult(ok, title, data) {
+      status.textContent = title;
+      status.className = `status ${ok ? "ok" : "err"}`;
+      output.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+    }
+
+    function apiBase() {
+      return apiBaseInput.value.replace(/\/+$/, "");
+    }
+
+    async function request(method, path, body) {
+      const url = `${apiBase()}${path}`;
+      const options = {
+        method,
+        credentials: "include",
+        headers: {}
+      };
+
+      if (body !== undefined) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+      }
+
+      try {
+        const response = await fetch(url, options);
+        const text = await response.text();
+        let payload = text;
+
+        try {
+          payload = text ? JSON.parse(text) : {};
+        } catch (_) {}
+
+        setResult(
+          response.ok,
+          `${method} ${path} -> ${response.status}`,
+          payload
+        );
+      } catch (error) {
+        setResult(false, `${method} ${path} -> network error`, {
+          error: String(error),
+          hint: "If this is a CORS failure, check the browser console too."
+        });
+      }
+    }
+
+    document.querySelectorAll("[data-method][data-path]").forEach((button) => {
+      button.addEventListener("click", () => {
+        request(button.dataset.method, button.dataset.path);
+      });
+    });
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      request("POST", "/auth/login", {
+        email: document.getElementById("login-email").value,
+        password: document.getElementById("login-password").value
+      });
+    });
+
+    document.getElementById("me-btn").addEventListener("click", () => {
+      request("GET", "/auth/me");
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      request("POST", "/auth/logout");
+    });
+
+    document.getElementById("profile-btn").addEventListener("click", () => {
+      request("GET", `/profiles/${document.getElementById("profile-user-id").value}`);
+    });
+
+    document.getElementById("profile-posts-btn").addEventListener("click", () => {
+      request("GET", `/profiles/${document.getElementById("profile-user-id").value}/posts`);
+    });
+
+    document.getElementById("post-btn").addEventListener("click", () => {
+      request("GET", `/posts/${document.getElementById("post-id").value}`);
+    });
+  </script>
+</body>
+</html>
