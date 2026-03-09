@@ -37,6 +37,13 @@ type authResponse struct {
 	User userResponse `json:"user"`
 }
 
+type clientRegisterRequest struct {
+	Username       string `json:"username"`
+	Email          string `json:"email"`
+	Password       string `json:"password"`
+	PasswordRepeat string `json:"password_repeat"`
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
 type loginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -93,6 +100,41 @@ func userIDFromContext(ctx context.Context) (int64, bool) {
 	return userID, ok
 }
 
+func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWriter, request *nethttp.Request) {
+	var registerRequest clientRegisterRequest
+
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&registerRequest); err != nil {
+		writeBadRequest(writer)
+		return
+	}
+
+	validationErrors := validateClientRegisterRequest(registerRequest)
+	if len(validationErrors) > 0 {
+		writeValidationError(writer, validationErrors)
+		return
+	}
+
+	user, err := handler.userService.RegisterClient(request.Context(), service.RegisterClientParams{
+		Username:  registerRequest.Username,
+		Email:     registerRequest.Email,
+		Password:  registerRequest.Password,
+		FirstName: registerRequest.FirstName,
+		LastName:  registerRequest.LastName,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrEmailExists):
+			writeConflict(writer, "email_exists", "Email уже существует")
+			return
+		case errors.Is(err, service.ErrUsernameExists):
+			writeConflict(writer, "username_exists", "Username уже существует")
+			return
+		default:
+			writeInternalError(writer)
+			return
+		}
 func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, request *nethttp.Request) {
 	var loginRequest loginRequest
 	if err := json.NewDecoder(request.Body).Decode(&loginRequest); err != nil {
@@ -122,6 +164,7 @@ func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, reque
 	}
 
 	handler.setSessionCookie(writer, sessionID)
+	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
 	writeJSON(writer, nethttp.StatusOK, authResponse{
 		User: userResponse{
 			UserID:    user.ID,
@@ -160,7 +203,11 @@ func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *
 		return
 	}
 
-	writeJSON(writer, nethttp.StatusOK, authResponse{
+	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
+}
+
+func newAuthResponse(user service.User) authResponse {
+	return authResponse{
 		User: userResponse{
 			UserID:    user.ID,
 			Username:  user.Username,
@@ -177,5 +224,53 @@ func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *
 				AvatarURL: user.Profile.AvatarURL,
 			},
 		},
-	})
+	}
+}
+
+func validateClientRegisterRequest(request clientRegisterRequest) []validationErrorField {
+	validationErrors := make([]validationErrorField, 0)
+
+	if !usernamePattern.MatchString(request.Username) {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "username",
+			Message: "Username должен содержать от 3 до 30 символов и только буквы, цифры или _",
+		})
+	}
+
+	if !emailPattern.MatchString(request.Email) || len(request.Email) > 254 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "email",
+			Message: "Неверный формат email",
+		})
+	}
+
+	if len(request.Password) < 8 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "password",
+			Message: "Пароль должен содержать минимум 8 символов",
+		})
+	}
+
+	if request.Password != request.PasswordRepeat {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "password_repeat",
+			Message: "Пароли не совпадают",
+		})
+	}
+
+	if len(request.FirstName) < 1 || len(request.FirstName) > 100 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "first_name",
+			Message: "Имя должно содержать от 1 до 100 символов",
+		})
+	}
+
+	if len(request.LastName) < 1 || len(request.LastName) > 100 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "last_name",
+			Message: "Фамилия должна содержать от 1 до 100 символов",
+		})
+	}
+
+	return validationErrors
 }
