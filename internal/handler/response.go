@@ -44,6 +44,10 @@ func writeBadRequest(writer nethttp.ResponseWriter) {
 	writeError(writer, nethttp.StatusBadRequest, "bad_request", "Некорректный запрос")
 }
 
+func writeUnauthorized(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusUnauthorized, "unauthorized", "Не авторизован")
+}
+
 func writeInternalError(writer nethttp.ResponseWriter) {
 	writeError(writer, nethttp.StatusInternalServerError, "internal_error", "Внутренняя ошибка сервера")
 }
