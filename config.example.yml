@@ -1,0 +1,8 @@
+server:
+  port:
+
+postgres:
+  host:
+  port:
+  user:
+  db_name:
