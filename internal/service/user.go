@@ -25,6 +25,11 @@ type RegisterClientParams struct {
 	Password  string
 	FirstName string
 	LastName  string
+var ErrInvalidCredentials = errors.New("invalid credentials")
+
+type userRepository interface {
+	GetByID(ctx context.Context, userID int64) (repository.User, error)
+	GetByEmail(ctx context.Context, email string) (repository.User, error)
 }
 
 type UserProfile struct {
@@ -103,10 +108,35 @@ func (service *UserService) RegisterClient(ctx context.Context, params RegisterC
 		}
 		if errors.Is(err, repository.ErrUsernameExists) {
 			return User{}, ErrUsernameExists
+func (service *UserService) Authenticate(ctx context.Context, email string, password string) (User, error) {
+	user, err := service.userRepository.GetByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, ErrInvalidCredentials
 		}
 
 		return User{}, err
 	}
 
 	return service.GetByID(ctx, userID)
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return User{}, ErrInvalidCredentials
+	}
+
+	return User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		IsTrainer: user.IsTrainer,
+		IsAdmin:   user.IsAdmin,
+		Profile: UserProfile{
+			Username:  user.Profile.Username,
+			FirstName: user.Profile.FirstName,
+			LastName:  user.Profile.LastName,
+			Bio:       user.Profile.Bio,
+			AvatarURL: user.Profile.AvatarURL,
+		},
+	}, nil
 }

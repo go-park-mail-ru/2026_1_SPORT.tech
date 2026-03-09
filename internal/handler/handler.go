@@ -20,6 +20,7 @@ type sessionService interface {
 type userService interface {
 	GetByID(ctx context.Context, userID int64) (service.User, error)
 	RegisterClient(ctx context.Context, params service.RegisterClientParams) (service.User, error)
+	Authenticate(ctx context.Context, email string, password string) (service.User, error)
 }
 
 type Deps struct {
@@ -51,6 +52,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
 	mux.HandleFunc("POST /auth/register/client", handler.handlePostAuthRegisterClient)
+	mux.HandleFunc("POST /auth/login", handler.handlePostAuthLogin)
 	mux.Handle("GET /auth/me", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handleGetAuthMe)))
 
 	return mux

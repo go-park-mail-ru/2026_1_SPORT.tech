@@ -62,6 +62,10 @@ func writeUnauthorized(writer nethttp.ResponseWriter) {
 	writeError(writer, nethttp.StatusUnauthorized, "unauthorized", "Не авторизован")
 }
 
+func writeInvalidCredentials(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusUnauthorized, "invalid_credentials", "Неверный email или пароль")
+}
+
 func writeInternalError(writer nethttp.ResponseWriter) {
 	writeError(writer, nethttp.StatusInternalServerError, "internal_error", "Внутренняя ошибка сервера")
 }
