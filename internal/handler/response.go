@@ -31,6 +31,10 @@ func writeJSON(writer nethttp.ResponseWriter, statusCode int, body any) {
 	_ = json.NewEncoder(writer).Encode(body)
 }
 
+func writeNoContent(writer nethttp.ResponseWriter) {
+	writer.WriteHeader(nethttp.StatusNoContent)
+}
+
 func writeError(writer nethttp.ResponseWriter, statusCode int, code string, message string) {
 	writeJSON(writer, statusCode, errorResponse{
 		Error: apiError{
@@ -40,8 +44,30 @@ func writeError(writer nethttp.ResponseWriter, statusCode int, code string, mess
 	})
 }
 
+func writeValidationError(writer nethttp.ResponseWriter, fields []validationErrorField) {
+	writeJSON(writer, nethttp.StatusUnprocessableEntity, errorResponse{
+		Error: apiError{
+			Code:    "validation_error",
+			Message: "Некорректные данные",
+			Fields:  fields,
+		},
+	})
+}
+
 func writeBadRequest(writer nethttp.ResponseWriter) {
 	writeError(writer, nethttp.StatusBadRequest, "bad_request", "Некорректный запрос")
+}
+
+func writeConflict(writer nethttp.ResponseWriter, code string, message string) {
+	writeError(writer, nethttp.StatusConflict, code, message)
+}
+
+func writeUnauthorized(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusUnauthorized, "unauthorized", "Не авторизован")
+}
+
+func writeInvalidCredentials(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusUnauthorized, "invalid_credentials", "Неверный email или пароль")
 }
 
 func writeInternalError(writer nethttp.ResponseWriter) {
