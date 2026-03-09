@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+postgres:
+  host: db
+  port: 5432
+  user: postgres
+  db_name: postgres
