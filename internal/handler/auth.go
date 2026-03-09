@@ -63,3 +63,19 @@ func userIDFromContext(ctx context.Context) (int64, bool) {
 	userID, ok := ctx.Value(userIDContextKey).(int64)
 	return userID, ok
 }
+
+func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, request *nethttp.Request) {
+	cookie, err := request.Cookie(handler.authCookieName)
+	if err != nil {
+		writeUnauthorized(writer)
+		return
+	}
+
+	if err := handler.sessionService.RevokeSession(request.Context(), cookie.Value); err != nil {
+		writeInternalError(writer)
+		return
+	}
+
+	handler.clearSessionCookie(writer)
+	writeNoContent(writer)
+}
