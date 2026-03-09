@@ -44,6 +44,28 @@ services:
     networks:
       - backend
 
+  seeder:
+    image: postgres:17
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      PGPASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db/seed:/seed
+    command:
+      [
+        "psql",
+        "-h", "db",
+        "-U", "postgres",
+        "-d", "postgres",
+        "-f", "/seed/000001_dev_seed.sql"
+      ]
+    networks:
+      - backend
+
 networks:
   backend:
 
