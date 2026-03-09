@@ -23,11 +23,14 @@ func Run(config config.Config, db *sql.DB) error {
 
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
+	postRepository := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepository)
 
 	httpHandler := handler.NewHandler(handler.Deps{
 		SportTypeService: sportTypeService,
 		SessionService:   sessionService,
 		UserService:      userService,
+		PostService:      postService,
 		AuthCookieName:   config.Auth.CookieName,
 	})
 

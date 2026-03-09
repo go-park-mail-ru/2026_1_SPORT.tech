@@ -54,19 +54,28 @@ func (handler *Handler) handleGetProfile(writer nethttp.ResponseWriter, request 
 }
 
 func (handler *Handler) isCurrentUser(request *nethttp.Request, userID int64) (bool, error) {
+	currentUserID, err := handler.currentUserID(request)
+	if err != nil {
+		return false, err
+	}
+
+	return currentUserID == userID, nil
+}
+
+func (handler *Handler) currentUserID(request *nethttp.Request) (int64, error) {
 	cookie, err := request.Cookie(handler.authCookieName)
 	if err != nil {
-		return false, nil
+		return 0, nil
 	}
 
 	currentUserID, err := handler.sessionService.GetUserIDBySessionID(request.Context(), cookie.Value)
 	if err != nil {
 		if errors.Is(err, service.ErrSessionNotFound) {
-			return false, nil
+			return 0, nil
 		}
 
-		return false, err
+		return 0, err
 	}
 
-	return currentUserID == userID, nil
+	return currentUserID, nil
 }
