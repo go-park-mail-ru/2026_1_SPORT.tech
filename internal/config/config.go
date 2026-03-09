@@ -3,39 +3,41 @@ package config
 import (
 	"fmt"
 	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	ServerPort string
-
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
+	Server   ServerConfig   `yaml:"server"`
+	Postgres PostgresConfig `yaml:"postgres"`
 }
 
-func NewConfig() Config {
-	return Config{
-		ServerPort: getEnv("SERVER_PORT", "8080"),
+type ServerConfig struct {
+	Port string `yaml:"port"`
+}
 
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     getEnv("DB_PORT", "5432"),
-		DBUser:     getEnv("DB_USER", "postgres"),
-		DBPassword: getEnv("DB_PASSWORD", "postgres"),
-		DBName:     getEnv("DB_NAME", "db"),
+type PostgresConfig struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string
+	Name     string `yaml:"db_name"`
+}
+
+func NewConfig(path string) (Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return Config{}, fmt.Errorf("read config: %w", err)
 	}
-}
 
-func (c *Config) DSN() string {
-	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.DBHost,
-		c.DBPort,
-		c.DBUser,
-		c.DBPassword,
-		c.DBName,
-	)
+	var config Config
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return Config{}, fmt.Errorf("unmarshal config: %w", err)
+	}
+
+	config.Postgres.Password = getEnv("DB_PASSWORD", "postgres")
+
+	return config, nil
 }
 
 func getEnv(key, fallback string) string {
@@ -44,4 +46,19 @@ func getEnv(key, fallback string) string {
 	}
 
 	return fallback
+}
+
+func (config PostgresConfig) DSN() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		config.Host,
+		config.Port,
+		config.User,
+		config.Password,
+		config.Name,
+	)
+}
+
+func (config ServerConfig) Address() string {
+	return ":" + config.Port
 }
