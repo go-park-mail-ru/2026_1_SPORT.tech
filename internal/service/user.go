@@ -7,12 +7,15 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var ErrUserNotFound = errors.New("user not found")
+var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type userRepository interface {
 	GetByID(ctx context.Context, userID int64) (repository.User, error)
+	GetByEmail(ctx context.Context, email string) (repository.User, error)
 }
 
 type UserProfile struct {
@@ -52,6 +55,38 @@ func (service *UserService) GetByID(ctx context.Context, userID int64) (User, er
 		}
 
 		return User{}, err
+	}
+
+	return User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		IsTrainer: user.IsTrainer,
+		IsAdmin:   user.IsAdmin,
+		Profile: UserProfile{
+			Username:  user.Profile.Username,
+			FirstName: user.Profile.FirstName,
+			LastName:  user.Profile.LastName,
+			Bio:       user.Profile.Bio,
+			AvatarURL: user.Profile.AvatarURL,
+		},
+	}, nil
+}
+
+func (service *UserService) Authenticate(ctx context.Context, email string, password string) (User, error) {
+	user, err := service.userRepository.GetByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, ErrInvalidCredentials
+		}
+
+		return User{}, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return User{}, ErrInvalidCredentials
 	}
 
 	return User{
