@@ -12,6 +12,11 @@ import (
 )
 
 func Run(config config.Config, db *sql.DB) error {
+	sportTypeRepository := repository.NewSportTypeRepository(db)
+	sportTypeService := service.NewSportTypeService(sportTypeRepository)
+
+	httpHandler := handler.NewHandler(handler.Deps{
+		SportTypeService: sportTypeService,
 	sessionRepository := repository.NewSessionRepository(db)
 	sessionService, err := service.NewSessionService(sessionRepository, config.Auth)
 	if err != nil {

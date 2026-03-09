@@ -5,6 +5,12 @@ import (
 	nethttp "net/http"
 	"regexp"
 
+type Deps struct {
+	SportTypeService sportTypeService
+}
+
+type Handler struct {
+	sportTypeService sportTypeService
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
 )
 
@@ -41,6 +47,7 @@ type healthResponse struct {
 
 func NewHandler(deps Deps) *Handler {
 	return &Handler{
+		sportTypeService: deps.SportTypeService,
 		sessionService: deps.SessionService,
 		userService:    deps.UserService,
 		authCookieName: deps.AuthCookieName,
@@ -51,6 +58,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 	mux := nethttp.NewServeMux()
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
+	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
 	mux.HandleFunc("POST /auth/register/client", handler.handlePostAuthRegisterClient)
 	mux.HandleFunc("POST /auth/login", handler.handlePostAuthLogin)
 	mux.Handle("GET /auth/me", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handleGetAuthMe)))
