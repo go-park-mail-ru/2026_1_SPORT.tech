@@ -41,50 +41,76 @@ func (stub *sessionRepositoryStub) RevokeSessionByHash(ctx context.Context, sess
 	return stub.revokeSessionByHashFunc(ctx, sessionIDHash)
 }
 
-func TestNewSessionService(t *testing.T) {
-	t.Parallel()
+type newSessionServiceTest struct {
+	name       string
+	authConfig config.AuthConfig
+	expectErr  bool
+}
 
-	testCases := []struct {
-		name       string
-		authConfig config.AuthConfig
-		wantErr    bool
-	}{
+type getUserIDBySessionIDTest struct {
+	name       string
+	sessionID  string
+	repository *sessionRepositoryStub
+	expectID   int64
+	expectErr  error
+}
+
+type revokeSessionTest struct {
+	name       string
+	sessionID  string
+	repository *sessionRepositoryStub
+	expectErr  error
+}
+
+func TestNewSessionServicePositive(t *testing.T) {
+	tests := []newSessionServiceTest{
 		{
-			name: "valid ttl",
+			name: "Корректный session ttl",
 			authConfig: config.AuthConfig{
 				SessionTTL: "2h",
 			},
-			wantErr: false,
-		},
-		{
-			name: "invalid ttl",
-			authConfig: config.AuthConfig{
-				SessionTTL: "not-a-duration",
-			},
-			wantErr: true,
+			expectErr: false,
 		},
 	}
 
-	for _, testCase := range testCases {
-		testCase := testCase
-
-		t.Run(testCase.name, func(t *testing.T) {
-			t.Parallel()
-
-			_, err := NewSessionService(&sessionRepositoryStub{}, testCase.authConfig)
-			if testCase.wantErr && err == nil {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewSessionService(&sessionRepositoryStub{}, tt.authConfig)
+			if tt.expectErr && err == nil {
 				t.Fatal("expected error")
 			}
-			if !testCase.wantErr && err != nil {
-				t.Fatalf("unexpected error: %v", err)
+			if !tt.expectErr && err != nil {
+				t.Fatalf("unexpected error: got %v", err)
 			}
 		})
 	}
 }
 
-func TestCreateSession(t *testing.T) {
-	t.Parallel()
+func TestNewSessionServiceNegative(t *testing.T) {
+	tests := []newSessionServiceTest{
+		{
+			name: "Некорректный session ttl",
+			authConfig: config.AuthConfig{
+				SessionTTL: "not-a-duration",
+			},
+			expectErr: true,
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewSessionService(&sessionRepositoryStub{}, tt.authConfig)
+			if tt.expectErr && err == nil {
+				t.Fatal("expected error")
+			}
+			if !tt.expectErr && err != nil {
+				t.Fatalf("unexpected error: got %v", err)
+			}
+		})
+	}
+}
+
+func TestSessionServiceCreateSessionPositive(t *testing.T) {
 	const (
 		userID     int64 = 42
 		sessionTTL       = 2 * time.Hour
@@ -105,13 +131,13 @@ func TestCreateSession(t *testing.T) {
 	sessionID, err := service.CreateSession(context.Background(), userID)
 	after := time.Now()
 	if err != nil {
-		t.Fatalf("CreateSession returned error: %v", err)
+		t.Fatalf("unexpected error: got %v", err)
 	}
 	if sessionID == "" {
 		t.Fatal("expected non-empty session id")
 	}
 	if capturedParams.UserID != userID {
-		t.Fatalf("unexpected user id: got %d, want %d", capturedParams.UserID, userID)
+		t.Fatalf("unexpected user id: got %d, expect %d", capturedParams.UserID, userID)
 	}
 	if capturedParams.SessionIDHash != hashSessionID(sessionID) {
 		t.Fatal("expected repository to receive hashed session id")
@@ -120,41 +146,47 @@ func TestCreateSession(t *testing.T) {
 	minExpiresAt := before.Add(sessionTTL)
 	maxExpiresAt := after.Add(sessionTTL)
 	if capturedParams.ExpiresAt.Before(minExpiresAt) || capturedParams.ExpiresAt.After(maxExpiresAt) {
-		t.Fatalf("unexpected expires at: got %v, want between %v and %v", capturedParams.ExpiresAt, minExpiresAt, maxExpiresAt)
+		t.Fatalf("unexpected expires at: got %v, expect between %v and %v", capturedParams.ExpiresAt, minExpiresAt, maxExpiresAt)
 	}
 }
 
-func TestCreateSessionRepositoryError(t *testing.T) {
-	t.Parallel()
-
+func TestSessionServiceCreateSessionNegative(t *testing.T) {
 	expectedErr := errors.New("create session")
-	service := &SessionService{
-		sessionRepository: &sessionRepositoryStub{
-			createSessionFunc: func(ctx context.Context, params repository.CreateSessionParams) error {
-				return expectedErr
-			},
-		},
-		sessionTTL: time.Hour,
-	}
-
-	_, err := service.CreateSession(context.Background(), 1)
-	if !errors.Is(err, expectedErr) {
-		t.Fatalf("unexpected error: got %v, want %v", err, expectedErr)
-	}
-}
-
-func TestGetUserIDBySessionID(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
+	tests := []struct {
 		name       string
-		sessionID  string
 		repository *sessionRepositoryStub
-		wantUserID int64
-		wantErr    error
+		expectErr  error
 	}{
 		{
-			name:      "active session",
+			name: "Ошибка репозитория",
+			repository: &sessionRepositoryStub{
+				createSessionFunc: func(ctx context.Context, params repository.CreateSessionParams) error {
+					return expectedErr
+				},
+			},
+			expectErr: expectedErr,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &SessionService{
+				sessionRepository: tt.repository,
+				sessionTTL:        time.Hour,
+			}
+
+			_, err := service.CreateSession(context.Background(), 1)
+			if !errors.Is(err, tt.expectErr) {
+				t.Fatalf("unexpected error: got %v, expect %v", err, tt.expectErr)
+			}
+		})
+	}
+}
+
+func TestSessionServiceGetUserIDBySessionIDPositive(t *testing.T) {
+	tests := []getUserIDBySessionIDTest{
+		{
+			name:      "Активная сессия",
 			sessionID: "raw-session-id",
 			repository: &sessionRepositoryStub{
 				getActiveSessionByHashFunc: func(ctx context.Context, sessionIDHash string) (repository.Session, error) {
@@ -165,53 +197,59 @@ func TestGetUserIDBySessionID(t *testing.T) {
 					return repository.Session{UserID: 7}, nil
 				},
 			},
-			wantUserID: 7,
+			expectID: 7,
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &SessionService{
+				sessionRepository: tt.repository,
+			}
+
+			userID, err := service.GetUserIDBySessionID(context.Background(), tt.sessionID)
+			if err != nil {
+				t.Fatalf("unexpected error: got %v", err)
+			}
+			if userID != tt.expectID {
+				t.Fatalf("unexpected user id: got %d, expect %d", userID, tt.expectID)
+			}
+		})
+	}
+}
+
+func TestSessionServiceGetUserIDBySessionIDNegative(t *testing.T) {
+	tests := []getUserIDBySessionIDTest{
 		{
-			name:      "session not found",
+			name:      "Сессия не найдена",
 			sessionID: "missing-session",
 			repository: &sessionRepositoryStub{
 				getActiveSessionByHashFunc: func(ctx context.Context, sessionIDHash string) (repository.Session, error) {
 					return repository.Session{}, sql.ErrNoRows
 				},
 			},
-			wantErr: ErrSessionNotFound,
+			expectErr: ErrSessionNotFound,
 		},
 	}
 
-	for _, testCase := range testCases {
-		testCase := testCase
-
-		t.Run(testCase.name, func(t *testing.T) {
-			t.Parallel()
-
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			service := &SessionService{
-				sessionRepository: testCase.repository,
+				sessionRepository: tt.repository,
 			}
 
-			userID, err := service.GetUserIDBySessionID(context.Background(), testCase.sessionID)
-			if !errors.Is(err, testCase.wantErr) {
-				t.Fatalf("unexpected error: got %v, want %v", err, testCase.wantErr)
-			}
-			if userID != testCase.wantUserID {
-				t.Fatalf("unexpected user id: got %d, want %d", userID, testCase.wantUserID)
+			_, err := service.GetUserIDBySessionID(context.Background(), tt.sessionID)
+			if !errors.Is(err, tt.expectErr) {
+				t.Fatalf("unexpected error: got %v, expect %v", err, tt.expectErr)
 			}
 		})
 	}
 }
 
-func TestRevokeSession(t *testing.T) {
-	t.Parallel()
-
-	expectedErr := errors.New("revoke session")
-	testCases := []struct {
-		name       string
-		sessionID  string
-		repository *sessionRepositoryStub
-		wantErr    error
-	}{
+func TestSessionServiceRevokeSessionPositive(t *testing.T) {
+	tests := []revokeSessionTest{
 		{
-			name:      "success",
+			name:      "Успех",
 			sessionID: "raw-session-id",
 			repository: &sessionRepositoryStub{
 				revokeSessionByHashFunc: func(ctx context.Context, sessionIDHash string) error {
@@ -223,31 +261,46 @@ func TestRevokeSession(t *testing.T) {
 				},
 			},
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &SessionService{
+				sessionRepository: tt.repository,
+			}
+
+			err := service.RevokeSession(context.Background(), tt.sessionID)
+			if err != nil {
+				t.Fatalf("unexpected error: got %v", err)
+			}
+		})
+	}
+}
+
+func TestSessionServiceRevokeSessionNegative(t *testing.T) {
+	expectedErr := errors.New("revoke session")
+	tests := []revokeSessionTest{
 		{
-			name:      "repository error",
+			name:      "Ошибка репозитория",
 			sessionID: "raw-session-id",
 			repository: &sessionRepositoryStub{
 				revokeSessionByHashFunc: func(ctx context.Context, sessionIDHash string) error {
 					return expectedErr
 				},
 			},
-			wantErr: expectedErr,
+			expectErr: expectedErr,
 		},
 	}
 
-	for _, testCase := range testCases {
-		testCase := testCase
-
-		t.Run(testCase.name, func(t *testing.T) {
-			t.Parallel()
-
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			service := &SessionService{
-				sessionRepository: testCase.repository,
+				sessionRepository: tt.repository,
 			}
 
-			err := service.RevokeSession(context.Background(), testCase.sessionID)
-			if !errors.Is(err, testCase.wantErr) {
-				t.Fatalf("unexpected error: got %v, want %v", err, testCase.wantErr)
+			err := service.RevokeSession(context.Background(), tt.sessionID)
+			if !errors.Is(err, tt.expectErr) {
+				t.Fatalf("unexpected error: got %v, expect %v", err, tt.expectErr)
 			}
 		})
 	}
