@@ -2,22 +2,29 @@ package handler
 
 import nethttp "net/http"
 
-type Deps struct{}
+type Deps struct {
+	SportTypeService sportTypeService
+}
 
-type Handler struct{}
+type Handler struct {
+	sportTypeService sportTypeService
+}
 
 type healthResponse struct {
 	Status string `json:"status"`
 }
 
-func NewHandler(_ Deps) *Handler {
-	return &Handler{}
+func NewHandler(deps Deps) *Handler {
+	return &Handler{
+		sportTypeService: deps.SportTypeService,
+	}
 }
 
 func (handler *Handler) Routes() nethttp.Handler {
 	mux := nethttp.NewServeMux()
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
+	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
 
 	return mux
 }
