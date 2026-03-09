@@ -27,6 +27,7 @@ type sessionService interface {
 type userService interface {
 	GetByID(ctx context.Context, userID int64) (service.User, error)
 	RegisterClient(ctx context.Context, params service.RegisterClientParams) (service.User, error)
+	RegisterTrainer(ctx context.Context, params service.RegisterTrainerParams) (service.User, error)
 	Authenticate(ctx context.Context, email string, password string) (service.User, error)
 }
 
@@ -60,6 +61,28 @@ type clientRegisterRequest struct {
 	PasswordRepeat string `json:"password_repeat"`
 	FirstName      string `json:"first_name"`
 	LastName       string `json:"last_name"`
+}
+
+type trainerRegisterSportRequest struct {
+	SportTypeID     int64   `json:"sport_type_id"`
+	ExperienceYears int     `json:"experience_years"`
+	SportsRank      *string `json:"sports_rank"`
+}
+
+type trainerRegisterDetailsRequest struct {
+	EducationDegree *string                       `json:"education_degree"`
+	CareerSinceDate string                        `json:"career_since_date"`
+	Sports          []trainerRegisterSportRequest `json:"sports"`
+}
+
+type trainerRegisterRequest struct {
+	Username       string                        `json:"username"`
+	Email          string                        `json:"email"`
+	Password       string                        `json:"password"`
+	PasswordRepeat string                        `json:"password_repeat"`
+	FirstName      string                        `json:"first_name"`
+	LastName       string                        `json:"last_name"`
+	TrainerDetails trainerRegisterDetailsRequest `json:"trainer_details"`
 }
 
 type loginRequest struct {
@@ -148,6 +171,71 @@ func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWrit
 			return
 		case errors.Is(err, service.ErrUsernameExists):
 			writeConflict(writer, "username_exists", "Username уже существует")
+			return
+		default:
+			writeInternalError(writer)
+			return
+		}
+	}
+
+	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	if err != nil {
+		writeInternalError(writer)
+		return
+	}
+
+	handler.setSessionCookie(writer, sessionID)
+	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
+}
+
+func (handler *Handler) handlePostAuthRegisterTrainer(writer nethttp.ResponseWriter, request *nethttp.Request) {
+	var registerRequest trainerRegisterRequest
+
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&registerRequest); err != nil {
+		writeBadRequest(writer)
+		return
+	}
+
+	careerSinceDate, validationErrors := validateTrainerRegisterRequest(registerRequest)
+	if len(validationErrors) > 0 {
+		writeValidationError(writer, validationErrors)
+		return
+	}
+
+	sports := make([]service.RegisterTrainerSportParams, 0, len(registerRequest.TrainerDetails.Sports))
+	for _, sport := range registerRequest.TrainerDetails.Sports {
+		sports = append(sports, service.RegisterTrainerSportParams{
+			SportTypeID:     sport.SportTypeID,
+			ExperienceYears: sport.ExperienceYears,
+			SportsRank:      sport.SportsRank,
+		})
+	}
+
+	user, err := handler.userService.RegisterTrainer(request.Context(), service.RegisterTrainerParams{
+		Username:        registerRequest.Username,
+		Email:           registerRequest.Email,
+		Password:        registerRequest.Password,
+		FirstName:       registerRequest.FirstName,
+		LastName:        registerRequest.LastName,
+		EducationDegree: registerRequest.TrainerDetails.EducationDegree,
+		CareerSinceDate: careerSinceDate,
+		Sports:          sports,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrEmailExists):
+			writeConflict(writer, "email_exists", "Email уже существует")
+			return
+		case errors.Is(err, service.ErrUsernameExists):
+			writeConflict(writer, "username_exists", "Username уже существует")
+			return
+		case errors.Is(err, service.ErrSportTypeNotFound):
+			writeValidationError(writer, []validationErrorField{{
+				Field:   "trainer_details.sports",
+				Message: "Указан несуществующий sport_type_id",
+			}})
 			return
 		default:
 			writeInternalError(writer)
@@ -305,4 +393,80 @@ func validateClientRegisterRequest(request clientRegisterRequest) []validationEr
 	}
 
 	return validationErrors
+}
+
+func validateTrainerRegisterRequest(request trainerRegisterRequest) (time.Time, []validationErrorField) {
+	validationErrors := validateClientRegisterRequest(clientRegisterRequest{
+		Username:       request.Username,
+		Email:          request.Email,
+		Password:       request.Password,
+		PasswordRepeat: request.PasswordRepeat,
+		FirstName:      request.FirstName,
+		LastName:       request.LastName,
+	})
+
+	if request.TrainerDetails.EducationDegree != nil && len(*request.TrainerDetails.EducationDegree) > 255 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "trainer_details.education_degree",
+			Message: "Образование должно содержать не более 255 символов",
+		})
+	}
+
+	careerSinceDate, err := time.Parse("2006-01-02", request.TrainerDetails.CareerSinceDate)
+	if err != nil {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "trainer_details.career_since_date",
+			Message: "Неверный формат даты",
+		})
+	} else if careerSinceDate.After(time.Now()) {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "trainer_details.career_since_date",
+			Message: "Дата начала карьеры не может быть в будущем",
+		})
+	}
+
+	if len(request.TrainerDetails.Sports) == 0 {
+		validationErrors = append(validationErrors, validationErrorField{
+			Field:   "trainer_details.sports",
+			Message: "Нужно указать хотя бы один вид спорта",
+		})
+	}
+
+	seenSportTypeIDs := make(map[int64]struct{}, len(request.TrainerDetails.Sports))
+	for index, sport := range request.TrainerDetails.Sports {
+		fieldPrefix := "trainer_details.sports"
+
+		if sport.SportTypeID <= 0 {
+			validationErrors = append(validationErrors, validationErrorField{
+				Field:   fieldPrefix,
+				Message: "sport_type_id должен быть положительным числом",
+			})
+		}
+
+		if sport.ExperienceYears < 0 {
+			validationErrors = append(validationErrors, validationErrorField{
+				Field:   fieldPrefix,
+				Message: "experience_years не может быть отрицательным",
+			})
+		}
+
+		if sport.SportsRank != nil && len(*sport.SportsRank) > 100 {
+			validationErrors = append(validationErrors, validationErrorField{
+				Field:   fieldPrefix,
+				Message: "sports_rank должен содержать не более 100 символов",
+			})
+		}
+
+		if _, ok := seenSportTypeIDs[sport.SportTypeID]; ok {
+			validationErrors = append(validationErrors, validationErrorField{
+				Field:   fieldPrefix,
+				Message: "sport_type_id не должен повторяться",
+			})
+		}
+		seenSportTypeIDs[sport.SportTypeID] = struct{}{}
+
+		_ = index
+	}
+
+	return careerSinceDate, validationErrors
 }
