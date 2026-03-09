@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -10,6 +11,7 @@ import (
 type Config struct {
 	Server   ServerConfig   `yaml:"server"`
 	Postgres PostgresConfig `yaml:"postgres"`
+	Auth     AuthConfig     `yaml:"auth"`
 }
 
 type ServerConfig struct {
@@ -24,6 +26,11 @@ type PostgresConfig struct {
 	Name     string `yaml:"db_name"`
 }
 
+type AuthConfig struct {
+	CookieName string `yaml:"cookie_name"`
+	SessionTTL string `yaml:"session_ttl"`
+}
+
 func NewConfig(path string) (Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -36,6 +43,12 @@ func NewConfig(path string) (Config, error) {
 	}
 
 	config.Postgres.Password = getEnv("DB_PASSWORD", "postgres")
+	if config.Auth.CookieName == "" {
+		config.Auth.CookieName = "sid"
+	}
+	if config.Auth.SessionTTL == "" {
+		config.Auth.SessionTTL = "720h"
+	}
 
 	return config, nil
 }
@@ -61,4 +74,8 @@ func (config PostgresConfig) DSN() string {
 
 func (config ServerConfig) Address() string {
 	return ":" + config.Port
+}
+
+func (config AuthConfig) SessionTTLDuration() (time.Duration, error) {
+	return time.ParseDuration(config.SessionTTL)
 }

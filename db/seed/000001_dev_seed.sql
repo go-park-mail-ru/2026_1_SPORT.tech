@@ -9,13 +9,15 @@ ON CONFLICT (sport_type_id) DO NOTHING;
 INSERT INTO "user" (user_id, email, password_hash)
 VALUES
     (1, 'trainer@example.com', '$2a$10$exampletrainerhash'),
-    (2, 'client@example.com', '$2a$10$exampleclienthash')
+    (2, 'client@example.com', '$2a$10$exampleclienthash'),
+    (3, 'mamapapaya@example.com', '$2a$10$eDl.rzMw6ldNi/GbGiT2QuV.ED8Y44E5vhObrArjoKUbXur9gVU.i')
 ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO user_profile (user_id, username, first_name, last_name, bio, avatar_url)
 VALUES
     (1, 'trainer_one', 'Иван', 'Тренеров', 'Тренер по бегу и плаванию', 'https://placehold.co/200x200'),
-    (2, 'client_one', 'Петр', 'Клиентов', 'Люблю спорт', 'https://placehold.co/200x200')
+    (2, 'client_one', 'Петр', 'Клиентов', 'Люблю спорт', 'https://placehold.co/200x200'),
+    (3, 'mamapapaya', 'Mama', 'Papaya', NULL, NULL)
 ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO trainer_details (trainer_user_id, education_degree, career_since_date)
