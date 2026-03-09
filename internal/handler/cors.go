@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var allowAllOrigins = true
+
 func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
 	return nethttp.HandlerFunc(func(writer nethttp.ResponseWriter, request *nethttp.Request) {
 		origin := request.Header.Get("Origin")
@@ -15,7 +17,7 @@ func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
 			return
 		}
 
-		if !isAllowedOrigin(origin, request.Host) {
+		if !allowAllOrigins && !isAllowedOrigin(origin, request.Host) {
 			if request.Method == nethttp.MethodOptions {
 				writer.WriteHeader(nethttp.StatusForbidden)
 				return
