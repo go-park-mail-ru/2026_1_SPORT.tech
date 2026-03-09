@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	nethttp "net/http"
 	"time"
@@ -34,6 +35,11 @@ type userResponse struct {
 
 type authResponse struct {
 	User userResponse `json:"user"`
+}
+
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (handler *Handler) AuthMiddleware(next nethttp.Handler) nethttp.Handler {
@@ -85,6 +91,55 @@ func (handler *Handler) clearSessionCookie(writer nethttp.ResponseWriter) {
 func userIDFromContext(ctx context.Context) (int64, bool) {
 	userID, ok := ctx.Value(userIDContextKey).(int64)
 	return userID, ok
+}
+
+func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, request *nethttp.Request) {
+	var loginRequest loginRequest
+	if err := json.NewDecoder(request.Body).Decode(&loginRequest); err != nil {
+		writeBadRequest(writer)
+		return
+	}
+	if loginRequest.Email == "" || loginRequest.Password == "" {
+		writeBadRequest(writer)
+		return
+	}
+
+	user, err := handler.userService.Authenticate(request.Context(), loginRequest.Email, loginRequest.Password)
+	if err != nil {
+		if errors.Is(err, service.ErrInvalidCredentials) {
+			writeInvalidCredentials(writer)
+			return
+		}
+
+		writeInternalError(writer)
+		return
+	}
+
+	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	if err != nil {
+		writeInternalError(writer)
+		return
+	}
+
+	handler.setSessionCookie(writer, sessionID)
+	writeJSON(writer, nethttp.StatusOK, authResponse{
+		User: userResponse{
+			UserID:    user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+			IsTrainer: user.IsTrainer,
+			IsAdmin:   user.IsAdmin,
+			Profile: userProfileResponse{
+				Username:  user.Profile.Username,
+				FirstName: user.Profile.FirstName,
+				LastName:  user.Profile.LastName,
+				Bio:       user.Profile.Bio,
+				AvatarURL: user.Profile.AvatarURL,
+			},
+		},
+	})
 }
 
 func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *nethttp.Request) {
