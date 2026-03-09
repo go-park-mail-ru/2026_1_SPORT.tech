@@ -31,6 +31,10 @@ func writeJSON(writer nethttp.ResponseWriter, statusCode int, body any) {
 	_ = json.NewEncoder(writer).Encode(body)
 }
 
+func writeNoContent(writer nethttp.ResponseWriter) {
+	writer.WriteHeader(nethttp.StatusNoContent)
+}
+
 func writeError(writer nethttp.ResponseWriter, statusCode int, code string, message string) {
 	writeJSON(writer, statusCode, errorResponse{
 		Error: apiError{

@@ -199,6 +199,14 @@ func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *
 			return
 		}
 
+func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, request *nethttp.Request) {
+	cookie, err := request.Cookie(handler.authCookieName)
+	if err != nil {
+		writeUnauthorized(writer)
+		return
+	}
+
+	if err := handler.sessionService.RevokeSession(request.Context(), cookie.Value); err != nil {
 		writeInternalError(writer)
 		return
 	}
@@ -273,4 +281,6 @@ func validateClientRegisterRequest(request clientRegisterRequest) []validationEr
 	}
 
 	return validationErrors
+	handler.clearSessionCookie(writer)
+	writeNoContent(writer)
 }
