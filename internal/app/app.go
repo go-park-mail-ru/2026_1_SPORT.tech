@@ -2,6 +2,7 @@ package app
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/config"
@@ -16,6 +17,18 @@ func Run(config config.Config, db *sql.DB) error {
 
 	httpHandler := handler.NewHandler(handler.Deps{
 		SportTypeService: sportTypeService,
+	sessionRepository := repository.NewSessionRepository(db)
+	sessionService, err := service.NewSessionService(sessionRepository, config.Auth)
+	if err != nil {
+		return fmt.Errorf("new session service: %w", err)
+	}
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+
+	httpHandler := handler.NewHandler(handler.Deps{
+		SessionService: sessionService,
+		UserService:    userService,
+		AuthCookieName: config.Auth.CookieName,
 	})
 
 	server := &http.Server{
