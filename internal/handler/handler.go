@@ -34,6 +34,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
 	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
+	mux.HandleFunc("GET /profiles/{user_id}", handler.handleGetProfile)
 	mux.HandleFunc("POST /auth/register/client", handler.handlePostAuthRegisterClient)
 	mux.HandleFunc("POST /auth/register/trainer", handler.handlePostAuthRegisterTrainer)
 	mux.HandleFunc("POST /auth/login", handler.handlePostAuthLogin)
