@@ -17,9 +17,12 @@ func Run(config config.Config, db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf("new session service: %w", err)
 	}
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
 
 	httpHandler := handler.NewHandler(handler.Deps{
 		SessionService: sessionService,
+		UserService:    userService,
 		AuthCookieName: config.Auth.CookieName,
 	})
 
