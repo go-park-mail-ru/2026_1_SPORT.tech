@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	nethttp "net/http"
+
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
 )
 
 type sessionService interface {
@@ -11,13 +13,19 @@ type sessionService interface {
 	RevokeSession(ctx context.Context, sessionID string) error
 }
 
+type userService interface {
+	GetByID(ctx context.Context, userID int64) (service.User, error)
+}
+
 type Deps struct {
 	SessionService sessionService
+	UserService    userService
 	AuthCookieName string
 }
 
 type Handler struct {
 	sessionService sessionService
+	userService    userService
 	authCookieName string
 }
 
@@ -28,6 +36,7 @@ type healthResponse struct {
 func NewHandler(deps Deps) *Handler {
 	return &Handler{
 		sessionService: deps.SessionService,
+		userService:    deps.UserService,
 		authCookieName: deps.AuthCookieName,
 	}
 }
@@ -36,6 +45,7 @@ func (handler *Handler) Routes() nethttp.Handler {
 	mux := nethttp.NewServeMux()
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
+	mux.Handle("GET /auth/me", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handleGetAuthMe)))
 
 	return mux
 }
