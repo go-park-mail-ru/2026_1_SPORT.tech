@@ -1,8 +1,10 @@
 package app
 
-import "net/http"
+import (
+	"net/http"
+)
 
-type healthReponse struct {
+type healthResponse struct {
 	Status string `json:"status"`
 }
 
@@ -14,7 +16,7 @@ func NewRouter() http.Handler {
 }
 
 func handleHealth(writer http.ResponseWriter, request *http.Request) {
-	writeJSON(writer, http.StatusOK, healthReponse{
+	writeJSON(writer, http.StatusOK, healthResponse{
 		Status: "ok",
 	})
 }
