@@ -1,8 +1,8 @@
-package app
+package handler
 
 import (
 	"encoding/json"
-	"net/http"
+	nethttp "net/http"
 )
 
 type errorResponse struct {
@@ -20,7 +20,7 @@ type validationErrorField struct {
 	Message string `json:"message"`
 }
 
-func writeJSON(writer http.ResponseWriter, statusCode int, body any) {
+func writeJSON(writer nethttp.ResponseWriter, statusCode int, body any) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(statusCode)
 
@@ -31,7 +31,7 @@ func writeJSON(writer http.ResponseWriter, statusCode int, body any) {
 	_ = json.NewEncoder(writer).Encode(body)
 }
 
-func writeError(writer http.ResponseWriter, statusCode int, code string, message string) {
+func writeError(writer nethttp.ResponseWriter, statusCode int, code string, message string) {
 	writeJSON(writer, statusCode, errorResponse{
 		Error: apiError{
 			Code:    code,
@@ -40,14 +40,10 @@ func writeError(writer http.ResponseWriter, statusCode int, code string, message
 	})
 }
 
-func writeBadRequest(writer http.ResponseWriter) {
-	writeError(writer, http.StatusBadRequest, "bad_request", "Некорректный запрос")
+func writeBadRequest(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusBadRequest, "bad_request", "Некорректный запрос")
 }
 
-func writeUnauthorized(writer http.ResponseWriter) {
-	writeError(writer, http.StatusUnauthorized, "unauthorized", "Не авторизован")
-}
-
-func writeNotFound(writer http.ResponseWriter, message string) {
-	writeError(writer, http.StatusNotFound, "not_found", message)
+func writeInternalError(writer nethttp.ResponseWriter) {
+	writeError(writer, nethttp.StatusInternalServerError, "internal_error", "Внутренняя ошибка сервера")
 }
