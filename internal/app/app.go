@@ -15,20 +15,23 @@ func Run(config config.Config, db *sql.DB) error {
 	sportTypeRepository := repository.NewSportTypeRepository(db)
 	sportTypeService := service.NewSportTypeService(sportTypeRepository)
 
-	httpHandler := handler.NewHandler(handler.Deps{
-		SportTypeService: sportTypeService,
 	sessionRepository := repository.NewSessionRepository(db)
 	sessionService, err := service.NewSessionService(sessionRepository, config.Auth)
 	if err != nil {
 		return fmt.Errorf("new session service: %w", err)
 	}
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
+	postRepository := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepository)
 
 	httpHandler := handler.NewHandler(handler.Deps{
-		SessionService: sessionService,
-		UserService:    userService,
-		AuthCookieName: config.Auth.CookieName,
+		SportTypeService: sportTypeService,
+		SessionService:   sessionService,
+		UserService:      userService,
+		PostService:      postService,
+		AuthCookieName:   config.Auth.CookieName,
 	})
 
 	server := &http.Server{
