@@ -17,7 +17,7 @@ const userIDContextKey contextKey = "user_id"
 
 var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 var emailPattern = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
-var allowCrossSiteCookies = true
+var allowCrossSiteCookies = false
 
 type sessionService interface {
 	CreateSession(ctx context.Context, userID int64) (string, error)

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var allowAllOrigins = true
+var allowAllOrigins = false
 
 func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
 	return nethttp.HandlerFunc(func(writer nethttp.ResponseWriter, request *nethttp.Request) {
