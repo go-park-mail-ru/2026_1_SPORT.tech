@@ -1,15 +1,8 @@
 package handler
 
 import (
-	"context"
-	nethttp "net/http"
-
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"net/http"
 )
-
-type sportTypeService interface {
-	ListSportTypes(ctx context.Context) ([]service.SportType, error)
-}
 
 type getSportTypesResponse struct {
 	SportTypes []sportTypeResponseItem `json:"sport_types"`
@@ -20,8 +13,8 @@ type sportTypeResponseItem struct {
 	Name        string `json:"name"`
 }
 
-func (handler *Handler) handleGetSportTypes(writer nethttp.ResponseWriter, request *nethttp.Request) {
-	sportTypes, err := handler.sportTypeService.ListSportTypes(request.Context())
+func (handler *Handler) handleGetSportTypes(writer http.ResponseWriter, request *http.Request) {
+	sportTypes, err := handler.sportTypeUseCase.ListSportTypes(request.Context())
 	if err != nil {
 		writeInternalError(writer)
 		return
@@ -38,5 +31,5 @@ func (handler *Handler) handleGetSportTypes(writer nethttp.ResponseWriter, reque
 		})
 	}
 
-	writeJSON(writer, nethttp.StatusOK, response)
+	writeJSON(writer, http.StatusOK, response)
 }

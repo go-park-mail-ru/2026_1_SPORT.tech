@@ -2,10 +2,10 @@ package handler
 
 import (
 	"errors"
-	nethttp "net/http"
+	"net/http"
 	"strconv"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
 type profileResponse struct {
@@ -15,16 +15,16 @@ type profileResponse struct {
 	Profile   userProfileResponse `json:"profile"`
 }
 
-func (handler *Handler) handleGetProfile(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handleGetProfile(writer http.ResponseWriter, request *http.Request) {
 	userID, err := strconv.ParseInt(request.PathValue("user_id"), 10, 64)
 	if err != nil || userID <= 0 {
 		writeBadRequest(writer)
 		return
 	}
 
-	user, err := handler.userService.GetByID(request.Context(), userID)
+	user, err := handler.userUseCase.GetByID(request.Context(), userID)
 	if err != nil {
-		if errors.Is(err, service.ErrUserNotFound) {
+		if errors.Is(err, usecase.ErrUserNotFound) {
 			writeNotFound(writer, "Пользователь не найден")
 			return
 		}
@@ -39,7 +39,7 @@ func (handler *Handler) handleGetProfile(writer nethttp.ResponseWriter, request 
 		return
 	}
 
-	writeJSON(writer, nethttp.StatusOK, profileResponse{
+	writeJSON(writer, http.StatusOK, profileResponse{
 		UserID:    user.ID,
 		IsMe:      isMe,
 		IsTrainer: user.IsTrainer,
@@ -53,7 +53,7 @@ func (handler *Handler) handleGetProfile(writer nethttp.ResponseWriter, request 
 	})
 }
 
-func (handler *Handler) isCurrentUser(request *nethttp.Request, userID int64) (bool, error) {
+func (handler *Handler) isCurrentUser(request *http.Request, userID int64) (bool, error) {
 	currentUserID, err := handler.currentUserID(request)
 	if err != nil {
 		return false, err
@@ -62,15 +62,15 @@ func (handler *Handler) isCurrentUser(request *nethttp.Request, userID int64) (b
 	return currentUserID == userID, nil
 }
 
-func (handler *Handler) currentUserID(request *nethttp.Request) (int64, error) {
+func (handler *Handler) currentUserID(request *http.Request) (int64, error) {
 	cookie, err := request.Cookie(handler.authCookieName)
 	if err != nil {
 		return 0, nil
 	}
 
-	currentUserID, err := handler.sessionService.GetUserIDBySessionID(request.Context(), cookie.Value)
+	currentUserID, err := handler.sessionUseCase.GetUserIDBySessionID(request.Context(), cookie.Value)
 	if err != nil {
-		if errors.Is(err, service.ErrSessionNotFound) {
+		if errors.Is(err, usecase.ErrSessionNotFound) {
 			return 0, nil
 		}
 

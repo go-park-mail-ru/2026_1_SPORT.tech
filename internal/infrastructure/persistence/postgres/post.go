@@ -1,37 +1,11 @@
-package repository
+package postgres
 
 import (
 	"context"
 	"database/sql"
-	"time"
+
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
-
-type PostListItem struct {
-	PostID    int64
-	TrainerID int64
-	MinTierID *int64
-	Title     string
-	CreatedAt time.Time
-	CanView   bool
-}
-
-type PostAttachment struct {
-	PostAttachmentID int64
-	Kind             string
-	FileURL          string
-}
-
-type Post struct {
-	PostID      int64
-	TrainerID   int64
-	MinTierID   *int64
-	Title       string
-	TextContent string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	CanView     bool
-	Attachments []PostAttachment
-}
 
 type PostRepository struct {
 	db *sql.DB
@@ -43,7 +17,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 	}
 }
 
-func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]PostListItem, error) {
+func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error) {
 	const query = `
 		SELECT
 			p.post_id,
@@ -80,10 +54,10 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 	}
 	defer rows.Close()
 
-	posts := make([]PostListItem, 0)
+	posts := make([]domain.PostListItem, 0)
 	for rows.Next() {
 		var (
-			post      PostListItem
+			post      domain.PostListItem
 			minTierID sql.NullInt64
 		)
 
@@ -112,7 +86,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 	return posts, nil
 }
 
-func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (Post, error) {
+func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error) {
 	const postQuery = `
 		SELECT
 			p.post_id,
@@ -145,7 +119,7 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	`
 
 	var (
-		post      Post
+		post      domain.Post
 		minTierID sql.NullInt64
 	)
 
@@ -160,7 +134,7 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 		&post.CanView,
 	)
 	if err != nil {
-		return Post{}, err
+		return domain.Post{}, err
 	}
 
 	if minTierID.Valid {
@@ -176,26 +150,26 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 
 	rows, err := repository.db.QueryContext(ctx, attachmentQuery, postID)
 	if err != nil {
-		return Post{}, err
+		return domain.Post{}, err
 	}
 	defer rows.Close()
 
-	post.Attachments = make([]PostAttachment, 0)
+	post.Attachments = make([]domain.PostAttachment, 0)
 	for rows.Next() {
-		var attachment PostAttachment
+		var attachment domain.PostAttachment
 		if err := rows.Scan(
 			&attachment.PostAttachmentID,
 			&attachment.Kind,
 			&attachment.FileURL,
 		); err != nil {
-			return Post{}, err
+			return domain.Post{}, err
 		}
 
 		post.Attachments = append(post.Attachments, attachment)
 	}
 
 	if err := rows.Err(); err != nil {
-		return Post{}, err
+		return domain.Post{}, err
 	}
 
 	return post, nil

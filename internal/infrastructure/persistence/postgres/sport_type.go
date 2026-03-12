@@ -1,14 +1,11 @@
-package repository
+package postgres
 
 import (
 	"context"
 	"database/sql"
-)
 
-type SportType struct {
-	ID   int64
-	Name string
-}
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+)
 
 type SportTypeRepository struct {
 	db *sql.DB
@@ -20,7 +17,7 @@ func NewSportTypeRepository(db *sql.DB) *SportTypeRepository {
 	}
 }
 
-func (repository *SportTypeRepository) ListSportTypes(ctx context.Context) ([]SportType, error) {
+func (repository *SportTypeRepository) ListSportTypes(ctx context.Context) ([]domain.SportType, error) {
 	const query = `
 		SELECT sport_type_id, name
 		FROM sport_type
@@ -33,9 +30,9 @@ func (repository *SportTypeRepository) ListSportTypes(ctx context.Context) ([]Sp
 	}
 	defer rows.Close()
 
-	sportTypes := make([]SportType, 0)
+	sportTypes := make([]domain.SportType, 0)
 	for rows.Next() {
-		var sportType SportType
+		var sportType domain.SportType
 		if err := rows.Scan(&sportType.ID, &sportType.Name); err != nil {
 			return nil, err
 		}

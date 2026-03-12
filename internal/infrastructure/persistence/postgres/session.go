@@ -1,20 +1,11 @@
-package repository
+package postgres
 
 import (
 	"context"
 	"database/sql"
-	"time"
+
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
-
-type Session struct {
-	UserID int64
-}
-
-type CreateSessionParams struct {
-	SessionIDHash string
-	UserID        int64
-	ExpiresAt     time.Time
-}
 
 type SessionRepository struct {
 	db *sql.DB
@@ -26,7 +17,7 @@ func NewSessionRepository(db *sql.DB) *SessionRepository {
 	}
 }
 
-func (repository *SessionRepository) CreateSession(ctx context.Context, params CreateSessionParams) error {
+func (repository *SessionRepository) CreateSession(ctx context.Context, session domain.Session) error {
 	const query = `
 		INSERT INTO session (session_id_hash, user_id, expires_at)
 		VALUES ($1, $2, $3)
@@ -35,15 +26,15 @@ func (repository *SessionRepository) CreateSession(ctx context.Context, params C
 	_, err := repository.db.ExecContext(
 		ctx,
 		query,
-		params.SessionIDHash,
-		params.UserID,
-		params.ExpiresAt,
+		session.SessionIDHash,
+		session.UserID,
+		session.ExpiresAt,
 	)
 
 	return err
 }
 
-func (repository *SessionRepository) GetActiveSessionByHash(ctx context.Context, sessionIDHash string) (Session, error) {
+func (repository *SessionRepository) GetActiveSessionByHash(ctx context.Context, sessionIDHash string) (domain.Session, error) {
 	const query = `
 		SELECT user_id
 		FROM session
@@ -52,10 +43,10 @@ func (repository *SessionRepository) GetActiveSessionByHash(ctx context.Context,
 		  AND expires_at > now()
 	`
 
-	var session Session
+	var session domain.Session
 	err := repository.db.QueryRowContext(ctx, query, sessionIDHash).Scan(&session.UserID)
 	if err != nil {
-		return Session{}, err
+		return domain.Session{}, err
 	}
 
 	return session, nil
