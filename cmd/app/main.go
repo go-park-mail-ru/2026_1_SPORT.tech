@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/bootstrap"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/app"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/config"
 )
 
@@ -29,7 +29,7 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := bootstrap.Run(cfg, db); err != nil {
+	if err := app.Run(cfg, db); err != nil {
 		log.Fatal(err)
 	}
 }
