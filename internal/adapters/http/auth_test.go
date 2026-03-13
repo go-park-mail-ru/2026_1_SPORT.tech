@@ -3,12 +3,12 @@ package handler
 import (
 	"context"
 	"errors"
-	nethttp "net/http"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
 type sessionServiceStub struct {
@@ -67,7 +67,7 @@ func TestHandlePostAuthLogoutPositive(t *testing.T) {
 					return nil
 				},
 			},
-			expectStatus:    nethttp.StatusNoContent,
+			expectStatus:    http.StatusNoContent,
 			expectSetCookie: true,
 		},
 	}
@@ -75,12 +75,12 @@ func TestHandlePostAuthLogoutPositive(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			handler := NewHandler(Deps{
-				SessionService: tt.sessionService,
+				SessionUseCase: tt.sessionService,
 				AuthCookieName: "sid",
 			})
 
-			request := httptest.NewRequest(nethttp.MethodPost, "/auth/logout", nil)
-			request.AddCookie(&nethttp.Cookie{
+			request := httptest.NewRequest(http.MethodPost, "/auth/logout", nil)
+			request.AddCookie(&http.Cookie{
 				Name:  "sid",
 				Value: tt.sessionID,
 			})
@@ -106,7 +106,7 @@ func TestHandlePostAuthLogoutNegative(t *testing.T) {
 		{
 			name:           "Нет cookie",
 			sessionService: &sessionServiceStub{},
-			expectStatus:   nethttp.StatusUnauthorized,
+			expectStatus:   http.StatusUnauthorized,
 			expectBody:     `"code":"unauthorized"`,
 		},
 		{
@@ -114,10 +114,10 @@ func TestHandlePostAuthLogoutNegative(t *testing.T) {
 			sessionID: "missing-session-id",
 			sessionService: &sessionServiceStub{
 				getUserIDBySessionIDFunc: func(ctx context.Context, sessionID string) (int64, error) {
-					return 0, service.ErrSessionNotFound
+					return 0, usecase.ErrSessionNotFound
 				},
 			},
-			expectStatus: nethttp.StatusUnauthorized,
+			expectStatus: http.StatusUnauthorized,
 			expectBody:   `"code":"unauthorized"`,
 		},
 		{
@@ -131,7 +131,7 @@ func TestHandlePostAuthLogoutNegative(t *testing.T) {
 					return internalErr
 				},
 			},
-			expectStatus: nethttp.StatusInternalServerError,
+			expectStatus: http.StatusInternalServerError,
 			expectBody:   `"code":"internal_error"`,
 		},
 	}
@@ -139,13 +139,13 @@ func TestHandlePostAuthLogoutNegative(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			handler := NewHandler(Deps{
-				SessionService: tt.sessionService,
+				SessionUseCase: tt.sessionService,
 				AuthCookieName: "sid",
 			})
 
-			request := httptest.NewRequest(nethttp.MethodPost, "/auth/logout", nil)
+			request := httptest.NewRequest(http.MethodPost, "/auth/logout", nil)
 			if tt.sessionID != "" {
-				request.AddCookie(&nethttp.Cookie{
+				request.AddCookie(&http.Cookie{
 					Name:  "sid",
 					Value: tt.sessionID,
 				})

@@ -1,4 +1,4 @@
-package service
+package usecase
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/repository"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
 
 type sportTypeRepositoryStub struct {
-	listSportTypesFunc func(ctx context.Context) ([]repository.SportType, error)
+	listSportTypesFunc func(ctx context.Context) ([]domain.SportType, error)
 }
 
-func (stub *sportTypeRepositoryStub) ListSportTypes(ctx context.Context) ([]repository.SportType, error) {
+func (stub *sportTypeRepositoryStub) ListSportTypes(ctx context.Context) ([]domain.SportType, error) {
 	if stub.listSportTypesFunc == nil {
 		return nil, nil
 	}
@@ -21,26 +21,26 @@ func (stub *sportTypeRepositoryStub) ListSportTypes(ctx context.Context) ([]repo
 	return stub.listSportTypesFunc(ctx)
 }
 
-type sportTypeServiceTest struct {
+type sportTypeUseCaseTest struct {
 	name       string
 	repository *sportTypeRepositoryStub
-	expect     []SportType
+	expect     []domain.SportType
 	expectErr  error
 }
 
-func TestSportTypeServiceListSportTypesPositive(t *testing.T) {
-	tests := []sportTypeServiceTest{
+func TestSportTypeUseCaseListSportTypesPositive(t *testing.T) {
+	tests := []sportTypeUseCaseTest{
 		{
-			name: "Корректный маппинг sport types",
+			name: "Корректный список sport types",
 			repository: &sportTypeRepositoryStub{
-				listSportTypesFunc: func(ctx context.Context) ([]repository.SportType, error) {
-					return []repository.SportType{
+				listSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) {
+					return []domain.SportType{
 						{ID: 1, Name: "Бег"},
 						{ID: 2, Name: "Плавание"},
 					}, nil
 				},
 			},
-			expect: []SportType{
+			expect: []domain.SportType{
 				{ID: 1, Name: "Бег"},
 				{ID: 2, Name: "Плавание"},
 			},
@@ -49,9 +49,9 @@ func TestSportTypeServiceListSportTypesPositive(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := NewSportTypeService(tt.repository)
+			useCase := NewSportTypeUseCase(tt.repository)
 
-			res, err := service.ListSportTypes(context.Background())
+			res, err := useCase.ListSportTypes(context.Background())
 			if err != nil {
 				t.Fatalf("unexpected error: got %v", err)
 			}
@@ -62,13 +62,13 @@ func TestSportTypeServiceListSportTypesPositive(t *testing.T) {
 	}
 }
 
-func TestSportTypeServiceListSportTypesNegative(t *testing.T) {
+func TestSportTypeUseCaseListSportTypesNegative(t *testing.T) {
 	expectedErr := errors.New("list sport types")
-	tests := []sportTypeServiceTest{
+	tests := []sportTypeUseCaseTest{
 		{
 			name: "Ошибка репозитория",
 			repository: &sportTypeRepositoryStub{
-				listSportTypesFunc: func(ctx context.Context) ([]repository.SportType, error) {
+				listSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) {
 					return nil, expectedErr
 				},
 			},
@@ -78,9 +78,9 @@ func TestSportTypeServiceListSportTypesNegative(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := NewSportTypeService(tt.repository)
+			useCase := NewSportTypeUseCase(tt.repository)
 
-			_, err := service.ListSportTypes(context.Background())
+			_, err := useCase.ListSportTypes(context.Background())
 			if !errors.Is(err, tt.expectErr) {
 				t.Fatalf("unexpected error: got %v, expect %v", err, tt.expectErr)
 			}

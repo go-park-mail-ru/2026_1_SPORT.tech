@@ -1,65 +1,17 @@
-package repository
+package postgres
 
 import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
 
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 	"github.com/lib/pq"
 )
 
-var ErrEmailExists = errors.New("email exists")
-var ErrUsernameExists = errors.New("username exists")
-var ErrSportTypeNotFound = errors.New("sport type not found")
-
-type UserProfile struct {
-	Username  string
-	FirstName string
-	LastName  string
-	Bio       *string
-	AvatarURL *string
-}
-
-type User struct {
-	ID           int64
-	Username     string
-	Email        string
-	PasswordHash string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	IsTrainer    bool
-	IsAdmin      bool
-	Profile      UserProfile
-}
-
 type UserRepository struct {
 	db *sql.DB
-}
-
-type CreateClientParams struct {
-	Username     string
-	Email        string
-	PasswordHash string
-	FirstName    string
-	LastName     string
-}
-
-type CreateTrainerSportParams struct {
-	SportTypeID     int64
-	ExperienceYears int
-	SportsRank      *string
-}
-
-type CreateTrainerParams struct {
-	Username          string
-	Email             string
-	PasswordHash      string
-	FirstName         string
-	LastName          string
-	EducationDegree   *string
-	CareerSinceDate   time.Time
-	TrainerSportItems []CreateTrainerSportParams
 }
 
 func NewUserRepository(db *sql.DB) *UserRepository {
@@ -68,7 +20,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (User, error) {
+func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (domain.User, error) {
 	const query = `
 		SELECT
 			u.user_id,
@@ -90,7 +42,7 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (Us
 	`
 
 	var (
-		user      User
+		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
@@ -109,7 +61,7 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (Us
 		&avatarURL,
 	)
 	if err != nil {
-		return User{}, err
+		return domain.User{}, err
 	}
 
 	user.Profile.Username = user.Username
@@ -123,7 +75,7 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (Us
 	return user, nil
 }
 
-func (repository *UserRepository) CreateClient(ctx context.Context, params CreateClientParams) (int64, error) {
+func (repository *UserRepository) CreateClient(ctx context.Context, command usecase.CreateClientCommand) (int64, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -140,8 +92,8 @@ func (repository *UserRepository) CreateClient(ctx context.Context, params Creat
 	if err := tx.QueryRowContext(
 		ctx,
 		createUserQuery,
-		params.Email,
-		params.PasswordHash,
+		command.Email,
+		command.PasswordHash,
 	).Scan(&userID); err != nil {
 		return 0, mapUserConflictError(err)
 	}
@@ -155,9 +107,9 @@ func (repository *UserRepository) CreateClient(ctx context.Context, params Creat
 		ctx,
 		createUserProfileQuery,
 		userID,
-		params.Username,
-		params.FirstName,
-		params.LastName,
+		command.Username,
+		command.FirstName,
+		command.LastName,
 	); err != nil {
 		return 0, mapUserConflictError(err)
 	}
@@ -169,7 +121,7 @@ func (repository *UserRepository) CreateClient(ctx context.Context, params Creat
 	return userID, nil
 }
 
-func (repository *UserRepository) CreateTrainer(ctx context.Context, params CreateTrainerParams) (int64, error) {
+func (repository *UserRepository) CreateTrainer(ctx context.Context, command usecase.CreateTrainerCommand) (int64, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -186,8 +138,8 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, params Crea
 	if err := tx.QueryRowContext(
 		ctx,
 		createUserQuery,
-		params.Email,
-		params.PasswordHash,
+		command.Email,
+		command.PasswordHash,
 	).Scan(&userID); err != nil {
 		return 0, mapUserConflictError(err)
 	}
@@ -201,9 +153,9 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, params Crea
 		ctx,
 		createUserProfileQuery,
 		userID,
-		params.Username,
-		params.FirstName,
-		params.LastName,
+		command.Username,
+		command.FirstName,
+		command.LastName,
 	); err != nil {
 		return 0, mapUserConflictError(err)
 	}
@@ -217,8 +169,8 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, params Crea
 		ctx,
 		createTrainerDetailsQuery,
 		userID,
-		params.EducationDegree,
-		params.CareerSinceDate,
+		command.EducationDegree,
+		command.CareerSinceDate,
 	); err != nil {
 		return 0, err
 	}
@@ -228,7 +180,7 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, params Crea
 		VALUES ($1, $2, $3, $4)
 	`
 
-	for _, sport := range params.TrainerSportItems {
+	for _, sport := range command.Sports {
 		if _, err := tx.ExecContext(
 			ctx,
 			createTrainerSportQuery,
@@ -248,7 +200,7 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, params Crea
 	return userID, nil
 }
 
-func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (User, error) {
+func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
 	const query = `
 		SELECT
 			u.user_id,
@@ -271,7 +223,7 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	`
 
 	var (
-		user      User
+		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
@@ -291,7 +243,7 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		&avatarURL,
 	)
 	if err != nil {
-		return User{}, err
+		return domain.User{}, err
 	}
 
 	user.Profile.Username = user.Username
@@ -307,17 +259,17 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 
 func mapUserConflictError(err error) error {
 	var pqError *pq.Error
-	if !errors.As(err, &pqError) || pqError.Code != "23505" {
+	if !errors.As(err, &pqError) {
 		return err
 	}
 
-	switch pqError.Constraint {
-	case "user_email_key":
-		return ErrEmailExists
-	case "user_profile_username_key":
-		return ErrUsernameExists
-	case "trainer_to_sport_type_sport_type_id_fkey":
-		return ErrSportTypeNotFound
+	switch {
+	case pqError.Code == "23505" && pqError.Constraint == "user_email_key":
+		return usecase.ErrEmailExists
+	case pqError.Code == "23505" && pqError.Constraint == "user_profile_username_key":
+		return usecase.ErrUsernameExists
+	case pqError.Code == "23503" && pqError.Constraint == "trainer_to_sport_type_sport_type_id_fkey":
+		return usecase.ErrSportTypeNotFound
 	default:
 		return err
 	}

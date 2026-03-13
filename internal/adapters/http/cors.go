@@ -2,15 +2,15 @@ package handler
 
 import (
 	"net"
-	nethttp "net/http"
+	"net/http"
 	"net/url"
 	"strings"
 )
 
 var allowAllOrigins = false
 
-func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
-	return nethttp.HandlerFunc(func(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		origin := request.Header.Get("Origin")
 		if origin == "" {
 			next.ServeHTTP(writer, request)
@@ -18,8 +18,8 @@ func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
 		}
 
 		if !allowAllOrigins && !isAllowedOrigin(origin, request.Host) {
-			if request.Method == nethttp.MethodOptions {
-				writer.WriteHeader(nethttp.StatusForbidden)
+			if request.Method == http.MethodOptions {
+				writer.WriteHeader(http.StatusForbidden)
 				return
 			}
 
@@ -36,8 +36,8 @@ func (handler *Handler) corsMiddleware(next nethttp.Handler) nethttp.Handler {
 		headers.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		headers.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-		if request.Method == nethttp.MethodOptions {
-			writer.WriteHeader(nethttp.StatusNoContent)
+		if request.Method == http.MethodOptions {
+			writer.WriteHeader(http.StatusNoContent)
 			return
 		}
 

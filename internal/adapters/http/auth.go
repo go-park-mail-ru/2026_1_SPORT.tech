@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	nethttp "net/http"
+	"net/http"
 	"regexp"
 	"time"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
 type contextKey string
@@ -18,19 +19,6 @@ const userIDContextKey contextKey = "user_id"
 var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 var emailPattern = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
 var allowCrossSiteCookies = false
-
-type sessionService interface {
-	CreateSession(ctx context.Context, userID int64) (string, error)
-	GetUserIDBySessionID(ctx context.Context, sessionID string) (int64, error)
-	RevokeSession(ctx context.Context, sessionID string) error
-}
-
-type userService interface {
-	GetByID(ctx context.Context, userID int64) (service.User, error)
-	RegisterClient(ctx context.Context, params service.RegisterClientParams) (service.User, error)
-	RegisterTrainer(ctx context.Context, params service.RegisterTrainerParams) (service.User, error)
-	Authenticate(ctx context.Context, email string, password string) (service.User, error)
-}
 
 type userProfileResponse struct {
 	Username  string  `json:"username"`
@@ -91,17 +79,17 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-func (handler *Handler) AuthMiddleware(next nethttp.Handler) nethttp.Handler {
-	return nethttp.HandlerFunc(func(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		cookie, err := request.Cookie(handler.authCookieName)
 		if err != nil {
 			writeUnauthorized(writer)
 			return
 		}
 
-		userID, err := handler.sessionService.GetUserIDBySessionID(request.Context(), cookie.Value)
+		userID, err := handler.sessionUseCase.GetUserIDBySessionID(request.Context(), cookie.Value)
 		if err != nil {
-			if errors.Is(err, service.ErrSessionNotFound) {
+			if errors.Is(err, usecase.ErrSessionNotFound) {
 				writeUnauthorized(writer)
 				return
 			}
@@ -115,8 +103,8 @@ func (handler *Handler) AuthMiddleware(next nethttp.Handler) nethttp.Handler {
 	})
 }
 
-func (handler *Handler) setSessionCookie(writer nethttp.ResponseWriter, sessionID string) {
-	nethttp.SetCookie(writer, &nethttp.Cookie{
+func (handler *Handler) setSessionCookie(writer http.ResponseWriter, sessionID string) {
+	http.SetCookie(writer, &http.Cookie{
 		Name:     handler.authCookieName,
 		Value:    sessionID,
 		Path:     "/",
@@ -125,8 +113,8 @@ func (handler *Handler) setSessionCookie(writer nethttp.ResponseWriter, sessionI
 	})
 }
 
-func (handler *Handler) clearSessionCookie(writer nethttp.ResponseWriter) {
-	nethttp.SetCookie(writer, &nethttp.Cookie{
+func (handler *Handler) clearSessionCookie(writer http.ResponseWriter) {
+	http.SetCookie(writer, &http.Cookie{
 		Name:     handler.authCookieName,
 		Value:    "",
 		Path:     "/",
@@ -137,12 +125,12 @@ func (handler *Handler) clearSessionCookie(writer nethttp.ResponseWriter) {
 	})
 }
 
-func sessionCookieSameSite() nethttp.SameSite {
+func sessionCookieSameSite() http.SameSite {
 	if allowCrossSiteCookies {
-		return nethttp.SameSiteNoneMode
+		return http.SameSiteNoneMode
 	}
 
-	return nethttp.SameSiteLaxMode
+	return http.SameSiteLaxMode
 }
 
 func userIDFromContext(ctx context.Context) (int64, bool) {
@@ -150,7 +138,7 @@ func userIDFromContext(ctx context.Context) (int64, bool) {
 	return userID, ok
 }
 
-func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handlePostAuthRegisterClient(writer http.ResponseWriter, request *http.Request) {
 	var registerRequest clientRegisterRequest
 
 	decoder := json.NewDecoder(request.Body)
@@ -166,7 +154,7 @@ func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWrit
 		return
 	}
 
-	user, err := handler.userService.RegisterClient(request.Context(), service.RegisterClientParams{
+	user, err := handler.userUseCase.RegisterClient(request.Context(), usecase.RegisterClientCommand{
 		Username:  registerRequest.Username,
 		Email:     registerRequest.Email,
 		Password:  registerRequest.Password,
@@ -175,10 +163,10 @@ func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWrit
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, service.ErrEmailExists):
+		case errors.Is(err, usecase.ErrEmailExists):
 			writeConflict(writer, "email_exists", "Email уже существует")
 			return
-		case errors.Is(err, service.ErrUsernameExists):
+		case errors.Is(err, usecase.ErrUsernameExists):
 			writeConflict(writer, "username_exists", "Username уже существует")
 			return
 		default:
@@ -187,17 +175,17 @@ func (handler *Handler) handlePostAuthRegisterClient(writer nethttp.ResponseWrit
 		}
 	}
 
-	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	sessionID, err := handler.sessionUseCase.CreateSession(request.Context(), user.ID)
 	if err != nil {
 		writeInternalError(writer)
 		return
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
+	writeJSON(writer, http.StatusCreated, newAuthResponse(user))
 }
 
-func (handler *Handler) handlePostAuthRegisterTrainer(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handlePostAuthRegisterTrainer(writer http.ResponseWriter, request *http.Request) {
 	var registerRequest trainerRegisterRequest
 
 	decoder := json.NewDecoder(request.Body)
@@ -213,16 +201,16 @@ func (handler *Handler) handlePostAuthRegisterTrainer(writer nethttp.ResponseWri
 		return
 	}
 
-	sports := make([]service.RegisterTrainerSportParams, 0, len(registerRequest.TrainerDetails.Sports))
+	sports := make([]usecase.RegisterTrainerSportCommand, 0, len(registerRequest.TrainerDetails.Sports))
 	for _, sport := range registerRequest.TrainerDetails.Sports {
-		sports = append(sports, service.RegisterTrainerSportParams{
+		sports = append(sports, usecase.RegisterTrainerSportCommand{
 			SportTypeID:     sport.SportTypeID,
 			ExperienceYears: sport.ExperienceYears,
 			SportsRank:      sport.SportsRank,
 		})
 	}
 
-	user, err := handler.userService.RegisterTrainer(request.Context(), service.RegisterTrainerParams{
+	user, err := handler.userUseCase.RegisterTrainer(request.Context(), usecase.RegisterTrainerCommand{
 		Username:        registerRequest.Username,
 		Email:           registerRequest.Email,
 		Password:        registerRequest.Password,
@@ -234,13 +222,13 @@ func (handler *Handler) handlePostAuthRegisterTrainer(writer nethttp.ResponseWri
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, service.ErrEmailExists):
+		case errors.Is(err, usecase.ErrEmailExists):
 			writeConflict(writer, "email_exists", "Email уже существует")
 			return
-		case errors.Is(err, service.ErrUsernameExists):
+		case errors.Is(err, usecase.ErrUsernameExists):
 			writeConflict(writer, "username_exists", "Username уже существует")
 			return
-		case errors.Is(err, service.ErrSportTypeNotFound):
+		case errors.Is(err, usecase.ErrSportTypeNotFound):
 			writeValidationError(writer, []validationErrorField{{
 				Field:   "trainer_details.sports",
 				Message: "Указан несуществующий sport_type_id",
@@ -252,17 +240,17 @@ func (handler *Handler) handlePostAuthRegisterTrainer(writer nethttp.ResponseWri
 		}
 	}
 
-	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	sessionID, err := handler.sessionUseCase.CreateSession(request.Context(), user.ID)
 	if err != nil {
 		writeInternalError(writer)
 		return
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, nethttp.StatusCreated, newAuthResponse(user))
+	writeJSON(writer, http.StatusCreated, newAuthResponse(user))
 }
 
-func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handlePostAuthLogin(writer http.ResponseWriter, request *http.Request) {
 	var loginRequest loginRequest
 
 	decoder := json.NewDecoder(request.Body)
@@ -277,9 +265,9 @@ func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, reque
 		return
 	}
 
-	user, err := handler.userService.Authenticate(request.Context(), loginRequest.Email, loginRequest.Password)
+	user, err := handler.userUseCase.Authenticate(request.Context(), loginRequest.Email, loginRequest.Password)
 	if err != nil {
-		if errors.Is(err, service.ErrInvalidCredentials) {
+		if errors.Is(err, usecase.ErrInvalidCredentials) {
 			writeInvalidCredentials(writer)
 			return
 		}
@@ -288,26 +276,26 @@ func (handler *Handler) handlePostAuthLogin(writer nethttp.ResponseWriter, reque
 		return
 	}
 
-	sessionID, err := handler.sessionService.CreateSession(request.Context(), user.ID)
+	sessionID, err := handler.sessionUseCase.CreateSession(request.Context(), user.ID)
 	if err != nil {
 		writeInternalError(writer)
 		return
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
+	writeJSON(writer, http.StatusOK, newAuthResponse(user))
 }
 
-func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handleGetAuthMe(writer http.ResponseWriter, request *http.Request) {
 	userID, ok := userIDFromContext(request.Context())
 	if !ok {
 		writeInternalError(writer)
 		return
 	}
 
-	user, err := handler.userService.GetByID(request.Context(), userID)
+	user, err := handler.userUseCase.GetByID(request.Context(), userID)
 	if err != nil {
-		if errors.Is(err, service.ErrUserNotFound) {
+		if errors.Is(err, usecase.ErrUserNotFound) {
 			writeUnauthorized(writer)
 			return
 		}
@@ -316,17 +304,17 @@ func (handler *Handler) handleGetAuthMe(writer nethttp.ResponseWriter, request *
 		return
 	}
 
-	writeJSON(writer, nethttp.StatusOK, newAuthResponse(user))
+	writeJSON(writer, http.StatusOK, newAuthResponse(user))
 }
 
-func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handlePostAuthLogout(writer http.ResponseWriter, request *http.Request) {
 	cookie, err := request.Cookie(handler.authCookieName)
 	if err != nil {
 		writeUnauthorized(writer)
 		return
 	}
 
-	if err := handler.sessionService.RevokeSession(request.Context(), cookie.Value); err != nil {
+	if err := handler.sessionUseCase.RevokeSession(request.Context(), cookie.Value); err != nil {
 		writeInternalError(writer)
 		return
 	}
@@ -335,7 +323,7 @@ func (handler *Handler) handlePostAuthLogout(writer nethttp.ResponseWriter, requ
 	writeNoContent(writer)
 }
 
-func newAuthResponse(user service.User) authResponse {
+func newAuthResponse(user domain.User) authResponse {
 	return authResponse{
 		User: userResponse{
 			UserID:    user.ID,

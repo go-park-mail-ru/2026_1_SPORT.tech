@@ -2,11 +2,11 @@ package handler
 
 import (
 	"errors"
-	nethttp "net/http"
+	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
 type postAttachmentResponse struct {
@@ -26,7 +26,7 @@ type postResponse struct {
 	Attachments []postAttachmentResponse `json:"attachments"`
 }
 
-func (handler *Handler) handleGetPost(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handleGetPost(writer http.ResponseWriter, request *http.Request) {
 	postID, err := strconv.ParseInt(request.PathValue("post_id"), 10, 64)
 	if err != nil || postID <= 0 {
 		writeBadRequest(writer)
@@ -39,13 +39,13 @@ func (handler *Handler) handleGetPost(writer nethttp.ResponseWriter, request *ne
 		return
 	}
 
-	post, err := handler.postService.GetByID(request.Context(), postID, currentUserID)
+	post, err := handler.postUseCase.GetByID(request.Context(), postID, currentUserID)
 	if err != nil {
 		switch {
-		case errors.Is(err, service.ErrPostNotFound):
+		case errors.Is(err, usecase.ErrPostNotFound):
 			writeNotFound(writer, "Пост не найден")
 			return
-		case errors.Is(err, service.ErrPostForbidden):
+		case errors.Is(err, usecase.ErrPostForbidden):
 			writeForbidden(writer, "Нет доступа к этому посту")
 			return
 		default:
@@ -63,7 +63,7 @@ func (handler *Handler) handleGetPost(writer nethttp.ResponseWriter, request *ne
 		})
 	}
 
-	writeJSON(writer, nethttp.StatusOK, postResponse{
+	writeJSON(writer, http.StatusOK, postResponse{
 		PostID:      post.PostID,
 		TrainerID:   post.TrainerID,
 		MinTierID:   post.MinTierID,

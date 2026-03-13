@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/app"
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/config"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/app"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/config"
 )
 
 const (
@@ -34,8 +34,8 @@ func main() {
 	}
 }
 
-func initDB(config config.Config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", config.Postgres.DSN())
+func initDB(cfg config.Config) (*sql.DB, error) {
+	db, err := sql.Open("postgres", cfg.Postgres.DSN())
 	if err != nil {
 		return nil, err
 	}

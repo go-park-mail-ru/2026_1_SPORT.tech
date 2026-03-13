@@ -1,19 +1,13 @@
 package handler
 
 import (
-	"context"
 	"errors"
-	nethttp "net/http"
+	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/service"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
-
-type postService interface {
-	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]service.PostListItem, error)
-	GetByID(ctx context.Context, postID int64, currentUserID int64) (service.Post, error)
-}
 
 type profilePostsResponse struct {
 	UserID int64             `json:"user_id"`
@@ -29,16 +23,16 @@ type postListItemDTO struct {
 	CanView   bool      `json:"can_view"`
 }
 
-func (handler *Handler) handleGetProfilePosts(writer nethttp.ResponseWriter, request *nethttp.Request) {
+func (handler *Handler) handleGetProfilePosts(writer http.ResponseWriter, request *http.Request) {
 	userID, err := strconv.ParseInt(request.PathValue("user_id"), 10, 64)
 	if err != nil || userID <= 0 {
 		writeBadRequest(writer)
 		return
 	}
 
-	_, err = handler.userService.GetByID(request.Context(), userID)
+	_, err = handler.userUseCase.GetByID(request.Context(), userID)
 	if err != nil {
-		if errors.Is(err, service.ErrUserNotFound) {
+		if errors.Is(err, usecase.ErrUserNotFound) {
 			writeNotFound(writer, "Пользователь не найден")
 			return
 		}
@@ -53,7 +47,7 @@ func (handler *Handler) handleGetProfilePosts(writer nethttp.ResponseWriter, req
 		return
 	}
 
-	posts, err := handler.postService.ListProfilePosts(request.Context(), userID, currentUserID)
+	posts, err := handler.postUseCase.ListProfilePosts(request.Context(), userID, currentUserID)
 	if err != nil {
 		writeInternalError(writer)
 		return
@@ -75,5 +69,5 @@ func (handler *Handler) handleGetProfilePosts(writer nethttp.ResponseWriter, req
 		})
 	}
 
-	writeJSON(writer, nethttp.StatusOK, response)
+	writeJSON(writer, http.StatusOK, response)
 }

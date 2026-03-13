@@ -1,20 +1,20 @@
 package handler
 
-import nethttp "net/http"
+import "net/http"
 
 type Deps struct {
-	SportTypeService sportTypeService
-	SessionService   sessionService
-	UserService      userService
-	PostService      postService
+	SportTypeUseCase sportTypeUseCase
+	SessionUseCase   sessionUseCase
+	UserUseCase      userUseCase
+	PostUseCase      postUseCase
 	AuthCookieName   string
 }
 
 type Handler struct {
-	sportTypeService sportTypeService
-	sessionService   sessionService
-	userService      userService
-	postService      postService
+	sportTypeUseCase sportTypeUseCase
+	sessionUseCase   sessionUseCase
+	userUseCase      userUseCase
+	postUseCase      postUseCase
 	authCookieName   string
 }
 
@@ -24,16 +24,16 @@ type healthResponse struct {
 
 func NewHandler(deps Deps) *Handler {
 	return &Handler{
-		sportTypeService: deps.SportTypeService,
-		sessionService:   deps.SessionService,
-		userService:      deps.UserService,
-		postService:      deps.PostService,
+		sportTypeUseCase: deps.SportTypeUseCase,
+		sessionUseCase:   deps.SessionUseCase,
+		userUseCase:      deps.UserUseCase,
+		postUseCase:      deps.PostUseCase,
 		authCookieName:   deps.AuthCookieName,
 	}
 }
 
-func (handler *Handler) Routes() nethttp.Handler {
-	mux := nethttp.NewServeMux()
+func (handler *Handler) Routes() http.Handler {
+	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", handler.handleHealth)
 	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
@@ -43,14 +43,14 @@ func (handler *Handler) Routes() nethttp.Handler {
 	mux.HandleFunc("POST /auth/register/client", handler.handlePostAuthRegisterClient)
 	mux.HandleFunc("POST /auth/register/trainer", handler.handlePostAuthRegisterTrainer)
 	mux.HandleFunc("POST /auth/login", handler.handlePostAuthLogin)
-	mux.Handle("GET /auth/me", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handleGetAuthMe)))
-	mux.Handle("POST /auth/logout", handler.AuthMiddleware(nethttp.HandlerFunc(handler.handlePostAuthLogout)))
+	mux.Handle("GET /auth/me", handler.AuthMiddleware(http.HandlerFunc(handler.handleGetAuthMe)))
+	mux.Handle("POST /auth/logout", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostAuthLogout)))
 
 	return handler.corsMiddleware(mux)
 }
 
-func (handler *Handler) handleHealth(writer nethttp.ResponseWriter, request *nethttp.Request) {
-	writeJSON(writer, nethttp.StatusOK, healthResponse{
+func (handler *Handler) handleHealth(writer http.ResponseWriter, request *http.Request) {
+	writeJSON(writer, http.StatusOK, healthResponse{
 		Status: "ok",
 	})
 }
