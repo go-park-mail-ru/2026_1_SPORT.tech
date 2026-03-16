@@ -3,21 +3,30 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log/slog"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
 
 type PostRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewPostRepository(db *sql.DB) *PostRepository {
+func NewPostRepository(db *sql.DB, logger *slog.Logger) *PostRepository {
 	return &PostRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
-func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error) {
+func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) (posts []domain.PostListItem, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "post.list_profile_posts", startedAt, err)
+	}()
+
 	const query = `
 		SELECT
 			p.post_id,
@@ -54,7 +63,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 	}
 	defer rows.Close()
 
-	posts := make([]domain.PostListItem, 0)
+	posts = make([]domain.PostListItem, 0)
 	for rows.Next() {
 		var (
 			post      domain.PostListItem
@@ -86,7 +95,12 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 	return posts, nil
 }
 
-func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error) {
+func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (post domain.Post, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "post.list_profile_posts", startedAt, err)
+	}()
+
 	const postQuery = `
 		SELECT
 			p.post_id,
@@ -119,11 +133,10 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	`
 
 	var (
-		post      domain.Post
 		minTierID sql.NullInt64
 	)
 
-	err := repository.db.QueryRowContext(ctx, postQuery, postID, currentUserID).Scan(
+	err = repository.db.QueryRowContext(ctx, postQuery, postID, currentUserID).Scan(
 		&post.PostID,
 		&post.TrainerID,
 		&minTierID,

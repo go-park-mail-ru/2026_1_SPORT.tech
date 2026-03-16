@@ -13,19 +13,19 @@ import (
 )
 
 func Run(cfg config.Config, db *sql.DB, logger *slog.Logger) error {
-	sportTypeRepository := postgres.NewSportTypeRepository(db)
+	sportTypeRepository := postgres.NewSportTypeRepository(db, logger)
 	sportTypeUseCase := usecase.NewSportTypeUseCase(sportTypeRepository)
 
 	sessionTTL, err := cfg.Auth.SessionTTLDuration()
 	if err != nil {
 		return fmt.Errorf("new session use case: %w", err)
 	}
-	sessionRepository := postgres.NewSessionRepository(db)
+	sessionRepository := postgres.NewSessionRepository(db, logger)
 	sessionUseCase := usecase.NewSessionUseCase(sessionRepository, sessionTTL)
 
-	userRepository := postgres.NewUserRepository(db)
+	userRepository := postgres.NewUserRepository(db, logger)
 	userUseCase := usecase.NewUserUseCase(userRepository)
-	postRepository := postgres.NewPostRepository(db)
+	postRepository := postgres.NewPostRepository(db, logger)
 	postUseCase := usecase.NewPostUseCase(postRepository)
 
 	httpHandler := httpadapter.NewHandler(httpadapter.Deps{

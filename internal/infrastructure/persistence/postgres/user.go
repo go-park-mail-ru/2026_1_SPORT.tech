@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -11,16 +13,23 @@ import (
 )
 
 type UserRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
+func NewUserRepository(db *sql.DB, logger *slog.Logger) *UserRepository {
 	return &UserRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
-func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (domain.User, error) {
+func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (user domain.User, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "user.get_by_id", startedAt, err)
+	}()
+
 	const query = `
 		SELECT
 			u.user_id,
@@ -42,12 +51,11 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 	`
 
 	var (
-		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
 
-	err := repository.db.QueryRowContext(ctx, query, userID).Scan(
+	err = repository.db.QueryRowContext(ctx, query, userID).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -74,7 +82,12 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 	return user, nil
 }
 
-func (repository *UserRepository) CreateClient(ctx context.Context, command usecase.CreateClientCommand) (int64, error) {
+func (repository *UserRepository) CreateClient(ctx context.Context, command usecase.CreateClientCommand) (userID int64, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "user.create_client", startedAt, err)
+	}()
+
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -87,7 +100,6 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 		RETURNING user_id
 	`
 
-	var userID int64
 	if err := tx.QueryRowContext(
 		ctx,
 		createUserQuery,
@@ -120,7 +132,12 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 	return userID, nil
 }
 
-func (repository *UserRepository) CreateTrainer(ctx context.Context, command usecase.CreateTrainerCommand) (int64, error) {
+func (repository *UserRepository) CreateTrainer(ctx context.Context, command usecase.CreateTrainerCommand) (userID int64, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "user.create_trainer", startedAt, err)
+	}()
+
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -133,7 +150,6 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		RETURNING user_id
 	`
 
-	var userID int64
 	if err := tx.QueryRowContext(
 		ctx,
 		createUserQuery,
@@ -199,7 +215,12 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 	return userID, nil
 }
 
-func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (user domain.User, err error) {
+	startedAt := time.Now()
+	defer func() {
+		logDBOperation(ctx, repository.logger, "user.get_by_email", startedAt, err)
+	}()
+
 	const query = `
 		SELECT
 			u.user_id,
@@ -222,12 +243,11 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	`
 
 	var (
-		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
 
-	err := repository.db.QueryRowContext(ctx, query, email).Scan(
+	err = repository.db.QueryRowContext(ctx, query, email).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
