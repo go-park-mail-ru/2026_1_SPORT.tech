@@ -2,14 +2,6 @@ package domain
 
 import "time"
 
-type UserProfile struct {
-	Username  string
-	FirstName string
-	LastName  string
-	Bio       *string
-	AvatarURL *string
-}
-
 type User struct {
 	ID           int64
 	Username     string
@@ -19,5 +11,8 @@ type User struct {
 	UpdatedAt    time.Time
 	IsTrainer    bool
 	IsAdmin      bool
-	Profile      UserProfile
+	FirstName    string
+	LastName     string
+	Bio          *string
+	AvatarURL    *string
 }
