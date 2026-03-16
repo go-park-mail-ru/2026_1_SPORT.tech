@@ -55,8 +55,8 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		&user.UpdatedAt,
 		&user.IsTrainer,
 		&user.IsAdmin,
-		&user.Profile.FirstName,
-		&user.Profile.LastName,
+		&user.FirstName,
+		&user.LastName,
 		&bio,
 		&avatarURL,
 	)
@@ -64,12 +64,11 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		return domain.User{}, err
 	}
 
-	user.Profile.Username = user.Username
 	if bio.Valid {
-		user.Profile.Bio = &bio.String
+		user.Bio = &bio.String
 	}
 	if avatarURL.Valid {
-		user.Profile.AvatarURL = &avatarURL.String
+		user.AvatarURL = &avatarURL.String
 	}
 
 	return user, nil
@@ -237,8 +236,8 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		&user.UpdatedAt,
 		&user.IsTrainer,
 		&user.IsAdmin,
-		&user.Profile.FirstName,
-		&user.Profile.LastName,
+		&user.FirstName,
+		&user.LastName,
 		&bio,
 		&avatarURL,
 	)
@@ -246,12 +245,11 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		return domain.User{}, err
 	}
 
-	user.Profile.Username = user.Username
 	if bio.Valid {
-		user.Profile.Bio = &bio.String
+		user.Bio = &bio.String
 	}
 	if avatarURL.Valid {
-		user.Profile.AvatarURL = &avatarURL.String
+		user.AvatarURL = &avatarURL.String
 	}
 
 	return user, nil

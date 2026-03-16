@@ -9,10 +9,14 @@ import (
 )
 
 type profileResponse struct {
-	UserID    int64               `json:"user_id"`
-	IsMe      bool                `json:"is_me"`
-	IsTrainer bool                `json:"is_trainer"`
-	Profile   userProfileResponse `json:"profile"`
+	UserID    int64   `json:"user_id"`
+	IsMe      bool    `json:"is_me"`
+	IsTrainer bool    `json:"is_trainer"`
+	Username  string  `json:"username"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Bio       *string `json:"bio"`
+	AvatarURL *string `json:"avatar_url"`
 }
 
 func (handler *Handler) handleGetProfile(writer http.ResponseWriter, request *http.Request) {
@@ -43,13 +47,11 @@ func (handler *Handler) handleGetProfile(writer http.ResponseWriter, request *ht
 		UserID:    user.ID,
 		IsMe:      isMe,
 		IsTrainer: user.IsTrainer,
-		Profile: userProfileResponse{
-			Username:  user.Profile.Username,
-			FirstName: user.Profile.FirstName,
-			LastName:  user.Profile.LastName,
-			Bio:       user.Profile.Bio,
-			AvatarURL: user.Profile.AvatarURL,
-		},
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Bio:       user.Bio,
+		AvatarURL: user.AvatarURL,
 	})
 }
 
