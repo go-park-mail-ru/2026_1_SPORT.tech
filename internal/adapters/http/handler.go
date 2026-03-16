@@ -1,8 +1,12 @@
 package handler
 
-import "net/http"
+import (
+	"log/slog"
+	"net/http"
+)
 
 type Deps struct {
+	Logger           *slog.Logger
 	SportTypeUseCase sportTypeUseCase
 	SessionUseCase   sessionUseCase
 	UserUseCase      userUseCase
@@ -11,6 +15,7 @@ type Deps struct {
 }
 
 type Handler struct {
+	logger           *slog.Logger
 	sportTypeUseCase sportTypeUseCase
 	sessionUseCase   sessionUseCase
 	userUseCase      userUseCase
@@ -24,6 +29,7 @@ type healthResponse struct {
 
 func NewHandler(deps Deps) *Handler {
 	return &Handler{
+		logger:           deps.Logger,
 		sportTypeUseCase: deps.SportTypeUseCase,
 		sessionUseCase:   deps.SessionUseCase,
 		userUseCase:      deps.UserUseCase,
@@ -46,7 +52,10 @@ func (handler *Handler) Routes() http.Handler {
 	mux.Handle("GET /auth/me", handler.AuthMiddleware(http.HandlerFunc(handler.handleGetAuthMe)))
 	mux.Handle("POST /auth/logout", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostAuthLogout)))
 
-	return handler.corsMiddleware(mux)
+	handlerWithCORS := handler.corsMiddleware(mux)
+	handlerWithLogger := handler.requestContextMiddleware(handlerWithCORS)
+
+	return handlerWithLogger
 }
 
 func (handler *Handler) handleHealth(writer http.ResponseWriter, request *http.Request) {

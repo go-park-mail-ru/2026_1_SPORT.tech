@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	httpadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/adapters/http"
@@ -11,7 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
-func Run(cfg config.Config, db *sql.DB) error {
+func Run(cfg config.Config, db *sql.DB, logger *slog.Logger) error {
 	sportTypeRepository := postgres.NewSportTypeRepository(db)
 	sportTypeUseCase := usecase.NewSportTypeUseCase(sportTypeRepository)
 
@@ -28,6 +29,7 @@ func Run(cfg config.Config, db *sql.DB) error {
 	postUseCase := usecase.NewPostUseCase(postRepository)
 
 	httpHandler := httpadapter.NewHandler(httpadapter.Deps{
+		Logger:           logger,
 		SportTypeUseCase: sportTypeUseCase,
 		SessionUseCase:   sessionUseCase,
 		UserUseCase:      userUseCase,
