@@ -53,7 +53,8 @@ func (handler *Handler) Routes() http.Handler {
 	mux.Handle("POST /auth/logout", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostAuthLogout)))
 
 	handlerWithCORS := handler.corsMiddleware(mux)
-	handlerWithLogger := handler.requestContextMiddleware(handlerWithCORS)
+	handlerWithAccessLog := handler.accessLogMiddleware(handlerWithCORS)
+	handlerWithLogger := handler.requestContextMiddleware(handlerWithAccessLog)
 
 	return handlerWithLogger
 }
