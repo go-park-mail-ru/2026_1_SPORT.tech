@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
-	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -24,12 +23,7 @@ func NewUserRepository(db *sql.DB, logger *slog.Logger) *UserRepository {
 	}
 }
 
-func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (user domain.User, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "user.get_by_id", startedAt, err)
-	}()
-
+func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (domain.User, error) {
 	const query = `
 		SELECT
 			u.user_id,
@@ -51,11 +45,12 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (us
 	`
 
 	var (
+		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
 
-	err = repository.db.QueryRowContext(ctx, query, userID).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "user.get_by_id", query, userID).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -82,12 +77,7 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (us
 	return user, nil
 }
 
-func (repository *UserRepository) CreateClient(ctx context.Context, command usecase.CreateClientCommand) (userID int64, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "user.create_client", startedAt, err)
-	}()
-
+func (repository *UserRepository) CreateClient(ctx context.Context, command usecase.CreateClientCommand) (int64, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -100,8 +90,12 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 		RETURNING user_id
 	`
 
-	if err := tx.QueryRowContext(
+	var userID int64
+	if err := queryRowContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_client.user",
 		createUserQuery,
 		command.Email,
 		command.PasswordHash,
@@ -114,8 +108,11 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 		VALUES ($1, $2, $3, $4)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_client.profile",
 		createUserProfileQuery,
 		userID,
 		command.Username,
@@ -132,12 +129,7 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 	return userID, nil
 }
 
-func (repository *UserRepository) CreateTrainer(ctx context.Context, command usecase.CreateTrainerCommand) (userID int64, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "user.create_trainer", startedAt, err)
-	}()
-
+func (repository *UserRepository) CreateTrainer(ctx context.Context, command usecase.CreateTrainerCommand) (int64, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -150,8 +142,12 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		RETURNING user_id
 	`
 
-	if err := tx.QueryRowContext(
+	var userID int64
+	if err := queryRowContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.user",
 		createUserQuery,
 		command.Email,
 		command.PasswordHash,
@@ -164,8 +160,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		VALUES ($1, $2, $3, $4)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.profile",
 		createUserProfileQuery,
 		userID,
 		command.Username,
@@ -180,8 +179,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		VALUES ($1, $2, $3)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.details",
 		createTrainerDetailsQuery,
 		userID,
 		command.EducationDegree,
@@ -196,8 +198,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 	`
 
 	for _, sport := range command.Sports {
-		if _, err := tx.ExecContext(
+		if _, err := execContext(
 			ctx,
+			tx,
+			repository.logger,
+			"user.create_trainer.sport",
 			createTrainerSportQuery,
 			userID,
 			sport.SportTypeID,
@@ -215,12 +220,7 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 	return userID, nil
 }
 
-func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (user domain.User, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "user.get_by_email", startedAt, err)
-	}()
-
+func (repository *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
 	const query = `
 		SELECT
 			u.user_id,
@@ -243,11 +243,12 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	`
 
 	var (
+		user      domain.User
 		bio       sql.NullString
 		avatarURL sql.NullString
 	)
 
-	err = repository.db.QueryRowContext(ctx, query, email).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "user.get_by_email", query, email).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
-	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
@@ -21,12 +20,7 @@ func NewPostRepository(db *sql.DB, logger *slog.Logger) *PostRepository {
 	}
 }
 
-func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) (posts []domain.PostListItem, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "post.list_profile_posts", startedAt, err)
-	}()
-
+func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error) {
 	const query = `
 		SELECT
 			p.post_id,
@@ -57,13 +51,13 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 		ORDER BY p.created_at DESC, p.post_id DESC
 	`
 
-	rows, err := repository.db.QueryContext(ctx, query, profileUserID, currentUserID)
+	rows, err := queryContext(ctx, repository.db, repository.logger, "post.list_profile_posts", query, profileUserID, currentUserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	posts = make([]domain.PostListItem, 0)
+	posts := make([]domain.PostListItem, 0)
 	for rows.Next() {
 		var (
 			post      domain.PostListItem
@@ -95,12 +89,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 	return posts, nil
 }
 
-func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (post domain.Post, err error) {
-	startedAt := time.Now()
-	defer func() {
-		logDBOperation(ctx, repository.logger, "post.list_profile_posts", startedAt, err)
-	}()
-
+func (repository *PostRepository) GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error) {
 	const postQuery = `
 		SELECT
 			p.post_id,
@@ -133,10 +122,11 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	`
 
 	var (
+		post      domain.Post
 		minTierID sql.NullInt64
 	)
 
-	err = repository.db.QueryRowContext(ctx, postQuery, postID, currentUserID).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "post.get_by_id", postQuery, postID, currentUserID).Scan(
 		&post.PostID,
 		&post.TrainerID,
 		&minTierID,
@@ -161,7 +151,7 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 		ORDER BY post_attachment_id
 	`
 
-	rows, err := repository.db.QueryContext(ctx, attachmentQuery, postID)
+	rows, err := queryContext(ctx, repository.db, repository.logger, "post.list_attachments", attachmentQuery, postID)
 	if err != nil {
 		return domain.Post{}, err
 	}
