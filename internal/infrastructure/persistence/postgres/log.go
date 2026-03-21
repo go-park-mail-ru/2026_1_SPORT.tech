@@ -21,12 +21,22 @@ func loggerFromContext(ctx context.Context, fallback *slog.Logger) *slog.Logger 
 	return slog.Default()
 }
 
-func logDBOperation(ctx context.Context, logger *slog.Logger, operation string, startedAt time.Time, err error) {
+func logDBOperation(
+	ctx context.Context,
+	logger *slog.Logger,
+	operation string,
+	query string,
+	queryArgs []any,
+	startedAt time.Time,
+	err error,
+) {
 	requestLogger := loggerFromContext(ctx, logger)
 
 	args := []any{
 		"component", "postgres",
 		"operation", operation,
+		"query", query,
+		"query_args", queryArgs,
 		"duration_ms", time.Since(startedAt).Milliseconds(),
 	}
 
@@ -48,13 +58,15 @@ type loggedRow struct {
 	ctx       context.Context
 	logger    *slog.Logger
 	operation string
+	query     string
+	queryArgs []any
 	startedAt time.Time
 	row       *sql.Row
 }
 
 func (row *loggedRow) Scan(dest ...any) error {
 	err := row.row.Scan(dest...)
-	logDBOperation(row.ctx, row.logger, row.operation, row.startedAt, err)
+	logDBOperation(row.ctx, row.logger, row.operation, row.query, row.queryArgs, row.startedAt, err)
 	return err
 }
 
@@ -69,7 +81,7 @@ func execContext(
 	startedAt := time.Now()
 
 	result, err := runner.ExecContext(ctx, query, args...)
-	logDBOperation(ctx, logger, operation, startedAt, err)
+	logDBOperation(ctx, logger, operation, query, args, startedAt, err)
 
 	return result, err
 }
@@ -85,7 +97,7 @@ func queryContext(
 	startedAt := time.Now()
 
 	rows, err := runner.QueryContext(ctx, query, args...)
-	logDBOperation(ctx, logger, operation, startedAt, err)
+	logDBOperation(ctx, logger, operation, query, args, startedAt, err)
 
 	return rows, err
 }
@@ -102,6 +114,8 @@ func queryRowContext(
 		ctx:       ctx,
 		logger:    logger,
 		operation: operation,
+		query:     query,
+		queryArgs: args,
 		startedAt: time.Now(),
 		row:       runner.QueryRowContext(ctx, query, args...),
 	}
