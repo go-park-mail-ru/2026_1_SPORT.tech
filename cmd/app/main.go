@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"log/slog"
+	"os"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -18,6 +20,10 @@ const (
 )
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+
 	cfg, err := config.NewConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +35,7 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := app.Run(cfg, db); err != nil {
+	if err := app.Run(cfg, db, logger); err != nil {
 		log.Fatal(err)
 	}
 }
