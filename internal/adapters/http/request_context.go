@@ -13,8 +13,27 @@ import (
 
 const requestIDHeader = "X-Request-ID"
 
-func (handler *Handler) requestContextMiddleware(next http.Handler) http.Handler {
+type statusResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (writer *statusResponseWriter) WriteHeader(statusCode int) {
+	writer.statusCode = statusCode
+	writer.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (writer *statusResponseWriter) Write(body []byte) (int, error) {
+	if writer.statusCode == 0 {
+		writer.statusCode = http.StatusOK
+	}
+
+	return writer.ResponseWriter.Write(body)
+}
+
+func (handler *Handler) requestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		startedAt := time.Now()
 		requestID := newRequestID()
 
 		baseLogger := handler.logger
@@ -27,9 +46,23 @@ func (handler *Handler) requestContextMiddleware(next http.Handler) http.Handler
 		ctx := requestctx.WithRequestID(request.Context(), requestID)
 		ctx = requestctx.WithLogger(ctx, requestLogger)
 
-		writer.Header().Set(requestIDHeader, requestID)
+		responseWriter := &statusResponseWriter{
+			ResponseWriter: writer,
+			statusCode:     http.StatusOK,
+		}
 
-		next.ServeHTTP(writer, request.WithContext(ctx))
+		responseWriter.Header().Set(requestIDHeader, requestID)
+
+		next.ServeHTTP(responseWriter, request.WithContext(ctx))
+
+		requestLogger.Info(
+			"http request",
+			"method", request.Method,
+			"path", request.URL.Path,
+			"status", responseWriter.statusCode,
+			"duration_ms", time.Since(startedAt).Milliseconds(),
+			"remote_addr", request.RemoteAddr,
+		)
 	})
 }
 
