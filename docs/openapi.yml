@@ -83,34 +83,9 @@ components:
               items:
                 $ref: "#/components/schemas/ValidationErrorField"
 
-    UserProfile:
-      type: object
-      required: [username, first_name, last_name]
-      properties:
-        username:
-          type: string
-          minLength: 3
-          maxLength: 30
-          pattern: '^[A-Za-z0-9_]{3,30}$'
-        first_name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        last_name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        bio:
-          type: string
-          nullable: true
-          maxLength: 1000
-        avatar_url:
-          type: string
-          nullable: true
-
     User:
       type: object
-      required: [user_id, username, email, created_at, updated_at, is_trainer, is_admin, profile]
+      required: [user_id, username, email, created_at, updated_at, is_trainer, is_admin, first_name, last_name]
       properties:
         user_id:
           type: integer
@@ -141,8 +116,21 @@ components:
           type: boolean
           description: true, если у пользователя есть admin_profile
           example: false
-        profile:
-          $ref: "#/components/schemas/UserProfile"
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+        avatar_url:
+          type: string
+          nullable: true
 
     TrainerRegisterSport:
       type: object
@@ -300,7 +288,7 @@ components:
 
     ProfileResponse:
       type: object
-      required: [user_id, is_me, is_trainer, profile]
+      required: [user_id, is_me, is_trainer, username, first_name, last_name]
       properties:
         user_id:
           type: integer
@@ -311,8 +299,26 @@ components:
         is_trainer:
           type: boolean
           description: true, если у пользователя есть trainer_details
-        profile:
-          $ref: "#/components/schemas/UserProfile"
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+        avatar_url:
+          type: string
+          nullable: true
 
     PostListItem:
       type: object
@@ -468,12 +474,10 @@ paths:
                       updated_at: "2026-03-06T12:00:00Z"
                       is_trainer: false
                       is_admin: false
-                      profile:
-                        username: john_doe
-                        first_name: John
-                        last_name: Doe
-                        bio: null
-                        avatar_url: null
+                      first_name: John
+                      last_name: Doe
+                      bio: null
+                      avatar_url: null
         "409":
           description: Email или username уже существует
           content:
@@ -546,12 +550,10 @@ paths:
                       updated_at: "2026-03-06T12:00:00Z"
                       is_trainer: true
                       is_admin: false
-                      profile:
-                        username: ricardo
-                        first_name: Ricardo
-                        last_name: Milos
-                        bio: null
-                        avatar_url: null
+                      first_name: Ricardo
+                      last_name: Milos
+                      bio: null
+                      avatar_url: null
         "409":
           description: Email или username уже существует
           content:
@@ -608,12 +610,10 @@ paths:
                       updated_at: "2026-03-06T12:00:00Z"
                       is_trainer: false
                       is_admin: false
-                      profile:
-                        username: john_doe
-                        first_name: John
-                        last_name: Doe
-                        bio: null
-                        avatar_url: null
+                      first_name: John
+                      last_name: Doe
+                      bio: null
+                      avatar_url: null
         "401":
           description: Неверный email или пароль
           content:
@@ -656,12 +656,10 @@ paths:
                       updated_at: "2026-03-06T12:00:00Z"
                       is_trainer: false
                       is_admin: false
-                      profile:
-                        username: john_doe
-                        first_name: John
-                        last_name: Doe
-                        bio: null
-                        avatar_url: null
+                      first_name: John
+                      last_name: Doe
+                      bio: null
+                      avatar_url: null
         "401":
           description: Не авторизован
           content:
@@ -732,12 +730,11 @@ paths:
                     user_id: 123
                     is_me: false
                     is_trainer: true
-                    profile:
-                      username: john_doe
-                      first_name: John
-                      last_name: Doe
-                      bio: Тренер по бегу
-                      avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
+                    username: john_doe
+                    first_name: John
+                    last_name: Doe
+                    bio: Тренер по бегу
+                    avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
         "404":
           description: Пользователь не найден
           content:

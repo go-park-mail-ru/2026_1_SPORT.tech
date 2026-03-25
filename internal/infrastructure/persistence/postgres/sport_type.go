@@ -3,17 +3,20 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
 
 type SportTypeRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewSportTypeRepository(db *sql.DB) *SportTypeRepository {
+func NewSportTypeRepository(db *sql.DB, logger *slog.Logger) *SportTypeRepository {
 	return &SportTypeRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -24,7 +27,7 @@ func (repository *SportTypeRepository) ListSportTypes(ctx context.Context) ([]do
 		ORDER BY sport_type_id
 	`
 
-	rows, err := repository.db.QueryContext(ctx, query)
+	rows, err := queryContext(ctx, repository.db, repository.logger, "sport_type.list", query)
 	if err != nil {
 		return nil, err
 	}

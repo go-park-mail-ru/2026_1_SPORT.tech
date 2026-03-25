@@ -3,17 +3,20 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
 
 type SessionRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewSessionRepository(db *sql.DB) *SessionRepository {
+func NewSessionRepository(db *sql.DB, logger *slog.Logger) *SessionRepository {
 	return &SessionRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -23,8 +26,11 @@ func (repository *SessionRepository) CreateSession(ctx context.Context, session 
 		VALUES ($1, $2, $3)
 	`
 
-	_, err := repository.db.ExecContext(
+	_, err := execContext(
 		ctx,
+		repository.db,
+		repository.logger,
+		"session.create",
 		query,
 		session.SessionIDHash,
 		session.UserID,
@@ -44,7 +50,14 @@ func (repository *SessionRepository) GetActiveSessionByHash(ctx context.Context,
 	`
 
 	var session domain.Session
-	err := repository.db.QueryRowContext(ctx, query, sessionIDHash).Scan(&session.UserID)
+	err := queryRowContext(
+		ctx,
+		repository.db,
+		repository.logger,
+		"session.get_active_by_hash",
+		query,
+		sessionIDHash,
+	).Scan(&session.UserID)
 	if err != nil {
 		return domain.Session{}, err
 	}
@@ -60,6 +73,6 @@ func (repository *SessionRepository) RevokeSessionByHash(ctx context.Context, se
 		  AND revoked_at IS NULL
 	`
 
-	_, err := repository.db.ExecContext(ctx, query, sessionIDHash)
+	_, err := execContext(ctx, repository.db, repository.logger, "session.revoke_by_hash", query, sessionIDHash)
 	return err
 }

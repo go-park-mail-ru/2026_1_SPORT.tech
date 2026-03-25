@@ -3,17 +3,20 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 )
 
 type PostRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewPostRepository(db *sql.DB) *PostRepository {
+func NewPostRepository(db *sql.DB, logger *slog.Logger) *PostRepository {
 	return &PostRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -48,7 +51,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 		ORDER BY p.created_at DESC, p.post_id DESC
 	`
 
-	rows, err := repository.db.QueryContext(ctx, query, profileUserID, currentUserID)
+	rows, err := queryContext(ctx, repository.db, repository.logger, "post.list_profile_posts", query, profileUserID, currentUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +126,7 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 		minTierID sql.NullInt64
 	)
 
-	err := repository.db.QueryRowContext(ctx, postQuery, postID, currentUserID).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "post.get_by_id", postQuery, postID, currentUserID).Scan(
 		&post.PostID,
 		&post.TrainerID,
 		&minTierID,
@@ -148,7 +151,7 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 		ORDER BY post_attachment_id
 	`
 
-	rows, err := repository.db.QueryContext(ctx, attachmentQuery, postID)
+	rows, err := queryContext(ctx, repository.db, repository.logger, "post.list_attachments", attachmentQuery, postID)
 	if err != nil {
 		return domain.Post{}, err
 	}

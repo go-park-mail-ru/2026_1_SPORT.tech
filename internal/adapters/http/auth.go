@@ -20,23 +20,18 @@ var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 var emailPattern = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
 var allowCrossSiteCookies = false
 
-type userProfileResponse struct {
-	Username  string  `json:"username"`
-	FirstName string  `json:"first_name"`
-	LastName  string  `json:"last_name"`
-	Bio       *string `json:"bio"`
-	AvatarURL *string `json:"avatar_url"`
-}
-
 type userResponse struct {
-	UserID    int64               `json:"user_id"`
-	Username  string              `json:"username"`
-	Email     string              `json:"email"`
-	CreatedAt time.Time           `json:"created_at"`
-	UpdatedAt time.Time           `json:"updated_at"`
-	IsTrainer bool                `json:"is_trainer"`
-	IsAdmin   bool                `json:"is_admin"`
-	Profile   userProfileResponse `json:"profile"`
+	UserID    int64     `json:"user_id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	IsTrainer bool      `json:"is_trainer"`
+	IsAdmin   bool      `json:"is_admin"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Bio       *string   `json:"bio"`
+	AvatarURL *string   `json:"avatar_url"`
 }
 
 type authResponse struct {
@@ -333,13 +328,10 @@ func newAuthResponse(user domain.User) authResponse {
 			UpdatedAt: user.UpdatedAt,
 			IsTrainer: user.IsTrainer,
 			IsAdmin:   user.IsAdmin,
-			Profile: userProfileResponse{
-				Username:  user.Profile.Username,
-				FirstName: user.Profile.FirstName,
-				LastName:  user.Profile.LastName,
-				Bio:       user.Profile.Bio,
-				AvatarURL: user.Profile.AvatarURL,
-			},
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Bio:       user.Bio,
+			AvatarURL: user.AvatarURL,
 		},
 	}
 }

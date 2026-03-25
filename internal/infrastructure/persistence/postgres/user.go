@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -11,12 +12,14 @@ import (
 )
 
 type UserRepository struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
+func NewUserRepository(db *sql.DB, logger *slog.Logger) *UserRepository {
 	return &UserRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -47,7 +50,7 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		avatarURL sql.NullString
 	)
 
-	err := repository.db.QueryRowContext(ctx, query, userID).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "user.get_by_id", query, userID).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -55,8 +58,8 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		&user.UpdatedAt,
 		&user.IsTrainer,
 		&user.IsAdmin,
-		&user.Profile.FirstName,
-		&user.Profile.LastName,
+		&user.FirstName,
+		&user.LastName,
 		&bio,
 		&avatarURL,
 	)
@@ -64,12 +67,11 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		return domain.User{}, err
 	}
 
-	user.Profile.Username = user.Username
 	if bio.Valid {
-		user.Profile.Bio = &bio.String
+		user.Bio = &bio.String
 	}
 	if avatarURL.Valid {
-		user.Profile.AvatarURL = &avatarURL.String
+		user.AvatarURL = &avatarURL.String
 	}
 
 	return user, nil
@@ -89,8 +91,11 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 	`
 
 	var userID int64
-	if err := tx.QueryRowContext(
+	if err := queryRowContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_client.user",
 		createUserQuery,
 		command.Email,
 		command.PasswordHash,
@@ -103,8 +108,11 @@ func (repository *UserRepository) CreateClient(ctx context.Context, command usec
 		VALUES ($1, $2, $3, $4)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_client.profile",
 		createUserProfileQuery,
 		userID,
 		command.Username,
@@ -135,8 +143,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 	`
 
 	var userID int64
-	if err := tx.QueryRowContext(
+	if err := queryRowContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.user",
 		createUserQuery,
 		command.Email,
 		command.PasswordHash,
@@ -149,8 +160,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		VALUES ($1, $2, $3, $4)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.profile",
 		createUserProfileQuery,
 		userID,
 		command.Username,
@@ -165,8 +179,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 		VALUES ($1, $2, $3)
 	`
 
-	if _, err := tx.ExecContext(
+	if _, err := execContext(
 		ctx,
+		tx,
+		repository.logger,
+		"user.create_trainer.details",
 		createTrainerDetailsQuery,
 		userID,
 		command.EducationDegree,
@@ -181,8 +198,11 @@ func (repository *UserRepository) CreateTrainer(ctx context.Context, command use
 	`
 
 	for _, sport := range command.Sports {
-		if _, err := tx.ExecContext(
+		if _, err := execContext(
 			ctx,
+			tx,
+			repository.logger,
+			"user.create_trainer.sport",
 			createTrainerSportQuery,
 			userID,
 			sport.SportTypeID,
@@ -228,7 +248,7 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		avatarURL sql.NullString
 	)
 
-	err := repository.db.QueryRowContext(ctx, query, email).Scan(
+	err := queryRowContext(ctx, repository.db, repository.logger, "user.get_by_email", query, email).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -237,8 +257,8 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		&user.UpdatedAt,
 		&user.IsTrainer,
 		&user.IsAdmin,
-		&user.Profile.FirstName,
-		&user.Profile.LastName,
+		&user.FirstName,
+		&user.LastName,
 		&bio,
 		&avatarURL,
 	)
@@ -246,12 +266,11 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 		return domain.User{}, err
 	}
 
-	user.Profile.Username = user.Username
 	if bio.Valid {
-		user.Profile.Bio = &bio.String
+		user.Bio = &bio.String
 	}
 	if avatarURL.Valid {
-		user.Profile.AvatarURL = &avatarURL.String
+		user.AvatarURL = &avatarURL.String
 	}
 
 	return user, nil
