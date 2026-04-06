@@ -2,9 +2,8 @@ package handler
 
 import (
 	"net/http"
-	"os"
-	"path/filepath"
-	"runtime"
+
+	apidocs "github.com/go-park-mail-ru/2026_1_SPORT.tech/docs"
 )
 
 const swaggerUIPage = `<!doctype html>
@@ -48,21 +47,6 @@ func (handler *Handler) handleGetDocsRedirect(writer http.ResponseWriter, reques
 }
 
 func (handler *Handler) handleGetOpenAPISpec(writer http.ResponseWriter, request *http.Request) {
-	specData, err := os.ReadFile(openAPISpecPath())
-	if err != nil {
-		writeInternalError(writer)
-		return
-	}
-
 	writer.Header().Set("Content-Type", "application/yaml")
-	_, _ = writer.Write(specData)
-}
-
-func openAPISpecPath() string {
-	_, currentFile, _, ok := runtime.Caller(0)
-	if !ok {
-		return filepath.Join("docs", "openapi.yml")
-	}
-
-	return filepath.Join(filepath.Dir(currentFile), "..", "..", "..", "docs", "openapi.yml")
+	_, _ = writer.Write(apidocs.OpenAPIYAML)
 }
