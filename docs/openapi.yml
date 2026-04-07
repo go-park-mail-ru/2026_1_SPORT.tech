@@ -10,6 +10,8 @@ tags:
     description: Профиль пользователя
   - name: post
     description: Посты
+  - name: donation
+    description: Пожертвования
   - name: sport
     description: Виды спорта
 
@@ -320,9 +322,43 @@ components:
           type: string
           nullable: true
 
+    UpdateProfileRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+      example:
+        username: john_doe
+        first_name: John
+        last_name: Doe
+        bio: Тренируюсь пять раз в неделю
+
+    AvatarUploadResponse:
+      type: object
+      required: [avatar_url]
+      properties:
+        avatar_url:
+          type: string
+          example: "https://cdn.example.com/avatars/john_doe.jpg"
+
     PostListItem:
       type: object
-      required: [post_id, trainer_id, title, created_at, min_tier_id, can_view]
+      required: [post_id, trainer_id, title, created_at, min_tier_id, can_view, likes_count, is_liked]
       properties:
         post_id:
           type: integer
@@ -345,6 +381,13 @@ components:
         can_view:
           type: boolean
           description: Есть ли у текущего пользователя доступ к полному посту
+        likes_count:
+          type: integer
+          format: int64
+          minimum: 0
+        is_liked:
+          type: boolean
+          description: Лайкнул ли текущий пользователь этот пост
 
     ProfilePostsResponse:
       type: object
@@ -371,9 +414,82 @@ components:
         file_url:
           type: string
 
+    CreatePostAttachmentRequest:
+      type: object
+      required: [kind, file_url]
+      properties:
+        kind:
+          type: string
+          enum: [image, video, document]
+        file_url:
+          type: string
+
+    CreatePostRequest:
+      type: object
+      required: [title, text_content]
+      properties:
+        min_tier_id:
+          type: integer
+          format: int64
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        text_content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePostAttachmentRequest"
+
+    UpdatePostRequest:
+      type: object
+      properties:
+        min_tier_id:
+          type: integer
+          format: int64
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        text_content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        attachments:
+          type: array
+          description: Полная замена списка вложений поста
+          items:
+            $ref: "#/components/schemas/CreatePostAttachmentRequest"
+      example:
+        min_tier_id: 3
+        title: Обновленный план тренировок на неделю
+        text_content: Добавил день восстановления и работу на мобильность.
+        attachments:
+          - kind: image
+            file_url: "https://cdn.example.com/posts/101/updated-cover.jpg"
+
+    PostLikeResponse:
+      type: object
+      required: [post_id, likes_count, is_liked]
+      properties:
+        post_id:
+          type: integer
+          format: int64
+        likes_count:
+          type: integer
+          format: int64
+          minimum: 0
+        is_liked:
+          type: boolean
+
     PostResponse:
       type: object
-      required: [post_id, trainer_id, title, text_content, created_at, updated_at, min_tier_id, attachments]
+      required: [post_id, trainer_id, title, text_content, created_at, updated_at, min_tier_id, attachments, likes_count, is_liked]
       properties:
         post_id:
           type: integer
@@ -400,10 +516,62 @@ components:
         updated_at:
           type: string
           format: date-time
+        likes_count:
+          type: integer
+          format: int64
+          minimum: 0
+        is_liked:
+          type: boolean
         attachments:
           type: array
           items:
             $ref: "#/components/schemas/PostAttachment"
+
+    DonationRequest:
+      type: object
+      required: [amount_value, currency]
+      properties:
+        amount_value:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Сумма пожертвования в минимальных денежных единицах
+        currency:
+          type: string
+          example: RUB
+        message:
+          type: string
+          nullable: true
+          maxLength: 500
+      example:
+        amount_value: 50000
+        currency: RUB
+        message: Спасибо за полезный контент
+
+    DonationResponse:
+      type: object
+      required: [donation_id, sender_user_id, recipient_user_id, amount_value, currency, created_at]
+      properties:
+        donation_id:
+          type: integer
+          format: int64
+        sender_user_id:
+          type: integer
+          format: int64
+        recipient_user_id:
+          type: integer
+          format: int64
+        amount_value:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
 
 paths:
   /sport-types:
@@ -428,6 +596,134 @@ paths:
                         name: Плавание
         "400":
           $ref: "#/components/responses/BadRequest"
+
+  /posts:
+    post:
+      tags: [post]
+      summary: Создание поста
+      description: Создание поста тренером.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePostRequest"
+            examples:
+              create_post:
+                value:
+                  min_tier_id: null
+                  title: План тренировок на неделю
+                  text_content: Три силовые и две кардио тренировки.
+                  attachments:
+                    - kind: image
+                      file_url: "https://cdn.example.com/posts/101/cover.jpg"
+      responses:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "201":
+          description: Пост создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Только тренер может создавать посты
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /posts/{post_id}/likes:
+    post:
+      tags: [post]
+      summary: Поставить лайк посту
+      description: Создает или подтверждает лайк текущего пользователя на посте.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Лайк установлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostLikeResponse"
+              examples:
+                success:
+                  value:
+                    post_id: 101
+                    likes_count: 25
+                    is_liked: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags: [post]
+      summary: Убрать лайк с поста
+      description: Удаляет лайк текущего пользователя с поста.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Лайк удален
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostLikeResponse"
+              examples:
+                success:
+                  value:
+                    post_id: 101
+                    likes_count: 24
+                    is_liked: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/register/client:
     post:
@@ -748,6 +1044,90 @@ paths:
                       code: not_found
                       message: Пользователь не найден
 
+  /profiles/me:
+    patch:
+      tags: [profile]
+      summary: Обновление собственного профиля
+      description: Изменение username, имени, фамилии и bio текущего пользователя.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+              examples:
+                success:
+                  value:
+                    user_id: 123
+                    is_me: true
+                    is_trainer: true
+                    username: john_doe
+                    first_name: John
+                    last_name: Doe
+                    bio: Обновленное описание профиля
+                    avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Username уже занят
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /profiles/me/avatar:
+    post:
+      tags: [profile]
+      summary: Загрузка аватарки
+      description: Загружает новый avatar и обновляет avatar_url у текущего пользователя.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [avatar]
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Аватарка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvatarUploadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /profiles/{user_id}/posts:
     get:
       tags: [profile]
@@ -780,6 +1160,8 @@ paths:
                         title: План тренировок на неделю
                         created_at: "2026-03-05T10:00:00Z"
                         can_view: true
+                        likes_count: 24
+                        is_liked: false
         "404":
           description: Пользователь не найден
           content:
@@ -792,6 +1174,60 @@ paths:
                     error:
                       code: not_found
                       message: Пользователь не найден
+
+  /profiles/{user_id}/donations:
+    post:
+      tags: [donation]
+      summary: Отправить пожертвование пользователю
+      description: Создает пожертвование текущего пользователя в пользу владельца профиля.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DonationRequest"
+      responses:
+        "201":
+          description: Пожертвование отправлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonationResponse"
+              examples:
+                success:
+                  value:
+                    donation_id: 9001
+                    sender_user_id: 321
+                    recipient_user_id: 123
+                    amount_value: 50000
+                    currency: RUB
+                    message: Спасибо за полезный контент
+                    created_at: "2026-04-06T18:30:00Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Получатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /posts/{post_id}:
     get:
@@ -818,6 +1254,8 @@ paths:
                 success:
                   value:
                     post_id: 101
+                    likes_count: 24
+                    is_liked: false
                     trainer_id: 12
                     min_tier_id: null
                     title: План тренировок на неделю
@@ -852,3 +1290,87 @@ paths:
                     error:
                       code: not_found
                       message: Пост не найден
+    patch:
+      tags: [post]
+      summary: Изменение поста
+      description: Обновление собственного поста тренером.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePostRequest"
+      responses:
+        "200":
+          description: Пост обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Нельзя изменять чужой пост
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [post]
+      summary: Удаление поста
+      description: Удаление собственного поста тренером.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Пост удален
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Нельзя удалять чужой пост
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"

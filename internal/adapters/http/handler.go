@@ -41,6 +41,9 @@ func NewHandler(deps Deps) *Handler {
 func (handler *Handler) Routes() http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /docs", handler.handleGetDocsRedirect)
+	mux.HandleFunc("GET /docs/", handler.handleGetDocs)
+	mux.HandleFunc("GET /docs/openapi.yml", handler.handleGetOpenAPISpec)
 	mux.HandleFunc("GET /health", handler.handleHealth)
 	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
 	mux.HandleFunc("GET /profiles/{user_id}", handler.handleGetProfile)
