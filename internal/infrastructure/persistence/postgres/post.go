@@ -362,6 +362,58 @@ func (repository *PostRepository) Update(ctx context.Context, trainerID int64, p
 	return tx.Commit()
 }
 
+func (repository *PostRepository) Delete(ctx context.Context, trainerID int64, postID int64) error {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const getPostForDeleteQuery = `
+		SELECT trainer_id
+		FROM post
+		WHERE post_id = $1
+		FOR UPDATE
+	`
+
+	var postTrainerID int64
+	err = queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.get_for_delete",
+		getPostForDeleteQuery,
+		postID,
+	).Scan(&postTrainerID)
+	if err != nil {
+		return err
+	}
+
+	if postTrainerID != trainerID {
+		return usecase.ErrPostForbidden
+	}
+
+	const deletePostQuery = `
+		DELETE FROM post
+		WHERE post_id = $1
+		  AND trainer_id = $2
+	`
+
+	if _, err := execContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.delete",
+		deletePostQuery,
+		postID,
+		trainerID,
+	); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
 func mapPostError(err error) error {
 	var pqError *pq.Error
 	if !errors.As(err, &pqError) {

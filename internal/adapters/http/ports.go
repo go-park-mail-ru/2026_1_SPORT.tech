@@ -29,4 +29,5 @@ type postUseCase interface {
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
 	Create(ctx context.Context, trainerID int64, command usecase.CreatePostCommand) (domain.Post, error)
 	Update(ctx context.Context, trainerID int64, postID int64, command usecase.UpdatePostCommand) (domain.Post, error)
+	Delete(ctx context.Context, trainerID int64, postID int64) error
 }

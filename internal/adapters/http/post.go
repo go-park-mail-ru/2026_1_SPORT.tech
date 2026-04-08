@@ -196,6 +196,53 @@ func (handler *Handler) handlePatchPost(writer http.ResponseWriter, request *htt
 	writeJSON(writer, http.StatusOK, newPostResponse(post))
 }
 
+func (handler *Handler) handleDeletePost(writer http.ResponseWriter, request *http.Request) {
+	currentUserID, ok := userIDFromContext(request.Context())
+	if !ok {
+		writeInternalError(writer)
+		return
+	}
+
+	postID, err := strconv.ParseInt(request.PathValue("post_id"), 10, 64)
+	if err != nil || postID <= 0 {
+		writeBadRequest(writer)
+		return
+	}
+
+	user, err := handler.userUseCase.GetByID(request.Context(), currentUserID)
+	if err != nil {
+		if errors.Is(err, usecase.ErrUserNotFound) {
+			writeUnauthorized(writer)
+			return
+		}
+
+		writeInternalError(writer)
+		return
+	}
+
+	if !user.IsTrainer {
+		writeForbidden(writer, "Только тренер может удалять посты")
+		return
+	}
+
+	err = handler.postUseCase.Delete(request.Context(), currentUserID, postID)
+	if err != nil {
+		switch {
+		case errors.Is(err, usecase.ErrPostNotFound):
+			writeNotFound(writer, "Пост не найден")
+			return
+		case errors.Is(err, usecase.ErrPostForbidden):
+			writeForbidden(writer, "Нельзя удалять чужой пост")
+			return
+		default:
+			writeInternalError(writer)
+			return
+		}
+	}
+
+	writeNoContent(writer)
+}
+
 func newPostResponse(post domain.Post) postResponse {
 	attachments := make([]postAttachmentResponse, 0, len(post.Attachments))
 	for _, attachment := range post.Attachments {
