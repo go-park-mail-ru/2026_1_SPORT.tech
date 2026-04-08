@@ -19,6 +19,7 @@ type sessionRepository interface {
 type postRepository interface {
 	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error)
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
+	Create(ctx context.Context, trainerID int64, command CreatePostCommand) (int64, error)
 }
 
 type userRepository interface {

@@ -3,9 +3,12 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
+	"github.com/lib/pq"
 )
 
 type PostRepository struct {
@@ -176,4 +179,73 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	}
 
 	return post, nil
+}
+
+func (repository *PostRepository) Create(ctx context.Context, trainerID int64, command usecase.CreatePostCommand) (int64, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	const createPostQuery = `
+		INSERT INTO post (trainer_id, min_tier_id, title, text_content)
+		VALUES ($1, $2, $3, $4)
+		RETURNING post_id
+	`
+
+	var postID int64
+	if err := queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.create",
+		createPostQuery,
+		trainerID,
+		command.MinTierID,
+		command.Title,
+		command.TextContent,
+	).Scan(&postID); err != nil {
+		return 0, mapPostError(err)
+	}
+
+	const createAttachmentQuery = `
+		INSERT INTO post_attachment (post_id, kind, file_url)
+		VALUES ($1, $2, $3)
+	`
+
+	for _, attachment := range command.Attachments {
+		if _, err := execContext(
+			ctx,
+			tx,
+			repository.logger,
+			"post.create_attachment",
+			createAttachmentQuery,
+			postID,
+			attachment.Kind,
+			attachment.FileURL,
+		); err != nil {
+			return 0, mapPostError(err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return postID, nil
+}
+
+func mapPostError(err error) error {
+	var pqError *pq.Error
+	if !errors.As(err, &pqError) {
+		return err
+	}
+
+	switch {
+	case pqError.Code == "23503" && pqError.Constraint == "post_min_tier_fk":
+		return usecase.ErrPostTierNotFound
+	default:
+		return err
+	}
 }
