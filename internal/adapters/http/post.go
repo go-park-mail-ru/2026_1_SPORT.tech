@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 )
 
@@ -26,9 +27,15 @@ type postResponse struct {
 	Attachments []postAttachmentResponse `json:"attachments"`
 }
 
+type postLikeResponse struct {
+	PostID     int64 `json:"post_id"`
+	LikesCount int64 `json:"likes_count"`
+	IsLiked    bool  `json:"is_liked"`
+}
+
 func (handler *Handler) handleGetPost(writer http.ResponseWriter, request *http.Request) {
-	postID, err := strconv.ParseInt(request.PathValue("post_id"), 10, 64)
-	if err != nil || postID <= 0 {
+	postID, ok := parsePostID(request)
+	if !ok {
 		writeBadRequest(writer)
 		return
 	}
@@ -73,4 +80,75 @@ func (handler *Handler) handleGetPost(writer http.ResponseWriter, request *http.
 		UpdatedAt:   post.UpdatedAt,
 		Attachments: attachments,
 	})
+}
+
+func (handler *Handler) handlePostPostLike(writer http.ResponseWriter, request *http.Request) {
+	userID, ok := userIDFromContext(request.Context())
+	if !ok {
+		writeInternalError(writer)
+		return
+	}
+
+	postID, ok := parsePostID(request)
+	if !ok {
+		writeBadRequest(writer)
+		return
+	}
+
+	postLikeStatus, err := handler.postUseCase.SetLike(request.Context(), postID, userID)
+	if err != nil {
+		if errors.Is(err, usecase.ErrPostNotFound) {
+			writeNotFound(writer, "Пост не найден")
+			return
+		}
+
+		writeInternalError(writer)
+		return
+	}
+
+	writeJSON(writer, http.StatusOK, newPostLikeResponse(postLikeStatus))
+}
+
+func (handler *Handler) handleDeletePostLike(writer http.ResponseWriter, request *http.Request) {
+	userID, ok := userIDFromContext(request.Context())
+	if !ok {
+		writeInternalError(writer)
+		return
+	}
+
+	postID, ok := parsePostID(request)
+	if !ok {
+		writeBadRequest(writer)
+		return
+	}
+
+	postLikeStatus, err := handler.postUseCase.DeleteLike(request.Context(), postID, userID)
+	if err != nil {
+		if errors.Is(err, usecase.ErrPostNotFound) {
+			writeNotFound(writer, "Пост не найден")
+			return
+		}
+
+		writeInternalError(writer)
+		return
+	}
+
+	writeJSON(writer, http.StatusOK, newPostLikeResponse(postLikeStatus))
+}
+
+func parsePostID(request *http.Request) (int64, bool) {
+	postID, err := strconv.ParseInt(request.PathValue("post_id"), 10, 64)
+	if err != nil || postID <= 0 {
+		return 0, false
+	}
+
+	return postID, true
+}
+
+func newPostLikeResponse(postLikeStatus domain.PostLikeStatus) postLikeResponse {
+	return postLikeResponse{
+		PostID:     postLikeStatus.PostID,
+		LikesCount: postLikeStatus.LikesCount,
+		IsLiked:    postLikeStatus.IsLiked,
+	}
 }

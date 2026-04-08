@@ -19,6 +19,8 @@ type sessionRepository interface {
 type postRepository interface {
 	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error)
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
+	SetLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error)
+	DeleteLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error)
 }
 
 type userRepository interface {

@@ -41,3 +41,29 @@ func (useCase *PostUseCase) GetByID(ctx context.Context, postID int64, currentUs
 
 	return post, nil
 }
+
+func (useCase *PostUseCase) SetLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error) {
+	postLikeStatus, err := useCase.postRepository.SetLike(ctx, postID, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.PostLikeStatus{}, ErrPostNotFound
+		}
+
+		return domain.PostLikeStatus{}, err
+	}
+
+	return postLikeStatus, nil
+}
+
+func (useCase *PostUseCase) DeleteLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error) {
+	postLikeStatus, err := useCase.postRepository.DeleteLike(ctx, postID, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.PostLikeStatus{}, ErrPostNotFound
+		}
+
+		return domain.PostLikeStatus{}, err
+	}
+
+	return postLikeStatus, nil
+}
