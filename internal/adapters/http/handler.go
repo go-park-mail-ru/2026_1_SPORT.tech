@@ -11,6 +11,7 @@ type Deps struct {
 	SessionUseCase   sessionUseCase
 	UserUseCase      userUseCase
 	PostUseCase      postUseCase
+	DonationUseCase  donationUseCase
 	AuthCookieName   string
 }
 
@@ -20,6 +21,7 @@ type Handler struct {
 	sessionUseCase   sessionUseCase
 	userUseCase      userUseCase
 	postUseCase      postUseCase
+	donationUseCase  donationUseCase
 	authCookieName   string
 }
 
@@ -34,6 +36,7 @@ func NewHandler(deps Deps) *Handler {
 		sessionUseCase:   deps.SessionUseCase,
 		userUseCase:      deps.UserUseCase,
 		postUseCase:      deps.PostUseCase,
+		donationUseCase:  deps.DonationUseCase,
 		authCookieName:   deps.AuthCookieName,
 	}
 }
@@ -48,6 +51,7 @@ func (handler *Handler) Routes() http.Handler {
 	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
 	mux.HandleFunc("GET /profiles/{user_id}", handler.handleGetProfile)
 	mux.HandleFunc("GET /profiles/{user_id}/posts", handler.handleGetProfilePosts)
+	mux.Handle("POST /profiles/{user_id}/donations", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostProfileDonation)))
 	mux.HandleFunc("GET /posts/{post_id}", handler.handleGetPost)
 	mux.HandleFunc("POST /auth/register/client", handler.handlePostAuthRegisterClient)
 	mux.HandleFunc("POST /auth/register/trainer", handler.handlePostAuthRegisterTrainer)

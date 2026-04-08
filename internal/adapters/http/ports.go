@@ -28,3 +28,7 @@ type postUseCase interface {
 	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error)
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
 }
+
+type donationUseCase interface {
+	Create(ctx context.Context, command usecase.CreateDonationCommand) (domain.Donation, error)
+}

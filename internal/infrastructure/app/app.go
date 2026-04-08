@@ -27,6 +27,8 @@ func Run(cfg config.Config, db *sql.DB, logger *slog.Logger) error {
 	userUseCase := usecase.NewUserUseCase(userRepository)
 	postRepository := postgres.NewPostRepository(db, logger)
 	postUseCase := usecase.NewPostUseCase(postRepository)
+	donationRepository := postgres.NewDonationRepository(db, logger)
+	donationUseCase := usecase.NewDonationUseCase(donationRepository)
 
 	httpHandler := httpadapter.NewHandler(httpadapter.Deps{
 		Logger:           logger,
@@ -34,6 +36,7 @@ func Run(cfg config.Config, db *sql.DB, logger *slog.Logger) error {
 		SessionUseCase:   sessionUseCase,
 		UserUseCase:      userUseCase,
 		PostUseCase:      postUseCase,
+		DonationUseCase:  donationUseCase,
 		AuthCookieName:   cfg.Auth.CookieName,
 	})
 

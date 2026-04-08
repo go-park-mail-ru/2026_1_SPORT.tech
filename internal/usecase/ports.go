@@ -21,6 +21,10 @@ type postRepository interface {
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
 }
 
+type donationRepository interface {
+	Create(ctx context.Context, params CreateDonationParams) (domain.Donation, error)
+}
+
 type userRepository interface {
 	GetByID(ctx context.Context, userID int64) (domain.User, error)
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
