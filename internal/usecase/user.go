@@ -60,6 +60,17 @@ type RegisterTrainerCommand struct {
 	Sports          []RegisterTrainerSportCommand
 }
 
+type UpdateProfileCommand struct {
+	HasUsername  bool
+	Username     string
+	HasFirstName bool
+	FirstName    string
+	HasLastName  bool
+	LastName     string
+	HasBio       bool
+	Bio          *string
+}
+
 type UserUseCase struct {
 	userRepository userRepository
 }
@@ -157,4 +168,20 @@ func (useCase *UserUseCase) Authenticate(ctx context.Context, email string, pass
 	}
 
 	return user, nil
+}
+
+func (useCase *UserUseCase) UpdateProfile(ctx context.Context, userID int64, command UpdateProfileCommand) (domain.User, error) {
+	err := useCase.userRepository.UpdateProfile(ctx, userID, command)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return domain.User{}, ErrUserNotFound
+		case errors.Is(err, ErrUsernameExists):
+			return domain.User{}, ErrUsernameExists
+		default:
+			return domain.User{}, err
+		}
+	}
+
+	return useCase.GetByID(ctx, userID)
 }

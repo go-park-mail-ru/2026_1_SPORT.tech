@@ -276,6 +276,99 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	return user, nil
 }
 
+func (repository *UserRepository) UpdateProfile(ctx context.Context, userID int64, command usecase.UpdateProfileCommand) error {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const getProfileForUpdateQuery = `
+		SELECT username, first_name, last_name, bio
+		FROM user_profile
+		WHERE user_id = $1
+		FOR UPDATE
+	`
+
+	var (
+		currentUsername  string
+		currentFirstName string
+		currentLastName  string
+		currentBio       sql.NullString
+	)
+
+	err = queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"user.get_profile_for_update",
+		getProfileForUpdateQuery,
+		userID,
+	).Scan(
+		&currentUsername,
+		&currentFirstName,
+		&currentLastName,
+		&currentBio,
+	)
+	if err != nil {
+		return err
+	}
+
+	updatedUsername := currentUsername
+	if command.HasUsername {
+		updatedUsername = command.Username
+	}
+
+	updatedFirstName := currentFirstName
+	if command.HasFirstName {
+		updatedFirstName = command.FirstName
+	}
+
+	updatedLastName := currentLastName
+	if command.HasLastName {
+		updatedLastName = command.LastName
+	}
+
+	var updatedBio any
+	if currentBio.Valid {
+		updatedBio = currentBio.String
+	}
+	if command.HasBio {
+		if command.Bio == nil {
+			updatedBio = nil
+		} else {
+			updatedBio = *command.Bio
+		}
+	}
+
+	const updateProfileQuery = `
+		UPDATE user_profile
+		SET username = $2,
+		    first_name = $3,
+		    last_name = $4,
+		    bio = $5,
+		    updated_at = now()
+		WHERE user_id = $1
+	`
+
+	if _, err := execContext(
+		ctx,
+		tx,
+		repository.logger,
+		"user.update_profile",
+		updateProfileQuery,
+		userID,
+		updatedUsername,
+		updatedFirstName,
+		updatedLastName,
+		updatedBio,
+	); err != nil {
+		return mapUserConflictError(err)
+	}
+
+	return tx.Commit()
+}
+
 func mapUserConflictError(err error) error {
 	var pqError *pq.Error
 	if !errors.As(err, &pqError) {

@@ -26,4 +26,5 @@ type userRepository interface {
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
 	CreateClient(ctx context.Context, params CreateClientCommand) (int64, error)
 	CreateTrainer(ctx context.Context, params CreateTrainerCommand) (int64, error)
+	UpdateProfile(ctx context.Context, userID int64, command UpdateProfileCommand) error
 }
