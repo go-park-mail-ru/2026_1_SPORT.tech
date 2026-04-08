@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"io"
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
@@ -73,11 +74,13 @@ type UpdateProfileCommand struct {
 
 type UserUseCase struct {
 	userRepository userRepository
+	avatarStorage  avatarStorage
 }
 
-func NewUserUseCase(userRepository userRepository) *UserUseCase {
+func NewUserUseCase(userRepository userRepository, avatarStorage avatarStorage) *UserUseCase {
 	return &UserUseCase{
 		userRepository: userRepository,
+		avatarStorage:  avatarStorage,
 	}
 }
 
@@ -181,6 +184,34 @@ func (useCase *UserUseCase) UpdateProfile(ctx context.Context, userID int64, com
 		default:
 			return domain.User{}, err
 		}
+	}
+
+	return useCase.GetByID(ctx, userID)
+}
+
+func (useCase *UserUseCase) UploadAvatar(
+	ctx context.Context,
+	userID int64,
+	fileName string,
+	contentType string,
+	file io.Reader,
+	size int64,
+) (domain.User, error) {
+	if useCase.avatarStorage == nil {
+		return domain.User{}, errors.New("avatar storage is not configured")
+	}
+
+	avatarURL, err := useCase.avatarStorage.UploadAvatar(ctx, userID, fileName, contentType, file, size)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	if err := useCase.userRepository.UpdateAvatarURL(ctx, userID, avatarURL); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.User{}, ErrUserNotFound
+		}
+
+		return domain.User{}, err
 	}
 
 	return useCase.GetByID(ctx, userID)
