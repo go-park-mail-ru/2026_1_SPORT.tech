@@ -24,6 +24,15 @@ type CreatePostCommand struct {
 	Attachments []CreatePostAttachmentCommand
 }
 
+type UpdatePostCommand struct {
+	HasMinTierID   bool
+	MinTierID      *int64
+	Title          *string
+	TextContent    *string
+	HasAttachments bool
+	Attachments    []CreatePostAttachmentCommand
+}
+
 type PostUseCase struct {
 	postRepository postRepository
 }
@@ -63,6 +72,24 @@ func (useCase *PostUseCase) Create(ctx context.Context, trainerID int64, command
 		}
 
 		return domain.Post{}, err
+	}
+
+	return useCase.GetByID(ctx, postID, trainerID)
+}
+
+func (useCase *PostUseCase) Update(ctx context.Context, trainerID int64, postID int64, command UpdatePostCommand) (domain.Post, error) {
+	err := useCase.postRepository.Update(ctx, trainerID, postID, command)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return domain.Post{}, ErrPostNotFound
+		case errors.Is(err, ErrPostTierNotFound):
+			return domain.Post{}, ErrPostTierNotFound
+		case errors.Is(err, ErrPostForbidden):
+			return domain.Post{}, ErrPostForbidden
+		default:
+			return domain.Post{}, err
+		}
 	}
 
 	return useCase.GetByID(ctx, postID, trainerID)

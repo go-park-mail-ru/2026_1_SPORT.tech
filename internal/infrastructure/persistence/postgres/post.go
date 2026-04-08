@@ -236,6 +236,132 @@ func (repository *PostRepository) Create(ctx context.Context, trainerID int64, c
 	return postID, nil
 }
 
+func (repository *PostRepository) Update(ctx context.Context, trainerID int64, postID int64, command usecase.UpdatePostCommand) error {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const getPostForUpdateQuery = `
+		SELECT trainer_id, min_tier_id, title, text_content
+		FROM post
+		WHERE post_id = $1
+		FOR UPDATE
+	`
+
+	var (
+		postTrainerID      int64
+		currentMinTierID   sql.NullInt64
+		currentTitle       string
+		currentTextContent string
+	)
+
+	err = queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.get_for_update",
+		getPostForUpdateQuery,
+		postID,
+	).Scan(
+		&postTrainerID,
+		&currentMinTierID,
+		&currentTitle,
+		&currentTextContent,
+	)
+	if err != nil {
+		return err
+	}
+
+	if postTrainerID != trainerID {
+		return usecase.ErrPostForbidden
+	}
+
+	var updatedMinTierID *int64
+	if currentMinTierID.Valid {
+		updatedMinTierID = &currentMinTierID.Int64
+	}
+	if command.HasMinTierID {
+		updatedMinTierID = command.MinTierID
+	}
+
+	updatedTitle := currentTitle
+	if command.Title != nil {
+		updatedTitle = *command.Title
+	}
+
+	updatedTextContent := currentTextContent
+	if command.TextContent != nil {
+		updatedTextContent = *command.TextContent
+	}
+
+	const updatePostQuery = `
+		UPDATE post
+		SET min_tier_id = $3,
+		    title = $4,
+		    text_content = $5,
+		    updated_at = now()
+		WHERE post_id = $1
+		  AND trainer_id = $2
+	`
+
+	if _, err := execContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.update",
+		updatePostQuery,
+		postID,
+		trainerID,
+		updatedMinTierID,
+		updatedTitle,
+		updatedTextContent,
+	); err != nil {
+		return mapPostError(err)
+	}
+
+	if command.HasAttachments {
+		const deleteAttachmentsQuery = `
+			DELETE FROM post_attachment
+			WHERE post_id = $1
+		`
+
+		if _, err := execContext(
+			ctx,
+			tx,
+			repository.logger,
+			"post.delete_attachments",
+			deleteAttachmentsQuery,
+			postID,
+		); err != nil {
+			return err
+		}
+
+		const createAttachmentQuery = `
+			INSERT INTO post_attachment (post_id, kind, file_url)
+			VALUES ($1, $2, $3)
+		`
+
+		for _, attachment := range command.Attachments {
+			if _, err := execContext(
+				ctx,
+				tx,
+				repository.logger,
+				"post.create_attachment",
+				createAttachmentQuery,
+				postID,
+				attachment.Kind,
+				attachment.FileURL,
+			); err != nil {
+				return mapPostError(err)
+			}
+		}
+	}
+
+	return tx.Commit()
+}
+
 func mapPostError(err error) error {
 	var pqError *pq.Error
 	if !errors.As(err, &pqError) {

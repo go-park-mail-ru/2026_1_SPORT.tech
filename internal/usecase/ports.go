@@ -20,6 +20,7 @@ type postRepository interface {
 	ListProfilePosts(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error)
 	GetByID(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error)
 	Create(ctx context.Context, trainerID int64, command CreatePostCommand) (int64, error)
+	Update(ctx context.Context, trainerID int64, postID int64, command UpdatePostCommand) error
 }
 
 type userRepository interface {
