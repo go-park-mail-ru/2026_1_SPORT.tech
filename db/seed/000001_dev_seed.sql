@@ -522,3 +522,69 @@ WHERE u.email = 'trainer@example.com'
       WHERE pa.post_id = p.post_id
         AND pa.file_url = 'https://placehold.co/900x1200'
   );
+
+INSERT INTO donation (
+    sender_user_id,
+    recipient_user_id,
+    amount_mantissa,
+    amount_scale,
+    currency,
+    message,
+    created_at,
+    updated_at
+)
+SELECT
+    sender.user_id,
+    recipient.user_id,
+    15000,
+    2,
+    'RUB',
+    'Спасибо за полезный контент',
+    now() - interval '2 days',
+    now() - interval '2 days'
+FROM "user" sender
+JOIN "user" recipient ON recipient.email = 'trainer@example.com'
+WHERE sender.email = 'client@example.com'
+AND NOT EXISTS (
+    SELECT 1
+    FROM donation d
+    WHERE d.sender_user_id = sender.user_id
+      AND d.recipient_user_id = recipient.user_id
+      AND d.amount_mantissa = 15000
+      AND d.amount_scale = 2
+      AND d.currency = 'RUB'
+      AND d.message = 'Спасибо за полезный контент'
+);
+
+INSERT INTO donation (
+    sender_user_id,
+    recipient_user_id,
+    amount_mantissa,
+    amount_scale,
+    currency,
+    message,
+    created_at,
+    updated_at
+)
+SELECT
+    sender.user_id,
+    recipient.user_id,
+    5000,
+    2,
+    'RUB',
+    'Очень помог разбор техники',
+    now() - interval '1 day',
+    now() - interval '1 day'
+FROM "user" sender
+JOIN "user" recipient ON recipient.email = 'trainer@example.com'
+WHERE sender.email = 'mamapapaya@example.com'
+AND NOT EXISTS (
+    SELECT 1
+    FROM donation d
+    WHERE d.sender_user_id = sender.user_id
+      AND d.recipient_user_id = recipient.user_id
+      AND d.amount_mantissa = 5000
+      AND d.amount_scale = 2
+      AND d.currency = 'RUB'
+      AND d.message = 'Очень помог разбор техники'
+);

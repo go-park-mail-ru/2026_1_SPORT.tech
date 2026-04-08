@@ -15,6 +15,9 @@ erDiagram
     user ||--o{ user_subscription : ""
     subscription_tier ||--o{ user_subscription : ""
 
+    user ||--o{ donation : ""
+    user ||--o{ donation : ""
+
     user ||--o{ post : ""
     subscription_tier ||--o{ post : ""
     post ||--o{ post_attachment : ""
@@ -136,6 +139,18 @@ erDiagram
         bigint subscription_tier_id FK "NOT NULL -> subscription_tier.subscription_tier_id"
         timestamptz started_at "NOT NULL"
         timestamptz expires_at "NOT NULL"
+        timestamptz created_at "NOT NULL"
+        timestamptz updated_at "NOT NULL"
+    }
+
+    donation {
+        bigint donation_id PK
+        bigint sender_user_id FK "NOT NULL -> user.user_id"
+        bigint recipient_user_id FK "NOT NULL -> user.user_id"
+        bigint amount_mantissa "NOT NULL, CHECK (amount_mantissa >= 1)"
+        integer amount_scale "NOT NULL, CHECK (amount_scale >= 0)"
+        text currency "NOT NULL"
+        text message "NULL"
         timestamptz created_at "NOT NULL"
         timestamptz updated_at "NOT NULL"
     }
