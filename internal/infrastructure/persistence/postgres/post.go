@@ -198,6 +198,103 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	return post, nil
 }
 
+func (repository *PostRepository) SetLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+	defer tx.Rollback()
+
+	if err := repository.ensurePostExists(ctx, tx, postID); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	const query = `
+		INSERT INTO post_like (post_id, user_id)
+		VALUES ($1, $2)
+		ON CONFLICT (post_id, user_id) DO UPDATE
+		SET updated_at = now()
+	`
+
+	if _, err := execContext(ctx, tx, repository.logger, "post.set_like", query, postID, userID); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	postLikeStatus, err := repository.getPostLikeStatus(ctx, tx, postID, true)
+	if err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	return postLikeStatus, nil
+}
+
+func (repository *PostRepository) DeleteLike(ctx context.Context, postID int64, userID int64) (domain.PostLikeStatus, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+	defer tx.Rollback()
+
+	if err := repository.ensurePostExists(ctx, tx, postID); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	const query = `
+		DELETE FROM post_like
+		WHERE post_id = $1 AND user_id = $2
+	`
+
+	if _, err := execContext(ctx, tx, repository.logger, "post.delete_like", query, postID, userID); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	postLikeStatus, err := repository.getPostLikeStatus(ctx, tx, postID, false)
+	if err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	return postLikeStatus, nil
+}
+
+func (repository *PostRepository) ensurePostExists(ctx context.Context, tx *sql.Tx, postID int64) error {
+	const query = `
+		SELECT 1
+		FROM post
+		WHERE post_id = $1
+	`
+
+	var exists int
+	return queryRowContext(ctx, tx, repository.logger, "post.ensure_exists", query, postID).Scan(&exists)
+}
+
+func (repository *PostRepository) getPostLikeStatus(ctx context.Context, tx *sql.Tx, postID int64, isLiked bool) (domain.PostLikeStatus, error) {
+	const query = `
+		SELECT COUNT(*)
+		FROM post_like
+		WHERE post_id = $1
+	`
+
+	postLikeStatus := domain.PostLikeStatus{
+		PostID:  postID,
+		IsLiked: isLiked,
+	}
+
+	err := queryRowContext(ctx, tx, repository.logger, "post.count_likes", query, postID).Scan(&postLikeStatus.LikesCount)
+	if err != nil {
+		return domain.PostLikeStatus{}, err
+	}
+
+	return postLikeStatus, nil
+}
+
 func (repository *PostRepository) Create(ctx context.Context, trainerID int64, command usecase.CreatePostCommand) (int64, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -223,8 +320,7 @@ func (repository *PostRepository) Create(ctx context.Context, trainerID int64, c
 		command.Title,
 		command.TextContent,
 	).Scan(&postID); err != nil {
-		return 0, 
-    Error(err)
+		return 0, Error(err)
 	}
 
 	const createAttachmentQuery = `

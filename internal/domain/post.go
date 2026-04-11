@@ -17,6 +17,12 @@ type PostAttachment struct {
 	FileURL          string
 }
 
+type PostLikeStatus struct {
+	PostID     int64
+	LikesCount int64
+	IsLiked    bool
+}
+
 type Post struct {
 	PostID      int64
 	TrainerID   int64

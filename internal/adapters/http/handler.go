@@ -51,6 +51,8 @@ func (handler *Handler) Routes() http.Handler {
 	mux.Handle("POST /profiles/me/avatar", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostProfileAvatar)))
 	mux.HandleFunc("GET /profiles/{user_id}/posts", handler.handleGetProfilePosts)
 	mux.HandleFunc("GET /posts/{post_id}", handler.handleGetPost)
+	mux.Handle("POST /posts/{post_id}/likes", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostPostLike)))
+	mux.Handle("DELETE /posts/{post_id}/likes", handler.AuthMiddleware(http.HandlerFunc(handler.handleDeletePostLike)))
 	mux.Handle("POST /posts", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostCreate)))
 	mux.Handle("PATCH /posts/{post_id}", handler.AuthMiddleware(http.HandlerFunc(handler.handlePatchPost)))
 	mux.Handle("DELETE /posts/{post_id}", handler.AuthMiddleware(http.HandlerFunc(handler.handleDeletePost)))

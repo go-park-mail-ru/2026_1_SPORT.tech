@@ -119,3 +119,12 @@ CREATE TABLE post_attachment (
   created_at         timestamptz NOT NULL DEFAULT now(),
   updated_at         timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE post_like (
+  post_id     bigint NOT NULL REFERENCES post(post_id) ON DELETE CASCADE,
+  user_id     bigint NOT NULL REFERENCES "user"(user_id) ON DELETE CASCADE,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now(),
+
+  PRIMARY KEY (post_id, user_id)
+);
