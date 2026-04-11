@@ -320,7 +320,7 @@ func (repository *PostRepository) Create(ctx context.Context, trainerID int64, c
 		command.Title,
 		command.TextContent,
 	).Scan(&postID); err != nil {
-		return 0, Error(err)
+		return 0, mapPostError(err)
 	}
 
 	const createAttachmentQuery = `
