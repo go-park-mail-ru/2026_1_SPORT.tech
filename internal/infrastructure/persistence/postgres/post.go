@@ -3,9 +3,12 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
+	"github.com/lib/pq"
 )
 
 type PostRepository struct {
@@ -48,6 +51,23 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 			END AS can_view
 		FROM post p
 		WHERE p.trainer_id = $1
+		  AND (
+			p.min_tier_id IS NULL
+			OR p.trainer_id = $2
+			OR EXISTS (
+				SELECT 1
+				FROM user_subscription us
+				JOIN subscription_tier viewer_tier
+				  ON viewer_tier.subscription_tier_id = us.subscription_tier_id
+				JOIN subscription_tier post_tier
+				  ON post_tier.subscription_tier_id = p.min_tier_id
+				WHERE us.subscriber_user_id = $2
+				  AND us.expires_at > now()
+				  AND viewer_tier.trainer_id = p.trainer_id
+				  AND post_tier.trainer_id = p.trainer_id
+				  AND viewer_tier.level_rank >= post_tier.level_rank
+			)
+		  )
 		ORDER BY p.created_at DESC, p.post_id DESC
 	`
 
@@ -176,4 +196,73 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 	}
 
 	return post, nil
+}
+
+func (repository *PostRepository) Create(ctx context.Context, trainerID int64, command usecase.CreatePostCommand) (int64, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	const createPostQuery = `
+		INSERT INTO post (trainer_id, min_tier_id, title, text_content)
+		VALUES ($1, $2, $3, $4)
+		RETURNING post_id
+	`
+
+	var postID int64
+	if err := queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"post.create",
+		createPostQuery,
+		trainerID,
+		command.MinTierID,
+		command.Title,
+		command.TextContent,
+	).Scan(&postID); err != nil {
+		return 0, mapPostError(err)
+	}
+
+	const createAttachmentQuery = `
+		INSERT INTO post_attachment (post_id, kind, file_url)
+		VALUES ($1, $2, $3)
+	`
+
+	for _, attachment := range command.Attachments {
+		if _, err := execContext(
+			ctx,
+			tx,
+			repository.logger,
+			"post.create_attachment",
+			createAttachmentQuery,
+			postID,
+			attachment.Kind,
+			attachment.FileURL,
+		); err != nil {
+			return 0, mapPostError(err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return postID, nil
+}
+
+func mapPostError(err error) error {
+	var pqError *pq.Error
+	if !errors.As(err, &pqError) {
+		return err
+	}
+
+	switch {
+	case pqError.Code == sqlStateForeignKeyViolation && pqError.Constraint == postMinTierConstraint:
+		return usecase.ErrPostTierNotFound
+	default:
+		return err
+	}
 }
