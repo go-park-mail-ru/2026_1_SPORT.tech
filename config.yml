@@ -10,3 +10,10 @@ postgres:
 auth:
   cookie_name: sid
   session_ttl: 720h
+
+storage:
+  host: minio
+  port: 9000
+  bucket: avatars
+  public_base_url: http://localhost:9000/avatars
+  use_ssl: false
