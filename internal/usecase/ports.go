@@ -27,6 +27,10 @@ type postRepository interface {
 	Delete(ctx context.Context, trainerID int64, postID int64) error
 }
 
+type donationRepository interface {
+	Create(ctx context.Context, params CreateDonationParams) (domain.Donation, error)
+}
+
 type userRepository interface {
 	GetByID(ctx context.Context, userID int64) (domain.User, error)
 	GetByEmail(ctx context.Context, email string) (domain.User, error)

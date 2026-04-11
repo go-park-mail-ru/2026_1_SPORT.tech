@@ -36,3 +36,7 @@ type postUseCase interface {
 	Update(ctx context.Context, trainerID int64, postID int64, command usecase.UpdatePostCommand) (domain.Post, error)
 	Delete(ctx context.Context, trainerID int64, postID int64) error
 }
+
+type donationUseCase interface {
+	Create(ctx context.Context, command usecase.CreateDonationCommand) (domain.Donation, error)
+}

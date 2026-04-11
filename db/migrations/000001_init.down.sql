@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS donation;
 DROP TABLE IF EXISTS post_like;
 DROP TABLE IF EXISTS post_attachment;
 DROP TABLE IF EXISTS post;

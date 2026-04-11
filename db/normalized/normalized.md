@@ -255,7 +255,24 @@ updated_at
 
 {post_id, user_id} -> created_at, updated_at
 
-### 19. Уведомления (notification)
+### 19. Пожертвования (donation)
+
+Назначение: добровольное пожертвование от одного пользователя другому.
+- donation_id (PK): Идентификатор пожертвования
+- sender_user_id (FK -> user.user_id): Кто отправил пожертвование
+- recipient_user_id (FK -> user.user_id): Кто получил пожертвование
+- amount_mantissa: Мантисса суммы пожертвования, `>= 1`
+- amount_scale: Порядок суммы пожертвования по основанию 10, `>= 0`
+- currency: Код валюты, например `RUB`
+- message: Необязательное сообщение к пожертвованию
+- created_at: Дата создания пожертвования
+- updated_at: Дата последнего обновления пожертвования
+
+**Функциональные зависимости:**
+
+{donation_id} -> sender_user_id, recipient_user_id, amount_mantissa, amount_scale, currency, message, created_at, updated_at
+
+### 20. Уведомления (notification)
 
 - notification_id (PK): Идентификатор уведомления
 - user_id (FK -> user.user_id): Идентификатор пользователя (кому)
