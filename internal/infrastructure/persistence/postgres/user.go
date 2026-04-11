@@ -276,6 +276,131 @@ func (repository *UserRepository) GetByEmail(ctx context.Context, email string) 
 	return user, nil
 }
 
+func (repository *UserRepository) UpdateProfile(ctx context.Context, userID int64, command usecase.UpdateProfileCommand) error {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const getProfileForUpdateQuery = `
+		SELECT username, first_name, last_name, bio
+		FROM user_profile
+		WHERE user_id = $1
+		FOR UPDATE
+	`
+
+	var (
+		currentUsername  string
+		currentFirstName string
+		currentLastName  string
+		currentBio       sql.NullString
+	)
+
+	err = queryRowContext(
+		ctx,
+		tx,
+		repository.logger,
+		"user.get_profile_for_update",
+		getProfileForUpdateQuery,
+		userID,
+	).Scan(
+		&currentUsername,
+		&currentFirstName,
+		&currentLastName,
+		&currentBio,
+	)
+	if err != nil {
+		return err
+	}
+
+	updatedUsername := currentUsername
+	if command.HasUsername {
+		updatedUsername = command.Username
+	}
+
+	updatedFirstName := currentFirstName
+	if command.HasFirstName {
+		updatedFirstName = command.FirstName
+	}
+
+	updatedLastName := currentLastName
+	if command.HasLastName {
+		updatedLastName = command.LastName
+	}
+
+	var updatedBio any
+	if currentBio.Valid {
+		updatedBio = currentBio.String
+	}
+	if command.HasBio {
+		if command.Bio == nil {
+			updatedBio = nil
+		} else {
+			updatedBio = *command.Bio
+		}
+	}
+
+	const updateProfileQuery = `
+		UPDATE user_profile
+		SET username = $2,
+		    first_name = $3,
+		    last_name = $4,
+		    bio = $5,
+		    updated_at = now()
+		WHERE user_id = $1
+	`
+
+	if _, err := execContext(
+		ctx,
+		tx,
+		repository.logger,
+		"user.update_profile",
+		updateProfileQuery,
+		userID,
+		updatedUsername,
+		updatedFirstName,
+		updatedLastName,
+		updatedBio,
+	); err != nil {
+		return mapUserConflictError(err)
+	}
+
+	return tx.Commit()
+}
+
+func (repository *UserRepository) UpdateAvatarURL(ctx context.Context, userID int64, avatarURL string) error {
+	const query = `
+		UPDATE user_profile
+		SET avatar_url = $2,
+		    updated_at = now()
+		WHERE user_id = $1
+	`
+
+	result, err := execContext(
+		ctx,
+		repository.db,
+		repository.logger,
+		"user.update_avatar_url",
+		query,
+		userID,
+		avatarURL,
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
 func mapUserConflictError(err error) error {
 	var pqError *pq.Error
 	if !errors.As(err, &pqError) {
@@ -283,11 +408,11 @@ func mapUserConflictError(err error) error {
 	}
 
 	switch {
-	case pqError.Code == "23505" && pqError.Constraint == "user_email_key":
+	case pqError.Code == sqlStateUniqueViolation && pqError.Constraint == userEmailUniqueConstraint:
 		return usecase.ErrEmailExists
-	case pqError.Code == "23505" && pqError.Constraint == "user_profile_username_key":
+	case pqError.Code == sqlStateUniqueViolation && pqError.Constraint == userProfileUsernameUniqueConstraint:
 		return usecase.ErrUsernameExists
-	case pqError.Code == "23503" && pqError.Constraint == "trainer_to_sport_type_sport_type_id_fkey":
+	case pqError.Code == sqlStateForeignKeyViolation && pqError.Constraint == trainerSportTypeForeignKeyConstraint:
 		return usecase.ErrSportTypeNotFound
 	default:
 		return err

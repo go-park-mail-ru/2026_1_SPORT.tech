@@ -249,10 +249,11 @@ updated_at
 - post_id (PK, FK -> post.post_id): Идентификатор поста
 - user_id (PK, FK -> user.user_id): Идентификатор пользователя
 - created_at: Дата создания лайка
+- updated_at: Дата последнего обновления лайка
 
 **Функциональные зависимости:**
 
-{post_id, user_id} -> created_at
+{post_id, user_id} -> created_at, updated_at
 
 ### 19. Пожертвования (donation)
 
