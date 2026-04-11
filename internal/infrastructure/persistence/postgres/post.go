@@ -51,6 +51,23 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 			END AS can_view
 		FROM post p
 		WHERE p.trainer_id = $1
+		  AND (
+			p.min_tier_id IS NULL
+			OR p.trainer_id = $2
+			OR EXISTS (
+				SELECT 1
+				FROM user_subscription us
+				JOIN subscription_tier viewer_tier
+				  ON viewer_tier.subscription_tier_id = us.subscription_tier_id
+				JOIN subscription_tier post_tier
+				  ON post_tier.subscription_tier_id = p.min_tier_id
+				WHERE us.subscriber_user_id = $2
+				  AND us.expires_at > now()
+				  AND viewer_tier.trainer_id = p.trainer_id
+				  AND post_tier.trainer_id = p.trainer_id
+				  AND viewer_tier.level_rank >= post_tier.level_rank
+			)
+		  )
 		ORDER BY p.created_at DESC, p.post_id DESC
 	`
 
@@ -243,7 +260,7 @@ func mapPostError(err error) error {
 	}
 
 	switch {
-	case pqError.Code == "23503" && pqError.Constraint == "post_min_tier_fk":
+	case pqError.Code == sqlStateForeignKeyViolation && pqError.Constraint == postMinTierConstraint:
 		return usecase.ErrPostTierNotFound
 	default:
 		return err
