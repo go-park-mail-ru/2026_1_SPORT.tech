@@ -5,11 +5,15 @@ services:
       dockerfile: Dockerfile
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
+      minio:
+        condition: service_started
     networks:
       - backend
   
@@ -70,8 +74,23 @@ services:
     networks:
       - backend
 
+  minio:
+    image: quay.io/minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - backend
+
 networks:
   backend:
 
 volumes:
   postgres_data:
+  minio_data:
