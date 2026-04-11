@@ -94,3 +94,19 @@ func (useCase *PostUseCase) Update(ctx context.Context, trainerID int64, postID 
 
 	return useCase.GetByID(ctx, postID, trainerID)
 }
+
+func (useCase *PostUseCase) Delete(ctx context.Context, trainerID int64, postID int64) error {
+	err := useCase.postRepository.Delete(ctx, trainerID, postID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrPostNotFound
+		case errors.Is(err, ErrPostForbidden):
+			return ErrPostForbidden
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
