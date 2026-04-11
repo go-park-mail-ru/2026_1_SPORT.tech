@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"io"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -22,6 +23,8 @@ type userUseCase interface {
 	RegisterClient(ctx context.Context, command usecase.RegisterClientCommand) (domain.User, error)
 	RegisterTrainer(ctx context.Context, command usecase.RegisterTrainerCommand) (domain.User, error)
 	Authenticate(ctx context.Context, email string, password string) (domain.User, error)
+	UpdateProfile(ctx context.Context, userID int64, command usecase.UpdateProfileCommand) (domain.User, error)
+	UploadAvatar(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (domain.User, error)
 }
 
 type postUseCase interface {
