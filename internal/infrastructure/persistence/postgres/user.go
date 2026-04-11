@@ -283,11 +283,11 @@ func mapUserConflictError(err error) error {
 	}
 
 	switch {
-	case pqError.Code == "23505" && pqError.Constraint == "user_email_key":
+	case pqError.Code == sqlStateUniqueViolation && pqError.Constraint == userEmailUniqueConstraint:
 		return usecase.ErrEmailExists
-	case pqError.Code == "23505" && pqError.Constraint == "user_profile_username_key":
+	case pqError.Code == sqlStateUniqueViolation && pqError.Constraint == userProfileUsernameUniqueConstraint:
 		return usecase.ErrUsernameExists
-	case pqError.Code == "23503" && pqError.Constraint == "trainer_to_sport_type_sport_type_id_fkey":
+	case pqError.Code == sqlStateForeignKeyViolation && pqError.Constraint == trainerSportTypeForeignKeyConstraint:
 		return usecase.ErrSportTypeNotFound
 	default:
 		return err
