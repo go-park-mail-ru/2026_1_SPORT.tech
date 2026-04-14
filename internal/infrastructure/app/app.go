@@ -36,13 +36,14 @@ func Run(cfg config.Config, db *sql.DB, logger *slog.Logger) error {
 	donationUseCase := usecase.NewDonationUseCase(donationRepository)
 
 	httpHandler := httpadapter.NewHandler(httpadapter.Deps{
-		Logger:           logger,
-		SportTypeUseCase: sportTypeUseCase,
-		SessionUseCase:   sessionUseCase,
-		UserUseCase:      userUseCase,
-		PostUseCase:      postUseCase,
-		DonationUseCase:  donationUseCase,
-		AuthCookieName:   cfg.Auth.CookieName,
+		Logger:               logger,
+		SportTypeUseCase:     sportTypeUseCase,
+		SessionUseCase:       sessionUseCase,
+		UserUseCase:          userUseCase,
+		PostUseCase:          postUseCase,
+		DonationUseCase:      donationUseCase,
+		AuthCookieName:       cfg.Auth.CookieName,
+		StoragePublicBaseURL: cfg.Storage.PublicBaseURL,
 	})
 
 	server := &http.Server{

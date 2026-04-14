@@ -6,23 +6,25 @@ import (
 )
 
 type Deps struct {
-	Logger           *slog.Logger
-	SportTypeUseCase sportTypeUseCase
-	SessionUseCase   sessionUseCase
-	UserUseCase      userUseCase
-	PostUseCase      postUseCase
-	DonationUseCase  donationUseCase
-	AuthCookieName   string
+	Logger               *slog.Logger
+	SportTypeUseCase     sportTypeUseCase
+	SessionUseCase       sessionUseCase
+	UserUseCase          userUseCase
+	PostUseCase          postUseCase
+	DonationUseCase      donationUseCase
+	AuthCookieName       string
+	StoragePublicBaseURL string
 }
 
 type Handler struct {
-	logger           *slog.Logger
-	sportTypeUseCase sportTypeUseCase
-	sessionUseCase   sessionUseCase
-	userUseCase      userUseCase
-	postUseCase      postUseCase
-	donationUseCase  donationUseCase
-	authCookieName   string
+	logger               *slog.Logger
+	sportTypeUseCase     sportTypeUseCase
+	sessionUseCase       sessionUseCase
+	userUseCase          userUseCase
+	postUseCase          postUseCase
+	donationUseCase      donationUseCase
+	authCookieName       string
+	storagePublicBaseURL string
 }
 
 type healthResponse struct {
@@ -31,13 +33,14 @@ type healthResponse struct {
 
 func NewHandler(deps Deps) *Handler {
 	return &Handler{
-		logger:           deps.Logger,
-		sportTypeUseCase: deps.SportTypeUseCase,
-		sessionUseCase:   deps.SessionUseCase,
-		userUseCase:      deps.UserUseCase,
-		postUseCase:      deps.PostUseCase,
-		donationUseCase:  deps.DonationUseCase,
-		authCookieName:   deps.AuthCookieName,
+		logger:               deps.Logger,
+		sportTypeUseCase:     deps.SportTypeUseCase,
+		sessionUseCase:       deps.SessionUseCase,
+		userUseCase:          deps.UserUseCase,
+		postUseCase:          deps.PostUseCase,
+		donationUseCase:      deps.DonationUseCase,
+		authCookieName:       deps.AuthCookieName,
+		storagePublicBaseURL: deps.StoragePublicBaseURL,
 	}
 }
 

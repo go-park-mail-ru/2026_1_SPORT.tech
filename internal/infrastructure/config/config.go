@@ -72,6 +72,7 @@ func NewConfig(path string) (Config, error) {
 	if config.Storage.PublicBaseURL == "" {
 		config.Storage.PublicBaseURL = "http://localhost:8000/avatars"
 	}
+	config.Storage.PublicBaseURL = getEnv("STORAGE_PUBLIC_BASE_URL", config.Storage.PublicBaseURL)
 	config.Storage.AccessKey = getEnv("MINIO_ACCESS_KEY", "minioadmin")
 	config.Storage.SecretKey = getEnv("MINIO_SECRET_KEY", "minioadmin")
 

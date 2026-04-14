@@ -177,7 +177,7 @@ func (handler *Handler) handlePostAuthRegisterClient(writer http.ResponseWriter,
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, http.StatusCreated, newAuthResponse(user))
+	writeJSON(writer, http.StatusCreated, handler.newAuthResponse(user))
 }
 
 func (handler *Handler) handlePostAuthRegisterTrainer(writer http.ResponseWriter, request *http.Request) {
@@ -242,7 +242,7 @@ func (handler *Handler) handlePostAuthRegisterTrainer(writer http.ResponseWriter
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, http.StatusCreated, newAuthResponse(user))
+	writeJSON(writer, http.StatusCreated, handler.newAuthResponse(user))
 }
 
 func (handler *Handler) handlePostAuthLogin(writer http.ResponseWriter, request *http.Request) {
@@ -278,7 +278,7 @@ func (handler *Handler) handlePostAuthLogin(writer http.ResponseWriter, request 
 	}
 
 	handler.setSessionCookie(writer, sessionID)
-	writeJSON(writer, http.StatusOK, newAuthResponse(user))
+	writeJSON(writer, http.StatusOK, handler.newAuthResponse(user))
 }
 
 func (handler *Handler) handleGetAuthMe(writer http.ResponseWriter, request *http.Request) {
@@ -299,7 +299,7 @@ func (handler *Handler) handleGetAuthMe(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	writeJSON(writer, http.StatusOK, newAuthResponse(user))
+	writeJSON(writer, http.StatusOK, handler.newAuthResponse(user))
 }
 
 func (handler *Handler) handlePostAuthLogout(writer http.ResponseWriter, request *http.Request) {
@@ -318,7 +318,7 @@ func (handler *Handler) handlePostAuthLogout(writer http.ResponseWriter, request
 	writeNoContent(writer)
 }
 
-func newAuthResponse(user domain.User) authResponse {
+func (handler *Handler) newAuthResponse(user domain.User) authResponse {
 	return authResponse{
 		User: userResponse{
 			UserID:    user.ID,
@@ -331,7 +331,7 @@ func newAuthResponse(user domain.User) authResponse {
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			Bio:       user.Bio,
-			AvatarURL: user.AvatarURL,
+			AvatarURL: handler.normalizePublicURL(user.AvatarURL),
 		},
 	}
 }

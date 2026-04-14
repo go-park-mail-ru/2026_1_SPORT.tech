@@ -73,7 +73,7 @@ func (handler *Handler) handleGetProfile(writer http.ResponseWriter, request *ht
 		return
 	}
 
-	writeJSON(writer, http.StatusOK, newProfileResponse(user, isMe))
+	writeJSON(writer, http.StatusOK, handler.newProfileResponse(user, isMe))
 }
 
 func (handler *Handler) handlePatchProfileMe(writer http.ResponseWriter, request *http.Request) {
@@ -109,7 +109,7 @@ func (handler *Handler) handlePatchProfileMe(writer http.ResponseWriter, request
 		}
 	}
 
-	writeJSON(writer, http.StatusOK, newProfileResponse(user, true))
+	writeJSON(writer, http.StatusOK, handler.newProfileResponse(user, true))
 }
 
 func (handler *Handler) handlePostProfileAvatar(writer http.ResponseWriter, request *http.Request) {
@@ -185,7 +185,7 @@ func (handler *Handler) handlePostProfileAvatar(writer http.ResponseWriter, requ
 	})
 }
 
-func newProfileResponse(user domain.User, isMe bool) profileResponse {
+func (handler *Handler) newProfileResponse(user domain.User, isMe bool) profileResponse {
 	var trainerDetails *trainerDetailsResponse
 	if user.TrainerDetails != nil {
 		sports := make([]trainerSportResponse, 0, len(user.TrainerDetails.Sports))
@@ -212,7 +212,7 @@ func newProfileResponse(user domain.User, isMe bool) profileResponse {
 		FirstName:      user.FirstName,
 		LastName:       user.LastName,
 		Bio:            user.Bio,
-		AvatarURL:      user.AvatarURL,
+		AvatarURL:      handler.normalizePublicURL(user.AvatarURL),
 		TrainerDetails: trainerDetails,
 	}
 }
