@@ -22,14 +22,27 @@ var allowedAvatarContentTypes = map[string]struct{}{
 }
 
 type profileResponse struct {
-	UserID    int64   `json:"user_id"`
-	IsMe      bool    `json:"is_me"`
-	IsTrainer bool    `json:"is_trainer"`
-	Username  string  `json:"username"`
-	FirstName string  `json:"first_name"`
-	LastName  string  `json:"last_name"`
-	Bio       *string `json:"bio"`
-	AvatarURL *string `json:"avatar_url"`
+	UserID         int64                   `json:"user_id"`
+	IsMe           bool                    `json:"is_me"`
+	IsTrainer      bool                    `json:"is_trainer"`
+	Username       string                  `json:"username"`
+	FirstName      string                  `json:"first_name"`
+	LastName       string                  `json:"last_name"`
+	Bio            *string                 `json:"bio"`
+	AvatarURL      *string                 `json:"avatar_url"`
+	TrainerDetails *trainerDetailsResponse `json:"trainer_details"`
+}
+
+type trainerSportResponse struct {
+	SportTypeID     int64   `json:"sport_type_id"`
+	ExperienceYears int     `json:"experience_years"`
+	SportsRank      *string `json:"sports_rank"`
+}
+
+type trainerDetailsResponse struct {
+	EducationDegree *string                `json:"education_degree"`
+	CareerSinceDate string                 `json:"career_since_date"`
+	Sports          []trainerSportResponse `json:"sports"`
 }
 
 type avatarUploadResponse struct {
@@ -173,15 +186,34 @@ func (handler *Handler) handlePostProfileAvatar(writer http.ResponseWriter, requ
 }
 
 func newProfileResponse(user domain.User, isMe bool) profileResponse {
+	var trainerDetails *trainerDetailsResponse
+	if user.TrainerDetails != nil {
+		sports := make([]trainerSportResponse, 0, len(user.TrainerDetails.Sports))
+		for _, sport := range user.TrainerDetails.Sports {
+			sports = append(sports, trainerSportResponse{
+				SportTypeID:     sport.SportTypeID,
+				ExperienceYears: sport.ExperienceYears,
+				SportsRank:      sport.SportsRank,
+			})
+		}
+
+		trainerDetails = &trainerDetailsResponse{
+			EducationDegree: user.TrainerDetails.EducationDegree,
+			CareerSinceDate: user.TrainerDetails.CareerSinceDate.Format("2006-01-02"),
+			Sports:          sports,
+		}
+	}
+
 	return profileResponse{
-		UserID:    user.ID,
-		IsMe:      isMe,
-		IsTrainer: user.IsTrainer,
-		Username:  user.Username,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Bio:       user.Bio,
-		AvatarURL: user.AvatarURL,
+		UserID:         user.ID,
+		IsMe:           isMe,
+		IsTrainer:      user.IsTrainer,
+		Username:       user.Username,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		Bio:            user.Bio,
+		AvatarURL:      user.AvatarURL,
+		TrainerDetails: trainerDetails,
 	}
 }
 

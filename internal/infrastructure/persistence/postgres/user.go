@@ -36,7 +36,9 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 			up.first_name,
 			up.last_name,
 			up.bio,
-			up.avatar_url
+			up.avatar_url,
+			td.education_degree,
+			td.career_since_date
 		FROM "user" u
 		JOIN user_profile up ON up.user_id = u.user_id
 		LEFT JOIN trainer_details td ON td.trainer_user_id = u.user_id
@@ -45,9 +47,11 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 	`
 
 	var (
-		user      domain.User
-		bio       sql.NullString
-		avatarURL sql.NullString
+		user            domain.User
+		bio             sql.NullString
+		avatarURL       sql.NullString
+		educationDegree sql.NullString
+		careerSinceDate sql.NullTime
 	)
 
 	err := queryRowContext(ctx, repository.db, repository.logger, "user.get_by_id", query, userID).Scan(
@@ -62,6 +66,8 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 		&user.LastName,
 		&bio,
 		&avatarURL,
+		&educationDegree,
+		&careerSinceDate,
 	)
 	if err != nil {
 		return domain.User{}, err
@@ -72,6 +78,57 @@ func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (do
 	}
 	if avatarURL.Valid {
 		user.AvatarURL = &avatarURL.String
+	}
+	if user.IsTrainer {
+		trainerDetails := &domain.TrainerDetails{
+			Sports: make([]domain.TrainerSport, 0),
+		}
+		if educationDegree.Valid {
+			trainerDetails.EducationDegree = &educationDegree.String
+		}
+		if careerSinceDate.Valid {
+			trainerDetails.CareerSinceDate = careerSinceDate.Time
+		}
+
+		const sportsQuery = `
+			SELECT sport_type_id, experience_years, sports_rank
+			FROM trainer_to_sport_type
+			WHERE trainer_id = $1
+			ORDER BY sport_type_id
+		`
+
+		rows, err := queryContext(ctx, repository.db, repository.logger, "user.list_trainer_sports", sportsQuery, userID)
+		if err != nil {
+			return domain.User{}, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var (
+				sport      domain.TrainerSport
+				sportsRank sql.NullString
+			)
+
+			if err := rows.Scan(
+				&sport.SportTypeID,
+				&sport.ExperienceYears,
+				&sportsRank,
+			); err != nil {
+				return domain.User{}, err
+			}
+
+			if sportsRank.Valid {
+				sport.SportsRank = &sportsRank.String
+			}
+
+			trainerDetails.Sports = append(trainerDetails.Sports, sport)
+		}
+
+		if err := rows.Err(); err != nil {
+			return domain.User{}, err
+		}
+
+		user.TrainerDetails = trainerDetails
 	}
 
 	return user, nil
