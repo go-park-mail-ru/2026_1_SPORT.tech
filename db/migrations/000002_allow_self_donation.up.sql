@@ -1,0 +1,2 @@
+ALTER TABLE donation
+DROP CONSTRAINT IF EXISTS donation_check;

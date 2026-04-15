@@ -285,9 +285,11 @@ func TestPostHelpersAndLikeHandlers(t *testing.T) {
 		TrainerID:   7,
 		Title:       "Title",
 		TextContent: "Content",
+		LikesCount:  3,
+		IsLiked:     true,
 		Attachments: []domain.PostAttachment{{PostAttachmentID: 1, Kind: "image", FileURL: "http://example.com/img.jpg"}},
 	})
-	if response.PostID != 15 || len(response.Attachments) != 1 {
+	if response.PostID != 15 || len(response.Attachments) != 1 || response.LikesCount != 3 || !response.IsLiked {
 		t.Fatalf("unexpected post response: %+v", response)
 	}
 
@@ -518,7 +520,7 @@ func TestProfileAndPostHandlers(t *testing.T) {
 			},
 			postUseCase: &postUseCaseStub{
 				listProfilePostsFunc: func(ctx context.Context, profileUserID int64, currentUserID int64) ([]domain.PostListItem, error) {
-					return []domain.PostListItem{{PostID: 1, TrainerID: profileUserID, Title: "post", CreatedAt: now, CanView: true}}, nil
+					return []domain.PostListItem{{PostID: 1, TrainerID: profileUserID, Title: "post", CreatedAt: now, CanView: true, LikesCount: 5, IsLiked: true}}, nil
 				},
 			},
 			sessionUseCase: &sessionUseCaseStub{
@@ -540,7 +542,7 @@ func TestProfileAndPostHandlers(t *testing.T) {
 		handler := &Handler{
 			postUseCase: &postUseCaseStub{
 				getByIDFunc: func(ctx context.Context, postID int64, currentUserID int64) (domain.Post, error) {
-					return domain.Post{PostID: postID, TrainerID: 7, Title: "post", TextContent: "content"}, nil
+					return domain.Post{PostID: postID, TrainerID: 7, Title: "post", TextContent: "content", LikesCount: 2, IsLiked: true}, nil
 				},
 			},
 			sessionUseCase: &sessionUseCaseStub{
@@ -567,14 +569,14 @@ func TestProfileAndPostHandlers(t *testing.T) {
 			},
 			postUseCase: &postUseCaseStub{
 				createFunc: func(ctx context.Context, trainerID int64, command usecase.CreatePostCommand) (domain.Post, error) {
-					return domain.Post{PostID: 1, TrainerID: trainerID, Title: command.Title, TextContent: command.TextContent}, nil
+					return domain.Post{PostID: 1, TrainerID: trainerID, Title: command.Title, TextContent: command.TextContent, LikesCount: 0, IsLiked: false}, nil
 				},
 				updateFunc: func(ctx context.Context, trainerID int64, postID int64, command usecase.UpdatePostCommand) (domain.Post, error) {
 					title := ""
 					if command.Title != nil {
 						title = *command.Title
 					}
-					return domain.Post{PostID: postID, TrainerID: trainerID, Title: title}, nil
+					return domain.Post{PostID: postID, TrainerID: trainerID, Title: title, LikesCount: 0, IsLiked: false}, nil
 				},
 				deleteFunc: func(ctx context.Context, trainerID int64, postID int64) error { return nil },
 			},

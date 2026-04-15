@@ -26,6 +26,8 @@ type postResponse struct {
 	TextContent string                   `json:"text_content"`
 	CreatedAt   time.Time                `json:"created_at"`
 	UpdatedAt   time.Time                `json:"updated_at"`
+	LikesCount  int64                    `json:"likes_count"`
+	IsLiked     bool                     `json:"is_liked"`
 	Attachments []postAttachmentResponse `json:"attachments"`
 }
 
@@ -267,6 +269,8 @@ func newPostResponse(post domain.Post) postResponse {
 		TextContent: post.TextContent,
 		CreatedAt:   post.CreatedAt,
 		UpdatedAt:   post.UpdatedAt,
+		LikesCount:  post.LikesCount,
+		IsLiked:     post.IsLiked,
 		Attachments: attachments,
 	}
 }

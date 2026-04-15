@@ -20,8 +20,8 @@ func TestPostRepositoryListProfilePosts(t *testing.T) {
 
 	repository := NewPostRepository(db, nil)
 	now := time.Date(2026, 4, 15, 10, 0, 0, 0, time.UTC)
-	rows := sqlmock.NewRows([]string{"post_id", "trainer_id", "min_tier_id", "title", "created_at", "can_view"}).
-		AddRow(int64(1), int64(3), nil, "free post", now, true)
+	rows := sqlmock.NewRows([]string{"post_id", "trainer_id", "min_tier_id", "title", "created_at", "likes_count", "is_liked", "can_view"}).
+		AddRow(int64(1), int64(3), nil, "free post", now, int64(4), true, true)
 
 	mock.ExpectQuery("SELECT\\s+p\\.post_id").
 		WithArgs(int64(3), int64(7)).
@@ -33,6 +33,9 @@ func TestPostRepositoryListProfilePosts(t *testing.T) {
 	}
 	if len(posts) != 1 || posts[0].PostID != 1 {
 		t.Fatalf("unexpected posts: %+v", posts)
+	}
+	if posts[0].LikesCount != 4 || !posts[0].IsLiked {
+		t.Fatalf("unexpected likes state: %+v", posts[0])
 	}
 }
 
@@ -47,38 +50,9 @@ func TestPostRepositoryGetByID(t *testing.T) {
 	now := time.Date(2026, 4, 15, 10, 0, 0, 0, time.UTC)
 
 	postRows := sqlmock.NewRows([]string{
-		"post_id", "trainer_id", "min_tier_id", "title", "text_content", "created_at", "updated_at", "can_view",
-	}).AddRow(int64(10), int64(3), nil, "title", "content", now, now, true)
-	mock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT
-			p.post_id,
-			p.trainer_id,
-			p.min_tier_id,
-			p.title,
-			p.text_content,
-			p.created_at,
-			p.updated_at,
-			CASE
-				WHEN p.min_tier_id IS NULL THEN true
-				WHEN p.trainer_id = $2 THEN true
-				WHEN EXISTS (
-					SELECT 1
-					FROM user_subscription us
-					JOIN subscription_tier viewer_tier
-					  ON viewer_tier.subscription_tier_id = us.subscription_tier_id
-					JOIN subscription_tier post_tier
-					  ON post_tier.subscription_tier_id = p.min_tier_id
-					WHERE us.subscriber_user_id = $2
-					  AND us.expires_at > now()
-					  AND viewer_tier.trainer_id = p.trainer_id
-					  AND post_tier.trainer_id = p.trainer_id
-					  AND viewer_tier.level_rank >= post_tier.level_rank
-				) THEN true
-				ELSE false
-			END AS can_view
-		FROM post p
-		WHERE p.post_id = $1
-	`)).
+		"post_id", "trainer_id", "min_tier_id", "title", "text_content", "created_at", "updated_at", "likes_count", "is_liked", "can_view",
+	}).AddRow(int64(10), int64(3), nil, "title", "content", now, now, int64(2), true, true)
+	mock.ExpectQuery("SELECT\\s+p\\.post_id").
 		WithArgs(int64(10), int64(7)).
 		WillReturnRows(postRows)
 
@@ -99,6 +73,9 @@ func TestPostRepositoryGetByID(t *testing.T) {
 	}
 	if post.PostID != 10 || len(post.Attachments) != 1 {
 		t.Fatalf("unexpected post: %+v", post)
+	}
+	if post.LikesCount != 2 || !post.IsLiked {
+		t.Fatalf("unexpected likes state: %+v", post)
 	}
 }
 

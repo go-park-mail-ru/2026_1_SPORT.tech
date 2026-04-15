@@ -3,12 +3,14 @@ package domain
 import "time"
 
 type PostListItem struct {
-	PostID    int64
-	TrainerID int64
-	MinTierID *int64
-	Title     string
-	CreatedAt time.Time
-	CanView   bool
+	PostID     int64
+	TrainerID  int64
+	MinTierID  *int64
+	Title      string
+	CreatedAt  time.Time
+	CanView    bool
+	LikesCount int64
+	IsLiked    bool
 }
 
 type PostAttachment struct {
@@ -32,5 +34,7 @@ type Post struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	CanView     bool
+	LikesCount  int64
+	IsLiked     bool
 	Attachments []PostAttachment
 }

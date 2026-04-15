@@ -106,9 +106,7 @@ CREATE TABLE donation (
   currency           text NOT NULL CHECK (currency ~ '^[A-Z]{3}$'),
   message            text CHECK (message IS NULL OR char_length(message) <= 500),
   created_at         timestamptz NOT NULL DEFAULT now(),
-  updated_at         timestamptz NOT NULL DEFAULT now(),
-
-  CHECK (sender_user_id <> recipient_user_id)
+  updated_at         timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE post (
