@@ -64,14 +64,15 @@ func NewConfig(path string) (Config, error) {
 		config.Storage.Host = "minio"
 	}
 	if config.Storage.Port == "" {
-		config.Storage.Port = "9000"
+		config.Storage.Port = "8000"
 	}
 	if config.Storage.Bucket == "" {
 		config.Storage.Bucket = "avatars"
 	}
 	if config.Storage.PublicBaseURL == "" {
-		config.Storage.PublicBaseURL = "http://localhost:9000/avatars"
+		config.Storage.PublicBaseURL = "http://localhost:8000/avatars"
 	}
+	config.Storage.PublicBaseURL = getEnv("STORAGE_PUBLIC_BASE_URL", config.Storage.PublicBaseURL)
 	config.Storage.AccessKey = getEnv("MINIO_ACCESS_KEY", "minioadmin")
 	config.Storage.SecretKey = getEnv("MINIO_SECRET_KEY", "minioadmin")
 

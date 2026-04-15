@@ -15,12 +15,14 @@ type profilePostsResponse struct {
 }
 
 type postListItemDTO struct {
-	PostID    int64     `json:"post_id"`
-	TrainerID int64     `json:"trainer_id"`
-	MinTierID *int64    `json:"min_tier_id"`
-	Title     string    `json:"title"`
-	CreatedAt time.Time `json:"created_at"`
-	CanView   bool      `json:"can_view"`
+	PostID     int64     `json:"post_id"`
+	TrainerID  int64     `json:"trainer_id"`
+	MinTierID  *int64    `json:"min_tier_id"`
+	Title      string    `json:"title"`
+	CreatedAt  time.Time `json:"created_at"`
+	CanView    bool      `json:"can_view"`
+	LikesCount int64     `json:"likes_count"`
+	IsLiked    bool      `json:"is_liked"`
 }
 
 func (handler *Handler) handleGetProfilePosts(writer http.ResponseWriter, request *http.Request) {
@@ -60,12 +62,14 @@ func (handler *Handler) handleGetProfilePosts(writer http.ResponseWriter, reques
 
 	for _, post := range posts {
 		response.Posts = append(response.Posts, postListItemDTO{
-			PostID:    post.PostID,
-			TrainerID: post.TrainerID,
-			MinTierID: post.MinTierID,
-			Title:     post.Title,
-			CreatedAt: post.CreatedAt,
-			CanView:   post.CanView,
+			PostID:     post.PostID,
+			TrainerID:  post.TrainerID,
+			MinTierID:  post.MinTierID,
+			Title:      post.Title,
+			CreatedAt:  post.CreatedAt,
+			CanView:    post.CanView,
+			LikesCount: post.LikesCount,
+			IsLiked:    post.IsLiked,
 		})
 	}
 

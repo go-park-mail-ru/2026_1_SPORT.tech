@@ -52,7 +52,7 @@ func (handler *Handler) handlePostProfileDonation(writer http.ResponseWriter, re
 		return
 	}
 
-	validationErrors := validateDonationRequest(senderUserID, recipientUserID, donationRequest)
+	validationErrors := validateDonationRequest(donationRequest)
 	if len(validationErrors) > 0 {
 		writeValidationError(writer, validationErrors)
 		return
@@ -78,15 +78,8 @@ func (handler *Handler) handlePostProfileDonation(writer http.ResponseWriter, re
 	writeJSON(writer, http.StatusCreated, newDonationResponse(donation))
 }
 
-func validateDonationRequest(senderUserID int64, recipientUserID int64, donationRequest donationRequest) []validationErrorField {
+func validateDonationRequest(donationRequest donationRequest) []validationErrorField {
 	validationErrors := make([]validationErrorField, 0)
-
-	if senderUserID == recipientUserID {
-		validationErrors = append(validationErrors, validationErrorField{
-			Field:   "user_id",
-			Message: "Нельзя отправить пожертвование самому себе",
-		})
-	}
 
 	if donationRequest.AmountValue < 1 {
 		validationErrors = append(validationErrors, validationErrorField{

@@ -321,6 +321,41 @@ components:
         avatar_url:
           type: string
           nullable: true
+        trainer_details:
+          allOf:
+            - $ref: "#/components/schemas/TrainerProfileDetails"
+          nullable: true
+
+    TrainerProfileSport:
+      type: object
+      required: [sport_type_id, experience_years]
+      properties:
+        sport_type_id:
+          type: integer
+          format: int64
+        experience_years:
+          type: integer
+          minimum: 0
+        sports_rank:
+          type: string
+          nullable: true
+          maxLength: 100
+
+    TrainerProfileDetails:
+      type: object
+      required: [career_since_date, sports]
+      properties:
+        education_degree:
+          type: string
+          nullable: true
+          maxLength: 255
+        career_since_date:
+          type: string
+          format: date
+        sports:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainerProfileSport"
 
     UpdateProfileRequest:
       type: object
@@ -1031,6 +1066,13 @@ paths:
                     last_name: Doe
                     bio: Тренер по бегу
                     avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
+                    trainer_details:
+                      education_degree: Bachelor of Sports Science
+                      career_since_date: "2020-01-01"
+                      sports:
+                        - sport_type_id: 1
+                          experience_years: 5
+                          sports_rank: КМС
         "404":
           description: Пользователь не найден
           content:

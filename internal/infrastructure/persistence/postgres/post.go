@@ -31,6 +31,8 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 			p.min_tier_id,
 			p.title,
 			p.created_at,
+			COUNT(pl.user_id) AS likes_count,
+			COALESCE(BOOL_OR(pl.user_id = $2), false) AS is_liked,
 			CASE
 				WHEN p.min_tier_id IS NULL THEN true
 				WHEN p.trainer_id = $2 THEN true
@@ -50,6 +52,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 				ELSE false
 			END AS can_view
 		FROM post p
+		LEFT JOIN post_like pl ON pl.post_id = p.post_id
 		WHERE p.trainer_id = $1
 		  AND (
 			p.min_tier_id IS NULL
@@ -68,6 +71,7 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 				  AND viewer_tier.level_rank >= post_tier.level_rank
 			)
 		  )
+		GROUP BY p.post_id, p.trainer_id, p.min_tier_id, p.title, p.created_at
 		ORDER BY p.created_at DESC, p.post_id DESC
 	`
 
@@ -90,6 +94,8 @@ func (repository *PostRepository) ListProfilePosts(ctx context.Context, profileU
 			&minTierID,
 			&post.Title,
 			&post.CreatedAt,
+			&post.LikesCount,
+			&post.IsLiked,
 			&post.CanView,
 		); err != nil {
 			return nil, err
@@ -119,6 +125,8 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 			p.text_content,
 			p.created_at,
 			p.updated_at,
+			COUNT(pl.user_id) AS likes_count,
+			COALESCE(BOOL_OR(pl.user_id = $2), false) AS is_liked,
 			CASE
 				WHEN p.min_tier_id IS NULL THEN true
 				WHEN p.trainer_id = $2 THEN true
@@ -138,7 +146,9 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 				ELSE false
 			END AS can_view
 		FROM post p
+		LEFT JOIN post_like pl ON pl.post_id = p.post_id
 		WHERE p.post_id = $1
+		GROUP BY p.post_id, p.trainer_id, p.min_tier_id, p.title, p.text_content, p.created_at, p.updated_at
 	`
 
 	var (
@@ -154,6 +164,8 @@ func (repository *PostRepository) GetByID(ctx context.Context, postID int64, cur
 		&post.TextContent,
 		&post.CreatedAt,
 		&post.UpdatedAt,
+		&post.LikesCount,
+		&post.IsLiked,
 		&post.CanView,
 	)
 	if err != nil {
@@ -320,7 +332,7 @@ func (repository *PostRepository) Create(ctx context.Context, trainerID int64, c
 		command.Title,
 		command.TextContent,
 	).Scan(&postID); err != nil {
-		return 0, Error(err)
+		return 0, mapPostError(err)
 	}
 
 	const createAttachmentQuery = `
