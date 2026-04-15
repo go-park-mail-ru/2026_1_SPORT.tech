@@ -34,3 +34,17 @@ func TestRandomObjectIDLengthAndUniqueness(t *testing.T) {
 		t.Fatal("expected random object ids to differ")
 	}
 }
+
+func TestAvatarObjectName(t *testing.T) {
+	storage := &AvatarStorage{bucket: "avatars"}
+
+	objectName := storage.avatarObjectName("http://example.com/avatars/users/7/avatar.jpg")
+	if objectName != "users/7/avatar.jpg" {
+		t.Fatalf("unexpected object name: %s", objectName)
+	}
+
+	objectName = storage.avatarObjectName("http://example.com/files/users/7/avatar.jpg")
+	if objectName != "" {
+		t.Fatalf("expected empty object name, got %s", objectName)
+	}
+}

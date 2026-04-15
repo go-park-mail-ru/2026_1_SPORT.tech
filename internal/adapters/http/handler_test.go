@@ -48,6 +48,7 @@ type userUseCaseStub struct {
 	authenticateFunc    func(ctx context.Context, email string, password string) (domain.User, error)
 	updateProfileFunc   func(ctx context.Context, userID int64, command usecase.UpdateProfileCommand) (domain.User, error)
 	uploadAvatarFunc    func(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (domain.User, error)
+	deleteAvatarFunc    func(ctx context.Context, userID int64) error
 }
 
 func (stub *userUseCaseStub) GetByID(ctx context.Context, userID int64) (domain.User, error) {
@@ -67,6 +68,9 @@ func (stub *userUseCaseStub) UpdateProfile(ctx context.Context, userID int64, co
 }
 func (stub *userUseCaseStub) UploadAvatar(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (domain.User, error) {
 	return stub.uploadAvatarFunc(ctx, userID, fileName, contentType, file, size)
+}
+func (stub *userUseCaseStub) DeleteAvatar(ctx context.Context, userID int64) error {
+	return stub.deleteAvatarFunc(ctx, userID)
 }
 
 type postUseCaseStub struct {
@@ -671,6 +675,27 @@ func TestProfileAndPostHandlers(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		handler.handlePostProfileAvatar(recorder, request)
 		if recorder.Code != http.StatusOK {
+			t.Fatalf("unexpected response: %d %s", recorder.Code, recorder.Body.String())
+		}
+	})
+
+	t.Run("delete avatar success", func(t *testing.T) {
+		handler := &Handler{
+			userUseCase: &userUseCaseStub{
+				deleteAvatarFunc: func(ctx context.Context, userID int64) error {
+					if userID != 7 {
+						t.Fatalf("unexpected user id: %d", userID)
+					}
+					return nil
+				},
+			},
+		}
+
+		request := httptest.NewRequest(http.MethodDelete, "/profiles/me/avatar", nil)
+		request = request.WithContext(context.WithValue(request.Context(), userIDContextKey, int64(7)))
+		recorder := httptest.NewRecorder()
+		handler.handleDeleteProfileAvatar(recorder, request)
+		if recorder.Code != http.StatusNoContent {
 			t.Fatalf("unexpected response: %d %s", recorder.Code, recorder.Body.String())
 		}
 	})

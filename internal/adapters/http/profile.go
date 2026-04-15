@@ -185,6 +185,28 @@ func (handler *Handler) handlePostProfileAvatar(writer http.ResponseWriter, requ
 	})
 }
 
+func (handler *Handler) handleDeleteProfileAvatar(writer http.ResponseWriter, request *http.Request) {
+	userID, ok := userIDFromContext(request.Context())
+	if !ok {
+		writeInternalError(writer)
+		return
+	}
+
+	err := handler.userUseCase.DeleteAvatar(request.Context(), userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, usecase.ErrUserNotFound):
+			writeUnauthorized(writer)
+			return
+		default:
+			writeInternalError(writer)
+			return
+		}
+	}
+
+	writeNoContent(writer)
+}
+
 func (handler *Handler) newProfileResponse(user domain.User, isMe bool) profileResponse {
 	var trainerDetails *trainerDetailsResponse
 	if user.TrainerDetails != nil {

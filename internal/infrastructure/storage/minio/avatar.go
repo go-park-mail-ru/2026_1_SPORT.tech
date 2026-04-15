@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"net/url"
 	"strings"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/infrastructure/config"
@@ -59,6 +60,15 @@ func (storage *AvatarStorage) UploadAvatar(
 	return storage.publicBaseURL + "/" + objectName, nil
 }
 
+func (storage *AvatarStorage) DeleteAvatar(ctx context.Context, avatarURL string) error {
+	objectName := storage.avatarObjectName(avatarURL)
+	if objectName == "" {
+		return nil
+	}
+
+	return storage.client.RemoveObject(ctx, storage.bucket, objectName, minio.RemoveObjectOptions{})
+}
+
 func (storage *AvatarStorage) ensureBucket(ctx context.Context) error {
 	exists, err := storage.client.BucketExists(ctx, storage.bucket)
 	if err != nil {
@@ -97,6 +107,21 @@ func avatarExtension(contentType string, _ string) string {
 	default:
 		return ""
 	}
+}
+
+func (storage *AvatarStorage) avatarObjectName(avatarURL string) string {
+	parsedURL, err := url.Parse(avatarURL)
+	if err != nil {
+		return ""
+	}
+
+	path := strings.Trim(parsedURL.Path, "/")
+	bucketPrefix := strings.Trim(storage.bucket, "/") + "/"
+	if strings.HasPrefix(path, bucketPrefix) {
+		return strings.TrimPrefix(path, bucketPrefix)
+	}
+
+	return ""
 }
 
 func randomObjectID() string {

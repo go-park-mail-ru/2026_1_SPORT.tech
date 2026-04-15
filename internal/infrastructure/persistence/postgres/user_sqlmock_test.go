@@ -214,6 +214,29 @@ func TestUserRepositoryUpdateAvatarURLReturnsNotFound(t *testing.T) {
 	}
 }
 
+func TestUserRepositoryClearAvatarURL(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock.New: %v", err)
+	}
+	defer db.Close()
+
+	repository := NewUserRepository(db, nil)
+
+	mock.ExpectExec(regexp.QuoteMeta(`
+		UPDATE user_profile
+		SET avatar_url = NULL,
+		    updated_at = now()
+		WHERE user_id = $1
+	`)).
+		WithArgs(int64(5)).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	if err := repository.ClearAvatarURL(context.Background(), 5); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestMapUserConflictError(t *testing.T) {
 	tests := []struct {
 		err    error

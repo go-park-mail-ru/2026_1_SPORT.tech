@@ -1169,6 +1169,21 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "422":
           $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [profile]
+      summary: Удаление аватарки
+      description: Удаляет avatar текущего пользователя и очищает avatar_url.
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Аватарка удалена
+        "401":
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /profiles/{user_id}/posts:
     get:

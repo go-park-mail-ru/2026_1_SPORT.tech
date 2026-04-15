@@ -38,8 +38,10 @@ type userRepository interface {
 	CreateTrainer(ctx context.Context, params CreateTrainerCommand) (int64, error)
 	UpdateProfile(ctx context.Context, userID int64, command UpdateProfileCommand) error
 	UpdateAvatarURL(ctx context.Context, userID int64, avatarURL string) error
+	ClearAvatarURL(ctx context.Context, userID int64) error
 }
 
 type avatarStorage interface {
 	UploadAvatar(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
+	DeleteAvatar(ctx context.Context, avatarURL string) error
 }

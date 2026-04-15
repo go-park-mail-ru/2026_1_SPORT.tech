@@ -55,6 +55,7 @@ func (handler *Handler) Routes() http.Handler {
 	mux.HandleFunc("GET /profiles/{user_id}", handler.handleGetProfile)
 	mux.Handle("PATCH /profiles/me", handler.AuthMiddleware(http.HandlerFunc(handler.handlePatchProfileMe)))
 	mux.Handle("POST /profiles/me/avatar", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostProfileAvatar)))
+	mux.Handle("DELETE /profiles/me/avatar", handler.AuthMiddleware(http.HandlerFunc(handler.handleDeleteProfileAvatar)))
 	mux.HandleFunc("GET /profiles/{user_id}/posts", handler.handleGetProfilePosts)
 	mux.Handle("POST /profiles/{user_id}/donations", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostProfileDonation)))
 	mux.HandleFunc("GET /posts/{post_id}", handler.handleGetPost)

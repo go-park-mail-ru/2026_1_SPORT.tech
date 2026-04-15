@@ -216,3 +216,32 @@ func (useCase *UserUseCase) UploadAvatar(
 
 	return useCase.GetByID(ctx, userID)
 }
+
+func (useCase *UserUseCase) DeleteAvatar(ctx context.Context, userID int64) error {
+	user, err := useCase.GetByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.AvatarURL == nil {
+		return nil
+	}
+
+	if useCase.avatarStorage == nil {
+		return errors.New("avatar storage is not configured")
+	}
+
+	if err := useCase.avatarStorage.DeleteAvatar(ctx, *user.AvatarURL); err != nil {
+		return err
+	}
+
+	if err := useCase.userRepository.ClearAvatarURL(ctx, userID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrUserNotFound
+		}
+
+		return err
+	}
+
+	return nil
+}

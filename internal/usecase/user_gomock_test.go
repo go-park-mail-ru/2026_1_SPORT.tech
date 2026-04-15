@@ -229,6 +229,58 @@ func TestUserUseCaseUploadAvatar(t *testing.T) {
 	})
 }
 
+func TestUserUseCaseDeleteAvatar(t *testing.T) {
+	t.Run("user not found", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		repository := NewMockuserRepository(ctrl)
+		storage := NewMockavatarStorage(ctrl)
+
+		repository.EXPECT().GetByID(gomock.Any(), int64(9)).Return(domain.User{}, sql.ErrNoRows)
+
+		useCase := NewUserUseCase(repository, storage)
+
+		err := useCase.DeleteAvatar(context.Background(), 9)
+		if !errors.Is(err, ErrUserNotFound) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, ErrUserNotFound)
+		}
+	})
+
+	t.Run("no avatar is no-op", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		repository := NewMockuserRepository(ctrl)
+		storage := NewMockavatarStorage(ctrl)
+
+		repository.EXPECT().GetByID(gomock.Any(), int64(9)).Return(domain.User{ID: 9, Username: "john"}, nil)
+
+		useCase := NewUserUseCase(repository, storage)
+
+		if err := useCase.DeleteAvatar(context.Background(), 9); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("success", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		repository := NewMockuserRepository(ctrl)
+		storage := NewMockavatarStorage(ctrl)
+
+		avatarURL := "http://storage/avatars/users/9/file.jpg"
+		repository.EXPECT().GetByID(gomock.Any(), int64(9)).Return(domain.User{
+			ID:        9,
+			Username:  "john",
+			AvatarURL: &avatarURL,
+		}, nil)
+		storage.EXPECT().DeleteAvatar(gomock.Any(), avatarURL).Return(nil)
+		repository.EXPECT().ClearAvatarURL(gomock.Any(), int64(9)).Return(nil)
+
+		useCase := NewUserUseCase(repository, storage)
+
+		if err := useCase.DeleteAvatar(context.Background(), 9); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+}
+
 func stringPtr(value string) *string {
 	return &value
 }

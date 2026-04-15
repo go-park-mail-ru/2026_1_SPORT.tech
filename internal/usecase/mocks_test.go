@@ -364,6 +364,20 @@ func (mr *MockuserRepositoryMockRecorder) GetByID(ctx, userID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockuserRepository)(nil).GetByID), ctx, userID)
 }
 
+// ClearAvatarURL mocks base method.
+func (m *MockuserRepository) ClearAvatarURL(ctx context.Context, userID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClearAvatarURL", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ClearAvatarURL indicates an expected call of ClearAvatarURL.
+func (mr *MockuserRepositoryMockRecorder) ClearAvatarURL(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearAvatarURL", reflect.TypeOf((*MockuserRepository)(nil).ClearAvatarURL), ctx, userID)
+}
+
 // UpdateAvatarURL mocks base method.
 func (m *MockuserRepository) UpdateAvatarURL(ctx context.Context, userID int64, avatarURL string) error {
 	m.ctrl.T.Helper()
@@ -413,6 +427,20 @@ func NewMockavatarStorage(ctrl *gomock.Controller) *MockavatarStorage {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockavatarStorage) EXPECT() *MockavatarStorageMockRecorder {
 	return m.recorder
+}
+
+// DeleteAvatar mocks base method.
+func (m *MockavatarStorage) DeleteAvatar(ctx context.Context, avatarURL string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAvatar", ctx, avatarURL)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteAvatar indicates an expected call of DeleteAvatar.
+func (mr *MockavatarStorageMockRecorder) DeleteAvatar(ctx, avatarURL interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvatar", reflect.TypeOf((*MockavatarStorage)(nil).DeleteAvatar), ctx, avatarURL)
 }
 
 // UploadAvatar mocks base method.

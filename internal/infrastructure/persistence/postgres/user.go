@@ -458,6 +458,37 @@ func (repository *UserRepository) UpdateAvatarURL(ctx context.Context, userID in
 	return nil
 }
 
+func (repository *UserRepository) ClearAvatarURL(ctx context.Context, userID int64) error {
+	const query = `
+		UPDATE user_profile
+		SET avatar_url = NULL,
+		    updated_at = now()
+		WHERE user_id = $1
+	`
+
+	result, err := execContext(
+		ctx,
+		repository.db,
+		repository.logger,
+		"user.clear_avatar_url",
+		query,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
 func mapUserConflictError(err error) error {
 	var pqError *pq.Error
 	if !errors.As(err, &pqError) {

@@ -25,6 +25,7 @@ type userUseCase interface {
 	Authenticate(ctx context.Context, email string, password string) (domain.User, error)
 	UpdateProfile(ctx context.Context, userID int64, command usecase.UpdateProfileCommand) (domain.User, error)
 	UploadAvatar(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (domain.User, error)
+	DeleteAvatar(ctx context.Context, userID int64) error
 }
 
 type postUseCase interface {
