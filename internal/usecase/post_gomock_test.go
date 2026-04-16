@@ -1,4 +1,4 @@
-package usecase
+package usecase_test
 
 import (
 	"context"
@@ -7,44 +7,46 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/gen"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 	"github.com/golang/mock/gomock"
 )
 
 func TestPostUseCaseGetByID(t *testing.T) {
 	t.Run("maps not found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		repository.EXPECT().GetByID(gomock.Any(), int64(10), int64(2)).Return(domain.Post{}, sql.ErrNoRows)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		_, err := useCase.GetByID(context.Background(), 10, 2)
-		if !errors.Is(err, ErrPostNotFound) {
-			t.Fatalf("unexpected error: got %v, expect %v", err, ErrPostNotFound)
+		if !errors.Is(err, usecase.ErrPostNotFound) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrPostNotFound)
 		}
 	})
 
 	t.Run("maps forbidden", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		repository.EXPECT().GetByID(gomock.Any(), int64(10), int64(2)).Return(domain.Post{CanView: false}, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		_, err := useCase.GetByID(context.Background(), 10, 2)
-		if !errors.Is(err, ErrPostForbidden) {
-			t.Fatalf("unexpected error: got %v, expect %v", err, ErrPostForbidden)
+		if !errors.Is(err, usecase.ErrPostForbidden) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrPostForbidden)
 		}
 	})
 
 	t.Run("success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		expected := domain.Post{PostID: 10, TrainerID: 2, CanView: true}
 		repository.EXPECT().GetByID(gomock.Any(), int64(10), int64(2)).Return(expected, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		post, err := useCase.GetByID(context.Background(), 10, 2)
 		if err != nil {
@@ -59,14 +61,14 @@ func TestPostUseCaseGetByID(t *testing.T) {
 func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 	t.Run("create success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
-		command := CreatePostCommand{Title: "hello", TextContent: "world"}
+		repository := gen.NewMockpostRepository(ctrl)
+		command := usecase.CreatePostCommand{Title: "hello", TextContent: "world"}
 		expected := domain.Post{PostID: 20, TrainerID: 7, CanView: true}
 
 		repository.EXPECT().Create(gomock.Any(), int64(7), command).Return(int64(20), nil)
 		repository.EXPECT().GetByID(gomock.Any(), int64(20), int64(7)).Return(expected, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		post, err := useCase.Create(context.Background(), 7, command)
 		if err != nil {
@@ -79,28 +81,28 @@ func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 
 	t.Run("create maps tier error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
-		repository.EXPECT().Create(gomock.Any(), int64(7), gomock.Any()).Return(int64(0), ErrPostTierNotFound)
+		repository := gen.NewMockpostRepository(ctrl)
+		repository.EXPECT().Create(gomock.Any(), int64(7), gomock.Any()).Return(int64(0), usecase.ErrPostTierNotFound)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
-		_, err := useCase.Create(context.Background(), 7, CreatePostCommand{})
-		if !errors.Is(err, ErrPostTierNotFound) {
-			t.Fatalf("unexpected error: got %v, expect %v", err, ErrPostTierNotFound)
+		_, err := useCase.Create(context.Background(), 7, usecase.CreatePostCommand{})
+		if !errors.Is(err, usecase.ErrPostTierNotFound) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrPostTierNotFound)
 		}
 	})
 
 	t.Run("update success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		title := "updated"
-		command := UpdatePostCommand{Title: &title}
+		command := usecase.UpdatePostCommand{Title: &title}
 		expected := domain.Post{PostID: 21, TrainerID: 7, CanView: true, Title: title}
 
 		repository.EXPECT().Update(gomock.Any(), int64(7), int64(21), command).Return(nil)
 		repository.EXPECT().GetByID(gomock.Any(), int64(21), int64(7)).Return(expected, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		post, err := useCase.Update(context.Background(), 7, 21, command)
 		if err != nil {
@@ -117,20 +119,20 @@ func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 			repoErr   error
 			expectErr error
 		}{
-			{name: "not found", repoErr: sql.ErrNoRows, expectErr: ErrPostNotFound},
-			{name: "forbidden", repoErr: ErrPostForbidden, expectErr: ErrPostForbidden},
-			{name: "tier", repoErr: ErrPostTierNotFound, expectErr: ErrPostTierNotFound},
+			{name: "not found", repoErr: sql.ErrNoRows, expectErr: usecase.ErrPostNotFound},
+			{name: "forbidden", repoErr: usecase.ErrPostForbidden, expectErr: usecase.ErrPostForbidden},
+			{name: "tier", repoErr: usecase.ErrPostTierNotFound, expectErr: usecase.ErrPostTierNotFound},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				ctrl := gomock.NewController(t)
-				repository := NewMockpostRepository(ctrl)
+				repository := gen.NewMockpostRepository(ctrl)
 				repository.EXPECT().Update(gomock.Any(), int64(7), int64(21), gomock.Any()).Return(tt.repoErr)
 
-				useCase := NewPostUseCase(repository)
+				useCase := usecase.NewPostUseCase(repository)
 
-				_, err := useCase.Update(context.Background(), 7, 21, UpdatePostCommand{})
+				_, err := useCase.Update(context.Background(), 7, 21, usecase.UpdatePostCommand{})
 				if !errors.Is(err, tt.expectErr) {
 					t.Fatalf("unexpected error: got %v, expect %v", err, tt.expectErr)
 				}
@@ -144,17 +146,17 @@ func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 			repoErr   error
 			expectErr error
 		}{
-			{name: "not found", repoErr: sql.ErrNoRows, expectErr: ErrPostNotFound},
-			{name: "forbidden", repoErr: ErrPostForbidden, expectErr: ErrPostForbidden},
+			{name: "not found", repoErr: sql.ErrNoRows, expectErr: usecase.ErrPostNotFound},
+			{name: "forbidden", repoErr: usecase.ErrPostForbidden, expectErr: usecase.ErrPostForbidden},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				ctrl := gomock.NewController(t)
-				repository := NewMockpostRepository(ctrl)
+				repository := gen.NewMockpostRepository(ctrl)
 				repository.EXPECT().Delete(gomock.Any(), int64(7), int64(21)).Return(tt.repoErr)
 
-				useCase := NewPostUseCase(repository)
+				useCase := usecase.NewPostUseCase(repository)
 
 				err := useCase.Delete(context.Background(), 7, 21)
 				if !errors.Is(err, tt.expectErr) {
@@ -166,11 +168,11 @@ func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 
 	t.Run("set like success", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		expected := domain.PostLikeStatus{PostID: 21, LikesCount: 3, IsLiked: true}
 		repository.EXPECT().SetLike(gomock.Any(), int64(21), int64(7)).Return(expected, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		status, err := useCase.SetLike(context.Background(), 21, 7)
 		if err != nil {
@@ -183,24 +185,24 @@ func TestPostUseCaseCreateUpdateDeleteAndLikes(t *testing.T) {
 
 	t.Run("delete like not found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		repository.EXPECT().DeleteLike(gomock.Any(), int64(21), int64(7)).Return(domain.PostLikeStatus{}, sql.ErrNoRows)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		_, err := useCase.DeleteLike(context.Background(), 21, 7)
-		if !errors.Is(err, ErrPostNotFound) {
-			t.Fatalf("unexpected error: got %v, expect %v", err, ErrPostNotFound)
+		if !errors.Is(err, usecase.ErrPostNotFound) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrPostNotFound)
 		}
 	})
 
 	t.Run("list profile posts passthrough", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockpostRepository(ctrl)
+		repository := gen.NewMockpostRepository(ctrl)
 		expected := []domain.PostListItem{{PostID: 1, Title: "one", CreatedAt: time.Now()}}
 		repository.EXPECT().ListProfilePosts(gomock.Any(), int64(3), int64(7)).Return(expected, nil)
 
-		useCase := NewPostUseCase(repository)
+		useCase := usecase.NewPostUseCase(repository)
 
 		posts, err := useCase.ListProfilePosts(context.Background(), 3, 7)
 		if err != nil {

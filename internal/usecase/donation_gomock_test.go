@@ -1,4 +1,4 @@
-package usecase
+package usecase_test
 
 import (
 	"context"
@@ -6,19 +6,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/gen"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
 	"github.com/golang/mock/gomock"
 )
 
 func TestDonationUseCaseCreate(t *testing.T) {
 	t.Run("success uses default scale", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockdonationRepository(ctrl)
+		repository := gen.NewMockdonationRepository(ctrl)
 		message := "thanks"
 		now := time.Now()
 
 		repository.EXPECT().
-			Create(gomock.Any(), CreateDonationParams{
+			Create(gomock.Any(), usecase.CreateDonationParams{
 				SenderUserID:    1,
 				RecipientUserID: 2,
 				AmountMantissa:  5000,
@@ -37,9 +39,9 @@ func TestDonationUseCaseCreate(t *testing.T) {
 				UpdatedAt:       now,
 			}, nil)
 
-		useCase := NewDonationUseCase(repository)
+		useCase := usecase.NewDonationUseCase(repository)
 
-		donation, err := useCase.Create(context.Background(), CreateDonationCommand{
+		donation, err := useCase.Create(context.Background(), usecase.CreateDonationCommand{
 			SenderUserID:    1,
 			RecipientUserID: 2,
 			AmountValue:     5000,
@@ -56,10 +58,10 @@ func TestDonationUseCaseCreate(t *testing.T) {
 
 	t.Run("success uses jpy scale zero", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockdonationRepository(ctrl)
+		repository := gen.NewMockdonationRepository(ctrl)
 
 		repository.EXPECT().
-			Create(gomock.Any(), CreateDonationParams{
+			Create(gomock.Any(), usecase.CreateDonationParams{
 				SenderUserID:    1,
 				RecipientUserID: 2,
 				AmountMantissa:  5000,
@@ -68,9 +70,9 @@ func TestDonationUseCaseCreate(t *testing.T) {
 			}).
 			Return(domain.Donation{DonationID: 11}, nil)
 
-		useCase := NewDonationUseCase(repository)
+		useCase := usecase.NewDonationUseCase(repository)
 
-		_, err := useCase.Create(context.Background(), CreateDonationCommand{
+		_, err := useCase.Create(context.Background(), usecase.CreateDonationCommand{
 			SenderUserID:    1,
 			RecipientUserID: 2,
 			AmountValue:     5000,
@@ -83,14 +85,14 @@ func TestDonationUseCaseCreate(t *testing.T) {
 
 	t.Run("maps recipient not found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
-		repository := NewMockdonationRepository(ctrl)
-		repository.EXPECT().Create(gomock.Any(), gomock.Any()).Return(domain.Donation{}, ErrUserNotFound)
+		repository := gen.NewMockdonationRepository(ctrl)
+		repository.EXPECT().Create(gomock.Any(), gomock.Any()).Return(domain.Donation{}, usecase.ErrUserNotFound)
 
-		useCase := NewDonationUseCase(repository)
+		useCase := usecase.NewDonationUseCase(repository)
 
-		_, err := useCase.Create(context.Background(), CreateDonationCommand{})
-		if !errors.Is(err, ErrDonationRecipientNotFound) {
-			t.Fatalf("unexpected error: got %v, expect %v", err, ErrDonationRecipientNotFound)
+		_, err := useCase.Create(context.Background(), usecase.CreateDonationCommand{})
+		if !errors.Is(err, usecase.ErrDonationRecipientNotFound) {
+			t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrDonationRecipientNotFound)
 		}
 	})
 }
