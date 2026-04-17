@@ -16,6 +16,7 @@ var ErrEmailExists = errors.New("email exists")
 var ErrUsernameExists = errors.New("username exists")
 var ErrInvalidCredentials = errors.New("invalid credentials")
 var ErrSportTypeNotFound = errors.New("sport type not found")
+var ErrTrainerProfileForbidden = errors.New("trainer profile forbidden")
 
 type RegisterTrainerSportCommand struct {
 	SportTypeID     int64
@@ -62,14 +63,20 @@ type RegisterTrainerCommand struct {
 }
 
 type UpdateProfileCommand struct {
-	HasUsername  bool
-	Username     string
-	HasFirstName bool
-	FirstName    string
-	HasLastName  bool
-	LastName     string
-	HasBio       bool
-	Bio          *string
+	HasUsername        bool
+	Username           string
+	HasFirstName       bool
+	FirstName          string
+	HasLastName        bool
+	LastName           string
+	HasBio             bool
+	Bio                *string
+	HasEducationDegree bool
+	EducationDegree    *string
+	HasCareerSinceDate bool
+	CareerSinceDate    time.Time
+	HasSports          bool
+	Sports             []RegisterTrainerSportCommand
 }
 
 type UserUseCase struct {
@@ -174,6 +181,16 @@ func (useCase *UserUseCase) Authenticate(ctx context.Context, email string, pass
 }
 
 func (useCase *UserUseCase) UpdateProfile(ctx context.Context, userID int64, command UpdateProfileCommand) (domain.User, error) {
+	if command.HasEducationDegree || command.HasCareerSinceDate || command.HasSports {
+		user, err := useCase.GetByID(ctx, userID)
+		if err != nil {
+			return domain.User{}, err
+		}
+		if !user.IsTrainer {
+			return domain.User{}, ErrTrainerProfileForbidden
+		}
+	}
+
 	err := useCase.userRepository.UpdateProfile(ctx, userID, command)
 	if err != nil {
 		switch {
@@ -181,6 +198,10 @@ func (useCase *UserUseCase) UpdateProfile(ctx context.Context, userID int64, com
 			return domain.User{}, ErrUserNotFound
 		case errors.Is(err, ErrUsernameExists):
 			return domain.User{}, ErrUsernameExists
+		case errors.Is(err, ErrSportTypeNotFound):
+			return domain.User{}, ErrSportTypeNotFound
+		case errors.Is(err, ErrTrainerProfileForbidden):
+			return domain.User{}, ErrTrainerProfileForbidden
 		default:
 			return domain.User{}, err
 		}

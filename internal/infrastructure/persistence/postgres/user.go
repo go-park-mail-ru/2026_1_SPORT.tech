@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -421,6 +422,115 @@ func (repository *UserRepository) UpdateProfile(ctx context.Context, userID int6
 		updatedBio,
 	); err != nil {
 		return mapUserConflictError(err)
+	}
+
+	if command.HasEducationDegree || command.HasCareerSinceDate || command.HasSports {
+		const getTrainerDetailsForUpdateQuery = `
+			SELECT education_degree, career_since_date
+			FROM trainer_details
+			WHERE trainer_user_id = $1
+			FOR UPDATE
+		`
+
+		var (
+			currentEducationDegree sql.NullString
+			currentCareerSinceDate time.Time
+		)
+
+		err = queryRowContext(
+			ctx,
+			tx,
+			repository.logger,
+			"user.get_trainer_details_for_update",
+			getTrainerDetailsForUpdateQuery,
+			userID,
+		).Scan(
+			&currentEducationDegree,
+			&currentCareerSinceDate,
+		)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return usecase.ErrTrainerProfileForbidden
+			}
+			return err
+		}
+
+		var updatedEducationDegree any
+		if currentEducationDegree.Valid {
+			updatedEducationDegree = currentEducationDegree.String
+		}
+		if command.HasEducationDegree {
+			if command.EducationDegree == nil {
+				updatedEducationDegree = nil
+			} else {
+				updatedEducationDegree = *command.EducationDegree
+			}
+		}
+
+		updatedCareerSinceDate := currentCareerSinceDate
+		if command.HasCareerSinceDate {
+			updatedCareerSinceDate = command.CareerSinceDate
+		}
+
+		const updateTrainerDetailsQuery = `
+			UPDATE trainer_details
+			SET education_degree = $2,
+			    career_since_date = $3,
+			    updated_at = now()
+			WHERE trainer_user_id = $1
+		`
+
+		if _, err := execContext(
+			ctx,
+			tx,
+			repository.logger,
+			"user.update_trainer_details",
+			updateTrainerDetailsQuery,
+			userID,
+			updatedEducationDegree,
+			updatedCareerSinceDate,
+		); err != nil {
+			return err
+		}
+
+		if command.HasSports {
+			const deleteTrainerSportsQuery = `
+				DELETE FROM trainer_to_sport_type
+				WHERE trainer_id = $1
+			`
+
+			if _, err := execContext(
+				ctx,
+				tx,
+				repository.logger,
+				"user.delete_trainer_sports",
+				deleteTrainerSportsQuery,
+				userID,
+			); err != nil {
+				return err
+			}
+
+			const insertTrainerSportQuery = `
+				INSERT INTO trainer_to_sport_type (trainer_id, sport_type_id, experience_years, sports_rank)
+				VALUES ($1, $2, $3, $4)
+			`
+
+			for _, sport := range command.Sports {
+				if _, err := execContext(
+					ctx,
+					tx,
+					repository.logger,
+					"user.insert_trainer_sport",
+					insertTrainerSportQuery,
+					userID,
+					sport.SportTypeID,
+					sport.ExperienceYears,
+					sport.SportsRank,
+				); err != nil {
+					return mapUserConflictError(err)
+				}
+			}
+		}
 	}
 
 	return tx.Commit()

@@ -172,6 +172,93 @@ func TestUserRepositoryUpdateProfile(t *testing.T) {
 	}
 }
 
+func TestUserRepositoryUpdateProfileTrainerDetails(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock.New: %v", err)
+	}
+	defer db.Close()
+
+	repository := NewUserRepository(db, nil)
+	careerSinceDate := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	educationDegree := "Bachelor"
+	sportsRank := "КМС"
+
+	mock.ExpectBegin()
+	currentRows := sqlmock.NewRows([]string{"username", "first_name", "last_name", "bio"}).
+		AddRow("oldname", "John", "Doe", "old bio")
+	mock.ExpectQuery(regexp.QuoteMeta(`
+		SELECT username, first_name, last_name, bio
+		FROM user_profile
+		WHERE user_id = $1
+		FOR UPDATE
+	`)).
+		WithArgs(int64(5)).
+		WillReturnRows(currentRows)
+	mock.ExpectExec(regexp.QuoteMeta(`
+		UPDATE user_profile
+		SET username = $2,
+		    first_name = $3,
+		    last_name = $4,
+		    bio = $5,
+		    updated_at = now()
+		WHERE user_id = $1
+	`)).
+		WithArgs(int64(5), "oldname", "John", "Doe", "old bio").
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	trainerRows := sqlmock.NewRows([]string{"education_degree", "career_since_date"}).
+		AddRow("Old degree", careerSinceDate)
+	mock.ExpectQuery(regexp.QuoteMeta(`
+			SELECT education_degree, career_since_date
+			FROM trainer_details
+			WHERE trainer_user_id = $1
+			FOR UPDATE
+		`)).
+		WithArgs(int64(5)).
+		WillReturnRows(trainerRows)
+	mock.ExpectExec(regexp.QuoteMeta(`
+			UPDATE trainer_details
+			SET education_degree = $2,
+			    career_since_date = $3,
+			    updated_at = now()
+			WHERE trainer_user_id = $1
+		`)).
+		WithArgs(int64(5), educationDegree, careerSinceDate).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(regexp.QuoteMeta(`
+				DELETE FROM trainer_to_sport_type
+				WHERE trainer_id = $1
+			`)).
+		WithArgs(int64(5)).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(regexp.QuoteMeta(`
+				INSERT INTO trainer_to_sport_type (trainer_id, sport_type_id, experience_years, sports_rank)
+				VALUES ($1, $2, $3, $4)
+			`)).
+		WithArgs(int64(5), int64(1), 3, &sportsRank).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	err = repository.UpdateProfile(context.Background(), 5, usecase.UpdateProfileCommand{
+		HasEducationDegree: true,
+		EducationDegree:    &educationDegree,
+		HasCareerSinceDate: true,
+		CareerSinceDate:    careerSinceDate,
+		HasSports:          true,
+		Sports: []usecase.RegisterTrainerSportCommand{{
+			SportTypeID:     1,
+			ExperienceYears: 3,
+			SportsRank:      &sportsRank,
+		}},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet expectations: %v", err)
+	}
+}
+
 func TestUserRepositoryUpdateAvatarURL(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {

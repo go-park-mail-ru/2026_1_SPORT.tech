@@ -214,6 +214,15 @@ func TestProfileHelpers(t *testing.T) {
 		t.Fatal("expected unknown field error")
 	}
 
+	request = httptest.NewRequest(http.MethodPatch, "/profiles/me", strings.NewReader(`{"trainer_details":{"education_degree":"Bachelor","career_since_date":"2020-01-01","sports":[{"sport_type_id":1,"experience_years":3}]}}`))
+	command, validationErrors, err = decodeUpdateProfileRequest(request)
+	if err != nil || len(validationErrors) != 0 {
+		t.Fatalf("unexpected trainer details decode result: %v %+v", err, validationErrors)
+	}
+	if !command.HasEducationDegree || command.EducationDegree == nil || *command.EducationDegree != "Bachelor" || !command.HasCareerSinceDate || !command.HasSports || len(command.Sports) != 1 {
+		t.Fatalf("unexpected trainer command: %+v", command)
+	}
+
 	content, contentType, validationErrors, err := decodeAvatarFile(bytes.NewReader(minimalPNG()))
 	if err != nil || len(validationErrors) != 0 || contentType != "image/png" || len(content) == 0 {
 		t.Fatalf("unexpected avatar decode result: %v %+v %q", err, validationErrors, contentType)
@@ -622,12 +631,18 @@ func TestProfileAndPostHandlers(t *testing.T) {
 						Username:  command.Username,
 						FirstName: "John",
 						LastName:  "Doe",
+						IsTrainer: true,
+						TrainerDetails: &domain.TrainerDetails{
+							EducationDegree: command.EducationDegree,
+							CareerSinceDate: command.CareerSinceDate,
+							Sports:          []domain.TrainerSport{{SportTypeID: 1, ExperienceYears: 3}},
+						},
 					}, nil
 				},
 			},
 		}
 
-		request := httptest.NewRequest(http.MethodPatch, "/profiles/me", strings.NewReader(`{"username":"updated_user"}`))
+		request := httptest.NewRequest(http.MethodPatch, "/profiles/me", strings.NewReader(`{"username":"updated_user","trainer_details":{"education_degree":"Bachelor","career_since_date":"2020-01-01","sports":[{"sport_type_id":1,"experience_years":3}]}}`))
 		request = request.WithContext(context.WithValue(request.Context(), userIDContextKey, int64(7)))
 		recorder := httptest.NewRecorder()
 		handler.handlePatchProfileMe(recorder, request)

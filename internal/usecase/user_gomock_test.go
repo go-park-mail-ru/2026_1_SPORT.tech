@@ -158,6 +158,22 @@ func TestUserUseCaseUpdateProfileMapsUsernameExists(t *testing.T) {
 	}
 }
 
+func TestUserUseCaseUpdateProfileTrainerFieldsRequireTrainer(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	repository := gen.NewMockuserRepository(ctrl)
+	repository.EXPECT().GetByID(gomock.Any(), int64(5)).Return(domain.User{ID: 5, IsTrainer: false}, nil)
+
+	useCase := usecase.NewUserUseCase(repository, nil)
+
+	_, err := useCase.UpdateProfile(context.Background(), 5, usecase.UpdateProfileCommand{
+		HasCareerSinceDate: true,
+		CareerSinceDate:    time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+	})
+	if !errors.Is(err, usecase.ErrTrainerProfileForbidden) {
+		t.Fatalf("unexpected error: got %v, expect %v", err, usecase.ErrTrainerProfileForbidden)
+	}
+}
+
 func TestUserUseCaseUploadAvatar(t *testing.T) {
 	t.Run("storage not configured", func(t *testing.T) {
 		ctrl := gomock.NewController(t)

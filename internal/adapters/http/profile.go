@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/internal/usecase"
@@ -102,6 +103,15 @@ func (handler *Handler) handlePatchProfileMe(writer http.ResponseWriter, request
 			return
 		case errors.Is(err, usecase.ErrUsernameExists):
 			writeConflict(writer, "username_exists", "Username уже существует")
+			return
+		case errors.Is(err, usecase.ErrTrainerProfileForbidden):
+			writeForbidden(writer, "Только тренер может обновлять trainer_details")
+			return
+		case errors.Is(err, usecase.ErrSportTypeNotFound):
+			writeValidationError(writer, []validationErrorField{{
+				Field:   "trainer_details.sports",
+				Message: "Указан несуществующий вид спорта",
+			}})
 			return
 		default:
 			writeInternalError(writer)
@@ -259,7 +269,7 @@ func decodeUpdateProfileRequest(request *http.Request) (usecase.UpdateProfileCom
 
 	for field := range raw {
 		switch field {
-		case "username", "first_name", "last_name", "bio":
+		case "username", "first_name", "last_name", "bio", "trainer_details":
 		default:
 			return usecase.UpdateProfileCommand{}, nil, errors.New("unknown field")
 		}
@@ -328,6 +338,118 @@ func decodeUpdateProfileRequest(request *http.Request) (usecase.UpdateProfileCom
 					Field:   "bio",
 					Message: "Bio должен содержать не более 1000 символов",
 				})
+			}
+		}
+	}
+
+	if rawValue, ok := raw["trainer_details"]; ok {
+		var trainerDetailsRaw map[string]json.RawMessage
+		if err := json.Unmarshal(rawValue, &trainerDetailsRaw); err != nil {
+			return usecase.UpdateProfileCommand{}, nil, err
+		}
+
+		for field := range trainerDetailsRaw {
+			switch field {
+			case "education_degree", "career_since_date", "sports":
+			default:
+				return usecase.UpdateProfileCommand{}, nil, errors.New("unknown trainer_details field")
+			}
+		}
+
+		if rawEducationDegree, ok := trainerDetailsRaw["education_degree"]; ok {
+			command.HasEducationDegree = true
+			if !bytes.Equal(bytes.TrimSpace(rawEducationDegree), []byte("null")) {
+				var educationDegree string
+				if err := json.Unmarshal(rawEducationDegree, &educationDegree); err != nil {
+					return usecase.UpdateProfileCommand{}, nil, err
+				}
+
+				command.EducationDegree = &educationDegree
+				if len(educationDegree) > 255 {
+					validationErrors = append(validationErrors, validationErrorField{
+						Field:   "trainer_details.education_degree",
+						Message: "Образование должно содержать не более 255 символов",
+					})
+				}
+			}
+		}
+
+		if rawCareerSinceDate, ok := trainerDetailsRaw["career_since_date"]; ok {
+			command.HasCareerSinceDate = true
+
+			var careerSinceDateRaw string
+			if err := json.Unmarshal(rawCareerSinceDate, &careerSinceDateRaw); err != nil {
+				return usecase.UpdateProfileCommand{}, nil, err
+			}
+
+			careerSinceDate, err := time.Parse("2006-01-02", careerSinceDateRaw)
+			if err != nil {
+				validationErrors = append(validationErrors, validationErrorField{
+					Field:   "trainer_details.career_since_date",
+					Message: "Неверный формат даты",
+				})
+			} else if careerSinceDate.After(time.Now()) {
+				validationErrors = append(validationErrors, validationErrorField{
+					Field:   "trainer_details.career_since_date",
+					Message: "Дата начала карьеры не может быть в будущем",
+				})
+			} else {
+				command.CareerSinceDate = careerSinceDate
+			}
+		}
+
+		if rawSports, ok := trainerDetailsRaw["sports"]; ok {
+			var sports []trainerRegisterSportRequest
+			if err := json.Unmarshal(rawSports, &sports); err != nil {
+				return usecase.UpdateProfileCommand{}, nil, err
+			}
+
+			command.HasSports = true
+			command.Sports = make([]usecase.RegisterTrainerSportCommand, 0, len(sports))
+
+			if len(sports) == 0 {
+				validationErrors = append(validationErrors, validationErrorField{
+					Field:   "trainer_details.sports",
+					Message: "Нужно указать хотя бы один вид спорта",
+				})
+			}
+
+			seenSportTypeIDs := make(map[int64]struct{}, len(sports))
+			for _, sport := range sports {
+				command.Sports = append(command.Sports, usecase.RegisterTrainerSportCommand{
+					SportTypeID:     sport.SportTypeID,
+					ExperienceYears: sport.ExperienceYears,
+					SportsRank:      sport.SportsRank,
+				})
+
+				if sport.SportTypeID <= 0 {
+					validationErrors = append(validationErrors, validationErrorField{
+						Field:   "trainer_details.sports",
+						Message: "sport_type_id должен быть положительным числом",
+					})
+				}
+
+				if sport.ExperienceYears < 0 {
+					validationErrors = append(validationErrors, validationErrorField{
+						Field:   "trainer_details.sports",
+						Message: "experience_years не может быть отрицательным",
+					})
+				}
+
+				if sport.SportsRank != nil && len(*sport.SportsRank) > 100 {
+					validationErrors = append(validationErrors, validationErrorField{
+						Field:   "trainer_details.sports",
+						Message: "sports_rank должен содержать не более 100 символов",
+					})
+				}
+
+				if _, ok := seenSportTypeIDs[sport.SportTypeID]; ok {
+					validationErrors = append(validationErrors, validationErrorField{
+						Field:   "trainer_details.sports",
+						Message: "sport_type_id не должен повторяться",
+					})
+				}
+				seenSportTypeIDs[sport.SportTypeID] = struct{}{}
 			}
 		}
 	}
