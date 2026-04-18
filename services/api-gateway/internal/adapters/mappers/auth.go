@@ -37,40 +37,55 @@ func ResolveSessionRequestToAuth(request *gatewayv1.ResolveSessionRequest) *auth
 	return &authv1.GetSessionRequest{SessionToken: request.GetSessionToken()}
 }
 
-func AuthSessionResponseFromAuth(response *authv1.AuthSessionResponse) *gatewayv1.AuthSessionResponse {
+func AuthSessionResponseFromAuth(response *authv1.AuthSessionResponse) (*gatewayv1.AuthSessionResponse, error) {
 	if response == nil {
-		return nil
+		return nil, nil
+	}
+
+	user, err := authUserFromAuth(response.GetUser())
+	if err != nil {
+		return nil, err
 	}
 
 	return &gatewayv1.AuthSessionResponse{
-		User:    authUserFromAuth(response.GetUser()),
+		User:    user,
 		Session: sessionInfoFromAuth(response.GetSession()),
-	}
+	}, nil
 }
 
-func ResolveSessionResponseFromAuth(response *authv1.GetSessionResponse) *gatewayv1.ResolveSessionResponse {
+func ResolveSessionResponseFromAuth(response *authv1.GetSessionResponse) (*gatewayv1.ResolveSessionResponse, error) {
 	if response == nil {
-		return nil
+		return nil, nil
+	}
+
+	user, err := authUserFromAuth(response.GetUser())
+	if err != nil {
+		return nil, err
 	}
 
 	return &gatewayv1.ResolveSessionResponse{
-		User:    authUserFromAuth(response.GetUser()),
+		User:    user,
 		Session: sessionInfoFromAuth(response.GetSession()),
-	}
+	}, nil
 }
 
-func authUserFromAuth(user *authv1.AuthUser) *gatewayv1.AuthUser {
+func authUserFromAuth(user *authv1.AuthUser) (*gatewayv1.AuthUser, error) {
 	if user == nil {
-		return nil
+		return nil, nil
+	}
+
+	userID, err := int64ToInt32("auth.user_id", user.GetUserId())
+	if err != nil {
+		return nil, err
 	}
 
 	return &gatewayv1.AuthUser{
-		UserId:   user.GetUserId(),
+		UserId:   userID,
 		Email:    user.GetEmail(),
 		Username: user.GetUsername(),
 		Role:     authRoleToPublicRole(user.GetRole()),
 		Status:   authStatusToPublicStatus(user.GetStatus()),
-	}
+	}, nil
 }
 
 func sessionInfoFromAuth(session *authv1.SessionInfo) *gatewayv1.SessionInfo {

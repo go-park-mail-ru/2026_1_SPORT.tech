@@ -173,15 +173,15 @@
             "name": "authorUserId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerUserId",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerSubscriptionLevel",
@@ -296,15 +296,15 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerUserId",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerSubscriptionLevel",
@@ -340,15 +340,15 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "authorUserId",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -376,8 +376,8 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "body",
@@ -415,15 +415,15 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerUserId",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerSubscriptionLevel",
@@ -472,8 +472,8 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "body",
@@ -511,8 +511,8 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "body",
@@ -550,15 +550,15 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "viewerSubscriptionLevel",
@@ -627,8 +627,8 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -656,8 +656,8 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "body",
@@ -696,8 +696,8 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -725,8 +725,8 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "body",
@@ -770,8 +770,8 @@
       "type": "object",
       "properties": {
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "viewerSubscriptionLevel": {
           "type": "integer",
@@ -786,8 +786,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "viewerSubscriptionLevel": {
           "type": "integer",
@@ -799,8 +799,8 @@
       "type": "object",
       "properties": {
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "title": {
           "type": "string"
@@ -902,8 +902,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "email": {
           "type": "string"
@@ -923,8 +923,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "username": {
           "type": "string"
@@ -950,16 +950,16 @@
       "type": "object",
       "properties": {
         "commentId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "postId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "body": {
           "type": "string"
@@ -997,8 +997,8 @@
       "type": "object",
       "properties": {
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "title": {
           "type": "string"
@@ -1020,8 +1020,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "username": {
           "type": "string"
@@ -1102,12 +1102,12 @@
       "type": "object",
       "properties": {
         "postId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "title": {
           "type": "string"
@@ -1128,15 +1128,15 @@
           "type": "boolean"
         },
         "likesCount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "isLiked": {
           "type": "boolean"
         },
         "commentsCount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "blocks": {
           "type": "array",
@@ -1151,8 +1151,8 @@
       "type": "object",
       "properties": {
         "postBlockId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "position": {
           "type": "integer",
@@ -1187,12 +1187,12 @@
       "type": "object",
       "properties": {
         "postId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "likesCount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "isLiked": {
           "type": "boolean"
@@ -1219,12 +1219,12 @@
       "type": "object",
       "properties": {
         "postId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "authorUserId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "title": {
           "type": "string"
@@ -1241,15 +1241,15 @@
           "type": "boolean"
         },
         "likesCount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "isLiked": {
           "type": "boolean"
         },
         "commentsCount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1257,8 +1257,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "username": {
           "type": "string"
@@ -1344,8 +1344,8 @@
         "sportTypeIds": {
           "type": "array",
           "items": {
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         },
         "limit": {
@@ -1386,8 +1386,8 @@
       "type": "object",
       "properties": {
         "sportTypeId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "name": {
           "type": "string"
@@ -1417,8 +1417,8 @@
       "type": "object",
       "properties": {
         "sportTypeId": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "experienceYears": {
           "type": "integer",

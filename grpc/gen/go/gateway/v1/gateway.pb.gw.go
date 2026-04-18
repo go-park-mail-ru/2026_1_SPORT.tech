@@ -184,7 +184,7 @@ func request_ProfileService_GetProfile_0(ctx context.Context, marshaler runtime.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -202,7 +202,7 @@ func local_request_ProfileService_GetProfile_0(ctx context.Context, marshaler ru
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -226,7 +226,7 @@ func request_ProfileService_UpdateProfile_0(ctx context.Context, marshaler runti
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -247,7 +247,7 @@ func local_request_ProfileService_UpdateProfile_0(ctx context.Context, marshaler
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -298,7 +298,7 @@ func request_ProfileService_UploadAvatar_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -319,7 +319,7 @@ func local_request_ProfileService_UploadAvatar_0(ctx context.Context, marshaler 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -340,7 +340,7 @@ func request_ProfileService_DeleteAvatar_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -358,7 +358,7 @@ func local_request_ProfileService_DeleteAvatar_0(ctx context.Context, marshaler 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -402,7 +402,7 @@ func request_ContentService_ListAuthorPosts_0(ctx context.Context, marshaler run
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "author_user_id")
 	}
-	protoReq.AuthorUserId, err = runtime.Int64(val)
+	protoReq.AuthorUserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "author_user_id", err)
 	}
@@ -426,7 +426,7 @@ func local_request_ContentService_ListAuthorPosts_0(ctx context.Context, marshal
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "author_user_id")
 	}
-	protoReq.AuthorUserId, err = runtime.Int64(val)
+	protoReq.AuthorUserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "author_user_id", err)
 	}
@@ -482,7 +482,7 @@ func request_ContentService_GetPost_0(ctx context.Context, marshaler runtime.Mar
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -506,7 +506,7 @@ func local_request_ContentService_GetPost_0(ctx context.Context, marshaler runti
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -536,7 +536,7 @@ func request_ContentService_UpdatePost_0(ctx context.Context, marshaler runtime.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -557,7 +557,7 @@ func local_request_ContentService_UpdatePost_0(ctx context.Context, marshaler ru
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -580,7 +580,7 @@ func request_ContentService_DeletePost_0(ctx context.Context, marshaler runtime.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -604,7 +604,7 @@ func local_request_ContentService_DeletePost_0(ctx context.Context, marshaler ru
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -634,7 +634,7 @@ func request_ContentService_LikePost_0(ctx context.Context, marshaler runtime.Ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -655,7 +655,7 @@ func local_request_ContentService_LikePost_0(ctx context.Context, marshaler runt
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -678,7 +678,7 @@ func request_ContentService_UnlikePost_0(ctx context.Context, marshaler runtime.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -686,7 +686,7 @@ func request_ContentService_UnlikePost_0(ctx context.Context, marshaler runtime.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -710,7 +710,7 @@ func local_request_ContentService_UnlikePost_0(ctx context.Context, marshaler ru
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -718,7 +718,7 @@ func local_request_ContentService_UnlikePost_0(ctx context.Context, marshaler ru
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
 	}
-	protoReq.UserId, err = runtime.Int64(val)
+	protoReq.UserId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
@@ -748,7 +748,7 @@ func request_ContentService_CreateComment_0(ctx context.Context, marshaler runti
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -769,7 +769,7 @@ func local_request_ContentService_CreateComment_0(ctx context.Context, marshaler
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -792,7 +792,7 @@ func request_ContentService_ListComments_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
@@ -816,7 +816,7 @@ func local_request_ContentService_ListComments_0(ctx context.Context, marshaler 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
-	protoReq.PostId, err = runtime.Int64(val)
+	protoReq.PostId, err = runtime.Int32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}

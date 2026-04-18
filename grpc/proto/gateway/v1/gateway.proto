@@ -17,7 +17,7 @@ enum ContentBlockKind {
 }
 
 message AuthUser {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string email = 2;
   string username = 3;
   string role = 4;
@@ -60,7 +60,7 @@ message ResolveSessionResponse {
 }
 
 message TrainerSport {
-  int64 sport_type_id = 1;
+  int32 sport_type_id = 1;
   int32 experience_years = 2;
   optional string sports_rank = 3;
 }
@@ -72,7 +72,7 @@ message TrainerDetails {
 }
 
 message Profile {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string username = 2;
   string first_name = 3;
   string last_name = 4;
@@ -85,7 +85,7 @@ message Profile {
 }
 
 message AuthorSummary {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string username = 2;
   string first_name = 3;
   string last_name = 4;
@@ -95,7 +95,7 @@ message AuthorSummary {
 }
 
 message SportType {
-  int64 sport_type_id = 1;
+  int32 sport_type_id = 1;
   string name = 2;
 }
 
@@ -104,7 +104,7 @@ message ProfileResponse {
 }
 
 message CreateProfileRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string username = 2;
   string first_name = 3;
   string last_name = 4;
@@ -114,11 +114,11 @@ message CreateProfileRequest {
 }
 
 message GetProfileRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
 }
 
 message UpdateProfileRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
   optional string username = 2;
   optional string first_name = 3;
   optional string last_name = 4;
@@ -128,7 +128,7 @@ message UpdateProfileRequest {
 
 message SearchAuthorsRequest {
   string query = 1;
-  repeated int64 sport_type_ids = 2;
+  repeated int32 sport_type_ids = 2;
   int32 limit = 3;
   int32 offset = 4;
 }
@@ -138,14 +138,14 @@ message SearchAuthorsResponse {
 }
 
 message UploadAvatarRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string file_name = 2;
   string content_type = 3;
   bytes content = 4;
 }
 
 message DeleteAvatarRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
 }
 
 message ListSportTypesResponse {
@@ -159,7 +159,7 @@ message PostBlockInput {
 }
 
 message PostBlock {
-  int64 post_block_id = 1;
+  int32 post_block_id = 1;
   int32 position = 2;
   ContentBlockKind kind = 3;
   optional string text_content = 4;
@@ -167,35 +167,35 @@ message PostBlock {
 }
 
 message Post {
-  int64 post_id = 1;
-  int64 author_user_id = 2;
+  int32 post_id = 1;
+  int32 author_user_id = 2;
   string title = 3;
   optional int32 required_subscription_level = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
   bool can_view = 7;
-  int64 likes_count = 8;
+  int32 likes_count = 8;
   bool is_liked = 9;
-  int64 comments_count = 10;
+  int32 comments_count = 10;
   repeated PostBlock blocks = 11;
 }
 
 message PostSummary {
-  int64 post_id = 1;
-  int64 author_user_id = 2;
+  int32 post_id = 1;
+  int32 author_user_id = 2;
   string title = 3;
   optional int32 required_subscription_level = 4;
   google.protobuf.Timestamp created_at = 5;
   bool can_view = 6;
-  int64 likes_count = 7;
+  int32 likes_count = 7;
   bool is_liked = 8;
-  int64 comments_count = 9;
+  int32 comments_count = 9;
 }
 
 message Comment {
-  int64 comment_id = 1;
-  int64 post_id = 2;
-  int64 author_user_id = 3;
+  int32 comment_id = 1;
+  int32 post_id = 2;
+  int32 author_user_id = 3;
   string body = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
@@ -206,8 +206,8 @@ message PostResponse {
 }
 
 message ListAuthorPostsRequest {
-  int64 author_user_id = 1;
-  int64 viewer_user_id = 2;
+  int32 author_user_id = 1;
+  int32 viewer_user_id = 2;
   optional int32 viewer_subscription_level = 3;
   int32 limit = 4;
   int32 offset = 5;
@@ -218,21 +218,21 @@ message ListAuthorPostsResponse {
 }
 
 message CreatePostRequest {
-  int64 author_user_id = 1;
+  int32 author_user_id = 1;
   string title = 2;
   optional int32 required_subscription_level = 3;
   repeated PostBlockInput blocks = 4;
 }
 
 message GetPostRequest {
-  int64 post_id = 1;
-  int64 viewer_user_id = 2;
+  int32 post_id = 1;
+  int32 viewer_user_id = 2;
   optional int32 viewer_subscription_level = 3;
 }
 
 message UpdatePostRequest {
-  int64 post_id = 1;
-  int64 author_user_id = 2;
+  int32 post_id = 1;
+  int32 author_user_id = 2;
   optional string title = 3;
   optional int32 required_subscription_level = 4;
   bool clear_required_subscription_level = 5;
@@ -241,25 +241,25 @@ message UpdatePostRequest {
 }
 
 message DeletePostRequest {
-  int64 post_id = 1;
-  int64 author_user_id = 2;
+  int32 post_id = 1;
+  int32 author_user_id = 2;
 }
 
 message LikePostRequest {
-  int64 post_id = 1;
-  int64 user_id = 2;
+  int32 post_id = 1;
+  int32 user_id = 2;
   optional int32 viewer_subscription_level = 3;
 }
 
 message UnlikePostRequest {
-  int64 post_id = 1;
-  int64 user_id = 2;
+  int32 post_id = 1;
+  int32 user_id = 2;
   optional int32 viewer_subscription_level = 3;
 }
 
 message PostLikeState {
-  int64 post_id = 1;
-  int64 likes_count = 2;
+  int32 post_id = 1;
+  int32 likes_count = 2;
   bool is_liked = 3;
 }
 
@@ -268,8 +268,8 @@ message PostLikeStateResponse {
 }
 
 message CreateCommentRequest {
-  int64 post_id = 1;
-  int64 author_user_id = 2;
+  int32 post_id = 1;
+  int32 author_user_id = 2;
   optional int32 viewer_subscription_level = 3;
   string body = 4;
 }
@@ -279,8 +279,8 @@ message CommentResponse {
 }
 
 message ListCommentsRequest {
-  int64 post_id = 1;
-  int64 viewer_user_id = 2;
+  int32 post_id = 1;
+  int32 viewer_user_id = 2;
   optional int32 viewer_subscription_level = 3;
   int32 limit = 4;
   int32 offset = 5;

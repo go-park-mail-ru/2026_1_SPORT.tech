@@ -81,7 +81,7 @@ func (ContentBlockKind) EnumDescriptor() ([]byte, []int) {
 
 type AuthUser struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
 	Role          string                 `protobuf:"bytes,4,opt,name=role,proto3" json:"role,omitempty"`
@@ -120,7 +120,7 @@ func (*AuthUser) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AuthUser) GetUserId() int64 {
+func (x *AuthUser) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -521,7 +521,7 @@ func (x *ResolveSessionResponse) GetSession() *SessionInfo {
 
 type TrainerSport struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	SportTypeId     int64                  `protobuf:"varint,1,opt,name=sport_type_id,json=sportTypeId,proto3" json:"sport_type_id,omitempty"`
+	SportTypeId     int32                  `protobuf:"varint,1,opt,name=sport_type_id,json=sportTypeId,proto3" json:"sport_type_id,omitempty"`
 	ExperienceYears int32                  `protobuf:"varint,2,opt,name=experience_years,json=experienceYears,proto3" json:"experience_years,omitempty"`
 	SportsRank      *string                `protobuf:"bytes,3,opt,name=sports_rank,json=sportsRank,proto3,oneof" json:"sports_rank,omitempty"`
 	unknownFields   protoimpl.UnknownFields
@@ -558,7 +558,7 @@ func (*TrainerSport) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *TrainerSport) GetSportTypeId() int64 {
+func (x *TrainerSport) GetSportTypeId() int32 {
 	if x != nil {
 		return x.SportTypeId
 	}
@@ -641,7 +641,7 @@ func (x *TrainerDetails) GetSports() []*TrainerSport {
 
 type Profile struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId         int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Username       string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	FirstName      string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName       string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
@@ -685,7 +685,7 @@ func (*Profile) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *Profile) GetUserId() int64 {
+func (x *Profile) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -757,7 +757,7 @@ func (x *Profile) GetTrainerDetails() *TrainerDetails {
 
 type AuthorSummary struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId         int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Username       string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	FirstName      string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName       string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
@@ -798,7 +798,7 @@ func (*AuthorSummary) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *AuthorSummary) GetUserId() int64 {
+func (x *AuthorSummary) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -849,7 +849,7 @@ func (x *AuthorSummary) GetTrainerDetails() *TrainerDetails {
 
 type SportType struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SportTypeId   int64                  `protobuf:"varint,1,opt,name=sport_type_id,json=sportTypeId,proto3" json:"sport_type_id,omitempty"`
+	SportTypeId   int32                  `protobuf:"varint,1,opt,name=sport_type_id,json=sportTypeId,proto3" json:"sport_type_id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -885,7 +885,7 @@ func (*SportType) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *SportType) GetSportTypeId() int64 {
+func (x *SportType) GetSportTypeId() int32 {
 	if x != nil {
 		return x.SportTypeId
 	}
@@ -945,7 +945,7 @@ func (x *ProfileResponse) GetProfile() *Profile {
 
 type CreateProfileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId         int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Username       string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	FirstName      string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName       string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
@@ -986,7 +986,7 @@ func (*CreateProfileRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *CreateProfileRequest) GetUserId() int64 {
+func (x *CreateProfileRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1037,7 +1037,7 @@ func (x *CreateProfileRequest) GetTrainerDetails() *TrainerDetails {
 
 type GetProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1072,7 +1072,7 @@ func (*GetProfileRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *GetProfileRequest) GetUserId() int64 {
+func (x *GetProfileRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1081,7 +1081,7 @@ func (x *GetProfileRequest) GetUserId() int64 {
 
 type UpdateProfileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId         int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Username       *string                `protobuf:"bytes,2,opt,name=username,proto3,oneof" json:"username,omitempty"`
 	FirstName      *string                `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
 	LastName       *string                `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
@@ -1121,7 +1121,7 @@ func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *UpdateProfileRequest) GetUserId() int64 {
+func (x *UpdateProfileRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1166,7 +1166,7 @@ func (x *UpdateProfileRequest) GetTrainerDetails() *TrainerDetails {
 type SearchAuthorsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	SportTypeIds  []int64                `protobuf:"varint,2,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	SportTypeIds  []int32                `protobuf:"varint,2,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1210,7 +1210,7 @@ func (x *SearchAuthorsRequest) GetQuery() string {
 	return ""
 }
 
-func (x *SearchAuthorsRequest) GetSportTypeIds() []int64 {
+func (x *SearchAuthorsRequest) GetSportTypeIds() []int32 {
 	if x != nil {
 		return x.SportTypeIds
 	}
@@ -1277,7 +1277,7 @@ func (x *SearchAuthorsResponse) GetAuthors() []*AuthorSummary {
 
 type UploadAvatarRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
 	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
 	Content       []byte                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
@@ -1315,7 +1315,7 @@ func (*UploadAvatarRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *UploadAvatarRequest) GetUserId() int64 {
+func (x *UploadAvatarRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1345,7 +1345,7 @@ func (x *UploadAvatarRequest) GetContent() []byte {
 
 type DeleteAvatarRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1380,7 +1380,7 @@ func (*DeleteAvatarRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *DeleteAvatarRequest) GetUserId() int64 {
+func (x *DeleteAvatarRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1493,7 +1493,7 @@ func (x *PostBlockInput) GetFileUrl() string {
 
 type PostBlock struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PostBlockId   int64                  `protobuf:"varint,1,opt,name=post_block_id,json=postBlockId,proto3" json:"post_block_id,omitempty"`
+	PostBlockId   int32                  `protobuf:"varint,1,opt,name=post_block_id,json=postBlockId,proto3" json:"post_block_id,omitempty"`
 	Position      int32                  `protobuf:"varint,2,opt,name=position,proto3" json:"position,omitempty"`
 	Kind          ContentBlockKind       `protobuf:"varint,3,opt,name=kind,proto3,enum=sporttech.gateway.v1.ContentBlockKind" json:"kind,omitempty"`
 	TextContent   *string                `protobuf:"bytes,4,opt,name=text_content,json=textContent,proto3,oneof" json:"text_content,omitempty"`
@@ -1532,7 +1532,7 @@ func (*PostBlock) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
 }
 
-func (x *PostBlock) GetPostBlockId() int64 {
+func (x *PostBlock) GetPostBlockId() int32 {
 	if x != nil {
 		return x.PostBlockId
 	}
@@ -1569,16 +1569,16 @@ func (x *PostBlock) GetFileUrl() string {
 
 type Post struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
-	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId              int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	PostId                    int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId              int32                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	Title                     string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	RequiredSubscriptionLevel *int32                 `protobuf:"varint,4,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	CreatedAt                 *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt                 *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	CanView                   bool                   `protobuf:"varint,7,opt,name=can_view,json=canView,proto3" json:"can_view,omitempty"`
-	LikesCount                int64                  `protobuf:"varint,8,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
+	LikesCount                int32                  `protobuf:"varint,8,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
 	IsLiked                   bool                   `protobuf:"varint,9,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
-	CommentsCount             int64                  `protobuf:"varint,10,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
+	CommentsCount             int32                  `protobuf:"varint,10,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	Blocks                    []*PostBlock           `protobuf:"bytes,11,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
@@ -1614,14 +1614,14 @@ func (*Post) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
 }
 
-func (x *Post) GetPostId() int64 {
+func (x *Post) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *Post) GetAuthorUserId() int64 {
+func (x *Post) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -1663,7 +1663,7 @@ func (x *Post) GetCanView() bool {
 	return false
 }
 
-func (x *Post) GetLikesCount() int64 {
+func (x *Post) GetLikesCount() int32 {
 	if x != nil {
 		return x.LikesCount
 	}
@@ -1677,7 +1677,7 @@ func (x *Post) GetIsLiked() bool {
 	return false
 }
 
-func (x *Post) GetCommentsCount() int64 {
+func (x *Post) GetCommentsCount() int32 {
 	if x != nil {
 		return x.CommentsCount
 	}
@@ -1693,15 +1693,15 @@ func (x *Post) GetBlocks() []*PostBlock {
 
 type PostSummary struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
-	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId              int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	PostId                    int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId              int32                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	Title                     string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	RequiredSubscriptionLevel *int32                 `protobuf:"varint,4,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	CreatedAt                 *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	CanView                   bool                   `protobuf:"varint,6,opt,name=can_view,json=canView,proto3" json:"can_view,omitempty"`
-	LikesCount                int64                  `protobuf:"varint,7,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
+	LikesCount                int32                  `protobuf:"varint,7,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
 	IsLiked                   bool                   `protobuf:"varint,8,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
-	CommentsCount             int64                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
+	CommentsCount             int32                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -1736,14 +1736,14 @@ func (*PostSummary) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
 }
 
-func (x *PostSummary) GetPostId() int64 {
+func (x *PostSummary) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *PostSummary) GetAuthorUserId() int64 {
+func (x *PostSummary) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -1778,7 +1778,7 @@ func (x *PostSummary) GetCanView() bool {
 	return false
 }
 
-func (x *PostSummary) GetLikesCount() int64 {
+func (x *PostSummary) GetLikesCount() int32 {
 	if x != nil {
 		return x.LikesCount
 	}
@@ -1792,7 +1792,7 @@ func (x *PostSummary) GetIsLiked() bool {
 	return false
 }
 
-func (x *PostSummary) GetCommentsCount() int64 {
+func (x *PostSummary) GetCommentsCount() int32 {
 	if x != nil {
 		return x.CommentsCount
 	}
@@ -1801,9 +1801,9 @@ func (x *PostSummary) GetCommentsCount() int64 {
 
 type Comment struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CommentId     int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
-	PostId        int64                  `protobuf:"varint,2,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId  int64                  `protobuf:"varint,3,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	CommentId     int32                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	PostId        int32                  `protobuf:"varint,2,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId  int32                  `protobuf:"varint,3,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	Body          string                 `protobuf:"bytes,4,opt,name=body,proto3" json:"body,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
@@ -1841,21 +1841,21 @@ func (*Comment) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
 }
 
-func (x *Comment) GetCommentId() int64 {
+func (x *Comment) GetCommentId() int32 {
 	if x != nil {
 		return x.CommentId
 	}
 	return 0
 }
 
-func (x *Comment) GetPostId() int64 {
+func (x *Comment) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *Comment) GetAuthorUserId() int64 {
+func (x *Comment) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -1929,8 +1929,8 @@ func (x *PostResponse) GetPost() *Post {
 
 type ListAuthorPostsRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	AuthorUserId            int64                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
-	ViewerUserId            int64                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	AuthorUserId            int32                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	ViewerUserId            int32                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	Limit                   int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset                  int32                  `protobuf:"varint,5,opt,name=offset,proto3" json:"offset,omitempty"`
@@ -1968,14 +1968,14 @@ func (*ListAuthorPostsRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *ListAuthorPostsRequest) GetAuthorUserId() int64 {
+func (x *ListAuthorPostsRequest) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
 	return 0
 }
 
-func (x *ListAuthorPostsRequest) GetViewerUserId() int64 {
+func (x *ListAuthorPostsRequest) GetViewerUserId() int32 {
 	if x != nil {
 		return x.ViewerUserId
 	}
@@ -2049,7 +2049,7 @@ func (x *ListAuthorPostsResponse) GetPosts() []*PostSummary {
 
 type CreatePostRequest struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
-	AuthorUserId              int64                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	AuthorUserId              int32                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	Title                     string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	RequiredSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	Blocks                    []*PostBlockInput      `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
@@ -2087,7 +2087,7 @@ func (*CreatePostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
 }
 
-func (x *CreatePostRequest) GetAuthorUserId() int64 {
+func (x *CreatePostRequest) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -2117,8 +2117,8 @@ func (x *CreatePostRequest) GetBlocks() []*PostBlockInput {
 
 type GetPostRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	ViewerUserId            int64                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	PostId                  int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	ViewerUserId            int32                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -2154,14 +2154,14 @@ func (*GetPostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
 }
 
-func (x *GetPostRequest) GetPostId() int64 {
+func (x *GetPostRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *GetPostRequest) GetViewerUserId() int64 {
+func (x *GetPostRequest) GetViewerUserId() int32 {
 	if x != nil {
 		return x.ViewerUserId
 	}
@@ -2177,8 +2177,8 @@ func (x *GetPostRequest) GetViewerSubscriptionLevel() int32 {
 
 type UpdatePostRequest struct {
 	state                          protoimpl.MessageState `protogen:"open.v1"`
-	PostId                         int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId                   int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	PostId                         int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId                   int32                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	Title                          *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	RequiredSubscriptionLevel      *int32                 `protobuf:"varint,4,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	ClearRequiredSubscriptionLevel bool                   `protobuf:"varint,5,opt,name=clear_required_subscription_level,json=clearRequiredSubscriptionLevel,proto3" json:"clear_required_subscription_level,omitempty"`
@@ -2218,14 +2218,14 @@ func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{32}
 }
 
-func (x *UpdatePostRequest) GetPostId() int64 {
+func (x *UpdatePostRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *UpdatePostRequest) GetAuthorUserId() int64 {
+func (x *UpdatePostRequest) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -2269,8 +2269,8 @@ func (x *UpdatePostRequest) GetReplaceBlocks() bool {
 
 type DeletePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId  int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	PostId        int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId  int32                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2305,14 +2305,14 @@ func (*DeletePostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{33}
 }
 
-func (x *DeletePostRequest) GetPostId() int64 {
+func (x *DeletePostRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *DeletePostRequest) GetAuthorUserId() int64 {
+func (x *DeletePostRequest) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -2321,8 +2321,8 @@ func (x *DeletePostRequest) GetAuthorUserId() int64 {
 
 type LikePostRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	UserId                  int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PostId                  int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	UserId                  int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -2358,14 +2358,14 @@ func (*LikePostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{34}
 }
 
-func (x *LikePostRequest) GetPostId() int64 {
+func (x *LikePostRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *LikePostRequest) GetUserId() int64 {
+func (x *LikePostRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -2381,8 +2381,8 @@ func (x *LikePostRequest) GetViewerSubscriptionLevel() int32 {
 
 type UnlikePostRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	UserId                  int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PostId                  int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	UserId                  int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -2418,14 +2418,14 @@ func (*UnlikePostRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{35}
 }
 
-func (x *UnlikePostRequest) GetPostId() int64 {
+func (x *UnlikePostRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *UnlikePostRequest) GetUserId() int64 {
+func (x *UnlikePostRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
@@ -2441,8 +2441,8 @@ func (x *UnlikePostRequest) GetViewerSubscriptionLevel() int32 {
 
 type PostLikeState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	LikesCount    int64                  `protobuf:"varint,2,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
+	PostId        int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	LikesCount    int32                  `protobuf:"varint,2,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
 	IsLiked       bool                   `protobuf:"varint,3,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2478,14 +2478,14 @@ func (*PostLikeState) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{36}
 }
 
-func (x *PostLikeState) GetPostId() int64 {
+func (x *PostLikeState) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *PostLikeState) GetLikesCount() int64 {
+func (x *PostLikeState) GetLikesCount() int32 {
 	if x != nil {
 		return x.LikesCount
 	}
@@ -2545,8 +2545,8 @@ func (x *PostLikeStateResponse) GetState() *PostLikeState {
 
 type CreateCommentRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	AuthorUserId            int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	PostId                  int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	AuthorUserId            int32                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	Body                    string                 `protobuf:"bytes,4,opt,name=body,proto3" json:"body,omitempty"`
 	unknownFields           protoimpl.UnknownFields
@@ -2583,14 +2583,14 @@ func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{38}
 }
 
-func (x *CreateCommentRequest) GetPostId() int64 {
+func (x *CreateCommentRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *CreateCommentRequest) GetAuthorUserId() int64 {
+func (x *CreateCommentRequest) GetAuthorUserId() int32 {
 	if x != nil {
 		return x.AuthorUserId
 	}
@@ -2657,8 +2657,8 @@ func (x *CommentResponse) GetComment() *Comment {
 
 type ListCommentsRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	ViewerUserId            int64                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	PostId                  int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	ViewerUserId            int32                  `protobuf:"varint,2,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
 	ViewerSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
 	Limit                   int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset                  int32                  `protobuf:"varint,5,opt,name=offset,proto3" json:"offset,omitempty"`
@@ -2696,14 +2696,14 @@ func (*ListCommentsRequest) Descriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{40}
 }
 
-func (x *ListCommentsRequest) GetPostId() int64 {
+func (x *ListCommentsRequest) GetPostId() int32 {
 	if x != nil {
 		return x.PostId
 	}
 	return 0
 }
 
-func (x *ListCommentsRequest) GetViewerUserId() int64 {
+func (x *ListCommentsRequest) GetViewerUserId() int32 {
 	if x != nil {
 		return x.ViewerUserId
 	}
@@ -2781,7 +2781,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\n" +
 	"\x18gateway/v1/gateway.proto\x12\x14sporttech.gateway.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x01\n" +
 	"\bAuthUser\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x14\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\busername\x18\x03 \x01(\tR\busername\x12\x12\n" +
 	"\x04role\x18\x04 \x01(\tR\x04role\x12\x16\n" +
@@ -2809,7 +2809,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\x1e.sporttech.gateway.v1.AuthUserR\x04user\x12;\n" +
 	"\asession\x18\x02 \x01(\v2!.sporttech.gateway.v1.SessionInfoR\asession\"\x93\x01\n" +
 	"\fTrainerSport\x12\"\n" +
-	"\rsport_type_id\x18\x01 \x01(\x03R\vsportTypeId\x12)\n" +
+	"\rsport_type_id\x18\x01 \x01(\x05R\vsportTypeId\x12)\n" +
 	"\x10experience_years\x18\x02 \x01(\x05R\x0fexperienceYears\x12$\n" +
 	"\vsports_rank\x18\x03 \x01(\tH\x00R\n" +
 	"sportsRank\x88\x01\x01B\x0e\n" +
@@ -2821,7 +2821,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x11_education_degreeB\x14\n" +
 	"\x12_career_since_date\"\xc9\x03\n" +
 	"\aProfile\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1a\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
@@ -2841,7 +2841,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\v_avatar_urlB\x12\n" +
 	"\x10_trainer_details\"\xba\x02\n" +
 	"\rAuthorSummary\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1a\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
@@ -2854,12 +2854,12 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\v_avatar_urlB\x12\n" +
 	"\x10_trainer_details\"C\n" +
 	"\tSportType\x12\"\n" +
-	"\rsport_type_id\x18\x01 \x01(\x03R\vsportTypeId\x12\x12\n" +
+	"\rsport_type_id\x18\x01 \x01(\x05R\vsportTypeId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"J\n" +
 	"\x0fProfileResponse\x127\n" +
 	"\aprofile\x18\x01 \x01(\v2\x1d.sporttech.gateway.v1.ProfileR\aprofile\"\xad\x02\n" +
 	"\x14CreateProfileRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1a\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
@@ -2871,9 +2871,9 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x04_bioB\x12\n" +
 	"\x10_trainer_details\",\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\xc7\x02\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\"\xc7\x02\n" +
 	"\x14UpdateProfileRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1f\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x1f\n" +
 	"\busername\x18\x02 \x01(\tH\x00R\busername\x88\x01\x01\x12\"\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tH\x01R\tfirstName\x88\x01\x01\x12 \n" +
@@ -2888,18 +2888,18 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x10_trainer_details\"\x80\x01\n" +
 	"\x14SearchAuthorsRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12$\n" +
-	"\x0esport_type_ids\x18\x02 \x03(\x03R\fsportTypeIds\x12\x14\n" +
+	"\x0esport_type_ids\x18\x02 \x03(\x05R\fsportTypeIds\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x04 \x01(\x05R\x06offset\"V\n" +
 	"\x15SearchAuthorsResponse\x12=\n" +
 	"\aauthors\x18\x01 \x03(\v2#.sporttech.gateway.v1.AuthorSummaryR\aauthors\"\x88\x01\n" +
 	"\x13UploadAvatarRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1b\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x1b\n" +
 	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12!\n" +
 	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\fR\acontent\".\n" +
 	"\x13DeleteAvatarRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"Z\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\"Z\n" +
 	"\x16ListSportTypesResponse\x12@\n" +
 	"\vsport_types\x18\x01 \x03(\v2\x1f.sporttech.gateway.v1.SportTypeR\n" +
 	"sportTypes\"\xb2\x01\n" +
@@ -2910,7 +2910,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\r_text_contentB\v\n" +
 	"\t_file_url\"\xed\x01\n" +
 	"\tPostBlock\x12\"\n" +
-	"\rpost_block_id\x18\x01 \x01(\x03R\vpostBlockId\x12\x1a\n" +
+	"\rpost_block_id\x18\x01 \x01(\x05R\vpostBlockId\x12\x1a\n" +
 	"\bposition\x18\x02 \x01(\x05R\bposition\x12:\n" +
 	"\x04kind\x18\x03 \x01(\x0e2&.sporttech.gateway.v1.ContentBlockKindR\x04kind\x12&\n" +
 	"\ftext_content\x18\x04 \x01(\tH\x00R\vtextContent\x88\x01\x01\x12\x1e\n" +
@@ -2918,8 +2918,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\r_text_contentB\v\n" +
 	"\t_file_url\"\xed\x03\n" +
 	"\x04Post\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x05R\fauthorUserId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x04 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x129\n" +
 	"\n" +
@@ -2927,31 +2927,31 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x19\n" +
 	"\bcan_view\x18\a \x01(\bR\acanView\x12\x1f\n" +
-	"\vlikes_count\x18\b \x01(\x03R\n" +
+	"\vlikes_count\x18\b \x01(\x05R\n" +
 	"likesCount\x12\x19\n" +
 	"\bis_liked\x18\t \x01(\bR\aisLiked\x12%\n" +
 	"\x0ecomments_count\x18\n" +
-	" \x01(\x03R\rcommentsCount\x127\n" +
+	" \x01(\x05R\rcommentsCount\x127\n" +
 	"\x06blocks\x18\v \x03(\v2\x1f.sporttech.gateway.v1.PostBlockR\x06blocksB\x1e\n" +
 	"\x1c_required_subscription_level\"\x80\x03\n" +
 	"\vPostSummary\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x05R\fauthorUserId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x04 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x19\n" +
 	"\bcan_view\x18\x06 \x01(\bR\acanView\x12\x1f\n" +
-	"\vlikes_count\x18\a \x01(\x03R\n" +
+	"\vlikes_count\x18\a \x01(\x05R\n" +
 	"likesCount\x12\x19\n" +
 	"\bis_liked\x18\b \x01(\bR\aisLiked\x12%\n" +
-	"\x0ecomments_count\x18\t \x01(\x03R\rcommentsCountB\x1e\n" +
+	"\x0ecomments_count\x18\t \x01(\x05R\rcommentsCountB\x1e\n" +
 	"\x1c_required_subscription_level\"\xf1\x01\n" +
 	"\aComment\x12\x1d\n" +
 	"\n" +
-	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12\x17\n" +
-	"\apost_id\x18\x02 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x03 \x01(\x03R\fauthorUserId\x12\x12\n" +
+	"comment_id\x18\x01 \x01(\x05R\tcommentId\x12\x17\n" +
+	"\apost_id\x18\x02 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x03 \x01(\x05R\fauthorUserId\x12\x12\n" +
 	"\x04body\x18\x04 \x01(\tR\x04body\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
@@ -2960,8 +2960,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\fPostResponse\x12.\n" +
 	"\x04post\x18\x01 \x01(\v2\x1a.sporttech.gateway.v1.PostR\x04post\"\xf1\x01\n" +
 	"\x16ListAuthorPostsRequest\x12$\n" +
-	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12$\n" +
-	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
+	"\x0eauthor_user_id\x18\x01 \x01(\x05R\fauthorUserId\x12$\n" +
+	"\x0eviewer_user_id\x18\x02 \x01(\x05R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x05 \x01(\x05R\x06offsetB\x1c\n" +
@@ -2969,19 +2969,19 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x17ListAuthorPostsResponse\x127\n" +
 	"\x05posts\x18\x01 \x03(\v2!.sporttech.gateway.v1.PostSummaryR\x05posts\"\xf2\x01\n" +
 	"\x11CreatePostRequest\x12$\n" +
-	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12\x14\n" +
+	"\x0eauthor_user_id\x18\x01 \x01(\x05R\fauthorUserId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x03 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x12<\n" +
 	"\x06blocks\x18\x04 \x03(\v2$.sporttech.gateway.v1.PostBlockInputR\x06blocksB\x1e\n" +
 	"\x1c_required_subscription_level\"\xae\x01\n" +
 	"\x0eGetPostRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eviewer_user_id\x18\x02 \x01(\x05R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
 	"\x1a_viewer_subscription_level\"\x8c\x03\n" +
 	"\x11UpdatePostRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x19\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x05R\fauthorUserId\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x00R\x05title\x88\x01\x01\x12C\n" +
 	"\x1brequired_subscription_level\x18\x04 \x01(\x05H\x01R\x19requiredSubscriptionLevel\x88\x01\x01\x12I\n" +
 	"!clear_required_subscription_level\x18\x05 \x01(\bR\x1eclearRequiredSubscriptionLevel\x12<\n" +
@@ -2990,36 +2990,36 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06_titleB\x1e\n" +
 	"\x1c_required_subscription_level\"R\n" +
 	"\x11DeletePostRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\"\xa2\x01\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x05R\fauthorUserId\"\xa2\x01\n" +
 	"\x0fLikePostRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12?\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
 	"\x1a_viewer_subscription_level\"\xa4\x01\n" +
 	"\x11UnlikePostRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12?\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
 	"\x1a_viewer_subscription_level\"d\n" +
 	"\rPostLikeState\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x1f\n" +
-	"\vlikes_count\x18\x02 \x01(\x03R\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12\x1f\n" +
+	"\vlikes_count\x18\x02 \x01(\x05R\n" +
 	"likesCount\x12\x19\n" +
 	"\bis_liked\x18\x03 \x01(\bR\aisLiked\"R\n" +
 	"\x15PostLikeStateResponse\x129\n" +
 	"\x05state\x18\x01 \x01(\v2#.sporttech.gateway.v1.PostLikeStateR\x05state\"\xc8\x01\n" +
 	"\x14CreateCommentRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12?\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x05R\fauthorUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01\x12\x12\n" +
 	"\x04body\x18\x04 \x01(\tR\x04bodyB\x1c\n" +
 	"\x1a_viewer_subscription_level\"J\n" +
 	"\x0fCommentResponse\x127\n" +
 	"\acomment\x18\x01 \x01(\v2\x1d.sporttech.gateway.v1.CommentR\acomment\"\xe1\x01\n" +
 	"\x13ListCommentsRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
-	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
+	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12$\n" +
+	"\x0eviewer_user_id\x18\x02 \x01(\x05R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x05 \x01(\x05R\x06offsetB\x1c\n" +

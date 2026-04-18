@@ -140,7 +140,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 
 	var loginPayload struct {
 		User struct {
-			UserID string `json:"userId"`
+			UserID int32  `json:"userId"`
 			Role   string `json:"role"`
 			Status string `json:"status"`
 		} `json:"user"`
@@ -151,7 +151,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	if err := json.NewDecoder(loginResponse.Body).Decode(&loginPayload); err != nil {
 		t.Fatalf("decode login response: %v", err)
 	}
-	if loginPayload.User.UserID != "7" ||
+	if loginPayload.User.UserID != 7 ||
 		loginPayload.User.Role != "client" ||
 		loginPayload.User.Status != "active" ||
 		loginPayload.Session.SessionToken != "token-123" {
@@ -170,13 +170,13 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 
 	var profilePayload struct {
 		Profile struct {
-			UserID string `json:"userId"`
+			UserID int32 `json:"userId"`
 		} `json:"profile"`
 	}
 	if err := json.NewDecoder(profileResponse.Body).Decode(&profilePayload); err != nil {
 		t.Fatalf("decode profile response: %v", err)
 	}
-	if profilePayload.Profile.UserID != "7" {
+	if profilePayload.Profile.UserID != 7 {
 		t.Fatalf("unexpected profile payload: %+v", profilePayload)
 	}
 
@@ -192,13 +192,13 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 
 	var postPayload struct {
 		Post struct {
-			PostID string `json:"postId"`
+			PostID int32 `json:"postId"`
 		} `json:"post"`
 	}
 	if err := json.NewDecoder(postResponse.Body).Decode(&postPayload); err != nil {
 		t.Fatalf("decode post response: %v", err)
 	}
-	if postPayload.Post.PostID != "11" {
+	if postPayload.Post.PostID != 11 {
 		t.Fatalf("unexpected post payload: %+v", postPayload)
 	}
 }
