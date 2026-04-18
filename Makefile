@@ -8,9 +8,14 @@ AUTH_CONFIG_PATH ?= services/auth/configs/service.yml
 AUTH_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_auth?sslmode=disable
 PROFILE_CONFIG_PATH ?= services/profile/configs/service.yml
 PROFILE_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_profile?sslmode=disable
+CONTENT_CONFIG_PATH ?= services/content/configs/service.yml
+CONTENT_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_content?sslmode=disable
 BIN_DIR ?= bin
 
-.PHONY: tools generate proto auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down
+.PHONY: tools generate proto \
+	auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down \
+	profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down \
+	content-build content-run content-test content-test-integration content-migrate-up content-migrate-down
 
 tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
@@ -68,3 +73,22 @@ profile-migrate-up:
 
 profile-migrate-down:
 	migrate -path services/profile/migrations -database "$(PROFILE_DB_URL)" down 1
+
+content-build:
+	mkdir -p $(BIN_DIR)
+	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/content-service ./services/content/cmd/service
+
+content-run:
+	GOSUMDB=off GOPROXY=off CONTENT_CONFIG_PATH=$(CONTENT_CONFIG_PATH) go run ./services/content/cmd/service
+
+content-test:
+	GOSUMDB=off GOPROXY=off go test ./services/content/...
+
+content-test-integration:
+	GOSUMDB=off GOPROXY=off go test -tags integration ./services/content/internal/adapters/repository/postgres/...
+
+content-migrate-up:
+	migrate -path services/content/migrations -database "$(CONTENT_DB_URL)" up
+
+content-migrate-down:
+	migrate -path services/content/migrations -database "$(CONTENT_DB_URL)" down 1

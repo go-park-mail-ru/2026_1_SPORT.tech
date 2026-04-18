@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+package sporttech.content.v1;
+
+option go_package = "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1;contentv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+enum ContentBlockKind {
+  CONTENT_BLOCK_KIND_UNSPECIFIED = 0;
+  CONTENT_BLOCK_KIND_TEXT = 1;
+  CONTENT_BLOCK_KIND_IMAGE = 2;
+  CONTENT_BLOCK_KIND_VIDEO = 3;
+  CONTENT_BLOCK_KIND_DOCUMENT = 4;
+}
+
+message PostBlockInput {
+  ContentBlockKind kind = 1;
+  optional string text_content = 2;
+  optional string file_url = 3;
+}
+
+message PostBlock {
+  int64 post_block_id = 1;
+  int32 position = 2;
+  ContentBlockKind kind = 3;
+  optional string text_content = 4;
+  optional string file_url = 5;
+}
+
+message Post {
+  int64 post_id = 1;
+  int64 author_user_id = 2;
+  string title = 3;
+  optional int32 required_subscription_level = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  bool can_view = 7;
+  int64 likes_count = 8;
+  bool is_liked = 9;
+  int64 comments_count = 10;
+  repeated PostBlock blocks = 11;
+}
+
+message PostSummary {
+  int64 post_id = 1;
+  int64 author_user_id = 2;
+  string title = 3;
+  optional int32 required_subscription_level = 4;
+  google.protobuf.Timestamp created_at = 5;
+  bool can_view = 6;
+  int64 likes_count = 7;
+  bool is_liked = 8;
+  int64 comments_count = 9;
+}
+
+message Comment {
+  int64 comment_id = 1;
+  int64 post_id = 2;
+  int64 author_user_id = 3;
+  string body = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message PostResponse {
+  Post post = 1;
+}
+
+message ListAuthorPostsRequest {
+  int64 author_user_id = 1;
+  int64 viewer_user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListAuthorPostsResponse {
+  repeated PostSummary posts = 1;
+}
+
+message CreatePostRequest {
+  int64 author_user_id = 1;
+  string title = 2;
+  optional int32 required_subscription_level = 3;
+  repeated PostBlockInput blocks = 4;
+}
+
+message GetPostRequest {
+  int64 post_id = 1;
+  int64 viewer_user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+}
+
+message UpdatePostRequest {
+  int64 post_id = 1;
+  int64 author_user_id = 2;
+  optional string title = 3;
+  optional int32 required_subscription_level = 4;
+  bool clear_required_subscription_level = 5;
+  repeated PostBlockInput blocks = 6;
+  bool replace_blocks = 7;
+}
+
+message DeletePostRequest {
+  int64 post_id = 1;
+  int64 author_user_id = 2;
+}
+
+message LikePostRequest {
+  int64 post_id = 1;
+  int64 user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+}
+
+message UnlikePostRequest {
+  int64 post_id = 1;
+  int64 user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+}
+
+message PostLikeState {
+  int64 post_id = 1;
+  int64 likes_count = 2;
+  bool is_liked = 3;
+}
+
+message PostLikeStateResponse {
+  PostLikeState state = 1;
+}
+
+message CreateCommentRequest {
+  int64 post_id = 1;
+  int64 author_user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+  string body = 4;
+}
+
+message CommentResponse {
+  Comment comment = 1;
+}
+
+message ListCommentsRequest {
+  int64 post_id = 1;
+  int64 viewer_user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListCommentsResponse {
+  repeated Comment comments = 1;
+}
+
+service ContentService {
+  rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
+    option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
+  }
+
+  rpc CreatePost(CreatePostRequest) returns (PostResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts"
+      body: "*"
+    };
+  }
+
+  rpc GetPost(GetPostRequest) returns (PostResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}";
+  }
+
+  rpc UpdatePost(UpdatePostRequest) returns (PostResponse) {
+    option (google.api.http) = {
+      patch: "/v1/posts/{post_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/posts/{post_id}";
+  }
+
+  rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/{post_id}/likes"
+      body: "*"
+    };
+  }
+
+  rpc UnlikePost(UnlikePostRequest) returns (PostLikeStateResponse) {
+    option (google.api.http).delete = "/v1/posts/{post_id}/likes/{user_id}";
+  }
+
+  rpc CreateComment(CreateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/{post_id}/comments"
+      body: "*"
+    };
+  }
+
+  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/comments";
+  }
+}
