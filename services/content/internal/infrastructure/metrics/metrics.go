@@ -92,8 +92,16 @@ func (metrics *Metrics) HTTPMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(recorder, request)
 
 		statusCode := strconv.Itoa(recorder.statusCode)
-		metrics.httpRequests.WithLabelValues(request.Method, request.URL.Path, statusCode).Inc()
-		metrics.httpLatency.WithLabelValues(request.Method, request.URL.Path, statusCode).Observe(time.Since(startedAt).Seconds())
+		path := recorder.routePattern
+		if path == "" {
+			path = request.Pattern
+		}
+		if path == "" {
+			path = request.URL.Path
+		}
+
+		metrics.httpRequests.WithLabelValues(request.Method, path, statusCode).Inc()
+		metrics.httpLatency.WithLabelValues(request.Method, path, statusCode).Observe(time.Since(startedAt).Seconds())
 	})
 }
 
@@ -117,10 +125,15 @@ func (metrics *Metrics) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 
 type statusRecorder struct {
 	http.ResponseWriter
-	statusCode int
+	statusCode   int
+	routePattern string
 }
 
 func (recorder *statusRecorder) WriteHeader(statusCode int) {
 	recorder.statusCode = statusCode
 	recorder.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (recorder *statusRecorder) SetRoutePattern(routePattern string) {
+	recorder.routePattern = routePattern
 }

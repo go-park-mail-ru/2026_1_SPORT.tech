@@ -13,8 +13,8 @@ import (
 	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
 	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/adapters/grpc"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/config"
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/health"
 	grpcserverinfra "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/grpcserver"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/health"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/httpgateway"
 	loggerinfra "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/logger"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/metrics"
@@ -55,7 +55,13 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		profilev1.NewProfileServiceClient(profileConn),
 		contentv1.NewContentServiceClient(contentConn),
 	)
-	grpcServer, err := grpcserverinfra.New(cfg.Server.GRPCListenAddress(), gatewayService, gatewayService, gatewayService)
+	grpcServer, err := grpcserverinfra.New(
+		cfg.Server.GRPCListenAddress(),
+		gatewayService,
+		gatewayService,
+		gatewayService,
+		metricsSet,
+	)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()
