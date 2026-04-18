@@ -183,7 +183,7 @@ services:
       cadvisor:
         condition: service_started
     ports:
-      - "9090:9090"
+      - "8090:9090"
     restart: unless-stopped
     networks:
       - backend
@@ -202,7 +202,7 @@ services:
       prometheus:
         condition: service_started
     ports:
-      - "3000:3000"
+      - "8100:3000"
     restart: unless-stopped
     networks:
       - backend
