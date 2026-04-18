@@ -17,7 +17,7 @@ proto:
 		--go_out=paths=source_relative:$(PROTO_GEN_GO_DIR) \
 		--go-grpc_out=paths=source_relative,require_unimplemented_servers=false:$(PROTO_GEN_GO_DIR) \
 		--grpc-gateway_out=paths=source_relative:$(PROTO_GEN_GO_DIR) \
-		--openapiv2_out=allow_merge=false:$(PROTO_GEN_OPENAPI_DIR) \
+		--openapiv2_out=allow_merge=false,json_names_for_fields=false:$(PROTO_GEN_OPENAPI_DIR) \
 		$(PROTO_FILES)
 	rm -rf $(PROTO_GEN_OPENAPI_DIR)/google $(PROTO_GEN_OPENAPI_DIR)/protoc-gen-openapiv2
 

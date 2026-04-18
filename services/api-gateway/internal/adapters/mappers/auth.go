@@ -6,20 +6,25 @@ import (
 
 	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
 	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
+	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
 )
 
-func RegisterRequestToAuth(request *gatewayv1.RegisterRequest) (*authv1.RegisterRequest, error) {
-	role, err := publicRoleToAuthRole(request.GetRole())
-	if err != nil {
-		return nil, err
-	}
-
+func RegisterClientRequestToAuth(request *gatewayv1.ClientRegisterRequest) *authv1.RegisterRequest {
 	return &authv1.RegisterRequest{
 		Email:    request.GetEmail(),
 		Username: request.GetUsername(),
 		Password: request.GetPassword(),
-		Role:     role,
-	}, nil
+		Role:     authv1.UserRole_USER_ROLE_CLIENT,
+	}
+}
+
+func RegisterTrainerRequestToAuth(request *gatewayv1.TrainerRegisterRequest) *authv1.RegisterRequest {
+	return &authv1.RegisterRequest{
+		Email:    request.GetEmail(),
+		Username: request.GetUsername(),
+		Password: request.GetPassword(),
+		Role:     authv1.UserRole_USER_ROLE_TRAINER,
+	}
 }
 
 func LoginRequestToAuth(request *gatewayv1.LoginRequest) *authv1.LoginRequest {
@@ -29,49 +34,18 @@ func LoginRequestToAuth(request *gatewayv1.LoginRequest) *authv1.LoginRequest {
 	}
 }
 
-func LogoutRequestToAuth(request *gatewayv1.LogoutRequest) *authv1.LogoutRequest {
-	return &authv1.LogoutRequest{SessionToken: request.GetSessionToken()}
-}
-
-func ResolveSessionRequestToAuth(request *gatewayv1.ResolveSessionRequest) *authv1.GetSessionRequest {
-	return &authv1.GetSessionRequest{SessionToken: request.GetSessionToken()}
-}
-
-func AuthSessionResponseFromAuth(response *authv1.AuthSessionResponse) (*gatewayv1.AuthSessionResponse, error) {
-	if response == nil {
-		return nil, nil
-	}
-
-	user, err := authUserFromAuth(response.GetUser())
+func AuthResponseFromServices(user *authv1.AuthUser, profile *profilev1.Profile) (*gatewayv1.AuthResponse, error) {
+	mappedUser, err := UserFromServices(user, profile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &gatewayv1.AuthSessionResponse{
-		User:    user,
-		Session: sessionInfoFromAuth(response.GetSession()),
-	}, nil
+	return &gatewayv1.AuthResponse{User: mappedUser}, nil
 }
 
-func ResolveSessionResponseFromAuth(response *authv1.GetSessionResponse) (*gatewayv1.ResolveSessionResponse, error) {
-	if response == nil {
-		return nil, nil
-	}
-
-	user, err := authUserFromAuth(response.GetUser())
-	if err != nil {
-		return nil, err
-	}
-
-	return &gatewayv1.ResolveSessionResponse{
-		User:    user,
-		Session: sessionInfoFromAuth(response.GetSession()),
-	}, nil
-}
-
-func authUserFromAuth(user *authv1.AuthUser) (*gatewayv1.AuthUser, error) {
-	if user == nil {
-		return nil, nil
+func UserFromServices(user *authv1.AuthUser, profile *profilev1.Profile) (*gatewayv1.User, error) {
+	if user == nil || profile == nil {
+		return nil, fmt.Errorf("user and profile are required")
 	}
 
 	userID, err := int64ToInt32("auth.user_id", user.GetUserId())
@@ -79,55 +53,43 @@ func authUserFromAuth(user *authv1.AuthUser) (*gatewayv1.AuthUser, error) {
 		return nil, err
 	}
 
-	return &gatewayv1.AuthUser{
-		UserId:   userID,
-		Email:    user.GetEmail(),
-		Username: user.GetUsername(),
-		Role:     authRoleToPublicRole(user.GetRole()),
-		Status:   authStatusToPublicStatus(user.GetStatus()),
+	return &gatewayv1.User{
+		UserId:    userID,
+		Username:  profile.GetUsername(),
+		Email:     user.GetEmail(),
+		CreatedAt: profile.GetCreatedAt(),
+		UpdatedAt: profile.GetUpdatedAt(),
+		IsTrainer: profile.GetIsTrainer(),
+		IsAdmin:   user.GetRole() == authv1.UserRole_USER_ROLE_ADMIN,
+		FirstName: profile.GetFirstName(),
+		LastName:  profile.GetLastName(),
+		Bio:       profile.Bio,
+		AvatarUrl: profile.AvatarUrl,
 	}, nil
 }
 
-func sessionInfoFromAuth(session *authv1.SessionInfo) *gatewayv1.SessionInfo {
-	if session == nil {
+func PasswordsMatch(password, passwordRepeat string) bool {
+	return password == passwordRepeat
+}
+
+func RequireTrainerRole(user *authv1.AuthUser) error {
+	if user == nil {
+		return fmt.Errorf("user is required")
+	}
+
+	switch user.GetRole() {
+	case authv1.UserRole_USER_ROLE_TRAINER, authv1.UserRole_USER_ROLE_ADMIN:
 		return nil
-	}
-
-	return &gatewayv1.SessionInfo{
-		SessionToken: session.GetSessionToken(),
-		ExpiresAt:    session.GetExpiresAt(),
+	default:
+		return fmt.Errorf("only trainer can perform this action")
 	}
 }
 
-func publicRoleToAuthRole(role string) (authv1.UserRole, error) {
-	switch strings.ToLower(strings.TrimSpace(role)) {
-	case "", "client", "user_role_client":
-		return authv1.UserRole_USER_ROLE_CLIENT, nil
-	case "trainer", "user_role_trainer":
-		return authv1.UserRole_USER_ROLE_TRAINER, nil
-	case "admin", "user_role_admin":
-		return authv1.UserRole_USER_ROLE_ADMIN, nil
+func NormalizeStatusCode(code string) string {
+	switch strings.ToLower(strings.TrimSpace(code)) {
+	case "", "bad_request":
+		return "bad_request"
 	default:
-		return authv1.UserRole_USER_ROLE_UNSPECIFIED, fmt.Errorf("invalid role %q", role)
-	}
-}
-
-func authRoleToPublicRole(role authv1.UserRole) string {
-	switch role {
-	case authv1.UserRole_USER_ROLE_TRAINER:
-		return "trainer"
-	case authv1.UserRole_USER_ROLE_ADMIN:
-		return "admin"
-	default:
-		return "client"
-	}
-}
-
-func authStatusToPublicStatus(status authv1.AccountStatus) string {
-	switch status {
-	case authv1.AccountStatus_ACCOUNT_STATUS_DISABLED:
-		return "disabled"
-	default:
-		return "active"
+		return code
 	}
 }

@@ -10,15 +10,15 @@ import (
 	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var gatewayOpenAPITagAliases = map[string]string{
-	"AuthService":           "Auth Service",
-	"ProfileService":        "Profile Service",
-	"ContentService":        "Content Service",
-	"GatewayAuthService":    "Auth Service",
-	"GatewayProfileService": "Profile Service",
-	"GatewayContentService": "Content Service",
+	"AuthService":     "Auth",
+	"ProfileService":  "Profile",
+	"PostService":     "Post",
+	"SportService":    "Sport",
+	"DonationService": "Donation",
 }
 
 const gatewayOpenAPIBasePath = "/api"
@@ -27,7 +27,9 @@ func NewMux(
 	ctx context.Context,
 	authServer gatewayv1.AuthServiceServer,
 	profileServer gatewayv1.ProfileServiceServer,
-	contentServer gatewayv1.ContentServiceServer,
+	postServer gatewayv1.PostServiceServer,
+	sportServer gatewayv1.SportServiceServer,
+	donationServer gatewayv1.DonationServiceServer,
 ) (http.Handler, error) {
 	mux := newMux()
 
@@ -37,7 +39,13 @@ func NewMux(
 	if err := gatewayv1.RegisterProfileServiceHandlerServer(ctx, mux, profileServer); err != nil {
 		return nil, err
 	}
-	if err := gatewayv1.RegisterContentServiceHandlerServer(ctx, mux, contentServer); err != nil {
+	if err := gatewayv1.RegisterPostServiceHandlerServer(ctx, mux, postServer); err != nil {
+		return nil, err
+	}
+	if err := gatewayv1.RegisterSportServiceHandlerServer(ctx, mux, sportServer); err != nil {
+		return nil, err
+	}
+	if err := gatewayv1.RegisterDonationServiceHandlerServer(ctx, mux, donationServer); err != nil {
 		return nil, err
 	}
 
@@ -80,9 +88,44 @@ func GatewayOpenAPIHandler(filePath string) http.Handler {
 
 func newMux() *runtime.ServeMux {
 	return runtime.NewServeMux(
+		runtime.WithMarshalerOption(
+			runtime.MIMEWildcard,
+			&runtime.HTTPBodyMarshaler{
+				Marshaler: &runtime.JSONPb{
+					MarshalOptions: protojson.MarshalOptions{UseProtoNames: true},
+					UnmarshalOptions: protojson.UnmarshalOptions{
+						DiscardUnknown: true,
+					},
+				},
+			},
+		),
 		runtime.WithIncomingHeaderMatcher(incomingHeaderMatcher),
+		runtime.WithOutgoingHeaderMatcher(outgoingHeaderMatcher),
 		runtime.WithMetadata(incomingMetadata),
+		runtime.WithForwardResponseOption(forwardResponseOption),
+		runtime.WithErrorHandler(httpErrorHandler),
+		runtime.WithRoutingErrorHandler(routingErrorHandler),
+		runtime.WithMiddlewares(routePatternMiddleware(gatewayOpenAPIBasePath)),
 	)
+}
+
+func routePatternMiddleware(prefix string) runtime.Middleware {
+	return func(next runtime.HandlerFunc) runtime.HandlerFunc {
+		return func(writer http.ResponseWriter, request *http.Request, pathParams map[string]string) {
+			pattern, ok := runtime.HTTPPathPattern(request.Context())
+			if ok {
+				if prefix != "" {
+					pattern = prefix + pattern
+				}
+
+				if setter, ok := writer.(interface{ SetRoutePattern(string) }); ok {
+					setter.SetRoutePattern(pattern)
+				}
+			}
+
+			next(writer, request, pathParams)
+		}
+	}
 }
 
 func incomingHeaderMatcher(key string) (string, bool) {
@@ -102,8 +145,17 @@ func incomingMetadata(ctx context.Context, request *http.Request) metadata.MD {
 			metadataPairs.Set(header, value)
 		}
 	}
+	if metadataPairs.Get("x-session-token") == nil {
+		if sessionCookie, err := request.Cookie("sid"); err == nil && strings.TrimSpace(sessionCookie.Value) != "" {
+			metadataPairs.Set("x-session-token", sessionCookie.Value)
+		}
+	}
 
 	return metadataPairs
+}
+
+func outgoingHeaderMatcher(key string) (string, bool) {
+	return "", false
 }
 
 func rewriteOpenAPISpec(data []byte, tagAliases map[string]string, basePath string) ([]byte, error) {
@@ -164,6 +216,34 @@ func rewriteOpenAPISpec(data []byte, tagAliases map[string]string, basePath stri
 	if basePath != "" {
 		document["basePath"] = basePath
 	}
+	rewriteAvatarUploadOperation(document)
 
 	return json.Marshal(document)
+}
+
+func rewriteAvatarUploadOperation(document map[string]any) {
+	paths, ok := document["paths"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	pathItem, ok := paths["/v1/profiles/me/avatar"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	postOperation, ok := pathItem["post"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	postOperation["consumes"] = []any{"multipart/form-data"}
+	postOperation["parameters"] = []any{
+		map[string]any{
+			"name":     "avatar",
+			"in":       "formData",
+			"required": true,
+			"type":     "file",
+		},
+	}
 }

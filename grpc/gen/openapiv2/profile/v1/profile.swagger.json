@@ -80,7 +80,7 @@
         ]
       }
     },
-    "/v1/profiles/{userId}": {
+    "/v1/profiles/{user_id}": {
       "get": {
         "operationId": "ProfileService_GetProfile",
         "responses": {
@@ -99,7 +99,7 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -128,7 +128,7 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -148,7 +148,7 @@
         ]
       }
     },
-    "/v1/profiles/{userId}/avatar": {
+    "/v1/profiles/{user_id}/avatar": {
       "delete": {
         "operationId": "ProfileService_DeleteAvatar",
         "responses": {
@@ -168,7 +168,7 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -197,7 +197,7 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -247,16 +247,16 @@
         "username": {
           "type": "string"
         },
-        "firstName": {
+        "first_name": {
           "type": "string"
         },
-        "lastName": {
+        "last_name": {
           "type": "string"
         },
         "bio": {
           "type": "string"
         },
-        "trainerDetails": {
+        "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
         }
       }
@@ -264,10 +264,10 @@
     "ProfileServiceUploadAvatarBody": {
       "type": "object",
       "properties": {
-        "fileName": {
+        "file_name": {
           "type": "string"
         },
-        "contentType": {
+        "content_type": {
           "type": "string"
         },
         "content": {
@@ -307,26 +307,26 @@
     "v1AuthorSummary": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "int64"
         },
         "username": {
           "type": "string"
         },
-        "firstName": {
+        "first_name": {
           "type": "string"
         },
-        "lastName": {
+        "last_name": {
           "type": "string"
         },
         "bio": {
           "type": "string"
         },
-        "avatarUrl": {
+        "avatar_url": {
           "type": "string"
         },
-        "trainerDetails": {
+        "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
         }
       }
@@ -334,26 +334,26 @@
     "v1CreateProfileRequest": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "int64"
         },
         "username": {
           "type": "string"
         },
-        "firstName": {
+        "first_name": {
           "type": "string"
         },
-        "lastName": {
+        "last_name": {
           "type": "string"
         },
         "bio": {
           "type": "string"
         },
-        "isTrainer": {
+        "is_trainer": {
           "type": "boolean"
         },
-        "trainerDetails": {
+        "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
         }
       }
@@ -361,7 +361,7 @@
     "v1ListSportTypesResponse": {
       "type": "object",
       "properties": {
-        "sportTypes": {
+        "sport_types": {
           "type": "array",
           "items": {
             "type": "object",
@@ -373,37 +373,37 @@
     "v1Profile": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "int64"
         },
         "username": {
           "type": "string"
         },
-        "firstName": {
+        "first_name": {
           "type": "string"
         },
-        "lastName": {
+        "last_name": {
           "type": "string"
         },
         "bio": {
           "type": "string"
         },
-        "avatarUrl": {
+        "avatar_url": {
           "type": "string"
         },
-        "isTrainer": {
+        "is_trainer": {
           "type": "boolean"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "updatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "trainerDetails": {
+        "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
         }
       }
@@ -422,7 +422,7 @@
         "query": {
           "type": "string"
         },
-        "sportTypeIds": {
+        "sport_type_ids": {
           "type": "array",
           "items": {
             "type": "string",
@@ -454,7 +454,7 @@
     "v1SportType": {
       "type": "object",
       "properties": {
-        "sportTypeId": {
+        "sport_type_id": {
           "type": "string",
           "format": "int64"
         },
@@ -466,10 +466,10 @@
     "v1TrainerDetails": {
       "type": "object",
       "properties": {
-        "educationDegree": {
+        "education_degree": {
           "type": "string"
         },
-        "careerSinceDate": {
+        "career_since_date": {
           "type": "string",
           "format": "date-time"
         },
@@ -485,15 +485,15 @@
     "v1TrainerSport": {
       "type": "object",
       "properties": {
-        "sportTypeId": {
+        "sport_type_id": {
           "type": "string",
           "format": "int64"
         },
-        "experienceYears": {
+        "experience_years": {
           "type": "integer",
           "format": "int32"
         },
-        "sportsRank": {
+        "sports_rank": {
           "type": "string"
         }
       }

@@ -52,7 +52,27 @@ func newMux() *runtime.ServeMux {
 	return runtime.NewServeMux(
 		runtime.WithIncomingHeaderMatcher(incomingHeaderMatcher),
 		runtime.WithMetadata(incomingMetadata),
+		runtime.WithMiddlewares(routePatternMiddleware("")),
 	)
+}
+
+func routePatternMiddleware(prefix string) runtime.Middleware {
+	return func(next runtime.HandlerFunc) runtime.HandlerFunc {
+		return func(writer http.ResponseWriter, request *http.Request, pathParams map[string]string) {
+			pattern, ok := runtime.HTTPPathPattern(request.Context())
+			if ok {
+				if prefix != "" {
+					pattern = prefix + pattern
+				}
+
+				if setter, ok := writer.(interface{ SetRoutePattern(string) }); ok {
+					setter.SetRoutePattern(pattern)
+				}
+			}
+
+			next(writer, request, pathParams)
+		}
+	}
 }
 
 func incomingHeaderMatcher(key string) (string, bool) {

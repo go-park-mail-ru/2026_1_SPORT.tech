@@ -1,93 +1,144 @@
 package mappers
 
 import (
+	"fmt"
+	"strings"
+	"time"
+
 	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func CreateProfileRequestToProfile(request *gatewayv1.CreateProfileRequest) *profilev1.CreateProfileRequest {
-	return &profilev1.CreateProfileRequest{
-		UserId:         int32ToInt64(request.GetUserId()),
-		Username:       request.GetUsername(),
-		FirstName:      request.GetFirstName(),
-		LastName:       request.GetLastName(),
-		Bio:            request.Bio,
-		IsTrainer:      request.GetIsTrainer(),
-		TrainerDetails: trainerDetailsToProfile(request.GetTrainerDetails()),
-	}
-}
+const publicDateLayout = "2006-01-02"
 
-func GetProfileRequestToProfile(request *gatewayv1.GetProfileRequest) *profilev1.GetProfileRequest {
-	return &profilev1.GetProfileRequest{UserId: int32ToInt64(request.GetUserId())}
-}
-
-func UpdateProfileRequestToProfile(request *gatewayv1.UpdateProfileRequest) *profilev1.UpdateProfileRequest {
-	return &profilev1.UpdateProfileRequest{
-		UserId:         int32ToInt64(request.GetUserId()),
-		Username:       request.Username,
-		FirstName:      request.FirstName,
-		LastName:       request.LastName,
-		Bio:            request.Bio,
-		TrainerDetails: trainerDetailsToProfile(request.GetTrainerDetails()),
-	}
-}
-
-func SearchAuthorsRequestToProfile(request *gatewayv1.SearchAuthorsRequest) *profilev1.SearchAuthorsRequest {
-	return &profilev1.SearchAuthorsRequest{
-		Query:        request.GetQuery(),
-		SportTypeIds: int32SliceToInt64Slice(request.GetSportTypeIds()),
-		Limit:        request.GetLimit(),
-		Offset:       request.GetOffset(),
-	}
-}
-
-func UploadAvatarRequestToProfile(request *gatewayv1.UploadAvatarRequest) *profilev1.UploadAvatarRequest {
-	return &profilev1.UploadAvatarRequest{
-		UserId:      int32ToInt64(request.GetUserId()),
-		FileName:    request.GetFileName(),
-		ContentType: request.GetContentType(),
-		Content:     request.GetContent(),
-	}
-}
-
-func DeleteAvatarRequestToProfile(request *gatewayv1.DeleteAvatarRequest) *profilev1.DeleteAvatarRequest {
-	return &profilev1.DeleteAvatarRequest{UserId: int32ToInt64(request.GetUserId())}
-}
-
-func ProfileResponseFromProfile(response *profilev1.ProfileResponse) (*gatewayv1.ProfileResponse, error) {
-	if response == nil {
-		return nil, nil
-	}
-
-	profile, err := profileFromProfile(response.GetProfile())
+func CreateProfileRequestToProfile(
+	userID int64,
+	username string,
+	firstName string,
+	lastName string,
+	isTrainer bool,
+	trainerDetails *gatewayv1.TrainerDetails,
+) (*profilev1.CreateProfileRequest, error) {
+	mappedTrainerDetails, err := trainerDetailsToProfile(trainerDetails)
 	if err != nil {
 		return nil, err
 	}
 
-	return &gatewayv1.ProfileResponse{Profile: profile}, nil
+	return &profilev1.CreateProfileRequest{
+		UserId:         userID,
+		Username:       username,
+		FirstName:      firstName,
+		LastName:       lastName,
+		IsTrainer:      isTrainer,
+		TrainerDetails: mappedTrainerDetails,
+	}, nil
 }
 
-func SearchAuthorsResponseFromProfile(response *profilev1.SearchAuthorsResponse) (*gatewayv1.SearchAuthorsResponse, error) {
-	if response == nil {
-		return nil, nil
+func UpdateMyProfileRequestToProfile(
+	userID int64,
+	request *gatewayv1.UpdateMyProfileRequest,
+) (*profilev1.UpdateProfileRequest, error) {
+	mappedTrainerDetails, err := trainerDetailsToProfile(request.GetTrainerDetails())
+	if err != nil {
+		return nil, err
 	}
 
-	authors := make([]*gatewayv1.AuthorSummary, 0, len(response.GetAuthors()))
+	return &profilev1.UpdateProfileRequest{
+		UserId:         userID,
+		Username:       request.Username,
+		FirstName:      request.FirstName,
+		LastName:       request.LastName,
+		Bio:            request.Bio,
+		TrainerDetails: mappedTrainerDetails,
+	}, nil
+}
+
+func UploadMyAvatarRequestToProfile(
+	userID int64,
+	request *gatewayv1.UploadMyAvatarRequest,
+) *profilev1.UploadAvatarRequest {
+	fileName := strings.TrimSpace(request.GetFileName())
+	if fileName == "" {
+		fileName = "avatar.bin"
+	}
+
+	contentType := strings.TrimSpace(request.GetContentType())
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	return &profilev1.UploadAvatarRequest{
+		UserId:      userID,
+		FileName:    fileName,
+		ContentType: contentType,
+		Content:     request.GetAvatar(),
+	}
+}
+
+func ProfileResponseFromProfile(profile *profilev1.Profile, currentUserID int64) (*gatewayv1.ProfileResponse, error) {
+	if profile == nil {
+		return nil, fmt.Errorf("profile is required")
+	}
+
+	userID, err := int64ToInt32("profile.user_id", profile.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	trainerDetails, err := trainerDetailsFromProfile(profile.GetTrainerDetails())
+	if err != nil {
+		return nil, err
+	}
+
+	return &gatewayv1.ProfileResponse{
+		UserId:         userID,
+		IsMe:           currentUserID > 0 && currentUserID == profile.GetUserId(),
+		IsTrainer:      profile.GetIsTrainer(),
+		Username:       profile.GetUsername(),
+		FirstName:      profile.GetFirstName(),
+		LastName:       profile.GetLastName(),
+		Bio:            profile.Bio,
+		AvatarUrl:      profile.AvatarUrl,
+		TrainerDetails: trainerDetails,
+	}, nil
+}
+
+func GetTrainersResponseFromProfile(response *profilev1.SearchAuthorsResponse) (*gatewayv1.GetTrainersResponse, error) {
+	if response == nil {
+		return &gatewayv1.GetTrainersResponse{}, nil
+	}
+
+	trainers := make([]*gatewayv1.TrainerListItem, 0, len(response.GetAuthors()))
 	for _, author := range response.GetAuthors() {
-		mappedAuthor, err := authorSummaryFromProfile(author)
+		userID, err := int64ToInt32("profile.author.user_id", author.GetUserId())
 		if err != nil {
 			return nil, err
 		}
 
-		authors = append(authors, mappedAuthor)
+		trainerDetails, err := trainerDetailsFromProfile(author.GetTrainerDetails())
+		if err != nil {
+			return nil, err
+		}
+
+		trainers = append(trainers, &gatewayv1.TrainerListItem{
+			UserId:         userID,
+			IsTrainer:      true,
+			Username:       author.GetUsername(),
+			FirstName:      author.GetFirstName(),
+			LastName:       author.GetLastName(),
+			Bio:            author.Bio,
+			AvatarUrl:      author.AvatarUrl,
+			TrainerDetails: trainerDetails,
+		})
 	}
 
-	return &gatewayv1.SearchAuthorsResponse{Authors: authors}, nil
+	return &gatewayv1.GetTrainersResponse{Trainers: trainers}, nil
 }
 
-func ListSportTypesResponseFromProfile(response *profilev1.ListSportTypesResponse) (*gatewayv1.ListSportTypesResponse, error) {
+func SportTypesResponseFromProfile(response *profilev1.ListSportTypesResponse) (*gatewayv1.SportTypesResponse, error) {
 	if response == nil {
-		return nil, nil
+		return &gatewayv1.SportTypesResponse{}, nil
 	}
 
 	sportTypes := make([]*gatewayv1.SportType, 0, len(response.GetSportTypes()))
@@ -103,12 +154,21 @@ func ListSportTypesResponseFromProfile(response *profilev1.ListSportTypesRespons
 		})
 	}
 
-	return &gatewayv1.ListSportTypesResponse{SportTypes: sportTypes}, nil
+	return &gatewayv1.SportTypesResponse{SportTypes: sportTypes}, nil
 }
 
-func trainerDetailsToProfile(details *gatewayv1.TrainerDetails) *profilev1.TrainerDetails {
+func AvatarUploadResponseFromProfile(profile *profilev1.Profile) *gatewayv1.AvatarUploadResponse {
+	response := &gatewayv1.AvatarUploadResponse{}
+	if profile != nil && profile.AvatarUrl != nil {
+		response.AvatarUrl = *profile.AvatarUrl
+	}
+
+	return response
+}
+
+func trainerDetailsToProfile(details *gatewayv1.TrainerDetails) (*profilev1.TrainerDetails, error) {
 	if details == nil {
-		return nil
+		return nil, nil
 	}
 
 	sports := make([]*profilev1.TrainerSport, 0, len(details.GetSports()))
@@ -120,11 +180,19 @@ func trainerDetailsToProfile(details *gatewayv1.TrainerDetails) *profilev1.Train
 		})
 	}
 
-	return &profilev1.TrainerDetails{
+	response := &profilev1.TrainerDetails{
 		EducationDegree: details.EducationDegree,
-		CareerSinceDate: details.CareerSinceDate,
 		Sports:          sports,
 	}
+	if details.CareerSinceDate != nil {
+		parsedDate, err := time.Parse(publicDateLayout, details.GetCareerSinceDate())
+		if err != nil {
+			return nil, fmt.Errorf("invalid career_since_date: %w", err)
+		}
+		response.CareerSinceDate = timestamppb.New(parsedDate.UTC())
+	}
+
+	return response, nil
 }
 
 func trainerDetailsFromProfile(details *profilev1.TrainerDetails) (*gatewayv1.TrainerDetails, error) {
@@ -146,64 +214,14 @@ func trainerDetailsFromProfile(details *profilev1.TrainerDetails) (*gatewayv1.Tr
 		})
 	}
 
-	return &gatewayv1.TrainerDetails{
+	response := &gatewayv1.TrainerDetails{
 		EducationDegree: details.EducationDegree,
-		CareerSinceDate: details.CareerSinceDate,
 		Sports:          sports,
-	}, nil
-}
-
-func profileFromProfile(profile *profilev1.Profile) (*gatewayv1.Profile, error) {
-	if profile == nil {
-		return nil, nil
+	}
+	if details.CareerSinceDate != nil {
+		formattedDate := details.GetCareerSinceDate().AsTime().UTC().Format(publicDateLayout)
+		response.CareerSinceDate = &formattedDate
 	}
 
-	userID, err := int64ToInt32("profile.user_id", profile.GetUserId())
-	if err != nil {
-		return nil, err
-	}
-
-	trainerDetails, err := trainerDetailsFromProfile(profile.GetTrainerDetails())
-	if err != nil {
-		return nil, err
-	}
-
-	return &gatewayv1.Profile{
-		UserId:         userID,
-		Username:       profile.GetUsername(),
-		FirstName:      profile.GetFirstName(),
-		LastName:       profile.GetLastName(),
-		Bio:            profile.Bio,
-		AvatarUrl:      profile.AvatarUrl,
-		IsTrainer:      profile.GetIsTrainer(),
-		CreatedAt:      profile.GetCreatedAt(),
-		UpdatedAt:      profile.GetUpdatedAt(),
-		TrainerDetails: trainerDetails,
-	}, nil
-}
-
-func authorSummaryFromProfile(author *profilev1.AuthorSummary) (*gatewayv1.AuthorSummary, error) {
-	if author == nil {
-		return nil, nil
-	}
-
-	userID, err := int64ToInt32("profile.author.user_id", author.GetUserId())
-	if err != nil {
-		return nil, err
-	}
-
-	trainerDetails, err := trainerDetailsFromProfile(author.GetTrainerDetails())
-	if err != nil {
-		return nil, err
-	}
-
-	return &gatewayv1.AuthorSummary{
-		UserId:         userID,
-		Username:       author.GetUsername(),
-		FirstName:      author.GetFirstName(),
-		LastName:       author.GetLastName(),
-		Bio:            author.Bio,
-		AvatarUrl:      author.AvatarUrl,
-		TrainerDetails: trainerDetails,
-	}, nil
+	return response, nil
 }
