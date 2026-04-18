@@ -303,7 +303,7 @@ message ListCommentsResponse {
   repeated Comment comments = 1;
 }
 
-service GatewayService {
+service AuthService {
   rpc Register(RegisterRequest) returns (AuthSessionResponse) {
     option (google.api.http) = {
       post: "/v1/auth/register"
@@ -331,7 +331,9 @@ service GatewayService {
       body: "*"
     };
   }
+}
 
+service ProfileService {
   rpc CreateProfile(CreateProfileRequest) returns (ProfileResponse) {
     option (google.api.http) = {
       post: "/v1/profiles"
@@ -371,7 +373,9 @@ service GatewayService {
   rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
     option (google.api.http).get = "/v1/sport-types";
   }
+}
 
+service ContentService {
   rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
     option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
   }

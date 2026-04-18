@@ -3141,12 +3141,13 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x17CONTENT_BLOCK_KIND_TEXT\x10\x01\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_IMAGE\x10\x02\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_VIDEO\x10\x03\x12\x1f\n" +
-	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\x97\x14\n" +
-	"\x0eGatewayService\x12z\n" +
+	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\xf3\x03\n" +
+	"\vAuthService\x12z\n" +
 	"\bRegister\x12%.sporttech.gateway.v1.RegisterRequest\x1a).sporttech.gateway.v1.AuthSessionResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/auth/register\x12q\n" +
 	"\x05Login\x12\".sporttech.gateway.v1.LoginRequest\x1a).sporttech.gateway.v1.AuthSessionResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12a\n" +
 	"\x06Logout\x12#.sporttech.gateway.v1.LogoutRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logout\x12\x91\x01\n" +
-	"\x0eResolveSession\x12+.sporttech.gateway.v1.ResolveSessionRequest\x1a,.sporttech.gateway.v1.ResolveSessionResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/sessions:resolve\x12{\n" +
+	"\x0eResolveSession\x12+.sporttech.gateway.v1.ResolveSessionRequest\x1a,.sporttech.gateway.v1.ResolveSessionResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/sessions:resolve2\x95\a\n" +
+	"\x0eProfileService\x12{\n" +
 	"\rCreateProfile\x12*.sporttech.gateway.v1.CreateProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/profiles\x12|\n" +
 	"\n" +
 	"GetProfile\x12'.sporttech.gateway.v1.GetProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12\x85\x01\n" +
@@ -3154,7 +3155,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\rSearchAuthors\x12*.sporttech.gateway.v1.SearchAuthorsRequest\x1a+.sporttech.gateway.v1.SearchAuthorsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authors:search\x12\x8a\x01\n" +
 	"\fUploadAvatar\x12).sporttech.gateway.v1.UploadAvatarRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/v1/profiles/{user_id}/avatar\x12x\n" +
 	"\fDeleteAvatar\x12).sporttech.gateway.v1.DeleteAvatarRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/v1/profiles/{user_id}/avatar\x12o\n" +
-	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a,.sporttech.gateway.v1.ListSportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-types\x12\x9a\x01\n" +
+	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a,.sporttech.gateway.v1.ListSportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-types2\xac\t\n" +
+	"\x0eContentService\x12\x9a\x01\n" +
 	"\x0fListAuthorPosts\x12,.sporttech.gateway.v1.ListAuthorPostsRequest\x1a-.sporttech.gateway.v1.ListAuthorPostsResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/authors/{author_user_id}/posts\x12o\n" +
 	"\n" +
 	"CreatePost\x12'.sporttech.gateway.v1.CreatePostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12p\n" +
@@ -3267,46 +3269,46 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	39, // 31: sporttech.gateway.v1.PostLikeStateResponse.state:type_name -> sporttech.gateway.v1.PostLikeState
 	29, // 32: sporttech.gateway.v1.CommentResponse.comment:type_name -> sporttech.gateway.v1.Comment
 	29, // 33: sporttech.gateway.v1.ListCommentsResponse.comments:type_name -> sporttech.gateway.v1.Comment
-	6,  // 34: sporttech.gateway.v1.GatewayService.Register:input_type -> sporttech.gateway.v1.RegisterRequest
-	7,  // 35: sporttech.gateway.v1.GatewayService.Login:input_type -> sporttech.gateway.v1.LoginRequest
-	8,  // 36: sporttech.gateway.v1.GatewayService.Logout:input_type -> sporttech.gateway.v1.LogoutRequest
-	9,  // 37: sporttech.gateway.v1.GatewayService.ResolveSession:input_type -> sporttech.gateway.v1.ResolveSessionRequest
-	17, // 38: sporttech.gateway.v1.GatewayService.CreateProfile:input_type -> sporttech.gateway.v1.CreateProfileRequest
-	18, // 39: sporttech.gateway.v1.GatewayService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
-	19, // 40: sporttech.gateway.v1.GatewayService.UpdateProfile:input_type -> sporttech.gateway.v1.UpdateProfileRequest
-	20, // 41: sporttech.gateway.v1.GatewayService.SearchAuthors:input_type -> sporttech.gateway.v1.SearchAuthorsRequest
-	22, // 42: sporttech.gateway.v1.GatewayService.UploadAvatar:input_type -> sporttech.gateway.v1.UploadAvatarRequest
-	23, // 43: sporttech.gateway.v1.GatewayService.DeleteAvatar:input_type -> sporttech.gateway.v1.DeleteAvatarRequest
-	46, // 44: sporttech.gateway.v1.GatewayService.ListSportTypes:input_type -> google.protobuf.Empty
-	31, // 45: sporttech.gateway.v1.GatewayService.ListAuthorPosts:input_type -> sporttech.gateway.v1.ListAuthorPostsRequest
-	33, // 46: sporttech.gateway.v1.GatewayService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
-	34, // 47: sporttech.gateway.v1.GatewayService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
-	35, // 48: sporttech.gateway.v1.GatewayService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
-	36, // 49: sporttech.gateway.v1.GatewayService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
-	37, // 50: sporttech.gateway.v1.GatewayService.LikePost:input_type -> sporttech.gateway.v1.LikePostRequest
-	38, // 51: sporttech.gateway.v1.GatewayService.UnlikePost:input_type -> sporttech.gateway.v1.UnlikePostRequest
-	41, // 52: sporttech.gateway.v1.GatewayService.CreateComment:input_type -> sporttech.gateway.v1.CreateCommentRequest
-	43, // 53: sporttech.gateway.v1.GatewayService.ListComments:input_type -> sporttech.gateway.v1.ListCommentsRequest
-	5,  // 54: sporttech.gateway.v1.GatewayService.Register:output_type -> sporttech.gateway.v1.AuthSessionResponse
-	5,  // 55: sporttech.gateway.v1.GatewayService.Login:output_type -> sporttech.gateway.v1.AuthSessionResponse
-	46, // 56: sporttech.gateway.v1.GatewayService.Logout:output_type -> google.protobuf.Empty
-	10, // 57: sporttech.gateway.v1.GatewayService.ResolveSession:output_type -> sporttech.gateway.v1.ResolveSessionResponse
-	16, // 58: sporttech.gateway.v1.GatewayService.CreateProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	16, // 59: sporttech.gateway.v1.GatewayService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	16, // 60: sporttech.gateway.v1.GatewayService.UpdateProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	21, // 61: sporttech.gateway.v1.GatewayService.SearchAuthors:output_type -> sporttech.gateway.v1.SearchAuthorsResponse
-	16, // 62: sporttech.gateway.v1.GatewayService.UploadAvatar:output_type -> sporttech.gateway.v1.ProfileResponse
-	46, // 63: sporttech.gateway.v1.GatewayService.DeleteAvatar:output_type -> google.protobuf.Empty
-	24, // 64: sporttech.gateway.v1.GatewayService.ListSportTypes:output_type -> sporttech.gateway.v1.ListSportTypesResponse
-	32, // 65: sporttech.gateway.v1.GatewayService.ListAuthorPosts:output_type -> sporttech.gateway.v1.ListAuthorPostsResponse
-	30, // 66: sporttech.gateway.v1.GatewayService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
-	30, // 67: sporttech.gateway.v1.GatewayService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
-	30, // 68: sporttech.gateway.v1.GatewayService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
-	46, // 69: sporttech.gateway.v1.GatewayService.DeletePost:output_type -> google.protobuf.Empty
-	40, // 70: sporttech.gateway.v1.GatewayService.LikePost:output_type -> sporttech.gateway.v1.PostLikeStateResponse
-	40, // 71: sporttech.gateway.v1.GatewayService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeStateResponse
-	42, // 72: sporttech.gateway.v1.GatewayService.CreateComment:output_type -> sporttech.gateway.v1.CommentResponse
-	44, // 73: sporttech.gateway.v1.GatewayService.ListComments:output_type -> sporttech.gateway.v1.ListCommentsResponse
+	6,  // 34: sporttech.gateway.v1.AuthService.Register:input_type -> sporttech.gateway.v1.RegisterRequest
+	7,  // 35: sporttech.gateway.v1.AuthService.Login:input_type -> sporttech.gateway.v1.LoginRequest
+	8,  // 36: sporttech.gateway.v1.AuthService.Logout:input_type -> sporttech.gateway.v1.LogoutRequest
+	9,  // 37: sporttech.gateway.v1.AuthService.ResolveSession:input_type -> sporttech.gateway.v1.ResolveSessionRequest
+	17, // 38: sporttech.gateway.v1.ProfileService.CreateProfile:input_type -> sporttech.gateway.v1.CreateProfileRequest
+	18, // 39: sporttech.gateway.v1.ProfileService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
+	19, // 40: sporttech.gateway.v1.ProfileService.UpdateProfile:input_type -> sporttech.gateway.v1.UpdateProfileRequest
+	20, // 41: sporttech.gateway.v1.ProfileService.SearchAuthors:input_type -> sporttech.gateway.v1.SearchAuthorsRequest
+	22, // 42: sporttech.gateway.v1.ProfileService.UploadAvatar:input_type -> sporttech.gateway.v1.UploadAvatarRequest
+	23, // 43: sporttech.gateway.v1.ProfileService.DeleteAvatar:input_type -> sporttech.gateway.v1.DeleteAvatarRequest
+	46, // 44: sporttech.gateway.v1.ProfileService.ListSportTypes:input_type -> google.protobuf.Empty
+	31, // 45: sporttech.gateway.v1.ContentService.ListAuthorPosts:input_type -> sporttech.gateway.v1.ListAuthorPostsRequest
+	33, // 46: sporttech.gateway.v1.ContentService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
+	34, // 47: sporttech.gateway.v1.ContentService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
+	35, // 48: sporttech.gateway.v1.ContentService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
+	36, // 49: sporttech.gateway.v1.ContentService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
+	37, // 50: sporttech.gateway.v1.ContentService.LikePost:input_type -> sporttech.gateway.v1.LikePostRequest
+	38, // 51: sporttech.gateway.v1.ContentService.UnlikePost:input_type -> sporttech.gateway.v1.UnlikePostRequest
+	41, // 52: sporttech.gateway.v1.ContentService.CreateComment:input_type -> sporttech.gateway.v1.CreateCommentRequest
+	43, // 53: sporttech.gateway.v1.ContentService.ListComments:input_type -> sporttech.gateway.v1.ListCommentsRequest
+	5,  // 54: sporttech.gateway.v1.AuthService.Register:output_type -> sporttech.gateway.v1.AuthSessionResponse
+	5,  // 55: sporttech.gateway.v1.AuthService.Login:output_type -> sporttech.gateway.v1.AuthSessionResponse
+	46, // 56: sporttech.gateway.v1.AuthService.Logout:output_type -> google.protobuf.Empty
+	10, // 57: sporttech.gateway.v1.AuthService.ResolveSession:output_type -> sporttech.gateway.v1.ResolveSessionResponse
+	16, // 58: sporttech.gateway.v1.ProfileService.CreateProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	16, // 59: sporttech.gateway.v1.ProfileService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	16, // 60: sporttech.gateway.v1.ProfileService.UpdateProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	21, // 61: sporttech.gateway.v1.ProfileService.SearchAuthors:output_type -> sporttech.gateway.v1.SearchAuthorsResponse
+	16, // 62: sporttech.gateway.v1.ProfileService.UploadAvatar:output_type -> sporttech.gateway.v1.ProfileResponse
+	46, // 63: sporttech.gateway.v1.ProfileService.DeleteAvatar:output_type -> google.protobuf.Empty
+	24, // 64: sporttech.gateway.v1.ProfileService.ListSportTypes:output_type -> sporttech.gateway.v1.ListSportTypesResponse
+	32, // 65: sporttech.gateway.v1.ContentService.ListAuthorPosts:output_type -> sporttech.gateway.v1.ListAuthorPostsResponse
+	30, // 66: sporttech.gateway.v1.ContentService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
+	30, // 67: sporttech.gateway.v1.ContentService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
+	30, // 68: sporttech.gateway.v1.ContentService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
+	46, // 69: sporttech.gateway.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
+	40, // 70: sporttech.gateway.v1.ContentService.LikePost:output_type -> sporttech.gateway.v1.PostLikeStateResponse
+	40, // 71: sporttech.gateway.v1.ContentService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeStateResponse
+	42, // 72: sporttech.gateway.v1.ContentService.CreateComment:output_type -> sporttech.gateway.v1.CommentResponse
+	44, // 73: sporttech.gateway.v1.ContentService.ListComments:output_type -> sporttech.gateway.v1.ListCommentsResponse
 	54, // [54:74] is the sub-list for method output_type
 	34, // [34:54] is the sub-list for method input_type
 	34, // [34:34] is the sub-list for extension type_name
@@ -3345,7 +3347,7 @@ func file_gateway_v1_gateway_proto_init() {
 			NumEnums:      3,
 			NumMessages:   42,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   3,
 		},
 		GoTypes:           file_gateway_v1_gateway_proto_goTypes,
 		DependencyIndexes: file_gateway_v1_gateway_proto_depIdxs,

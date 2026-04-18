@@ -1,33 +1,14 @@
 PROTO_DIR := grpc/proto
 PROTO_GEN_GO_DIR := grpc/gen/go
 PROTO_GEN_OPENAPI_DIR := grpc/gen/openapiv2
-PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto')
+PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/content $(PROTO_DIR)/gateway
+PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
 GO_BIN := $(HOME)/go/bin
 
-AUTH_CONFIG_PATH ?= services/auth/configs/service.yml
-AUTH_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_auth?sslmode=disable
-PROFILE_CONFIG_PATH ?= services/profile/configs/service.yml
-PROFILE_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_profile?sslmode=disable
-CONTENT_CONFIG_PATH ?= services/content/configs/service.yml
-CONTENT_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_content?sslmode=disable
-API_GATEWAY_CONFIG_PATH ?= services/api-gateway/configs/service.yml
-BIN_DIR ?= bin
-
-.PHONY: tools generate proto \
-	auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down \
-	profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down \
-	content-build content-run content-test content-test-integration content-migrate-up content-migrate-down \
-	api-gateway-build api-gateway-run api-gateway-test \
-	compose-up compose-down compose-logs compose-ps
-
-tools:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.1
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.28.0
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.28.0
-
+.PHONY: generate
 generate: proto
 
+.PHONY: proto
 proto:
 	mkdir -p $(PROTO_GEN_GO_DIR) $(PROTO_GEN_OPENAPI_DIR)
 	PATH="$(GO_BIN):$$PATH" protoc \
@@ -38,82 +19,84 @@ proto:
 		--grpc-gateway_out=paths=source_relative:$(PROTO_GEN_GO_DIR) \
 		--openapiv2_out=allow_merge=false:$(PROTO_GEN_OPENAPI_DIR) \
 		$(PROTO_FILES)
+	rm -rf $(PROTO_GEN_OPENAPI_DIR)/google $(PROTO_GEN_OPENAPI_DIR)/protoc-gen-openapiv2
 
+.PHONY: auth-build
 auth-build:
-	mkdir -p $(BIN_DIR)
-	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/auth-service ./services/auth/cmd/service
+	mkdir -p bin
+	GOSUMDB=off GOPROXY=off go build -o ./bin/auth-service ./services/auth/cmd/service
 
+.PHONY: auth-run
 auth-run:
-	GOSUMDB=off GOPROXY=off AUTH_CONFIG_PATH=$(AUTH_CONFIG_PATH) go run ./services/auth/cmd/service
+	GOSUMDB=off GOPROXY=off AUTH_CONFIG_PATH=services/auth/configs/service.yml go run ./services/auth/cmd/service
 
+.PHONY: auth-test
 auth-test:
 	GOSUMDB=off GOPROXY=off go test ./services/auth/...
 
+.PHONY: auth-test-integration
 auth-test-integration:
 	GOSUMDB=off GOPROXY=off go test -tags integration ./services/auth/internal/adapters/repository/postgres/...
 
-auth-migrate-up:
-	migrate -path services/auth/migrations -database "$(AUTH_DB_URL)" up
-
-auth-migrate-down:
-	migrate -path services/auth/migrations -database "$(AUTH_DB_URL)" down 1
-
+.PHONY: profile-build
 profile-build:
-	mkdir -p $(BIN_DIR)
-	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/profile-service ./services/profile/cmd/service
+	mkdir -p bin
+	GOSUMDB=off GOPROXY=off go build -o ./bin/profile-service ./services/profile/cmd/service
 
+.PHONY: profile-run
 profile-run:
-	GOSUMDB=off GOPROXY=off PROFILE_CONFIG_PATH=$(PROFILE_CONFIG_PATH) go run ./services/profile/cmd/service
+	GOSUMDB=off GOPROXY=off PROFILE_CONFIG_PATH=services/profile/configs/service.yml go run ./services/profile/cmd/service
 
+.PHONY: profile-test
 profile-test:
 	GOSUMDB=off GOPROXY=off go test ./services/profile/...
 
+.PHONY: profile-test-integration
 profile-test-integration:
 	GOSUMDB=off GOPROXY=off go test -tags integration ./services/profile/internal/adapters/repository/postgres/...
 
-profile-migrate-up:
-	migrate -path services/profile/migrations -database "$(PROFILE_DB_URL)" up
-
-profile-migrate-down:
-	migrate -path services/profile/migrations -database "$(PROFILE_DB_URL)" down 1
-
+.PHONY: content-build
 content-build:
-	mkdir -p $(BIN_DIR)
-	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/content-service ./services/content/cmd/service
+	mkdir -p bin
+	GOSUMDB=off GOPROXY=off go build -o ./bin/content-service ./services/content/cmd/service
 
+.PHONY: content-run
 content-run:
-	GOSUMDB=off GOPROXY=off CONTENT_CONFIG_PATH=$(CONTENT_CONFIG_PATH) go run ./services/content/cmd/service
+	GOSUMDB=off GOPROXY=off CONTENT_CONFIG_PATH=services/content/configs/service.yml go run ./services/content/cmd/service
 
+.PHONY: content-test
 content-test:
 	GOSUMDB=off GOPROXY=off go test ./services/content/...
 
+.PHONY: content-test-integration
 content-test-integration:
 	GOSUMDB=off GOPROXY=off go test -tags integration ./services/content/internal/adapters/repository/postgres/...
 
-content-migrate-up:
-	migrate -path services/content/migrations -database "$(CONTENT_DB_URL)" up
-
-content-migrate-down:
-	migrate -path services/content/migrations -database "$(CONTENT_DB_URL)" down 1
-
+.PHONY: api-gateway-build
 api-gateway-build:
-	mkdir -p $(BIN_DIR)
-	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/api-gateway ./services/api-gateway/cmd/service
+	mkdir -p bin
+	GOSUMDB=off GOPROXY=off go build -o ./bin/api-gateway ./services/api-gateway/cmd/service
 
+.PHONY: api-gateway-run
 api-gateway-run:
-	GOSUMDB=off GOPROXY=off API_GATEWAY_CONFIG_PATH=$(API_GATEWAY_CONFIG_PATH) go run ./services/api-gateway/cmd/service
+	GOSUMDB=off GOPROXY=off API_GATEWAY_CONFIG_PATH=services/api-gateway/configs/service.yml go run ./services/api-gateway/cmd/service
 
+.PHONY: api-gateway-test
 api-gateway-test:
 	GOSUMDB=off GOPROXY=off go test ./services/api-gateway/...
 
+.PHONY: compose-up
 compose-up:
 	docker compose up --build -d
 
+.PHONY: compose-down
 compose-down:
 	docker compose down
 
+.PHONY: compose-logs
 compose-logs:
 	docker compose logs -f
 
+.PHONY: compose-ps
 compose-ps:
 	docker compose ps

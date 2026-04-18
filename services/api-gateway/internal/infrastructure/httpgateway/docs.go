@@ -35,7 +35,7 @@ const swaggerUIDocsPage = `<!doctype html>
   <body>
     <div class="page-header">
       <h1>SPORT.tech API Gateway Docs</h1>
-      <p>Generated from the public api-gateway gRPC contract via grpc-gateway and OpenAPI.</p>
+      <p>Generated from the public api-gateway gRPC contract via grpc-gateway and OpenAPI. Methods are grouped into Auth, Profile and Content sections.</p>
     </div>
     <div id="swagger-ui"></div>
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>

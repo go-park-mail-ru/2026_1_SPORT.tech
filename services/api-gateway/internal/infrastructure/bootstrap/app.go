@@ -55,7 +55,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		profilev1.NewProfileServiceClient(profileConn),
 		contentv1.NewContentServiceClient(contentConn),
 	)
-	grpcServer, err := grpcserverinfra.New(cfg.Server.GRPCListenAddress(), gatewayService)
+	grpcServer, err := grpcserverinfra.New(cfg.Server.GRPCListenAddress(), gatewayService, gatewayService, gatewayService)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()
@@ -63,7 +63,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, err
 	}
 
-	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService)
+	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()
@@ -82,7 +82,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	httpMux.Handle("/healthz", health.NewHandler(cfg.ServiceName, healthChecker))
 	httpMux.Handle("/api/docs", http.RedirectHandler("/api/docs/", http.StatusMovedPermanently))
 	httpMux.Handle("/api/docs/", httpgateway.DocsHandler("/api/openapi/gateway.swagger.json"))
-	httpMux.Handle("/api/openapi/gateway.swagger.json", httpgateway.OpenAPIHandler(cfg.OpenAPI.GatewayFilePath))
+	httpMux.Handle("/api/openapi/gateway.swagger.json", httpgateway.GatewayOpenAPIHandler(cfg.OpenAPI.GatewayFilePath))
 	httpMux.Handle("/api/", http.StripPrefix("/api", gatewayHandler))
 
 	httpServer := &http.Server{

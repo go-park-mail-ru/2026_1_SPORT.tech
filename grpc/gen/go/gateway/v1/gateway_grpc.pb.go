@@ -20,36 +20,233 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GatewayService_Register_FullMethodName        = "/sporttech.gateway.v1.GatewayService/Register"
-	GatewayService_Login_FullMethodName           = "/sporttech.gateway.v1.GatewayService/Login"
-	GatewayService_Logout_FullMethodName          = "/sporttech.gateway.v1.GatewayService/Logout"
-	GatewayService_ResolveSession_FullMethodName  = "/sporttech.gateway.v1.GatewayService/ResolveSession"
-	GatewayService_CreateProfile_FullMethodName   = "/sporttech.gateway.v1.GatewayService/CreateProfile"
-	GatewayService_GetProfile_FullMethodName      = "/sporttech.gateway.v1.GatewayService/GetProfile"
-	GatewayService_UpdateProfile_FullMethodName   = "/sporttech.gateway.v1.GatewayService/UpdateProfile"
-	GatewayService_SearchAuthors_FullMethodName   = "/sporttech.gateway.v1.GatewayService/SearchAuthors"
-	GatewayService_UploadAvatar_FullMethodName    = "/sporttech.gateway.v1.GatewayService/UploadAvatar"
-	GatewayService_DeleteAvatar_FullMethodName    = "/sporttech.gateway.v1.GatewayService/DeleteAvatar"
-	GatewayService_ListSportTypes_FullMethodName  = "/sporttech.gateway.v1.GatewayService/ListSportTypes"
-	GatewayService_ListAuthorPosts_FullMethodName = "/sporttech.gateway.v1.GatewayService/ListAuthorPosts"
-	GatewayService_CreatePost_FullMethodName      = "/sporttech.gateway.v1.GatewayService/CreatePost"
-	GatewayService_GetPost_FullMethodName         = "/sporttech.gateway.v1.GatewayService/GetPost"
-	GatewayService_UpdatePost_FullMethodName      = "/sporttech.gateway.v1.GatewayService/UpdatePost"
-	GatewayService_DeletePost_FullMethodName      = "/sporttech.gateway.v1.GatewayService/DeletePost"
-	GatewayService_LikePost_FullMethodName        = "/sporttech.gateway.v1.GatewayService/LikePost"
-	GatewayService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.GatewayService/UnlikePost"
-	GatewayService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.GatewayService/CreateComment"
-	GatewayService_ListComments_FullMethodName    = "/sporttech.gateway.v1.GatewayService/ListComments"
+	AuthService_Register_FullMethodName       = "/sporttech.gateway.v1.AuthService/Register"
+	AuthService_Login_FullMethodName          = "/sporttech.gateway.v1.AuthService/Login"
+	AuthService_Logout_FullMethodName         = "/sporttech.gateway.v1.AuthService/Logout"
+	AuthService_ResolveSession_FullMethodName = "/sporttech.gateway.v1.AuthService/ResolveSession"
 )
 
-// GatewayServiceClient is the client API for GatewayService service.
+// AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GatewayServiceClient interface {
+type AuthServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResolveSession(ctx context.Context, in *ResolveSessionRequest, opts ...grpc.CallOption) (*ResolveSessionResponse, error)
+}
+
+type authServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
+	return &authServiceClient{cc}
+}
+
+func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthSessionResponse)
+	err := c.cc.Invoke(ctx, AuthService_Register_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthSessionResponse)
+	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_Logout_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ResolveSession(ctx context.Context, in *ResolveSessionRequest, opts ...grpc.CallOption) (*ResolveSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolveSessionResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResolveSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServiceServer is the server API for AuthService service.
+// All implementations should embed UnimplementedAuthServiceServer
+// for forward compatibility.
+type AuthServiceServer interface {
+	Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error)
+	Login(context.Context, *LoginRequest) (*AuthSessionResponse, error)
+	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
+	ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error)
+}
+
+// UnimplementedAuthServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedAuthServiceServer struct{}
+
+func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*AuthSessionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAuthServiceServer) ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResolveSession not implemented")
+}
+func (UnimplementedAuthServiceServer) testEmbeddedByValue() {}
+
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// result in compilation errors.
+type UnsafeAuthServiceServer interface {
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
+	// If the following call panics, it indicates UnimplementedAuthServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&AuthService_ServiceDesc, srv)
+}
+
+func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Register(ctx, req.(*RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ResolveSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResolveSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ResolveSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResolveSession(ctx, req.(*ResolveSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.AuthService",
+	HandlerType: (*AuthServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _AuthService_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _AuthService_Login_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _AuthService_Logout_Handler,
+		},
+		{
+			MethodName: "ResolveSession",
+			Handler:    _AuthService_ResolveSession_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	ProfileService_CreateProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/CreateProfile"
+	ProfileService_GetProfile_FullMethodName     = "/sporttech.gateway.v1.ProfileService/GetProfile"
+	ProfileService_UpdateProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateProfile"
+	ProfileService_SearchAuthors_FullMethodName  = "/sporttech.gateway.v1.ProfileService/SearchAuthors"
+	ProfileService_UploadAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadAvatar"
+	ProfileService_DeleteAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteAvatar"
+	ProfileService_ListSportTypes_FullMethodName = "/sporttech.gateway.v1.ProfileService/ListSportTypes"
+)
+
+// ProfileServiceClient is the client API for ProfileService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ProfileServiceClient interface {
 	CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
@@ -57,6 +254,329 @@ type GatewayServiceClient interface {
 	UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error)
+}
+
+type profileServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewProfileServiceClient(cc grpc.ClientConnInterface) ProfileServiceClient {
+	return &profileServiceClient{cc}
+}
+
+func (c *profileServiceClient) CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_CreateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_UpdateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchAuthorsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_SearchAuthors_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_UploadAvatar_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteAvatar_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSportTypesResponse)
+	err := c.cc.Invoke(ctx, ProfileService_ListSportTypes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ProfileServiceServer is the server API for ProfileService service.
+// All implementations should embed UnimplementedProfileServiceServer
+// for forward compatibility.
+type ProfileServiceServer interface {
+	CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error)
+	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
+	UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error)
+	SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error)
+	UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error)
+	DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error)
+	ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error)
+}
+
+// UnimplementedProfileServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedProfileServiceServer struct{}
+
+func (UnimplementedProfileServiceServer) CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SearchAuthors not implemented")
+}
+func (UnimplementedProfileServiceServer) UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadAvatar not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAvatar not implemented")
+}
+func (UnimplementedProfileServiceServer) ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSportTypes not implemented")
+}
+func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
+
+// UnsafeProfileServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProfileServiceServer will
+// result in compilation errors.
+type UnsafeProfileServiceServer interface {
+	mustEmbedUnimplementedProfileServiceServer()
+}
+
+func RegisterProfileServiceServer(s grpc.ServiceRegistrar, srv ProfileServiceServer) {
+	// If the following call panics, it indicates UnimplementedProfileServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ProfileService_ServiceDesc, srv)
+}
+
+func _ProfileService_CreateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).CreateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_CreateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).CreateProfile(ctx, req.(*CreateProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetProfile(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UpdateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UpdateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UpdateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UpdateProfile(ctx, req.(*UpdateProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_SearchAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchAuthorsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).SearchAuthors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_SearchAuthors_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).SearchAuthors(ctx, req.(*SearchAuthorsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UploadAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadAvatarRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UploadAvatar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UploadAvatar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UploadAvatar(ctx, req.(*UploadAvatarRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAvatarRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteAvatar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteAvatar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteAvatar(ctx, req.(*DeleteAvatarRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_ListSportTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).ListSportTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_ListSportTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).ListSportTypes(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ProfileService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.ProfileService",
+	HandlerType: (*ProfileServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateProfile",
+			Handler:    _ProfileService_CreateProfile_Handler,
+		},
+		{
+			MethodName: "GetProfile",
+			Handler:    _ProfileService_GetProfile_Handler,
+		},
+		{
+			MethodName: "UpdateProfile",
+			Handler:    _ProfileService_UpdateProfile_Handler,
+		},
+		{
+			MethodName: "SearchAuthors",
+			Handler:    _ProfileService_SearchAuthors_Handler,
+		},
+		{
+			MethodName: "UploadAvatar",
+			Handler:    _ProfileService_UploadAvatar_Handler,
+		},
+		{
+			MethodName: "DeleteAvatar",
+			Handler:    _ProfileService_DeleteAvatar_Handler,
+		},
+		{
+			MethodName: "ListSportTypes",
+			Handler:    _ProfileService_ListSportTypes_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	ContentService_ListAuthorPosts_FullMethodName = "/sporttech.gateway.v1.ContentService/ListAuthorPosts"
+	ContentService_CreatePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/CreatePost"
+	ContentService_GetPost_FullMethodName         = "/sporttech.gateway.v1.ContentService/GetPost"
+	ContentService_UpdatePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/UpdatePost"
+	ContentService_DeletePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/DeletePost"
+	ContentService_LikePost_FullMethodName        = "/sporttech.gateway.v1.ContentService/LikePost"
+	ContentService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/UnlikePost"
+	ContentService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.ContentService/CreateComment"
+	ContentService_ListComments_FullMethodName    = "/sporttech.gateway.v1.ContentService/ListComments"
+)
+
+// ContentServiceClient is the client API for ContentService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ContentServiceClient interface {
 	ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error)
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
@@ -68,229 +588,108 @@ type GatewayServiceClient interface {
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
 }
 
-type gatewayServiceClient struct {
+type contentServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGatewayServiceClient(cc grpc.ClientConnInterface) GatewayServiceClient {
-	return &gatewayServiceClient{cc}
+func NewContentServiceClient(cc grpc.ClientConnInterface) ContentServiceClient {
+	return &contentServiceClient{cc}
 }
 
-func (c *gatewayServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthSessionResponse)
-	err := c.cc.Invoke(ctx, GatewayService_Register_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthSessionResponse)
-	err := c.cc.Invoke(ctx, GatewayService_Login_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, GatewayService_Logout_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) ResolveSession(ctx context.Context, in *ResolveSessionRequest, opts ...grpc.CallOption) (*ResolveSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResolveSessionResponse)
-	err := c.cc.Invoke(ctx, GatewayService_ResolveSession_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, GatewayService_CreateProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, GatewayService_GetProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, GatewayService_UpdateProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SearchAuthorsResponse)
-	err := c.cc.Invoke(ctx, GatewayService_SearchAuthors_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, GatewayService_UploadAvatar_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, GatewayService_DeleteAvatar_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListSportTypesResponse)
-	err := c.cc.Invoke(ctx, GatewayService_ListSportTypes_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayServiceClient) ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error) {
+func (c *contentServiceClient) ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListAuthorPostsResponse)
-	err := c.cc.Invoke(ctx, GatewayService_ListAuthorPosts_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_ListAuthorPosts_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *contentServiceClient) CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, GatewayService_CreatePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_CreatePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *contentServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, GatewayService_GetPost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_GetPost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *contentServiceClient) UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, GatewayService_UpdatePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_UpdatePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *contentServiceClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, GatewayService_DeletePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_DeletePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
+func (c *contentServiceClient) LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostLikeStateResponse)
-	err := c.cc.Invoke(ctx, GatewayService_LikePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_LikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
+func (c *contentServiceClient) UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostLikeStateResponse)
-	err := c.cc.Invoke(ctx, GatewayService_UnlikePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_UnlikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
+func (c *contentServiceClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CommentResponse)
-	err := c.cc.Invoke(ctx, GatewayService_CreateComment_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_CreateComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *gatewayServiceClient) ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error) {
+func (c *contentServiceClient) ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListCommentsResponse)
-	err := c.cc.Invoke(ctx, GatewayService_ListComments_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ContentService_ListComments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GatewayServiceServer is the server API for GatewayService service.
-// All implementations should embed UnimplementedGatewayServiceServer
+// ContentServiceServer is the server API for ContentService service.
+// All implementations should embed UnimplementedContentServiceServer
 // for forward compatibility.
-type GatewayServiceServer interface {
-	Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error)
-	Login(context.Context, *LoginRequest) (*AuthSessionResponse, error)
-	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
-	ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error)
-	CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error)
-	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
-	UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error)
-	SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error)
-	UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error)
-	DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error)
-	ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error)
+type ContentServiceServer interface {
 	ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error)
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
@@ -302,539 +701,264 @@ type GatewayServiceServer interface {
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
 }
 
-// UnimplementedGatewayServiceServer should be embedded to have
+// UnimplementedContentServiceServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedGatewayServiceServer struct{}
+type UnimplementedContentServiceServer struct{}
 
-func (UnimplementedGatewayServiceServer) Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
-}
-func (UnimplementedGatewayServiceServer) Login(context.Context, *LoginRequest) (*AuthSessionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
-}
-func (UnimplementedGatewayServiceServer) Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
-}
-func (UnimplementedGatewayServiceServer) ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ResolveSession not implemented")
-}
-func (UnimplementedGatewayServiceServer) CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateProfile not implemented")
-}
-func (UnimplementedGatewayServiceServer) GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetProfile not implemented")
-}
-func (UnimplementedGatewayServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UpdateProfile not implemented")
-}
-func (UnimplementedGatewayServiceServer) SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SearchAuthors not implemented")
-}
-func (UnimplementedGatewayServiceServer) UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UploadAvatar not implemented")
-}
-func (UnimplementedGatewayServiceServer) DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteAvatar not implemented")
-}
-func (UnimplementedGatewayServiceServer) ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListSportTypes not implemented")
-}
-func (UnimplementedGatewayServiceServer) ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error) {
+func (UnimplementedContentServiceServer) ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListAuthorPosts not implemented")
 }
-func (UnimplementedGatewayServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
+func (UnimplementedContentServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePost not implemented")
 }
-func (UnimplementedGatewayServiceServer) GetPost(context.Context, *GetPostRequest) (*PostResponse, error) {
+func (UnimplementedContentServiceServer) GetPost(context.Context, *GetPostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPost not implemented")
 }
-func (UnimplementedGatewayServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error) {
+func (UnimplementedContentServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdatePost not implemented")
 }
-func (UnimplementedGatewayServiceServer) DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error) {
+func (UnimplementedContentServiceServer) DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePost not implemented")
 }
-func (UnimplementedGatewayServiceServer) LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error) {
+func (UnimplementedContentServiceServer) LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LikePost not implemented")
 }
-func (UnimplementedGatewayServiceServer) UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error) {
+func (UnimplementedContentServiceServer) UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnlikePost not implemented")
 }
-func (UnimplementedGatewayServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error) {
+func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateComment not implemented")
 }
-func (UnimplementedGatewayServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
+func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
 }
-func (UnimplementedGatewayServiceServer) testEmbeddedByValue() {}
+func (UnimplementedContentServiceServer) testEmbeddedByValue() {}
 
-// UnsafeGatewayServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GatewayServiceServer will
+// UnsafeContentServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ContentServiceServer will
 // result in compilation errors.
-type UnsafeGatewayServiceServer interface {
-	mustEmbedUnimplementedGatewayServiceServer()
+type UnsafeContentServiceServer interface {
+	mustEmbedUnimplementedContentServiceServer()
 }
 
-func RegisterGatewayServiceServer(s grpc.ServiceRegistrar, srv GatewayServiceServer) {
-	// If the following call panics, it indicates UnimplementedGatewayServiceServer was
+func RegisterContentServiceServer(s grpc.ServiceRegistrar, srv ContentServiceServer) {
+	// If the following call panics, it indicates UnimplementedContentServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&GatewayService_ServiceDesc, srv)
+	s.RegisterService(&ContentService_ServiceDesc, srv)
 }
 
-func _GatewayService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).Register(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_Register_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).Register(ctx, req.(*RegisterRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).Login(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_Login_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).Login(ctx, req.(*LoginRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogoutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).Logout(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_Logout_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).Logout(ctx, req.(*LogoutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_ResolveSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResolveSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).ResolveSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_ResolveSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).ResolveSession(ctx, req.(*ResolveSessionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_CreateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).CreateProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_CreateProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).CreateProfile(ctx, req.(*CreateProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).GetProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_GetProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).GetProfile(ctx, req.(*GetProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_UpdateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).UpdateProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_UpdateProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).UpdateProfile(ctx, req.(*UpdateProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_SearchAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchAuthorsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).SearchAuthors(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_SearchAuthors_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).SearchAuthors(ctx, req.(*SearchAuthorsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_UploadAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadAvatarRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).UploadAvatar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_UploadAvatar_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).UploadAvatar(ctx, req.(*UploadAvatarRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_DeleteAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAvatarRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).DeleteAvatar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_DeleteAvatar_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).DeleteAvatar(ctx, req.(*DeleteAvatarRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_ListSportTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServiceServer).ListSportTypes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GatewayService_ListSportTypes_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).ListSportTypes(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GatewayService_ListAuthorPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_ListAuthorPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListAuthorPostsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).ListAuthorPosts(ctx, in)
+		return srv.(ContentServiceServer).ListAuthorPosts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_ListAuthorPosts_FullMethodName,
+		FullMethod: ContentService_ListAuthorPosts_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).ListAuthorPosts(ctx, req.(*ListAuthorPostsRequest))
+		return srv.(ContentServiceServer).ListAuthorPosts(ctx, req.(*ListAuthorPostsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreatePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).CreatePost(ctx, in)
+		return srv.(ContentServiceServer).CreatePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_CreatePost_FullMethodName,
+		FullMethod: ContentService_CreatePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).CreatePost(ctx, req.(*CreatePostRequest))
+		return srv.(ContentServiceServer).CreatePost(ctx, req.(*CreatePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).GetPost(ctx, in)
+		return srv.(ContentServiceServer).GetPost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_GetPost_FullMethodName,
+		FullMethod: ContentService_GetPost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).GetPost(ctx, req.(*GetPostRequest))
+		return srv.(ContentServiceServer).GetPost(ctx, req.(*GetPostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).UpdatePost(ctx, in)
+		return srv.(ContentServiceServer).UpdatePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_UpdatePost_FullMethodName,
+		FullMethod: ContentService_UpdatePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).UpdatePost(ctx, req.(*UpdatePostRequest))
+		return srv.(ContentServiceServer).UpdatePost(ctx, req.(*UpdatePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeletePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).DeletePost(ctx, in)
+		return srv.(ContentServiceServer).DeletePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_DeletePost_FullMethodName,
+		FullMethod: ContentService_DeletePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).DeletePost(ctx, req.(*DeletePostRequest))
+		return srv.(ContentServiceServer).DeletePost(ctx, req.(*DeletePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LikePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).LikePost(ctx, in)
+		return srv.(ContentServiceServer).LikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_LikePost_FullMethodName,
+		FullMethod: ContentService_LikePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).LikePost(ctx, req.(*LikePostRequest))
+		return srv.(ContentServiceServer).LikePost(ctx, req.(*LikePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_UnlikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_UnlikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UnlikePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).UnlikePost(ctx, in)
+		return srv.(ContentServiceServer).UnlikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_UnlikePost_FullMethodName,
+		FullMethod: ContentService_UnlikePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).UnlikePost(ctx, req.(*UnlikePostRequest))
+		return srv.(ContentServiceServer).UnlikePost(ctx, req.(*UnlikePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateCommentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).CreateComment(ctx, in)
+		return srv.(ContentServiceServer).CreateComment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_CreateComment_FullMethodName,
+		FullMethod: ContentService_CreateComment_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).CreateComment(ctx, req.(*CreateCommentRequest))
+		return srv.(ContentServiceServer).CreateComment(ctx, req.(*CreateCommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GatewayService_ListComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListCommentsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServiceServer).ListComments(ctx, in)
+		return srv.(ContentServiceServer).ListComments(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GatewayService_ListComments_FullMethodName,
+		FullMethod: ContentService_ListComments_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServiceServer).ListComments(ctx, req.(*ListCommentsRequest))
+		return srv.(ContentServiceServer).ListComments(ctx, req.(*ListCommentsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GatewayService_ServiceDesc is the grpc.ServiceDesc for GatewayService service.
+// ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var GatewayService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sporttech.gateway.v1.GatewayService",
-	HandlerType: (*GatewayServiceServer)(nil),
+var ContentService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.ContentService",
+	HandlerType: (*ContentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Register",
-			Handler:    _GatewayService_Register_Handler,
-		},
-		{
-			MethodName: "Login",
-			Handler:    _GatewayService_Login_Handler,
-		},
-		{
-			MethodName: "Logout",
-			Handler:    _GatewayService_Logout_Handler,
-		},
-		{
-			MethodName: "ResolveSession",
-			Handler:    _GatewayService_ResolveSession_Handler,
-		},
-		{
-			MethodName: "CreateProfile",
-			Handler:    _GatewayService_CreateProfile_Handler,
-		},
-		{
-			MethodName: "GetProfile",
-			Handler:    _GatewayService_GetProfile_Handler,
-		},
-		{
-			MethodName: "UpdateProfile",
-			Handler:    _GatewayService_UpdateProfile_Handler,
-		},
-		{
-			MethodName: "SearchAuthors",
-			Handler:    _GatewayService_SearchAuthors_Handler,
-		},
-		{
-			MethodName: "UploadAvatar",
-			Handler:    _GatewayService_UploadAvatar_Handler,
-		},
-		{
-			MethodName: "DeleteAvatar",
-			Handler:    _GatewayService_DeleteAvatar_Handler,
-		},
-		{
-			MethodName: "ListSportTypes",
-			Handler:    _GatewayService_ListSportTypes_Handler,
-		},
-		{
 			MethodName: "ListAuthorPosts",
-			Handler:    _GatewayService_ListAuthorPosts_Handler,
+			Handler:    _ContentService_ListAuthorPosts_Handler,
 		},
 		{
 			MethodName: "CreatePost",
-			Handler:    _GatewayService_CreatePost_Handler,
+			Handler:    _ContentService_CreatePost_Handler,
 		},
 		{
 			MethodName: "GetPost",
-			Handler:    _GatewayService_GetPost_Handler,
+			Handler:    _ContentService_GetPost_Handler,
 		},
 		{
 			MethodName: "UpdatePost",
-			Handler:    _GatewayService_UpdatePost_Handler,
+			Handler:    _ContentService_UpdatePost_Handler,
 		},
 		{
 			MethodName: "DeletePost",
-			Handler:    _GatewayService_DeletePost_Handler,
+			Handler:    _ContentService_DeletePost_Handler,
 		},
 		{
 			MethodName: "LikePost",
-			Handler:    _GatewayService_LikePost_Handler,
+			Handler:    _ContentService_LikePost_Handler,
 		},
 		{
 			MethodName: "UnlikePost",
-			Handler:    _GatewayService_UnlikePost_Handler,
+			Handler:    _ContentService_UnlikePost_Handler,
 		},
 		{
 			MethodName: "CreateComment",
-			Handler:    _GatewayService_CreateComment_Handler,
+			Handler:    _ContentService_CreateComment_Handler,
 		},
 		{
 			MethodName: "ListComments",
-			Handler:    _GatewayService_ListComments_Handler,
+			Handler:    _ContentService_ListComments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

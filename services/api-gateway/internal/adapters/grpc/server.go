@@ -13,7 +13,9 @@ import (
 )
 
 type Server struct {
-	gatewayv1.UnimplementedGatewayServiceServer
+	gatewayv1.UnimplementedAuthServiceServer
+	gatewayv1.UnimplementedProfileServiceServer
+	gatewayv1.UnimplementedContentServiceServer
 	authClient    authv1.AuthServiceClient
 	profileClient profilev1.ProfileServiceClient
 	contentClient contentv1.ContentServiceClient

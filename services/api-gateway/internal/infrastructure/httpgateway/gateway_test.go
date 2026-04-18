@@ -107,11 +107,13 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	}
 	defer contentConn.Close()
 
-	handler, err := httpgateway.NewMux(context.Background(), grpcadapter.NewServer(
+	gatewayServer := grpcadapter.NewServer(
 		authv1.NewAuthServiceClient(authConn),
 		profilev1.NewProfileServiceClient(profileConn),
 		contentv1.NewContentServiceClient(contentConn),
-	))
+	)
+
+	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer)
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}

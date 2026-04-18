@@ -17,14 +17,21 @@ type Server struct {
 	listener net.Listener
 }
 
-func New(listenAddress string, gatewayService gatewayv1.GatewayServiceServer) (*Server, error) {
+func New(
+	listenAddress string,
+	authService gatewayv1.AuthServiceServer,
+	profileService gatewayv1.ProfileServiceServer,
+	contentService gatewayv1.ContentServiceServer,
+) (*Server, error) {
 	listener, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		return nil, fmt.Errorf("listen grpc: %w", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	gatewayv1.RegisterGatewayServiceServer(grpcServer, gatewayService)
+	gatewayv1.RegisterAuthServiceServer(grpcServer, authService)
+	gatewayv1.RegisterProfileServiceServer(grpcServer, profileService)
+	gatewayv1.RegisterContentServiceServer(grpcServer, contentService)
 
 	healthServer := grpcHealth.NewServer()
 	healthServer.SetServingStatus("", grpcHealthV1.HealthCheckResponse_SERVING)

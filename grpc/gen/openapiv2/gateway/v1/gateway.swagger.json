@@ -6,7 +6,13 @@
   },
   "tags": [
     {
-      "name": "GatewayService"
+      "name": "AuthService"
+    },
+    {
+      "name": "ProfileService"
+    },
+    {
+      "name": "ContentService"
     }
   ],
   "consumes": [
@@ -18,7 +24,7 @@
   "paths": {
     "/v1/auth/login": {
       "post": {
-        "operationId": "GatewayService_Login",
+        "operationId": "AuthService_Login",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -44,13 +50,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "AuthService"
         ]
       }
     },
     "/v1/auth/logout": {
       "post": {
-        "operationId": "GatewayService_Logout",
+        "operationId": "AuthService_Logout",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -77,13 +83,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "AuthService"
         ]
       }
     },
     "/v1/auth/register": {
       "post": {
-        "operationId": "GatewayService_Register",
+        "operationId": "AuthService_Register",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -109,13 +115,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "AuthService"
         ]
       }
     },
     "/v1/auth/sessions:resolve": {
       "post": {
-        "operationId": "GatewayService_ResolveSession",
+        "operationId": "AuthService_ResolveSession",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -141,13 +147,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "AuthService"
         ]
       }
     },
     "/v1/authors/{authorUserId}/posts": {
       "get": {
-        "operationId": "GatewayService_ListAuthorPosts",
+        "operationId": "ContentService_ListAuthorPosts",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -200,13 +206,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/authors:search": {
       "post": {
-        "operationId": "GatewayService_SearchAuthors",
+        "operationId": "ProfileService_SearchAuthors",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -232,13 +238,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       }
     },
     "/v1/posts": {
       "post": {
-        "operationId": "GatewayService_CreatePost",
+        "operationId": "ContentService_CreatePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -264,13 +270,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/posts/{postId}": {
       "get": {
-        "operationId": "GatewayService_GetPost",
+        "operationId": "ContentService_GetPost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -309,11 +315,11 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       },
       "delete": {
-        "operationId": "GatewayService_DeletePost",
+        "operationId": "ContentService_DeletePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -346,11 +352,11 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       },
       "patch": {
-        "operationId": "GatewayService_UpdatePost",
+        "operationId": "ContentService_UpdatePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -378,18 +384,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GatewayServiceUpdatePostBody"
+              "$ref": "#/definitions/ContentServiceUpdatePostBody"
             }
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/posts/{postId}/comments": {
       "get": {
-        "operationId": "GatewayService_ListComments",
+        "operationId": "ContentService_ListComments",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -442,11 +448,11 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       },
       "post": {
-        "operationId": "GatewayService_CreateComment",
+        "operationId": "ContentService_CreateComment",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -474,18 +480,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GatewayServiceCreateCommentBody"
+              "$ref": "#/definitions/ContentServiceCreateCommentBody"
             }
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/posts/{postId}/likes": {
       "post": {
-        "operationId": "GatewayService_LikePost",
+        "operationId": "ContentService_LikePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -513,18 +519,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GatewayServiceLikePostBody"
+              "$ref": "#/definitions/ContentServiceLikePostBody"
             }
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/posts/{postId}/likes/{userId}": {
       "delete": {
-        "operationId": "GatewayService_UnlikePost",
+        "operationId": "ContentService_UnlikePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -563,13 +569,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ContentService"
         ]
       }
     },
     "/v1/profiles": {
       "post": {
-        "operationId": "GatewayService_CreateProfile",
+        "operationId": "ProfileService_CreateProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -595,13 +601,13 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       }
     },
     "/v1/profiles/{userId}": {
       "get": {
-        "operationId": "GatewayService_GetProfile",
+        "operationId": "ProfileService_GetProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -626,11 +632,11 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       },
       "patch": {
-        "operationId": "GatewayService_UpdateProfile",
+        "operationId": "ProfileService_UpdateProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -658,18 +664,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GatewayServiceUpdateProfileBody"
+              "$ref": "#/definitions/ProfileServiceUpdateProfileBody"
             }
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       }
     },
     "/v1/profiles/{userId}/avatar": {
       "delete": {
-        "operationId": "GatewayService_DeleteAvatar",
+        "operationId": "ProfileService_DeleteAvatar",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -695,11 +701,11 @@
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       },
       "post": {
-        "operationId": "GatewayService_UploadAvatar",
+        "operationId": "ProfileService_UploadAvatar",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -727,18 +733,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GatewayServiceUploadAvatarBody"
+              "$ref": "#/definitions/ProfileServiceUploadAvatarBody"
             }
           }
         ],
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       }
     },
     "/v1/sport-types": {
       "get": {
-        "operationId": "GatewayService_ListSportTypes",
+        "operationId": "ProfileService_ListSportTypes",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -754,13 +760,13 @@
           }
         },
         "tags": [
-          "GatewayService"
+          "ProfileService"
         ]
       }
     }
   },
   "definitions": {
-    "GatewayServiceCreateCommentBody": {
+    "ContentServiceCreateCommentBody": {
       "type": "object",
       "properties": {
         "authorUserId": {
@@ -776,7 +782,7 @@
         }
       }
     },
-    "GatewayServiceLikePostBody": {
+    "ContentServiceLikePostBody": {
       "type": "object",
       "properties": {
         "userId": {
@@ -789,7 +795,7 @@
         }
       }
     },
-    "GatewayServiceUpdatePostBody": {
+    "ContentServiceUpdatePostBody": {
       "type": "object",
       "properties": {
         "authorUserId": {
@@ -818,7 +824,7 @@
         }
       }
     },
-    "GatewayServiceUpdateProfileBody": {
+    "ProfileServiceUpdateProfileBody": {
       "type": "object",
       "properties": {
         "username": {
@@ -838,7 +844,7 @@
         }
       }
     },
-    "GatewayServiceUploadAvatarBody": {
+    "ProfileServiceUploadAvatarBody": {
       "type": "object",
       "properties": {
         "fileName": {
