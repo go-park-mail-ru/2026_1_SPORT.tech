@@ -42,6 +42,12 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	httpMux := http.NewServeMux()
 	httpMux.Handle("/metrics", metricsSet.Handler())
 	httpMux.Handle("/healthz", health.NewHandler(cfg.ServiceName, healthChecker))
+	httpMux.Handle("/api/docs", http.RedirectHandler("/api/docs/", http.StatusMovedPermanently))
+	httpMux.Handle("/api/docs/", httpgateway.DocsHandler([]httpgateway.DocsSpec{
+		{Name: "Auth API", URL: "/api/openapi/auth.swagger.json"},
+		{Name: "Profile API", URL: "/api/openapi/profile.swagger.json"},
+		{Name: "Content API", URL: "/api/openapi/content.swagger.json"},
+	}))
 	httpMux.Handle("/api/openapi/auth.swagger.json", httpgateway.OpenAPIHandler(cfg.OpenAPI.AuthFilePath))
 	httpMux.Handle("/api/openapi/profile.swagger.json", httpgateway.OpenAPIHandler(cfg.OpenAPI.ProfileFilePath))
 	httpMux.Handle("/api/openapi/content.swagger.json", httpgateway.OpenAPIHandler(cfg.OpenAPI.ContentFilePath))

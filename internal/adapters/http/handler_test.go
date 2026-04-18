@@ -125,24 +125,6 @@ func TestDocsAndHealthHandlers(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("unexpected health status: %d", recorder.Code)
 	}
-
-	recorder = httptest.NewRecorder()
-	handler.handleGetDocs(recorder, httptest.NewRequest(http.MethodGet, "/docs/", nil))
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), "SwaggerUIBundle") {
-		t.Fatalf("unexpected docs response: %d %q", recorder.Code, recorder.Body.String())
-	}
-
-	recorder = httptest.NewRecorder()
-	handler.handleGetDocsRedirect(recorder, httptest.NewRequest(http.MethodGet, "/docs", nil))
-	if recorder.Code != http.StatusMovedPermanently {
-		t.Fatalf("unexpected redirect status: %d", recorder.Code)
-	}
-
-	recorder = httptest.NewRecorder()
-	handler.handleGetOpenAPISpec(recorder, httptest.NewRequest(http.MethodGet, "/docs/openapi.yml", nil))
-	if recorder.Code != http.StatusOK || recorder.Header().Get("Content-Type") != "application/yaml" {
-		t.Fatalf("unexpected spec response: %d %s", recorder.Code, recorder.Header().Get("Content-Type"))
-	}
 }
 
 func TestSportTypeAndDonationHandlers(t *testing.T) {
