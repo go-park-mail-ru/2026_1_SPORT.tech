@@ -13,8 +13,10 @@ import (
 	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
 	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
 	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
+	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/adapters/grpc"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/httpgateway"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -76,7 +78,7 @@ func (server contentServer) GetPost(ctx context.Context, request *contentv1.GetP
 	}, nil
 }
 
-func TestNewMuxRoutesRequestsToAllDownstreams(t *testing.T) {
+func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	authEndpoint := startGRPCServer(t, func(server *grpc.Server) {
 		authv1.RegisterAuthServiceServer(server, authServer{})
 	})
@@ -87,11 +89,29 @@ func TestNewMuxRoutesRequestsToAllDownstreams(t *testing.T) {
 		contentv1.RegisterContentServiceServer(server, contentServer{})
 	})
 
-	handler, err := httpgateway.NewMux(context.Background(), httpgateway.DownstreamEndpoints{
-		AuthGRPCEndpoint:    authEndpoint,
-		ProfileGRPCEndpoint: profileEndpoint,
-		ContentGRPCEndpoint: contentEndpoint,
-	})
+	authConn, err := grpc.DialContext(context.Background(), authEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("dial auth: %v", err)
+	}
+	defer authConn.Close()
+
+	profileConn, err := grpc.DialContext(context.Background(), profileEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("dial profile: %v", err)
+	}
+	defer profileConn.Close()
+
+	contentConn, err := grpc.DialContext(context.Background(), contentEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("dial content: %v", err)
+	}
+	defer contentConn.Close()
+
+	handler, err := httpgateway.NewMux(context.Background(), grpcadapter.NewServer(
+		authv1.NewAuthServiceClient(authConn),
+		profilev1.NewProfileServiceClient(profileConn),
+		contentv1.NewContentServiceClient(contentConn),
+	))
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}

@@ -1,15 +1,9 @@
 package httpgateway
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
-
-type DocsSpec struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
 
 const swaggerUIDocsPage = `<!doctype html>
 <html lang="en">
@@ -41,16 +35,14 @@ const swaggerUIDocsPage = `<!doctype html>
   <body>
     <div class="page-header">
       <h1>SPORT.tech API Gateway Docs</h1>
-      <p>Generated from gRPC protobuf contracts via grpc-gateway and OpenAPI.</p>
+      <p>Generated from the public api-gateway gRPC contract via grpc-gateway and OpenAPI.</p>
     </div>
     <div id="swagger-ui"></div>
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <script>
-      const specs = %s;
       window.onload = function () {
         window.ui = SwaggerUIBundle({
-          urls: specs,
-          "urls.primaryName": specs[0] ? specs[0].name : undefined,
+          url: %q,
           dom_id: "#swagger-ui",
           deepLinking: true,
           presets: [SwaggerUIBundle.presets.apis],
@@ -62,13 +54,8 @@ const swaggerUIDocsPage = `<!doctype html>
 </html>
 `
 
-func DocsHandler(specs []DocsSpec) http.Handler {
-	specsJSON, err := json.Marshal(specs)
-	if err != nil {
-		specsJSON = []byte("[]")
-	}
-
-	page := fmt.Sprintf(swaggerUIDocsPage, specsJSON)
+func DocsHandler(specURL string) http.Handler {
+	page := fmt.Sprintf(swaggerUIDocsPage, specURL)
 
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")

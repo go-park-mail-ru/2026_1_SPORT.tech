@@ -18,6 +18,7 @@ type Config struct {
 
 type ServerConfig struct {
 	Host            string `yaml:"host"`
+	GRPCPort        string `yaml:"grpc_port"`
 	HTTPPort        string `yaml:"http_port"`
 	ShutdownTimeout string `yaml:"shutdown_timeout"`
 }
@@ -29,9 +30,7 @@ type DownstreamConfig struct {
 }
 
 type OpenAPIConfig struct {
-	AuthFilePath    string `yaml:"auth_file_path"`
-	ProfileFilePath string `yaml:"profile_file_path"`
-	ContentFilePath string `yaml:"content_file_path"`
+	GatewayFilePath string `yaml:"gateway_file_path"`
 }
 
 func NewConfig(path string) (Config, error) {
@@ -63,6 +62,9 @@ func setDefaults(cfg *Config) {
 	if cfg.Server.HTTPPort == "" {
 		cfg.Server.HTTPPort = "8080"
 	}
+	if cfg.Server.GRPCPort == "" {
+		cfg.Server.GRPCPort = "9090"
+	}
 	if cfg.Server.ShutdownTimeout == "" {
 		cfg.Server.ShutdownTimeout = "10s"
 	}
@@ -75,14 +77,8 @@ func setDefaults(cfg *Config) {
 	if cfg.Downstream.ContentGRPCEndpoint == "" {
 		cfg.Downstream.ContentGRPCEndpoint = "localhost:9093"
 	}
-	if cfg.OpenAPI.AuthFilePath == "" {
-		cfg.OpenAPI.AuthFilePath = "grpc/gen/openapiv2/auth/v1/auth.swagger.json"
-	}
-	if cfg.OpenAPI.ProfileFilePath == "" {
-		cfg.OpenAPI.ProfileFilePath = "grpc/gen/openapiv2/profile/v1/profile.swagger.json"
-	}
-	if cfg.OpenAPI.ContentFilePath == "" {
-		cfg.OpenAPI.ContentFilePath = "grpc/gen/openapiv2/content/v1/content.swagger.json"
+	if cfg.OpenAPI.GatewayFilePath == "" {
+		cfg.OpenAPI.GatewayFilePath = "grpc/gen/openapiv2/gateway/v1/gateway.swagger.json"
 	}
 }
 
@@ -97,6 +93,20 @@ func getEnv(key string, fallback string) string {
 
 func (cfg ServerConfig) HTTPAddress() string {
 	return net.JoinHostPort(cfg.Host, cfg.HTTPPort)
+}
+
+func (cfg ServerConfig) GRPCListenAddress() string {
+	return net.JoinHostPort(cfg.Host, cfg.GRPCPort)
+}
+
+func (cfg ServerConfig) GRPCDialAddress() string {
+	host := cfg.Host
+	switch host {
+	case "", "0.0.0.0", "::":
+		host = "127.0.0.1"
+	}
+
+	return net.JoinHostPort(host, cfg.GRPCPort)
 }
 
 func (cfg ServerConfig) ShutdownTimeoutDuration() (time.Duration, error) {

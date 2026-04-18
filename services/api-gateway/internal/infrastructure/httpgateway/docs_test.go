@@ -10,11 +10,7 @@ import (
 )
 
 func TestDocsHandlerRendersSwaggerUIPage(t *testing.T) {
-	handler := httpgateway.DocsHandler([]httpgateway.DocsSpec{
-		{Name: "Auth API", URL: "/api/openapi/auth.swagger.json"},
-		{Name: "Profile API", URL: "/api/openapi/profile.swagger.json"},
-		{Name: "Content API", URL: "/api/openapi/content.swagger.json"},
-	})
+	handler := httpgateway.DocsHandler("/api/openapi/gateway.swagger.json")
 
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/api/docs/", nil))
@@ -30,9 +26,7 @@ func TestDocsHandlerRendersSwaggerUIPage(t *testing.T) {
 	if !strings.Contains(body, "SwaggerUIBundle") {
 		t.Fatalf("expected Swagger UI bundle in response body")
 	}
-	if !strings.Contains(body, "/api/openapi/auth.swagger.json") ||
-		!strings.Contains(body, "/api/openapi/profile.swagger.json") ||
-		!strings.Contains(body, "/api/openapi/content.swagger.json") {
+	if !strings.Contains(body, "/api/openapi/gateway.swagger.json") {
 		t.Fatalf("expected OpenAPI endpoints in response body: %s", body)
 	}
 }

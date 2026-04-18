@@ -2,38 +2,20 @@ package httpgateway
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
-	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
-	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
-	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
+	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 )
 
-type DownstreamEndpoints struct {
-	AuthGRPCEndpoint    string
-	ProfileGRPCEndpoint string
-	ContentGRPCEndpoint string
-}
-
-func NewMux(ctx context.Context, endpoints DownstreamEndpoints) (http.Handler, error) {
+func NewMux(ctx context.Context, server gatewayv1.GatewayServiceServer) (http.Handler, error) {
 	mux := newMux()
-	dialOptions := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	if err := authv1.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, endpoints.AuthGRPCEndpoint, dialOptions); err != nil {
-		return nil, fmt.Errorf("register auth handlers: %w", err)
-	}
-	if err := profilev1.RegisterProfileServiceHandlerFromEndpoint(ctx, mux, endpoints.ProfileGRPCEndpoint, dialOptions); err != nil {
-		return nil, fmt.Errorf("register profile handlers: %w", err)
-	}
-	if err := contentv1.RegisterContentServiceHandlerFromEndpoint(ctx, mux, endpoints.ContentGRPCEndpoint, dialOptions); err != nil {
-		return nil, fmt.Errorf("register content handlers: %w", err)
+	if err := gatewayv1.RegisterGatewayServiceHandlerServer(ctx, mux, server); err != nil {
+		return nil, err
 	}
 
 	return mux, nil

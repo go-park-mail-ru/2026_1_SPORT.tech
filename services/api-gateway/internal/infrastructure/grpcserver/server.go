@@ -1,0 +1,65 @@
+package grpcserver
+
+import (
+	"context"
+	"fmt"
+	"net"
+
+	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
+	"google.golang.org/grpc"
+	grpcHealth "google.golang.org/grpc/health"
+	grpcHealthV1 "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
+)
+
+type Server struct {
+	server   *grpc.Server
+	listener net.Listener
+}
+
+func New(listenAddress string, gatewayService gatewayv1.GatewayServiceServer) (*Server, error) {
+	listener, err := net.Listen("tcp", listenAddress)
+	if err != nil {
+		return nil, fmt.Errorf("listen grpc: %w", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	gatewayv1.RegisterGatewayServiceServer(grpcServer, gatewayService)
+
+	healthServer := grpcHealth.NewServer()
+	healthServer.SetServingStatus("", grpcHealthV1.HealthCheckResponse_SERVING)
+	grpcHealthV1.RegisterHealthServer(grpcServer, healthServer)
+
+	reflection.Register(grpcServer)
+
+	return &Server{
+		server:   grpcServer,
+		listener: listener,
+	}, nil
+}
+
+func (server *Server) Serve() error {
+	return server.server.Serve(server.listener)
+}
+
+func (server *Server) Shutdown(ctx context.Context) error {
+	done := make(chan struct{})
+
+	go func() {
+		server.server.GracefulStop()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		return nil
+	case <-ctx.Done():
+		server.server.Stop()
+		<-done
+		return nil
+	}
+}
+
+func (server *Server) Address() string {
+	return server.listener.Addr().String()
+}

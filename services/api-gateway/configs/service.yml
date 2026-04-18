@@ -2,6 +2,7 @@ service_name: api-gateway
 
 server:
   host: 0.0.0.0
+  grpc_port: "9090"
   http_port: "8080"
   shutdown_timeout: 10s
 
@@ -11,6 +12,4 @@ downstream:
   content_grpc_endpoint: localhost:9093
 
 openapi:
-  auth_file_path: grpc/gen/openapiv2/auth/v1/auth.swagger.json
-  profile_file_path: grpc/gen/openapiv2/profile/v1/profile.swagger.json
-  content_file_path: grpc/gen/openapiv2/content/v1/content.swagger.json
+  gateway_file_path: grpc/gen/openapiv2/gateway/v1/gateway.swagger.json

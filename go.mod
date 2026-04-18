@@ -3,8 +3,6 @@ module github.com/go-park-mail-ru/2026_1_SPORT.tech
 go 1.25.0
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	github.com/lib/pq v1.11.2
 	github.com/minio/minio-go/v7 v7.0.95
