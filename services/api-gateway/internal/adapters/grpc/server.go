@@ -8,7 +8,9 @@ import (
 	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	profilev1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/adapters/mappers"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -34,7 +36,12 @@ func NewServer(
 }
 
 func (server *Server) Register(ctx context.Context, request *gatewayv1.RegisterRequest) (*gatewayv1.AuthSessionResponse, error) {
-	response, err := server.authClient.Register(forwardContext(ctx), mappers.RegisterRequestToAuth(request))
+	registerRequest, err := mappers.RegisterRequestToAuth(request)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	response, err := server.authClient.Register(forwardContext(ctx), registerRequest)
 	if err != nil {
 		return nil, err
 	}

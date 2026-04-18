@@ -8,19 +8,6 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-enum UserRole {
-  USER_ROLE_UNSPECIFIED = 0;
-  USER_ROLE_CLIENT = 1;
-  USER_ROLE_TRAINER = 2;
-  USER_ROLE_ADMIN = 3;
-}
-
-enum AccountStatus {
-  ACCOUNT_STATUS_UNSPECIFIED = 0;
-  ACCOUNT_STATUS_ACTIVE = 1;
-  ACCOUNT_STATUS_DISABLED = 2;
-}
-
 enum ContentBlockKind {
   CONTENT_BLOCK_KIND_UNSPECIFIED = 0;
   CONTENT_BLOCK_KIND_TEXT = 1;
@@ -33,8 +20,8 @@ message AuthUser {
   int64 user_id = 1;
   string email = 2;
   string username = 3;
-  UserRole role = 4;
-  AccountStatus status = 5;
+  string role = 4;
+  string status = 5;
 }
 
 message SessionInfo {
@@ -51,7 +38,7 @@ message RegisterRequest {
   string email = 1;
   string username = 2;
   string password = 3;
-  UserRole role = 4;
+  string role = 4;
 }
 
 message LoginRequest {

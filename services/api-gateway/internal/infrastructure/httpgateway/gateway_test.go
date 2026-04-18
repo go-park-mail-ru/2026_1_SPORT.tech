@@ -141,6 +141,8 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	var loginPayload struct {
 		User struct {
 			UserID string `json:"userId"`
+			Role   string `json:"role"`
+			Status string `json:"status"`
 		} `json:"user"`
 		Session struct {
 			SessionToken string `json:"sessionToken"`
@@ -149,7 +151,10 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	if err := json.NewDecoder(loginResponse.Body).Decode(&loginPayload); err != nil {
 		t.Fatalf("decode login response: %v", err)
 	}
-	if loginPayload.User.UserID != "7" || loginPayload.Session.SessionToken != "token-123" {
+	if loginPayload.User.UserID != "7" ||
+		loginPayload.User.Role != "client" ||
+		loginPayload.User.Status != "active" ||
+		loginPayload.Session.SessionToken != "token-123" {
 		t.Fatalf("unexpected login payload: %+v", loginPayload)
 	}
 
