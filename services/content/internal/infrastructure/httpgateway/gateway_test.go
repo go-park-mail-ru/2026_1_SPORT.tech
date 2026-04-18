@@ -1,0 +1,134 @@
+package httpgateway_test
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
+	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/grpc"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/infrastructure/httpgateway"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
+)
+
+type stubContentUseCase struct {
+	listAuthorPostsFunc func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
+	createPostFunc      func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
+	getPostFunc         func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
+	updatePostFunc      func(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
+	deletePostFunc      func(ctx context.Context, command usecase.DeletePostCommand) error
+	likePostFunc        func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+	unlikePostFunc      func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+	createCommentFunc   func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
+	listCommentsFunc    func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
+}
+
+func (stub stubContentUseCase) ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
+	return stub.listAuthorPostsFunc(ctx, query)
+}
+
+func (stub stubContentUseCase) CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
+	return stub.createPostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
+	return stub.getPostFunc(ctx, query)
+}
+
+func (stub stubContentUseCase) UpdatePost(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error) {
+	return stub.updatePostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) DeletePost(ctx context.Context, command usecase.DeletePostCommand) error {
+	return stub.deletePostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
+	return stub.likePostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
+	return stub.unlikePostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) CreateComment(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error) {
+	return stub.createCommentFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
+	return stub.listCommentsFunc(ctx, query)
+}
+
+func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
+	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
+	handler := grpcadapter.NewServer(stubContentUseCase{
+		listAuthorPostsFunc: func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
+			return nil, errors.New("not implemented")
+		},
+		createPostFunc: func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
+			return domain.Post{}, errors.New("not implemented")
+		},
+		getPostFunc: func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
+			return domain.Post{
+				PostID:       query.PostID,
+				AuthorUserID: 7,
+				Title:        "Morning run",
+				CreatedAt:    now,
+				UpdatedAt:    now,
+				CanView:      true,
+			}, nil
+		},
+		updatePostFunc: func(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error) {
+			return domain.Post{}, errors.New("not implemented")
+		},
+		deletePostFunc: func(ctx context.Context, command usecase.DeletePostCommand) error {
+			return errors.New("not implemented")
+		},
+		likePostFunc: func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
+			return domain.PostLikeState{}, errors.New("not implemented")
+		},
+		unlikePostFunc: func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
+			return domain.PostLikeState{}, errors.New("not implemented")
+		},
+		createCommentFunc: func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error) {
+			return domain.Comment{}, errors.New("not implemented")
+		},
+		listCommentsFunc: func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
+			return nil, errors.New("not implemented")
+		},
+	})
+
+	mux, err := httpgateway.NewLocalMux(context.Background(), handler)
+	if err != nil {
+		t.Fatalf("new local mux: %v", err)
+	}
+
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	response, err := http.Get(server.URL + "/v1/posts/7?viewerUserId=7")
+	if err != nil {
+		t.Fatalf("get post: %v", err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status code: %d", response.StatusCode)
+	}
+
+	var payload struct {
+		Post struct {
+			PostID string `json:"postId"`
+		} `json:"post"`
+	}
+	if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if payload.Post.PostID != "7" {
+		t.Fatalf("unexpected post id: %s", payload.Post.PostID)
+	}
+}

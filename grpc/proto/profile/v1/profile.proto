@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package sporttech.profile.v1;
+
+option go_package = "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1;profilev1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message TrainerSport {
+  int64 sport_type_id = 1;
+  int32 experience_years = 2;
+  optional string sports_rank = 3;
+}
+
+message TrainerDetails {
+  optional string education_degree = 1;
+  optional google.protobuf.Timestamp career_since_date = 2;
+  repeated TrainerSport sports = 3;
+}
+
+message Profile {
+  int64 user_id = 1;
+  string username = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string bio = 5;
+  optional string avatar_url = 6;
+  bool is_trainer = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  optional TrainerDetails trainer_details = 10;
+}
+
+message AuthorSummary {
+  int64 user_id = 1;
+  string username = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string bio = 5;
+  optional string avatar_url = 6;
+  optional TrainerDetails trainer_details = 7;
+}
+
+message SportType {
+  int64 sport_type_id = 1;
+  string name = 2;
+}
+
+message ProfileResponse {
+  Profile profile = 1;
+}
+
+message CreateProfileRequest {
+  int64 user_id = 1;
+  string username = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string bio = 5;
+  bool is_trainer = 6;
+  optional TrainerDetails trainer_details = 7;
+}
+
+message GetProfileRequest {
+  int64 user_id = 1;
+}
+
+message UpdateProfileRequest {
+  int64 user_id = 1;
+  optional string username = 2;
+  optional string first_name = 3;
+  optional string last_name = 4;
+  optional string bio = 5;
+  optional TrainerDetails trainer_details = 6;
+}
+
+message SearchAuthorsRequest {
+  string query = 1;
+  repeated int64 sport_type_ids = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message SearchAuthorsResponse {
+  repeated AuthorSummary authors = 1;
+}
+
+message UploadAvatarRequest {
+  int64 user_id = 1;
+  string file_name = 2;
+  string content_type = 3;
+  bytes content = 4;
+}
+
+message DeleteAvatarRequest {
+  int64 user_id = 1;
+}
+
+message ListSportTypesResponse {
+  repeated SportType sport_types = 1;
+}
+
+service ProfileService {
+  rpc CreateProfile(CreateProfileRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles"
+      body: "*"
+    };
+  }
+
+  rpc GetProfile(GetProfileRequest) returns (ProfileResponse) {
+    option (google.api.http).get = "/v1/profiles/{user_id}";
+  }
+
+  rpc UpdateProfile(UpdateProfileRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      patch: "/v1/profiles/{user_id}"
+      body: "*"
+    };
+  }
+
+  rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse) {
+    option (google.api.http) = {
+      post: "/v1/authors:search"
+      body: "*"
+    };
+  }
+
+  rpc UploadAvatar(UploadAvatarRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles/{user_id}/avatar"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAvatar(DeleteAvatarRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/profiles/{user_id}/avatar";
+  }
+
+  rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
+    option (google.api.http).get = "/v1/sport-types";
+  }
+}

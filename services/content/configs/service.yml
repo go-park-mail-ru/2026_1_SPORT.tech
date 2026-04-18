@@ -1,0 +1,19 @@
+service_name: content-service
+
+server:
+  host: 0.0.0.0
+  grpc_port: "9093"
+  http_port: "8083"
+  shutdown_timeout: 10s
+
+postgres:
+  host: localhost
+  port: "5432"
+  user: postgres
+  db_name: sporttech_content
+  max_open_conns: 20
+  max_idle_conns: 10
+  conn_max_lifetime: 30m
+
+openapi:
+  file_path: grpc/gen/openapiv2/content/v1/content.swagger.json
