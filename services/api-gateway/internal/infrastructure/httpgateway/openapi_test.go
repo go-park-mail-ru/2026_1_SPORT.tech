@@ -47,6 +47,10 @@ func TestGatewayOpenAPIHandlerRewritesTags(t *testing.T) {
 		t.Fatalf("decode response: %v", err)
 	}
 
+	if payload["basePath"] != "/api" {
+		t.Fatalf("unexpected basePath: %#v", payload["basePath"])
+	}
+
 	tags := payload["tags"].([]any)
 	gotTags := map[string]bool{}
 	for _, rawTag := range tags {

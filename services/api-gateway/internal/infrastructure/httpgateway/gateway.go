@@ -13,10 +13,15 @@ import (
 )
 
 var gatewayOpenAPITagAliases = map[string]string{
+	"AuthService":           "Auth Service",
+	"ProfileService":        "Profile Service",
+	"ContentService":        "Content Service",
 	"GatewayAuthService":    "Auth Service",
 	"GatewayProfileService": "Profile Service",
 	"GatewayContentService": "Content Service",
 }
+
+const gatewayOpenAPIBasePath = "/api"
 
 func NewMux(
 	ctx context.Context,
@@ -39,7 +44,7 @@ func NewMux(
 	return mux, nil
 }
 
-func OpenAPIHandler(filePath string, tagAliases map[string]string) http.Handler {
+func OpenAPIHandler(filePath string, tagAliases map[string]string, basePath string) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if _, err := os.Stat(filePath); err != nil {
 			http.NotFound(writer, request)
@@ -59,7 +64,7 @@ func OpenAPIHandler(filePath string, tagAliases map[string]string) http.Handler 
 			return
 		}
 
-		normalized, err := rewriteOpenAPITags(data, tagAliases)
+		normalized, err := rewriteOpenAPISpec(data, tagAliases, basePath)
 		if err != nil {
 			http.Error(writer, "failed to normalize openapi spec", http.StatusInternalServerError)
 			return
@@ -70,7 +75,7 @@ func OpenAPIHandler(filePath string, tagAliases map[string]string) http.Handler 
 }
 
 func GatewayOpenAPIHandler(filePath string) http.Handler {
-	return OpenAPIHandler(filePath, gatewayOpenAPITagAliases)
+	return OpenAPIHandler(filePath, gatewayOpenAPITagAliases, gatewayOpenAPIBasePath)
 }
 
 func newMux() *runtime.ServeMux {
@@ -101,7 +106,7 @@ func incomingMetadata(ctx context.Context, request *http.Request) metadata.MD {
 	return metadataPairs
 }
 
-func rewriteOpenAPITags(data []byte, tagAliases map[string]string) ([]byte, error) {
+func rewriteOpenAPISpec(data []byte, tagAliases map[string]string, basePath string) ([]byte, error) {
 	var document map[string]any
 	if err := json.Unmarshal(data, &document); err != nil {
 		return nil, err
@@ -154,6 +159,10 @@ func rewriteOpenAPITags(data []byte, tagAliases map[string]string) ([]byte, erro
 				}
 			}
 		}
+	}
+
+	if basePath != "" {
+		document["basePath"] = basePath
 	}
 
 	return json.Marshal(document)
