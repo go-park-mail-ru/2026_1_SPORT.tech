@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -134,7 +135,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	defer server.Close()
 
 	loginResponse, err := http.Post(
-		server.URL+"/api/auth/login",
+		server.URL+"/api/v1/auth/login",
 		"application/json",
 		bytes.NewBufferString(`{"email":"runner@example.com","password":"secret"}`),
 	)
@@ -144,7 +145,8 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	defer loginResponse.Body.Close()
 
 	if loginResponse.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected login status: %d", loginResponse.StatusCode)
+		body, _ := io.ReadAll(loginResponse.Body)
+		t.Fatalf("unexpected login status: %d body=%s", loginResponse.StatusCode, string(body))
 	}
 
 	var loginPayload struct {
@@ -170,7 +172,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		t.Fatalf("expected sid cookie, got %q", setCookie)
 	}
 
-	profileResponse, err := http.Get(server.URL + "/api/profiles/7")
+	profileResponse, err := http.Get(server.URL + "/api/v1/profiles/7")
 	if err != nil {
 		t.Fatalf("get profile: %v", err)
 	}
@@ -190,7 +192,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		t.Fatalf("unexpected profile payload: %+v", profilePayload)
 	}
 
-	postResponse, err := http.Get(server.URL + "/api/posts/11")
+	postResponse, err := http.Get(server.URL + "/api/v1/posts/11")
 	if err != nil {
 		t.Fatalf("get post: %v", err)
 	}
@@ -210,7 +212,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		t.Fatalf("unexpected post payload: %+v", postPayload)
 	}
 
-	sportTypesResponse, err := http.Get(server.URL + "/api/sport-types")
+	sportTypesResponse, err := http.Get(server.URL + "/api/v1/sport-types")
 	if err != nil {
 		t.Fatalf("get sport types: %v", err)
 	}

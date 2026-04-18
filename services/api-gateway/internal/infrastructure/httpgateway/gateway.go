@@ -227,7 +227,7 @@ func rewriteAvatarUploadOperation(document map[string]any) {
 		return
 	}
 
-	pathItem, ok := paths["/profiles/me/avatar"].(map[string]any)
+	pathItem, ok := paths["/v1/profiles/me/avatar"].(map[string]any)
 	if !ok {
 		return
 	}

@@ -28,7 +28,7 @@
     "application/json"
   ],
   "paths": {
-    "/auth/login": {
+    "/v1/auth/login": {
       "post": {
         "operationId": "AuthService_Login",
         "responses": {
@@ -60,7 +60,7 @@
         ]
       }
     },
-    "/auth/logout": {
+    "/v1/auth/logout": {
       "post": {
         "operationId": "AuthService_Logout",
         "responses": {
@@ -83,7 +83,7 @@
         ]
       }
     },
-    "/auth/me": {
+    "/v1/auth/me": {
       "get": {
         "operationId": "AuthService_GetMe",
         "responses": {
@@ -105,7 +105,7 @@
         ]
       }
     },
-    "/auth/register/client": {
+    "/v1/auth/register/client": {
       "post": {
         "operationId": "AuthService_RegisterClient",
         "responses": {
@@ -137,7 +137,7 @@
         ]
       }
     },
-    "/auth/register/trainer": {
+    "/v1/auth/register/trainer": {
       "post": {
         "operationId": "AuthService_RegisterTrainer",
         "responses": {
@@ -169,7 +169,7 @@
         ]
       }
     },
-    "/posts": {
+    "/v1/posts": {
       "post": {
         "operationId": "PostService_CreatePost",
         "responses": {
@@ -201,7 +201,7 @@
         ]
       }
     },
-    "/posts/{post_id}": {
+    "/v1/posts/{post_id}": {
       "get": {
         "operationId": "PostService_GetPost",
         "responses": {
@@ -299,7 +299,7 @@
         ]
       }
     },
-    "/posts/{post_id}/likes": {
+    "/v1/posts/{post_id}/likes": {
       "delete": {
         "operationId": "PostService_UnlikePost",
         "responses": {
@@ -359,7 +359,7 @@
         ]
       }
     },
-    "/profiles/me": {
+    "/v1/profiles/me": {
       "patch": {
         "operationId": "ProfileService_UpdateMyProfile",
         "responses": {
@@ -391,7 +391,7 @@
         ]
       }
     },
-    "/profiles/me/avatar": {
+    "/v1/profiles/me/avatar": {
       "delete": {
         "operationId": "ProfileService_DeleteMyAvatar",
         "responses": {
@@ -444,7 +444,7 @@
         ]
       }
     },
-    "/profiles/{user_id}": {
+    "/v1/profiles/{user_id}": {
       "get": {
         "operationId": "ProfileService_GetProfile",
         "responses": {
@@ -475,7 +475,7 @@
         ]
       }
     },
-    "/profiles/{user_id}/donations": {
+    "/v1/profiles/{user_id}/donations": {
       "post": {
         "operationId": "DonationService_DonateToProfile",
         "responses": {
@@ -514,7 +514,7 @@
         ]
       }
     },
-    "/profiles/{user_id}/posts": {
+    "/v1/profiles/{user_id}/posts": {
       "get": {
         "operationId": "ProfileService_ListProfilePosts",
         "responses": {
@@ -545,7 +545,7 @@
         ]
       }
     },
-    "/sport-types": {
+    "/v1/sport-types": {
       "get": {
         "operationId": "SportService_ListSportTypes",
         "responses": {
@@ -567,7 +567,7 @@
         ]
       }
     },
-    "/trainers": {
+    "/v1/trainers": {
       "get": {
         "operationId": "ProfileService_ListTrainers",
         "responses": {

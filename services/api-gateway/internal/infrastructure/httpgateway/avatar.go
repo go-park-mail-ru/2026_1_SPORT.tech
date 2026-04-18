@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-const avatarUploadRoutePattern = "/api/profiles/me/avatar"
+const avatarUploadRoutePattern = "/api/v1/profiles/me/avatar"
 
 type AvatarUploader interface {
 	UploadMyAvatar(context.Context, *gatewayv1.UploadMyAvatarRequest) (*gatewayv1.AvatarUploadResponse, error)

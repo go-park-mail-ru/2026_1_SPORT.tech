@@ -26,11 +26,11 @@ func TestGatewayOpenAPIHandlerRewritesTags(t *testing.T) {
 			{"name":"DonationService"}
 		],
 		"paths":{
-			"/auth/login":{"post":{"tags":["AuthService"]}},
-			"/profiles/{user_id}":{"get":{"tags":["ProfileService"]}},
-			"/posts/{post_id}":{"get":{"tags":["PostService"]}},
-			"/sport-types":{"get":{"tags":["SportService"]}},
-			"/profiles/{user_id}/donations":{"post":{"tags":["DonationService"]}}
+			"/v1/auth/login":{"post":{"tags":["AuthService"]}},
+			"/v1/profiles/{user_id}":{"get":{"tags":["ProfileService"]}},
+			"/v1/posts/{post_id}":{"get":{"tags":["PostService"]}},
+			"/v1/sport-types":{"get":{"tags":["SportService"]}},
+			"/v1/profiles/{user_id}/donations":{"post":{"tags":["DonationService"]}}
 		}
 	}`
 	if err := os.WriteFile(specPath, []byte(spec), 0o644); err != nil {

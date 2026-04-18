@@ -2357,37 +2357,36 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\n" +
 	"\n" +
-	"\b_message2\xac\x04\n" +
-	"\vAuthService\x12\x83\x01\n" +
-	"\x0eRegisterClient\x12+.sporttech.gateway.v1.ClientRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/auth/register/client\x12\x86\x01\n" +
-	"\x0fRegisterTrainer\x12,.sporttech.gateway.v1.TrainerRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/auth/register/trainer\x12g\n" +
-	"\x05Login\x12\".sporttech.gateway.v1.LoginRequest\x1a\".sporttech.gateway.v1.AuthResponse\"\x16\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/auth/login\x12U\n" +
-	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\".sporttech.gateway.v1.AuthResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
-	"\x12\b/auth/me\x12N\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x14\x82\xd3\xe4\x93\x02\x0e\"\f/auth/logout2\xea\x05\n" +
-	"\x0eProfileService\x12y\n" +
+	"\b_message2\xbb\x04\n" +
+	"\vAuthService\x12\x86\x01\n" +
+	"\x0eRegisterClient\x12+.sporttech.gateway.v1.ClientRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/v1/auth/register/client\x12\x89\x01\n" +
+	"\x0fRegisterTrainer\x12,.sporttech.gateway.v1.TrainerRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/register/trainer\x12j\n" +
+	"\x05Login\x12\".sporttech.gateway.v1.LoginRequest\x1a\".sporttech.gateway.v1.AuthResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12X\n" +
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\".sporttech.gateway.v1.AuthResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/auth/me\x12Q\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x17\x82\xd3\xe4\x93\x02\x11\"\x0f/v1/auth/logout2\xfd\x05\n" +
+	"\x0eProfileService\x12|\n" +
 	"\n" +
-	"GetProfile\x12'.sporttech.gateway.v1.GetProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/profiles/{user_id}\x12d\n" +
-	"\fListTrainers\x12\x16.google.protobuf.Empty\x1a).sporttech.gateway.v1.GetTrainersResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/trainers\x12\x7f\n" +
-	"\x0fUpdateMyProfile\x12,.sporttech.gateway.v1.UpdateMyProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*2\f/profiles/me\x12\x89\x01\n" +
-	"\x0eUploadMyAvatar\x12+.sporttech.gateway.v1.UploadMyAvatarRequest\x1a*.sporttech.gateway.v1.AvatarUploadResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/profiles/me/avatar\x12]\n" +
-	"\x0eDeleteMyAvatar\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/profiles/me/avatar\x12\x8a\x01\n" +
-	"\x10ListProfilePosts\x12'.sporttech.gateway.v1.GetProfileRequest\x1a*.sporttech.gateway.v1.ProfilePostsResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/profiles/{user_id}/posts2\xc3\x05\n" +
-	"\vPostService\x12l\n" +
+	"GetProfile\x12'.sporttech.gateway.v1.GetProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12g\n" +
+	"\fListTrainers\x12\x16.google.protobuf.Empty\x1a).sporttech.gateway.v1.GetTrainersResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/trainers\x12\x82\x01\n" +
+	"\x0fUpdateMyProfile\x12,.sporttech.gateway.v1.UpdateMyProfileRequest\x1a%.sporttech.gateway.v1.ProfileResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*2\x0f/v1/profiles/me\x12\x8c\x01\n" +
+	"\x0eUploadMyAvatar\x12+.sporttech.gateway.v1.UploadMyAvatarRequest\x1a*.sporttech.gateway.v1.AvatarUploadResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/v1/profiles/me/avatar\x12`\n" +
+	"\x0eDeleteMyAvatar\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/v1/profiles/me/avatar\x12\x8d\x01\n" +
+	"\x10ListProfilePosts\x12'.sporttech.gateway.v1.GetProfileRequest\x1a*.sporttech.gateway.v1.ProfilePostsResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/profiles/{user_id}/posts2\xd5\x05\n" +
+	"\vPostService\x12o\n" +
 	"\n" +
-	"CreatePost\x12'.sporttech.gateway.v1.CreatePostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x11\x82\xd3\xe4\x93\x02\v:\x01*\"\x06/posts\x12m\n" +
-	"\aGetPost\x12$.sporttech.gateway.v1.GetPostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/posts/{post_id}\x12v\n" +
+	"CreatePost\x12'.sporttech.gateway.v1.CreatePostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12p\n" +
+	"\aGetPost\x12$.sporttech.gateway.v1.GetPostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/posts/{post_id}\x12y\n" +
 	"\n" +
-	"UpdatePost\x12'.sporttech.gateway.v1.UpdatePostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*2\x10/posts/{post_id}\x12g\n" +
+	"UpdatePost\x12'.sporttech.gateway.v1.UpdatePostRequest\x1a\".sporttech.gateway.v1.PostResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*2\x13/v1/posts/{post_id}\x12j\n" +
 	"\n" +
-	"DeletePost\x12'.sporttech.gateway.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/posts/{post_id}\x12y\n" +
-	"\bLikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\"\x16/posts/{post_id}/likes\x12{\n" +
+	"DeletePost\x12'.sporttech.gateway.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/posts/{post_id}\x12|\n" +
+	"\bLikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"!\x82\xd3\xe4\x93\x02\x1b\"\x19/v1/posts/{post_id}/likes\x12~\n" +
 	"\n" +
-	"UnlikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/posts/{post_id}/likes2x\n" +
-	"\fSportService\x12h\n" +
-	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a(.sporttech.gateway.v1.SportTypesResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/sport-types2\xa5\x01\n" +
-	"\x0fDonationService\x12\x91\x01\n" +
-	"\x0fDonateToProfile\x12,.sporttech.gateway.v1.DonateToProfileRequest\x1a&.sporttech.gateway.v1.DonationResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/profiles/{user_id}/donationsBOZMgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1;gatewayv1b\x06proto3"
+	"UnlikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/posts/{post_id}/likes2{\n" +
+	"\fSportService\x12k\n" +
+	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a(.sporttech.gateway.v1.SportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-types2\xa8\x01\n" +
+	"\x0fDonationService\x12\x94\x01\n" +
+	"\x0fDonateToProfile\x12,.sporttech.gateway.v1.DonateToProfileRequest\x1a&.sporttech.gateway.v1.DonationResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /v1/profiles/{user_id}/donationsBOZMgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1;gatewayv1b\x06proto3"
 
 var (
 	file_gateway_v1_gateway_proto_rawDescOnce sync.Once

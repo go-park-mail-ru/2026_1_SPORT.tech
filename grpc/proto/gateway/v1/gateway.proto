@@ -228,108 +228,108 @@ message DonationResponse {
 service AuthService {
   rpc RegisterClient(ClientRegisterRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/auth/register/client"
+      post: "/v1/auth/register/client"
       body: "*"
     };
   }
 
   rpc RegisterTrainer(TrainerRegisterRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/auth/register/trainer"
+      post: "/v1/auth/register/trainer"
       body: "*"
     };
   }
 
   rpc Login(LoginRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/auth/login"
+      post: "/v1/auth/login"
       body: "*"
     };
   }
 
   rpc GetMe(google.protobuf.Empty) returns (AuthResponse) {
-    option (google.api.http).get = "/auth/me";
+    option (google.api.http).get = "/v1/auth/me";
   }
 
   rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
-    option (google.api.http).post = "/auth/logout";
+    option (google.api.http).post = "/v1/auth/logout";
   }
 }
 
 service ProfileService {
   rpc GetProfile(GetProfileRequest) returns (ProfileResponse) {
-    option (google.api.http).get = "/profiles/{user_id}";
+    option (google.api.http).get = "/v1/profiles/{user_id}";
   }
 
   rpc ListTrainers(google.protobuf.Empty) returns (GetTrainersResponse) {
-    option (google.api.http).get = "/trainers";
+    option (google.api.http).get = "/v1/trainers";
   }
 
   rpc UpdateMyProfile(UpdateMyProfileRequest) returns (ProfileResponse) {
     option (google.api.http) = {
-      patch: "/profiles/me"
+      patch: "/v1/profiles/me"
       body: "*"
     };
   }
 
   rpc UploadMyAvatar(UploadMyAvatarRequest) returns (AvatarUploadResponse) {
     option (google.api.http) = {
-      post: "/profiles/me/avatar"
+      post: "/v1/profiles/me/avatar"
       body: "*"
     };
   }
 
   rpc DeleteMyAvatar(google.protobuf.Empty) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/profiles/me/avatar";
+    option (google.api.http).delete = "/v1/profiles/me/avatar";
   }
 
   rpc ListProfilePosts(GetProfileRequest) returns (ProfilePostsResponse) {
-    option (google.api.http).get = "/profiles/{user_id}/posts";
+    option (google.api.http).get = "/v1/profiles/{user_id}/posts";
   }
 }
 
 service PostService {
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
-      post: "/posts"
+      post: "/v1/posts"
       body: "*"
     };
   }
 
   rpc GetPost(GetPostRequest) returns (PostResponse) {
-    option (google.api.http).get = "/posts/{post_id}";
+    option (google.api.http).get = "/v1/posts/{post_id}";
   }
 
   rpc UpdatePost(UpdatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
-      patch: "/posts/{post_id}"
+      patch: "/v1/posts/{post_id}"
       body: "*"
     };
   }
 
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/posts/{post_id}";
+    option (google.api.http).delete = "/v1/posts/{post_id}";
   }
 
   rpc LikePost(PostLikeRequest) returns (PostLikeResponse) {
-    option (google.api.http).post = "/posts/{post_id}/likes";
+    option (google.api.http).post = "/v1/posts/{post_id}/likes";
   }
 
   rpc UnlikePost(PostLikeRequest) returns (PostLikeResponse) {
-    option (google.api.http).delete = "/posts/{post_id}/likes";
+    option (google.api.http).delete = "/v1/posts/{post_id}/likes";
   }
 }
 
 service SportService {
   rpc ListSportTypes(google.protobuf.Empty) returns (SportTypesResponse) {
-    option (google.api.http).get = "/sport-types";
+    option (google.api.http).get = "/v1/sport-types";
   }
 }
 
 service DonationService {
   rpc DonateToProfile(DonateToProfileRequest) returns (DonationResponse) {
     option (google.api.http) = {
-      post: "/profiles/{user_id}/donations"
+      post: "/v1/profiles/{user_id}/donations"
       body: "*"
     };
   }
