@@ -10,12 +10,14 @@ PROFILE_CONFIG_PATH ?= services/profile/configs/service.yml
 PROFILE_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_profile?sslmode=disable
 CONTENT_CONFIG_PATH ?= services/content/configs/service.yml
 CONTENT_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_content?sslmode=disable
+API_GATEWAY_CONFIG_PATH ?= services/api-gateway/configs/service.yml
 BIN_DIR ?= bin
 
 .PHONY: tools generate proto \
 	auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down \
 	profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down \
-	content-build content-run content-test content-test-integration content-migrate-up content-migrate-down
+	content-build content-run content-test content-test-integration content-migrate-up content-migrate-down \
+	api-gateway-build api-gateway-run api-gateway-test
 
 tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
@@ -92,3 +94,13 @@ content-migrate-up:
 
 content-migrate-down:
 	migrate -path services/content/migrations -database "$(CONTENT_DB_URL)" down 1
+
+api-gateway-build:
+	mkdir -p $(BIN_DIR)
+	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/api-gateway ./services/api-gateway/cmd/service
+
+api-gateway-run:
+	GOSUMDB=off GOPROXY=off API_GATEWAY_CONFIG_PATH=$(API_GATEWAY_CONFIG_PATH) go run ./services/api-gateway/cmd/service
+
+api-gateway-test:
+	GOSUMDB=off GOPROXY=off go test ./services/api-gateway/...
