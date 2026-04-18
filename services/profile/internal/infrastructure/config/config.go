@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -61,8 +62,16 @@ func NewConfig(path string) (Config, error) {
 	}
 
 	setDefaults(&cfg)
+	cfg.Postgres.Host = getEnv("PROFILE_DB_HOST", getEnv("DB_HOST", cfg.Postgres.Host))
+	cfg.Postgres.Port = getEnv("PROFILE_DB_PORT", getEnv("DB_PORT", cfg.Postgres.Port))
+	cfg.Postgres.User = getEnv("PROFILE_DB_USER", getEnv("DB_USER", cfg.Postgres.User))
+	cfg.Postgres.Name = getEnv("PROFILE_DB_NAME", cfg.Postgres.Name)
 	cfg.Postgres.Password = getEnv("PROFILE_DB_PASSWORD", getEnv("DB_PASSWORD", "postgres"))
+	cfg.Storage.Host = getEnv("PROFILE_STORAGE_HOST", getEnv("STORAGE_HOST", cfg.Storage.Host))
+	cfg.Storage.Port = getEnv("PROFILE_STORAGE_PORT", getEnv("STORAGE_PORT", cfg.Storage.Port))
+	cfg.Storage.Bucket = getEnv("PROFILE_STORAGE_BUCKET", getEnv("STORAGE_BUCKET", cfg.Storage.Bucket))
 	cfg.Storage.PublicBaseURL = getEnv("PROFILE_STORAGE_PUBLIC_BASE_URL", getEnv("STORAGE_PUBLIC_BASE_URL", cfg.Storage.PublicBaseURL))
+	cfg.Storage.UseSSL = getEnvBool("PROFILE_STORAGE_USE_SSL", getEnvBool("STORAGE_USE_SSL", cfg.Storage.UseSSL))
 	cfg.Storage.AccessKey = getEnv("MINIO_ACCESS_KEY", "minioadmin")
 	cfg.Storage.SecretKey = getEnv("MINIO_SECRET_KEY", "minioadmin")
 
@@ -130,6 +139,20 @@ func getEnv(key string, fallback string) string {
 	}
 
 	return value
+}
+
+func getEnvBool(key string, fallback bool) bool {
+	value, ok := os.LookupEnv(key)
+	if !ok {
+		return fallback
+	}
+
+	parsedValue, err := strconv.ParseBool(value)
+	if err != nil {
+		return fallback
+	}
+
+	return parsedValue
 }
 
 func (cfg ServerConfig) GRPCAddress() string {

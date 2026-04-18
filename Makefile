@@ -17,7 +17,8 @@ BIN_DIR ?= bin
 	auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down \
 	profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down \
 	content-build content-run content-test content-test-integration content-migrate-up content-migrate-down \
-	api-gateway-build api-gateway-run api-gateway-test
+	api-gateway-build api-gateway-run api-gateway-test \
+	compose-up compose-down compose-logs compose-ps
 
 tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
@@ -104,3 +105,15 @@ api-gateway-run:
 
 api-gateway-test:
 	GOSUMDB=off GOPROXY=off go test ./services/api-gateway/...
+
+compose-up:
+	docker compose up --build -d
+
+compose-down:
+	docker compose down
+
+compose-logs:
+	docker compose logs -f
+
+compose-ps:
+	docker compose ps

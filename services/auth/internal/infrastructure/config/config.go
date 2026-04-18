@@ -57,6 +57,10 @@ func NewConfig(path string) (Config, error) {
 	}
 
 	setDefaults(&cfg)
+	cfg.Postgres.Host = getEnv("AUTH_DB_HOST", getEnv("DB_HOST", cfg.Postgres.Host))
+	cfg.Postgres.Port = getEnv("AUTH_DB_PORT", getEnv("DB_PORT", cfg.Postgres.Port))
+	cfg.Postgres.User = getEnv("AUTH_DB_USER", getEnv("DB_USER", cfg.Postgres.User))
+	cfg.Postgres.Name = getEnv("AUTH_DB_NAME", cfg.Postgres.Name)
 	cfg.Postgres.Password = getEnv("AUTH_DB_PASSWORD", getEnv("DB_PASSWORD", "postgres"))
 
 	return cfg, nil
