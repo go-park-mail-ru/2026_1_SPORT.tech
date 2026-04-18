@@ -1,0 +1,26 @@
+service_name: profile-service
+
+server:
+  host: 0.0.0.0
+  grpc_port: "9092"
+  http_port: "8082"
+  shutdown_timeout: 10s
+
+postgres:
+  host: localhost
+  port: "5432"
+  user: postgres
+  db_name: sporttech_profile
+  max_open_conns: 20
+  max_idle_conns: 10
+  conn_max_lifetime: 30m
+
+storage:
+  host: localhost
+  port: "8000"
+  bucket: avatars
+  public_base_url: http://localhost:8000/avatars
+  use_ssl: false
+
+openapi:
+  file_path: grpc/gen/openapiv2/profile/v1/profile.swagger.json

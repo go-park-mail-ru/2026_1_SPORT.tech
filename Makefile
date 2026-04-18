@@ -6,9 +6,11 @@ GO_BIN := $(HOME)/go/bin
 
 AUTH_CONFIG_PATH ?= services/auth/configs/service.yml
 AUTH_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_auth?sslmode=disable
+PROFILE_CONFIG_PATH ?= services/profile/configs/service.yml
+PROFILE_DB_URL ?= postgres://postgres:postgres@localhost:5432/sporttech_profile?sslmode=disable
 BIN_DIR ?= bin
 
-.PHONY: tools generate proto auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down
+.PHONY: tools generate proto auth-build auth-run auth-test auth-test-integration auth-migrate-up auth-migrate-down profile-build profile-run profile-test profile-test-integration profile-migrate-up profile-migrate-down
 
 tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
@@ -47,3 +49,22 @@ auth-migrate-up:
 
 auth-migrate-down:
 	migrate -path services/auth/migrations -database "$(AUTH_DB_URL)" down 1
+
+profile-build:
+	mkdir -p $(BIN_DIR)
+	GOSUMDB=off GOPROXY=off go build -o ./$(BIN_DIR)/profile-service ./services/profile/cmd/service
+
+profile-run:
+	GOSUMDB=off GOPROXY=off PROFILE_CONFIG_PATH=$(PROFILE_CONFIG_PATH) go run ./services/profile/cmd/service
+
+profile-test:
+	GOSUMDB=off GOPROXY=off go test ./services/profile/...
+
+profile-test-integration:
+	GOSUMDB=off GOPROXY=off go test -tags integration ./services/profile/internal/adapters/repository/postgres/...
+
+profile-migrate-up:
+	migrate -path services/profile/migrations -database "$(PROFILE_DB_URL)" up
+
+profile-migrate-down:
+	migrate -path services/profile/migrations -database "$(PROFILE_DB_URL)" down 1
