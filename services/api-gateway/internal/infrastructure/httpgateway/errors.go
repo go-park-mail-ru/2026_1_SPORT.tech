@@ -18,6 +18,7 @@ const (
 	httpMetadataStatusCodeKey  = "x-http-status-code"
 	httpMetadataSetCookieKey   = "x-http-set-cookie"
 	httpMetadataClearCookieKey = "x-http-clear-cookie"
+	httpMetadataHeaderKey      = "x-http-header"
 )
 
 func forwardResponseOption(ctx context.Context, writer http.ResponseWriter, _ proto.Message) error {
@@ -31,6 +32,13 @@ func forwardResponseOption(ctx context.Context, writer http.ResponseWriter, _ pr
 	}
 	for _, cookie := range serverMetadata.HeaderMD.Get(httpMetadataClearCookieKey) {
 		writer.Header().Add("Set-Cookie", cookie)
+	}
+	for _, headerValue := range serverMetadata.HeaderMD.Get(httpMetadataHeaderKey) {
+		parts := strings.SplitN(headerValue, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		writer.Header().Set(parts[0], parts[1])
 	}
 
 	statusCodes := serverMetadata.HeaderMD.Get(httpMetadataStatusCodeKey)

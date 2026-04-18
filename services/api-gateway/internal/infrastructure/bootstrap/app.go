@@ -92,8 +92,9 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	httpMux.Handle("/api/docs/", httpgateway.DocsHandler("/api/openapi/gateway.swagger.json"))
 	httpMux.Handle("/api/openapi/gateway.swagger.json", httpgateway.GatewayOpenAPIHandler(cfg.OpenAPI.GatewayFilePath))
 	apiHandler := http.StripPrefix("/api", gatewayHandler)
-	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.MultipartAvatarHandler(gatewayService, apiHandler))
-	httpMux.Handle("/api/", apiHandler)
+	protectedAPIHandler := httpgateway.CSRFMiddleware(apiHandler)
+	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.CSRFMiddleware(httpgateway.MultipartAvatarHandler(gatewayService, apiHandler)))
+	httpMux.Handle("/api/", protectedAPIHandler)
 
 	httpServer := &http.Server{
 		Addr:              cfg.Server.HTTPAddress(),

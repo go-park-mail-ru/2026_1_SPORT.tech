@@ -171,6 +171,12 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	if setCookie := loginResponse.Header.Get("Set-Cookie"); !strings.Contains(setCookie, "sid=token-123") {
 		t.Fatalf("expected sid cookie, got %q", setCookie)
 	}
+	if setCookie := loginResponse.Header.Values("Set-Cookie"); len(setCookie) < 2 || !strings.Contains(strings.Join(setCookie, ";"), "csrf_token=") {
+		t.Fatalf("expected csrf cookie, got %q", setCookie)
+	}
+	if csrfHeader := loginResponse.Header.Get("X-CSRF-Token"); strings.TrimSpace(csrfHeader) == "" {
+		t.Fatalf("expected X-CSRF-Token header")
+	}
 
 	profileResponse, err := http.Get(server.URL + "/api/v1/profiles/7")
 	if err != nil {

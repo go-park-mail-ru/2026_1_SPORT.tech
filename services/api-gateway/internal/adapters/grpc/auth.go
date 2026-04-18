@@ -38,8 +38,18 @@ func (server *Server) RegisterClient(ctx context.Context, request *gatewayv1.Cli
 		return nil, err
 	}
 
+	csrfToken, err := newCSRFToken()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
+	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
+	}
+	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
+	}
+	if err := setCSRFHeader(ctx, csrfToken); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 	if err := setHTTPStatus(ctx, 201); err != nil {
 		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
@@ -75,8 +85,18 @@ func (server *Server) RegisterTrainer(ctx context.Context, request *gatewayv1.Tr
 		return nil, err
 	}
 
+	csrfToken, err := newCSRFToken()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
+	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
+	}
+	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
+	}
+	if err := setCSRFHeader(ctx, csrfToken); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 	if err := setHTTPStatus(ctx, 201); err != nil {
 		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
@@ -96,8 +116,18 @@ func (server *Server) Login(ctx context.Context, request *gatewayv1.LoginRequest
 		return nil, err
 	}
 
+	csrfToken, err := newCSRFToken()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
+	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
+	}
+	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
+	}
+	if err := setCSRFHeader(ctx, csrfToken); err != nil {
+		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 
 	return mappers.AuthResponseFromServices(authResponse.GetUser(), profile)
@@ -132,6 +162,9 @@ func (server *Server) Logout(ctx context.Context, _ *emptypb.Empty) (*emptypb.Em
 
 	if err := clearSessionCookie(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "clear session cookie: %v", err)
+	}
+	if err := clearCSRFCookie(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "clear csrf cookie: %v", err)
 	}
 	if err := setHTTPStatus(ctx, 204); err != nil {
 		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
