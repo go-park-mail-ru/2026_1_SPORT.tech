@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/httpgateway"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -53,9 +55,16 @@ func (server profileServer) GetProfile(ctx context.Context, request *profilev1.G
 			Username:  "runner",
 			FirstName: "Run",
 			LastName:  "Ner",
+			IsTrainer: false,
 			CreatedAt: timestamppb.New(now),
 			UpdatedAt: timestamppb.New(now),
 		},
+	}, nil
+}
+
+func (server profileServer) ListSportTypes(context.Context, *emptypb.Empty) (*profilev1.ListSportTypesResponse, error) {
+	return &profilev1.ListSportTypesResponse{
+		SportTypes: []*profilev1.SportType{{SportTypeId: 1, Name: "Run"}},
 	}, nil
 }
 
@@ -113,7 +122,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		contentv1.NewContentServiceClient(contentConn),
 	)
 
-	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer)
+	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}
@@ -125,7 +134,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	defer server.Close()
 
 	loginResponse, err := http.Post(
-		server.URL+"/api/v1/auth/login",
+		server.URL+"/api/auth/login",
 		"application/json",
 		bytes.NewBufferString(`{"email":"runner@example.com","password":"secret"}`),
 	)
@@ -140,25 +149,28 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 
 	var loginPayload struct {
 		User struct {
-			UserID int32  `json:"userId"`
-			Role   string `json:"role"`
-			Status string `json:"status"`
+			UserID    int32  `json:"user_id"`
+			Username  string `json:"username"`
+			Email     string `json:"email"`
+			FirstName string `json:"first_name"`
+			LastName  string `json:"last_name"`
 		} `json:"user"`
-		Session struct {
-			SessionToken string `json:"sessionToken"`
-		} `json:"session"`
 	}
 	if err := json.NewDecoder(loginResponse.Body).Decode(&loginPayload); err != nil {
 		t.Fatalf("decode login response: %v", err)
 	}
 	if loginPayload.User.UserID != 7 ||
-		loginPayload.User.Role != "client" ||
-		loginPayload.User.Status != "active" ||
-		loginPayload.Session.SessionToken != "token-123" {
+		loginPayload.User.Username != "runner" ||
+		loginPayload.User.Email != "runner@example.com" ||
+		loginPayload.User.FirstName != "Run" ||
+		loginPayload.User.LastName != "Ner" {
 		t.Fatalf("unexpected login payload: %+v", loginPayload)
 	}
+	if setCookie := loginResponse.Header.Get("Set-Cookie"); !strings.Contains(setCookie, "sid=token-123") {
+		t.Fatalf("expected sid cookie, got %q", setCookie)
+	}
 
-	profileResponse, err := http.Get(server.URL + "/api/v1/profiles/7")
+	profileResponse, err := http.Get(server.URL + "/api/profiles/7")
 	if err != nil {
 		t.Fatalf("get profile: %v", err)
 	}
@@ -169,18 +181,16 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	}
 
 	var profilePayload struct {
-		Profile struct {
-			UserID int32 `json:"userId"`
-		} `json:"profile"`
+		UserID int32 `json:"user_id"`
 	}
 	if err := json.NewDecoder(profileResponse.Body).Decode(&profilePayload); err != nil {
 		t.Fatalf("decode profile response: %v", err)
 	}
-	if profilePayload.Profile.UserID != 7 {
+	if profilePayload.UserID != 7 {
 		t.Fatalf("unexpected profile payload: %+v", profilePayload)
 	}
 
-	postResponse, err := http.Get(server.URL + "/api/v1/posts/11?viewerUserId=7")
+	postResponse, err := http.Get(server.URL + "/api/posts/11")
 	if err != nil {
 		t.Fatalf("get post: %v", err)
 	}
@@ -191,15 +201,23 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	}
 
 	var postPayload struct {
-		Post struct {
-			PostID int32 `json:"postId"`
-		} `json:"post"`
+		PostID int32 `json:"post_id"`
 	}
 	if err := json.NewDecoder(postResponse.Body).Decode(&postPayload); err != nil {
 		t.Fatalf("decode post response: %v", err)
 	}
-	if postPayload.Post.PostID != 11 {
+	if postPayload.PostID != 11 {
 		t.Fatalf("unexpected post payload: %+v", postPayload)
+	}
+
+	sportTypesResponse, err := http.Get(server.URL + "/api/sport-types")
+	if err != nil {
+		t.Fatalf("get sport types: %v", err)
+	}
+	defer sportTypesResponse.Body.Close()
+
+	if sportTypesResponse.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected sport types status: %d", sportTypesResponse.StatusCode)
 	}
 }
 

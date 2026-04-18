@@ -20,20 +20,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName       = "/sporttech.gateway.v1.AuthService/Register"
-	AuthService_Login_FullMethodName          = "/sporttech.gateway.v1.AuthService/Login"
-	AuthService_Logout_FullMethodName         = "/sporttech.gateway.v1.AuthService/Logout"
-	AuthService_ResolveSession_FullMethodName = "/sporttech.gateway.v1.AuthService/ResolveSession"
+	AuthService_RegisterClient_FullMethodName  = "/sporttech.gateway.v1.AuthService/RegisterClient"
+	AuthService_RegisterTrainer_FullMethodName = "/sporttech.gateway.v1.AuthService/RegisterTrainer"
+	AuthService_Login_FullMethodName           = "/sporttech.gateway.v1.AuthService/Login"
+	AuthService_GetMe_FullMethodName           = "/sporttech.gateway.v1.AuthService/GetMe"
+	AuthService_Logout_FullMethodName          = "/sporttech.gateway.v1.AuthService/Logout"
 )
 
 // AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error)
-	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	ResolveSession(ctx context.Context, in *ResolveSessionRequest, opts ...grpc.CallOption) (*ResolveSessionResponse, error)
+	RegisterClient(ctx context.Context, in *ClientRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	RegisterTrainer(ctx context.Context, in *TrainerRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AuthResponse, error)
+	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authServiceClient struct {
@@ -44,19 +46,29 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
+func (c *authServiceClient) RegisterClient(ctx context.Context, in *ClientRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthSessionResponse)
-	err := c.cc.Invoke(ctx, AuthService_Register_FullMethodName, in, out, cOpts...)
+	out := new(AuthResponse)
+	err := c.cc.Invoke(ctx, AuthService_RegisterClient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthSessionResponse, error) {
+func (c *authServiceClient) RegisterTrainer(ctx context.Context, in *TrainerRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthSessionResponse)
+	out := new(AuthResponse)
+	err := c.cc.Invoke(ctx, AuthService_RegisterTrainer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthResponse)
 	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -64,20 +76,20 @@ func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	return out, nil
 }
 
-func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *authServiceClient) GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AuthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AuthService_Logout_FullMethodName, in, out, cOpts...)
+	out := new(AuthResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetMe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) ResolveSession(ctx context.Context, in *ResolveSessionRequest, opts ...grpc.CallOption) (*ResolveSessionResponse, error) {
+func (c *authServiceClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResolveSessionResponse)
-	err := c.cc.Invoke(ctx, AuthService_ResolveSession_FullMethodName, in, out, cOpts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_Logout_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,10 +100,11 @@ func (c *authServiceClient) ResolveSession(ctx context.Context, in *ResolveSessi
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
-	Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error)
-	Login(context.Context, *LoginRequest) (*AuthSessionResponse, error)
-	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
-	ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error)
+	RegisterClient(context.Context, *ClientRegisterRequest) (*AuthResponse, error)
+	RegisterTrainer(context.Context, *TrainerRegisterRequest) (*AuthResponse, error)
+	Login(context.Context, *LoginRequest) (*AuthResponse, error)
+	GetMe(context.Context, *emptypb.Empty) (*AuthResponse, error)
+	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have
@@ -101,17 +114,20 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest) (*AuthSessionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
+func (UnimplementedAuthServiceServer) RegisterClient(context.Context, *ClientRegisterRequest) (*AuthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegisterClient not implemented")
 }
-func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*AuthSessionResponse, error) {
+func (UnimplementedAuthServiceServer) RegisterTrainer(context.Context, *TrainerRegisterRequest) (*AuthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegisterTrainer not implemented")
+}
+func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*AuthResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
+func (UnimplementedAuthServiceServer) GetMe(context.Context, *emptypb.Empty) (*AuthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMe not implemented")
 }
-func (UnimplementedAuthServiceServer) ResolveSession(context.Context, *ResolveSessionRequest) (*ResolveSessionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ResolveSession not implemented")
+func (UnimplementedAuthServiceServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedAuthServiceServer) testEmbeddedByValue() {}
 
@@ -133,20 +149,38 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterRequest)
+func _AuthService_RegisterClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClientRegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).Register(ctx, in)
+		return srv.(AuthServiceServer).RegisterClient(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_Register_FullMethodName,
+		FullMethod: AuthService_RegisterClient_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(AuthServiceServer).RegisterClient(ctx, req.(*ClientRegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_RegisterTrainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TrainerRegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RegisterTrainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RegisterTrainer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RegisterTrainer(ctx, req.(*TrainerRegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -169,8 +203,26 @@ func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetMe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetMe_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetMe(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogoutRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -182,25 +234,7 @@ func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: AuthService_Logout_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Logout(ctx, req.(*LogoutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_ResolveSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResolveSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).ResolveSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_ResolveSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).ResolveSession(ctx, req.(*ResolveSessionRequest))
+		return srv.(AuthServiceServer).Logout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -213,20 +247,24 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Register",
-			Handler:    _AuthService_Register_Handler,
+			MethodName: "RegisterClient",
+			Handler:    _AuthService_RegisterClient_Handler,
+		},
+		{
+			MethodName: "RegisterTrainer",
+			Handler:    _AuthService_RegisterTrainer_Handler,
 		},
 		{
 			MethodName: "Login",
 			Handler:    _AuthService_Login_Handler,
 		},
 		{
-			MethodName: "Logout",
-			Handler:    _AuthService_Logout_Handler,
+			MethodName: "GetMe",
+			Handler:    _AuthService_GetMe_Handler,
 		},
 		{
-			MethodName: "ResolveSession",
-			Handler:    _AuthService_ResolveSession_Handler,
+			MethodName: "Logout",
+			Handler:    _AuthService_Logout_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -234,26 +272,24 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ProfileService_CreateProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/CreateProfile"
-	ProfileService_GetProfile_FullMethodName     = "/sporttech.gateway.v1.ProfileService/GetProfile"
-	ProfileService_UpdateProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateProfile"
-	ProfileService_SearchAuthors_FullMethodName  = "/sporttech.gateway.v1.ProfileService/SearchAuthors"
-	ProfileService_UploadAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadAvatar"
-	ProfileService_DeleteAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteAvatar"
-	ProfileService_ListSportTypes_FullMethodName = "/sporttech.gateway.v1.ProfileService/ListSportTypes"
+	ProfileService_GetProfile_FullMethodName       = "/sporttech.gateway.v1.ProfileService/GetProfile"
+	ProfileService_ListTrainers_FullMethodName     = "/sporttech.gateway.v1.ProfileService/ListTrainers"
+	ProfileService_UpdateMyProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
+	ProfileService_UploadMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
+	ProfileService_DeleteMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
+	ProfileService_ListProfilePosts_FullMethodName = "/sporttech.gateway.v1.ProfileService/ListProfilePosts"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileServiceClient interface {
-	CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-	SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error)
-	UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-	DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error)
+	ListTrainers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetTrainersResponse, error)
+	UpdateMyProfile(ctx context.Context, in *UpdateMyProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	UploadMyAvatar(ctx context.Context, in *UploadMyAvatarRequest, opts ...grpc.CallOption) (*AvatarUploadResponse, error)
+	DeleteMyAvatar(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListProfilePosts(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfilePostsResponse, error)
 }
 
 type profileServiceClient struct {
@@ -262,16 +298,6 @@ type profileServiceClient struct {
 
 func NewProfileServiceClient(cc grpc.ClientConnInterface) ProfileServiceClient {
 	return &profileServiceClient{cc}
-}
-
-func (c *profileServiceClient) CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, ProfileService_CreateProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *profileServiceClient) GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
@@ -284,50 +310,50 @@ func (c *profileServiceClient) GetProfile(ctx context.Context, in *GetProfileReq
 	return out, nil
 }
 
-func (c *profileServiceClient) UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+func (c *profileServiceClient) ListTrainers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetTrainersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTrainersResponse)
+	err := c.cc.Invoke(ctx, ProfileService_ListTrainers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) UpdateMyProfile(ctx context.Context, in *UpdateMyProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, ProfileService_UpdateProfile_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ProfileService_UpdateMyProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error) {
+func (c *profileServiceClient) UploadMyAvatar(ctx context.Context, in *UploadMyAvatarRequest, opts ...grpc.CallOption) (*AvatarUploadResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SearchAuthorsResponse)
-	err := c.cc.Invoke(ctx, ProfileService_SearchAuthors_FullMethodName, in, out, cOpts...)
+	out := new(AvatarUploadResponse)
+	err := c.cc.Invoke(ctx, ProfileService_UploadMyAvatar_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, ProfileService_UploadAvatar_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *profileServiceClient) DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *profileServiceClient) DeleteMyAvatar(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, ProfileService_DeleteAvatar_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteMyAvatar_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error) {
+func (c *profileServiceClient) ListProfilePosts(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfilePostsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListSportTypesResponse)
-	err := c.cc.Invoke(ctx, ProfileService_ListSportTypes_FullMethodName, in, out, cOpts...)
+	out := new(ProfilePostsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_ListProfilePosts_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -338,13 +364,12 @@ func (c *profileServiceClient) ListSportTypes(ctx context.Context, in *emptypb.E
 // All implementations should embed UnimplementedProfileServiceServer
 // for forward compatibility.
 type ProfileServiceServer interface {
-	CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
-	UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error)
-	SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error)
-	UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error)
-	DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error)
-	ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error)
+	ListTrainers(context.Context, *emptypb.Empty) (*GetTrainersResponse, error)
+	UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error)
+	UploadMyAvatar(context.Context, *UploadMyAvatarRequest) (*AvatarUploadResponse, error)
+	DeleteMyAvatar(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error)
 }
 
 // UnimplementedProfileServiceServer should be embedded to have
@@ -354,26 +379,23 @@ type ProfileServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedProfileServiceServer struct{}
 
-func (UnimplementedProfileServiceServer) CreateProfile(context.Context, *CreateProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateProfile not implemented")
-}
 func (UnimplementedProfileServiceServer) GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProfile not implemented")
 }
-func (UnimplementedProfileServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UpdateProfile not implemented")
+func (UnimplementedProfileServiceServer) ListTrainers(context.Context, *emptypb.Empty) (*GetTrainersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTrainers not implemented")
 }
-func (UnimplementedProfileServiceServer) SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SearchAuthors not implemented")
+func (UnimplementedProfileServiceServer) UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateMyProfile not implemented")
 }
-func (UnimplementedProfileServiceServer) UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UploadAvatar not implemented")
+func (UnimplementedProfileServiceServer) UploadMyAvatar(context.Context, *UploadMyAvatarRequest) (*AvatarUploadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadMyAvatar not implemented")
 }
-func (UnimplementedProfileServiceServer) DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteAvatar not implemented")
+func (UnimplementedProfileServiceServer) DeleteMyAvatar(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMyAvatar not implemented")
 }
-func (UnimplementedProfileServiceServer) ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListSportTypes not implemented")
+func (UnimplementedProfileServiceServer) ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListProfilePosts not implemented")
 }
 func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
 
@@ -395,24 +417,6 @@ func RegisterProfileServiceServer(s grpc.ServiceRegistrar, srv ProfileServiceSer
 	s.RegisterService(&ProfileService_ServiceDesc, srv)
 }
 
-func _ProfileService_CreateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).CreateProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProfileService_CreateProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).CreateProfile(ctx, req.(*CreateProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ProfileService_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetProfileRequest)
 	if err := dec(in); err != nil {
@@ -431,92 +435,92 @@ func _ProfileService_GetProfile_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_UpdateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).UpdateProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProfileService_UpdateProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).UpdateProfile(ctx, req.(*UpdateProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProfileService_SearchAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchAuthorsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).SearchAuthors(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProfileService_SearchAuthors_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).SearchAuthors(ctx, req.(*SearchAuthorsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProfileService_UploadAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadAvatarRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).UploadAvatar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProfileService_UploadAvatar_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).UploadAvatar(ctx, req.(*UploadAvatarRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProfileService_DeleteAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAvatarRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).DeleteAvatar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProfileService_DeleteAvatar_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).DeleteAvatar(ctx, req.(*DeleteAvatarRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProfileService_ListSportTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProfileService_ListTrainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).ListSportTypes(ctx, in)
+		return srv.(ProfileServiceServer).ListTrainers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProfileService_ListSportTypes_FullMethodName,
+		FullMethod: ProfileService_ListTrainers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).ListSportTypes(ctx, req.(*emptypb.Empty))
+		return srv.(ProfileServiceServer).ListTrainers(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UpdateMyProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMyProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UpdateMyProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UpdateMyProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UpdateMyProfile(ctx, req.(*UpdateMyProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UploadMyAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadMyAvatarRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UploadMyAvatar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UploadMyAvatar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UploadMyAvatar(ctx, req.(*UploadMyAvatarRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteMyAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteMyAvatar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteMyAvatar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteMyAvatar(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_ListProfilePosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).ListProfilePosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_ListProfilePosts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).ListProfilePosts(ctx, req.(*GetProfileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -529,32 +533,28 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ProfileServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateProfile",
-			Handler:    _ProfileService_CreateProfile_Handler,
-		},
-		{
 			MethodName: "GetProfile",
 			Handler:    _ProfileService_GetProfile_Handler,
 		},
 		{
-			MethodName: "UpdateProfile",
-			Handler:    _ProfileService_UpdateProfile_Handler,
+			MethodName: "ListTrainers",
+			Handler:    _ProfileService_ListTrainers_Handler,
 		},
 		{
-			MethodName: "SearchAuthors",
-			Handler:    _ProfileService_SearchAuthors_Handler,
+			MethodName: "UpdateMyProfile",
+			Handler:    _ProfileService_UpdateMyProfile_Handler,
 		},
 		{
-			MethodName: "UploadAvatar",
-			Handler:    _ProfileService_UploadAvatar_Handler,
+			MethodName: "UploadMyAvatar",
+			Handler:    _ProfileService_UploadMyAvatar_Handler,
 		},
 		{
-			MethodName: "DeleteAvatar",
-			Handler:    _ProfileService_DeleteAvatar_Handler,
+			MethodName: "DeleteMyAvatar",
+			Handler:    _ProfileService_DeleteMyAvatar_Handler,
 		},
 		{
-			MethodName: "ListSportTypes",
-			Handler:    _ProfileService_ListSportTypes_Handler,
+			MethodName: "ListProfilePosts",
+			Handler:    _ProfileService_ListProfilePosts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -562,403 +562,489 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ContentService_ListAuthorPosts_FullMethodName = "/sporttech.gateway.v1.ContentService/ListAuthorPosts"
-	ContentService_CreatePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/CreatePost"
-	ContentService_GetPost_FullMethodName         = "/sporttech.gateway.v1.ContentService/GetPost"
-	ContentService_UpdatePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/UpdatePost"
-	ContentService_DeletePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/DeletePost"
-	ContentService_LikePost_FullMethodName        = "/sporttech.gateway.v1.ContentService/LikePost"
-	ContentService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.ContentService/UnlikePost"
-	ContentService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.ContentService/CreateComment"
-	ContentService_ListComments_FullMethodName    = "/sporttech.gateway.v1.ContentService/ListComments"
+	PostService_CreatePost_FullMethodName = "/sporttech.gateway.v1.PostService/CreatePost"
+	PostService_GetPost_FullMethodName    = "/sporttech.gateway.v1.PostService/GetPost"
+	PostService_UpdatePost_FullMethodName = "/sporttech.gateway.v1.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName = "/sporttech.gateway.v1.PostService/DeletePost"
+	PostService_LikePost_FullMethodName   = "/sporttech.gateway.v1.PostService/LikePost"
+	PostService_UnlikePost_FullMethodName = "/sporttech.gateway.v1.PostService/UnlikePost"
 )
 
-// ContentServiceClient is the client API for ContentService service.
+// PostServiceClient is the client API for PostService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ContentServiceClient interface {
-	ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error)
+type PostServiceClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
-	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
-	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
-	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	LikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error)
+	UnlikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error)
 }
 
-type contentServiceClient struct {
+type postServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewContentServiceClient(cc grpc.ClientConnInterface) ContentServiceClient {
-	return &contentServiceClient{cc}
+func NewPostServiceClient(cc grpc.ClientConnInterface) PostServiceClient {
+	return &postServiceClient{cc}
 }
 
-func (c *contentServiceClient) ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListAuthorPostsResponse)
-	err := c.cc.Invoke(ctx, ContentService_ListAuthorPosts_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contentServiceClient) CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postServiceClient) CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, ContentService_CreatePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PostService_CreatePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, ContentService_GetPost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PostService_GetPost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postServiceClient) UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, ContentService_UpdatePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PostService_UpdatePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *postServiceClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, ContentService_DeletePost_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PostService_DeletePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
+func (c *postServiceClient) LikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostLikeStateResponse)
-	err := c.cc.Invoke(ctx, ContentService_LikePost_FullMethodName, in, out, cOpts...)
+	out := new(PostLikeResponse)
+	err := c.cc.Invoke(ctx, PostService_LikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
+func (c *postServiceClient) UnlikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostLikeStateResponse)
-	err := c.cc.Invoke(ctx, ContentService_UnlikePost_FullMethodName, in, out, cOpts...)
+	out := new(PostLikeResponse)
+	err := c.cc.Invoke(ctx, PostService_UnlikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentServiceClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentResponse)
-	err := c.cc.Invoke(ctx, ContentService_CreateComment_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contentServiceClient) ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListCommentsResponse)
-	err := c.cc.Invoke(ctx, ContentService_ListComments_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ContentServiceServer is the server API for ContentService service.
-// All implementations should embed UnimplementedContentServiceServer
+// PostServiceServer is the server API for PostService service.
+// All implementations should embed UnimplementedPostServiceServer
 // for forward compatibility.
-type ContentServiceServer interface {
-	ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error)
+type PostServiceServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
 	UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error)
-	LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error)
-	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
-	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
-	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	LikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error)
+	UnlikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error)
 }
 
-// UnimplementedContentServiceServer should be embedded to have
+// UnimplementedPostServiceServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedContentServiceServer struct{}
+type UnimplementedPostServiceServer struct{}
 
-func (UnimplementedContentServiceServer) ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListAuthorPosts not implemented")
-}
-func (UnimplementedContentServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
+func (UnimplementedPostServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePost not implemented")
 }
-func (UnimplementedContentServiceServer) GetPost(context.Context, *GetPostRequest) (*PostResponse, error) {
+func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPost not implemented")
 }
-func (UnimplementedContentServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error) {
+func (UnimplementedPostServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdatePost not implemented")
 }
-func (UnimplementedContentServiceServer) DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error) {
+func (UnimplementedPostServiceServer) DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePost not implemented")
 }
-func (UnimplementedContentServiceServer) LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error) {
+func (UnimplementedPostServiceServer) LikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LikePost not implemented")
 }
-func (UnimplementedContentServiceServer) UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error) {
+func (UnimplementedPostServiceServer) UnlikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnlikePost not implemented")
 }
-func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateComment not implemented")
-}
-func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
-}
-func (UnimplementedContentServiceServer) testEmbeddedByValue() {}
+func (UnimplementedPostServiceServer) testEmbeddedByValue() {}
 
-// UnsafeContentServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ContentServiceServer will
+// UnsafePostServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PostServiceServer will
 // result in compilation errors.
-type UnsafeContentServiceServer interface {
-	mustEmbedUnimplementedContentServiceServer()
+type UnsafePostServiceServer interface {
+	mustEmbedUnimplementedPostServiceServer()
 }
 
-func RegisterContentServiceServer(s grpc.ServiceRegistrar, srv ContentServiceServer) {
-	// If the following call panics, it indicates UnimplementedContentServiceServer was
+func RegisterPostServiceServer(s grpc.ServiceRegistrar, srv PostServiceServer) {
+	// If the following call panics, it indicates UnimplementedPostServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ContentService_ServiceDesc, srv)
+	s.RegisterService(&PostService_ServiceDesc, srv)
 }
 
-func _ContentService_ListAuthorPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAuthorPostsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServiceServer).ListAuthorPosts(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ContentService_ListAuthorPosts_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).ListAuthorPosts(ctx, req.(*ListAuthorPostsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ContentService_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostService_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreatePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).CreatePost(ctx, in)
+		return srv.(PostServiceServer).CreatePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_CreatePost_FullMethodName,
+		FullMethod: PostService_CreatePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).CreatePost(ctx, req.(*CreatePostRequest))
+		return srv.(PostServiceServer).CreatePost(ctx, req.(*CreatePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostService_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).GetPost(ctx, in)
+		return srv.(PostServiceServer).GetPost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_GetPost_FullMethodName,
+		FullMethod: PostService_GetPost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).GetPost(ctx, req.(*GetPostRequest))
+		return srv.(PostServiceServer).GetPost(ctx, req.(*GetPostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).UpdatePost(ctx, in)
+		return srv.(PostServiceServer).UpdatePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_UpdatePost_FullMethodName,
+		FullMethod: PostService_UpdatePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).UpdatePost(ctx, req.(*UpdatePostRequest))
+		return srv.(PostServiceServer).UpdatePost(ctx, req.(*UpdatePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostService_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeletePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).DeletePost(ctx, in)
+		return srv.(PostServiceServer).DeletePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_DeletePost_FullMethodName,
+		FullMethod: PostService_DeletePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).DeletePost(ctx, req.(*DeletePostRequest))
+		return srv.(PostServiceServer).DeletePost(ctx, req.(*DeletePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikePostRequest)
+func _PostService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostLikeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).LikePost(ctx, in)
+		return srv.(PostServiceServer).LikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_LikePost_FullMethodName,
+		FullMethod: PostService_LikePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).LikePost(ctx, req.(*LikePostRequest))
+		return srv.(PostServiceServer).LikePost(ctx, req.(*PostLikeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_UnlikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnlikePostRequest)
+func _PostService_UnlikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostLikeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServiceServer).UnlikePost(ctx, in)
+		return srv.(PostServiceServer).UnlikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ContentService_UnlikePost_FullMethodName,
+		FullMethod: PostService_UnlikePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).UnlikePost(ctx, req.(*UnlikePostRequest))
+		return srv.(PostServiceServer).UnlikePost(ctx, req.(*PostLikeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCommentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServiceServer).CreateComment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ContentService_CreateComment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).CreateComment(ctx, req.(*CreateCommentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCommentsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServiceServer).ListComments(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ContentService_ListComments_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).ListComments(ctx, req.(*ListCommentsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
+// PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ContentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sporttech.gateway.v1.ContentService",
-	HandlerType: (*ContentServiceServer)(nil),
+var PostService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.PostService",
+	HandlerType: (*PostServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListAuthorPosts",
-			Handler:    _ContentService_ListAuthorPosts_Handler,
-		},
-		{
 			MethodName: "CreatePost",
-			Handler:    _ContentService_CreatePost_Handler,
+			Handler:    _PostService_CreatePost_Handler,
 		},
 		{
 			MethodName: "GetPost",
-			Handler:    _ContentService_GetPost_Handler,
+			Handler:    _PostService_GetPost_Handler,
 		},
 		{
 			MethodName: "UpdatePost",
-			Handler:    _ContentService_UpdatePost_Handler,
+			Handler:    _PostService_UpdatePost_Handler,
 		},
 		{
 			MethodName: "DeletePost",
-			Handler:    _ContentService_DeletePost_Handler,
+			Handler:    _PostService_DeletePost_Handler,
 		},
 		{
 			MethodName: "LikePost",
-			Handler:    _ContentService_LikePost_Handler,
+			Handler:    _PostService_LikePost_Handler,
 		},
 		{
 			MethodName: "UnlikePost",
-			Handler:    _ContentService_UnlikePost_Handler,
+			Handler:    _PostService_UnlikePost_Handler,
 		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	SportService_ListSportTypes_FullMethodName = "/sporttech.gateway.v1.SportService/ListSportTypes"
+)
+
+// SportServiceClient is the client API for SportService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type SportServiceClient interface {
+	ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SportTypesResponse, error)
+}
+
+type sportServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewSportServiceClient(cc grpc.ClientConnInterface) SportServiceClient {
+	return &sportServiceClient{cc}
+}
+
+func (c *sportServiceClient) ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SportTypesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SportTypesResponse)
+	err := c.cc.Invoke(ctx, SportService_ListSportTypes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SportServiceServer is the server API for SportService service.
+// All implementations should embed UnimplementedSportServiceServer
+// for forward compatibility.
+type SportServiceServer interface {
+	ListSportTypes(context.Context, *emptypb.Empty) (*SportTypesResponse, error)
+}
+
+// UnimplementedSportServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedSportServiceServer struct{}
+
+func (UnimplementedSportServiceServer) ListSportTypes(context.Context, *emptypb.Empty) (*SportTypesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSportTypes not implemented")
+}
+func (UnimplementedSportServiceServer) testEmbeddedByValue() {}
+
+// UnsafeSportServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SportServiceServer will
+// result in compilation errors.
+type UnsafeSportServiceServer interface {
+	mustEmbedUnimplementedSportServiceServer()
+}
+
+func RegisterSportServiceServer(s grpc.ServiceRegistrar, srv SportServiceServer) {
+	// If the following call panics, it indicates UnimplementedSportServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&SportService_ServiceDesc, srv)
+}
+
+func _SportService_ListSportTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SportServiceServer).ListSportTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SportService_ListSportTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SportServiceServer).ListSportTypes(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// SportService_ServiceDesc is the grpc.ServiceDesc for SportService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var SportService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.SportService",
+	HandlerType: (*SportServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateComment",
-			Handler:    _ContentService_CreateComment_Handler,
+			MethodName: "ListSportTypes",
+			Handler:    _SportService_ListSportTypes_Handler,
 		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	DonationService_DonateToProfile_FullMethodName = "/sporttech.gateway.v1.DonationService/DonateToProfile"
+)
+
+// DonationServiceClient is the client API for DonationService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type DonationServiceClient interface {
+	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
+}
+
+type donationServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewDonationServiceClient(cc grpc.ClientConnInterface) DonationServiceClient {
+	return &donationServiceClient{cc}
+}
+
+func (c *donationServiceClient) DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DonationResponse)
+	err := c.cc.Invoke(ctx, DonationService_DonateToProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// DonationServiceServer is the server API for DonationService service.
+// All implementations should embed UnimplementedDonationServiceServer
+// for forward compatibility.
+type DonationServiceServer interface {
+	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
+}
+
+// UnimplementedDonationServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedDonationServiceServer struct{}
+
+func (UnimplementedDonationServiceServer) DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DonateToProfile not implemented")
+}
+func (UnimplementedDonationServiceServer) testEmbeddedByValue() {}
+
+// UnsafeDonationServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DonationServiceServer will
+// result in compilation errors.
+type UnsafeDonationServiceServer interface {
+	mustEmbedUnimplementedDonationServiceServer()
+}
+
+func RegisterDonationServiceServer(s grpc.ServiceRegistrar, srv DonationServiceServer) {
+	// If the following call panics, it indicates UnimplementedDonationServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&DonationService_ServiceDesc, srv)
+}
+
+func _DonationService_DonateToProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DonateToProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DonationServiceServer).DonateToProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DonationService_DonateToProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DonationServiceServer).DonateToProfile(ctx, req.(*DonateToProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// DonationService_ServiceDesc is the grpc.ServiceDesc for DonationService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var DonationService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.DonationService",
+	HandlerType: (*DonationServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListComments",
-			Handler:    _ContentService_ListComments_Handler,
+			MethodName: "DonateToProfile",
+			Handler:    _DonationService_DonateToProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

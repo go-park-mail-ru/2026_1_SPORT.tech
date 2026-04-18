@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/authors/{authorUserId}/posts": {
+    "/v1/authors/{author_user_id}/posts": {
       "get": {
         "operationId": "ContentService_ListAuthorPosts",
         "responses": {
@@ -35,21 +35,21 @@
         },
         "parameters": [
           {
-            "name": "authorUserId",
+            "name": "author_user_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerUserId",
+            "name": "viewer_user_id",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerSubscriptionLevel",
+            "name": "viewer_subscription_level",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -107,7 +107,7 @@
         ]
       }
     },
-    "/v1/posts/{postId}": {
+    "/v1/posts/{post_id}": {
       "get": {
         "operationId": "ContentService_GetPost",
         "responses": {
@@ -126,21 +126,21 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerUserId",
+            "name": "viewer_user_id",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerSubscriptionLevel",
+            "name": "viewer_subscription_level",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -170,14 +170,14 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "authorUserId",
+            "name": "author_user_id",
             "in": "query",
             "required": false,
             "type": "string",
@@ -206,7 +206,7 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -226,7 +226,7 @@
         ]
       }
     },
-    "/v1/posts/{postId}/comments": {
+    "/v1/posts/{post_id}/comments": {
       "get": {
         "operationId": "ContentService_ListComments",
         "responses": {
@@ -245,21 +245,21 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerUserId",
+            "name": "viewer_user_id",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerSubscriptionLevel",
+            "name": "viewer_subscription_level",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -302,7 +302,7 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -322,7 +322,7 @@
         ]
       }
     },
-    "/v1/posts/{postId}/likes": {
+    "/v1/posts/{post_id}/likes": {
       "post": {
         "operationId": "ContentService_LikePost",
         "responses": {
@@ -341,7 +341,7 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -361,7 +361,7 @@
         ]
       }
     },
-    "/v1/posts/{postId}/likes/{userId}": {
+    "/v1/posts/{post_id}/likes/{user_id}": {
       "delete": {
         "operationId": "ContentService_UnlikePost",
         "responses": {
@@ -380,21 +380,21 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "viewerSubscriptionLevel",
+            "name": "viewer_subscription_level",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -411,11 +411,11 @@
     "ContentServiceCreateCommentBody": {
       "type": "object",
       "properties": {
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
-        "viewerSubscriptionLevel": {
+        "viewer_subscription_level": {
           "type": "integer",
           "format": "int32"
         },
@@ -427,11 +427,11 @@
     "ContentServiceLikePostBody": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "int64"
         },
-        "viewerSubscriptionLevel": {
+        "viewer_subscription_level": {
           "type": "integer",
           "format": "int32"
         }
@@ -440,18 +440,18 @@
     "ContentServiceUpdatePostBody": {
       "type": "object",
       "properties": {
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
+        "required_subscription_level": {
           "type": "integer",
           "format": "int32"
         },
-        "clearRequiredSubscriptionLevel": {
+        "clear_required_subscription_level": {
           "type": "boolean"
         },
         "blocks": {
@@ -461,7 +461,7 @@
             "$ref": "#/definitions/v1PostBlockInput"
           }
         },
-        "replaceBlocks": {
+        "replace_blocks": {
           "type": "boolean"
         }
       }
@@ -497,26 +497,26 @@
     "v1Comment": {
       "type": "object",
       "properties": {
-        "commentId": {
+        "comment_id": {
           "type": "string",
           "format": "int64"
         },
-        "postId": {
+        "post_id": {
           "type": "string",
           "format": "int64"
         },
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
         "body": {
           "type": "string"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "updatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -544,14 +544,14 @@
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
+        "required_subscription_level": {
           "type": "integer",
           "format": "int32"
         },
@@ -591,40 +591,40 @@
     "v1Post": {
       "type": "object",
       "properties": {
-        "postId": {
+        "post_id": {
           "type": "string",
           "format": "int64"
         },
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
+        "required_subscription_level": {
           "type": "integer",
           "format": "int32"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "updatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "canView": {
+        "can_view": {
           "type": "boolean"
         },
-        "likesCount": {
+        "likes_count": {
           "type": "string",
           "format": "int64"
         },
-        "isLiked": {
+        "is_liked": {
           "type": "boolean"
         },
-        "commentsCount": {
+        "comments_count": {
           "type": "string",
           "format": "int64"
         },
@@ -640,7 +640,7 @@
     "v1PostBlock": {
       "type": "object",
       "properties": {
-        "postBlockId": {
+        "post_block_id": {
           "type": "string",
           "format": "int64"
         },
@@ -651,10 +651,10 @@
         "kind": {
           "$ref": "#/definitions/v1ContentBlockKind"
         },
-        "textContent": {
+        "text_content": {
           "type": "string"
         },
-        "fileUrl": {
+        "file_url": {
           "type": "string"
         }
       }
@@ -665,10 +665,10 @@
         "kind": {
           "$ref": "#/definitions/v1ContentBlockKind"
         },
-        "textContent": {
+        "text_content": {
           "type": "string"
         },
-        "fileUrl": {
+        "file_url": {
           "type": "string"
         }
       }
@@ -676,15 +676,15 @@
     "v1PostLikeState": {
       "type": "object",
       "properties": {
-        "postId": {
+        "post_id": {
           "type": "string",
           "format": "int64"
         },
-        "likesCount": {
+        "likes_count": {
           "type": "string",
           "format": "int64"
         },
-        "isLiked": {
+        "is_liked": {
           "type": "boolean"
         }
       }
@@ -708,36 +708,36 @@
     "v1PostSummary": {
       "type": "object",
       "properties": {
-        "postId": {
+        "post_id": {
           "type": "string",
           "format": "int64"
         },
-        "authorUserId": {
+        "author_user_id": {
           "type": "string",
           "format": "int64"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
+        "required_subscription_level": {
           "type": "integer",
           "format": "int32"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "canView": {
+        "can_view": {
           "type": "boolean"
         },
-        "likesCount": {
+        "likes_count": {
           "type": "string",
           "format": "int64"
         },
-        "isLiked": {
+        "is_liked": {
           "type": "boolean"
         },
-        "commentsCount": {
+        "comments_count": {
           "type": "string",
           "format": "int64"
         }

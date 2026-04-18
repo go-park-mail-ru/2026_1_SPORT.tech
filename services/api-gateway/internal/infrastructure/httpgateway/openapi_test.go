@@ -19,14 +19,18 @@ func TestGatewayOpenAPIHandlerRewritesTags(t *testing.T) {
 	spec := `{
 		"swagger":"2.0",
 		"tags":[
-			{"name":"GatewayAuthService"},
-			{"name":"GatewayProfileService"},
-			{"name":"GatewayContentService"}
+			{"name":"AuthService"},
+			{"name":"ProfileService"},
+			{"name":"PostService"},
+			{"name":"SportService"},
+			{"name":"DonationService"}
 		],
 		"paths":{
-			"/v1/auth/login":{"post":{"tags":["GatewayAuthService"]}},
-			"/v1/profiles/{user_id}":{"get":{"tags":["GatewayProfileService"]}},
-			"/v1/posts/{post_id}":{"get":{"tags":["GatewayContentService"]}}
+			"/auth/login":{"post":{"tags":["AuthService"]}},
+			"/profiles/{user_id}":{"get":{"tags":["ProfileService"]}},
+			"/posts/{post_id}":{"get":{"tags":["PostService"]}},
+			"/sport-types":{"get":{"tags":["SportService"]}},
+			"/profiles/{user_id}/donations":{"post":{"tags":["DonationService"]}}
 		}
 	}`
 	if err := os.WriteFile(specPath, []byte(spec), 0o644); err != nil {
@@ -58,7 +62,7 @@ func TestGatewayOpenAPIHandlerRewritesTags(t *testing.T) {
 		gotTags[tag["name"].(string)] = true
 	}
 
-	if !gotTags["Auth Service"] || !gotTags["Profile Service"] || !gotTags["Content Service"] {
+	if !gotTags["Auth"] || !gotTags["Profile"] || !gotTags["Post"] || !gotTags["Sport"] || !gotTags["Donation"] {
 		t.Fatalf("unexpected tags: %#v", gotTags)
 	}
 }

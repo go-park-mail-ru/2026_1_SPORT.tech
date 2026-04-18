@@ -60,6 +60,8 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		gatewayService,
 		gatewayService,
 		gatewayService,
+		gatewayService,
+		gatewayService,
 		metricsSet,
 	)
 	if err != nil {
@@ -69,7 +71,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, err
 	}
 
-	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService)
+	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()
@@ -89,7 +91,9 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	httpMux.Handle("/api/docs", http.RedirectHandler("/api/docs/", http.StatusMovedPermanently))
 	httpMux.Handle("/api/docs/", httpgateway.DocsHandler("/api/openapi/gateway.swagger.json"))
 	httpMux.Handle("/api/openapi/gateway.swagger.json", httpgateway.GatewayOpenAPIHandler(cfg.OpenAPI.GatewayFilePath))
-	httpMux.Handle("/api/", http.StripPrefix("/api", gatewayHandler))
+	apiHandler := http.StripPrefix("/api", gatewayHandler)
+	httpMux.Handle("/api/profiles/me/avatar", httpgateway.MultipartAvatarHandler(gatewayService, apiHandler))
+	httpMux.Handle("/api/", apiHandler)
 
 	httpServer := &http.Server{
 		Addr:              cfg.Server.HTTPAddress(),

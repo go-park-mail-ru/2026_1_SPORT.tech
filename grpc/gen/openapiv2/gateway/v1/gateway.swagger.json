@@ -12,7 +12,13 @@
       "name": "ProfileService"
     },
     {
-      "name": "ContentService"
+      "name": "PostService"
+    },
+    {
+      "name": "SportService"
+    },
+    {
+      "name": "DonationService"
     }
   ],
   "consumes": [
@@ -22,14 +28,14 @@
     "application/json"
   ],
   "paths": {
-    "/v1/auth/login": {
+    "/auth/login": {
       "post": {
         "operationId": "AuthService_Login",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1AuthSessionResponse"
+              "$ref": "#/definitions/v1AuthResponse"
             }
           },
           "default": {
@@ -54,7 +60,7 @@
         ]
       }
     },
-    "/v1/auth/logout": {
+    "/auth/logout": {
       "post": {
         "operationId": "AuthService_Logout",
         "responses": {
@@ -72,93 +78,19 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1LogoutRequest"
-            }
-          }
-        ],
         "tags": [
           "AuthService"
         ]
       }
     },
-    "/v1/auth/register": {
-      "post": {
-        "operationId": "AuthService_Register",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1AuthSessionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1RegisterRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/v1/auth/sessions:resolve": {
-      "post": {
-        "operationId": "AuthService_ResolveSession",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ResolveSessionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1ResolveSessionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/v1/authors/{authorUserId}/posts": {
+    "/auth/me": {
       "get": {
-        "operationId": "ContentService_ListAuthorPosts",
+        "operationId": "AuthService_GetMe",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListAuthorPostsResponse"
+              "$ref": "#/definitions/v1AuthResponse"
             }
           },
           "default": {
@@ -168,56 +100,19 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "authorUserId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerUserId",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerSubscriptionLevel",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
         "tags": [
-          "ContentService"
+          "AuthService"
         ]
       }
     },
-    "/v1/authors:search": {
+    "/auth/register/client": {
       "post": {
-        "operationId": "ProfileService_SearchAuthors",
+        "operationId": "AuthService_RegisterClient",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1SearchAuthorsResponse"
+              "$ref": "#/definitions/v1AuthResponse"
             }
           },
           "default": {
@@ -233,18 +128,50 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1SearchAuthorsRequest"
+              "$ref": "#/definitions/v1ClientRegisterRequest"
             }
           }
         ],
         "tags": [
-          "ProfileService"
+          "AuthService"
         ]
       }
     },
-    "/v1/posts": {
+    "/auth/register/trainer": {
       "post": {
-        "operationId": "ContentService_CreatePost",
+        "operationId": "AuthService_RegisterTrainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AuthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1TrainerRegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/posts": {
+      "post": {
+        "operationId": "PostService_CreatePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -270,13 +197,13 @@
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       }
     },
-    "/v1/posts/{postId}": {
+    "/posts/{post_id}": {
       "get": {
-        "operationId": "ContentService_GetPost",
+        "operationId": "PostService_GetPost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -293,33 +220,19 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerUserId",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerSubscriptionLevel",
-            "in": "query",
-            "required": false,
             "type": "integer",
             "format": "int32"
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       },
       "delete": {
-        "operationId": "ContentService_DeletePost",
+        "operationId": "PostService_DeletePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -337,26 +250,19 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "authorUserId",
-            "in": "query",
-            "required": false,
             "type": "integer",
             "format": "int32"
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       },
       "patch": {
-        "operationId": "ContentService_UpdatePost",
+        "operationId": "PostService_UpdatePost",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -373,7 +279,7 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
             "type": "integer",
@@ -384,23 +290,23 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContentServiceUpdatePostBody"
+              "$ref": "#/definitions/PostServiceUpdatePostBody"
             }
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       }
     },
-    "/v1/posts/{postId}/comments": {
-      "get": {
-        "operationId": "ContentService_ListComments",
+    "/posts/{post_id}/likes": {
+      "delete": {
+        "operationId": "PostService_UnlikePost",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListCommentsResponse"
+              "$ref": "#/definitions/v1PostLikeResponse"
             }
           },
           "default": {
@@ -412,52 +318,24 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerUserId",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerSubscriptionLevel",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
             "type": "integer",
             "format": "int32"
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       },
       "post": {
-        "operationId": "ContentService_CreateComment",
+        "operationId": "PostService_LikePost",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CommentResponse"
+              "$ref": "#/definitions/v1PostLikeResponse"
             }
           },
           "default": {
@@ -469,113 +347,21 @@
         },
         "parameters": [
           {
-            "name": "postId",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ContentServiceCreateCommentBody"
-            }
-          }
-        ],
-        "tags": [
-          "ContentService"
-        ]
-      }
-    },
-    "/v1/posts/{postId}/likes": {
-      "post": {
-        "operationId": "ContentService_LikePost",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1PostLikeStateResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ContentServiceLikePostBody"
-            }
-          }
-        ],
-        "tags": [
-          "ContentService"
-        ]
-      }
-    },
-    "/v1/posts/{postId}/likes/{userId}": {
-      "delete": {
-        "operationId": "ContentService_UnlikePost",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1PostLikeStateResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "viewerSubscriptionLevel",
-            "in": "query",
-            "required": false,
             "type": "integer",
             "format": "int32"
           }
         ],
         "tags": [
-          "ContentService"
+          "PostService"
         ]
       }
     },
-    "/v1/profiles": {
-      "post": {
-        "operationId": "ProfileService_CreateProfile",
+    "/profiles/me": {
+      "patch": {
+        "operationId": "ProfileService_UpdateMyProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -596,7 +382,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1CreateProfileRequest"
+              "$ref": "#/definitions/v1UpdateMyProfileRequest"
             }
           }
         ],
@@ -605,7 +391,60 @@
         ]
       }
     },
-    "/v1/profiles/{userId}": {
+    "/profiles/me/avatar": {
+      "delete": {
+        "operationId": "ProfileService_DeleteMyAvatar",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "post": {
+        "operationId": "ProfileService_UploadMyAvatar",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AvatarUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UploadMyAvatarRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/profiles/{user_id}": {
       "get": {
         "operationId": "ProfileService_GetProfile",
         "responses": {
@@ -624,48 +463,11 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "integer",
             "format": "int32"
-          }
-        ],
-        "tags": [
-          "ProfileService"
-        ]
-      },
-      "patch": {
-        "operationId": "ProfileService_UpdateProfile",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ProfileResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ProfileServiceUpdateProfileBody"
-            }
           }
         ],
         "tags": [
@@ -673,44 +475,14 @@
         ]
       }
     },
-    "/v1/profiles/{userId}/avatar": {
-      "delete": {
-        "operationId": "ProfileService_DeleteAvatar",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "ProfileService"
-        ]
-      },
+    "/profiles/{user_id}/donations": {
       "post": {
-        "operationId": "ProfileService_UploadAvatar",
+        "operationId": "DonationService_DonateToProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProfileResponse"
+              "$ref": "#/definitions/v1DonationResponse"
             }
           },
           "default": {
@@ -722,7 +494,7 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "integer",
@@ -733,8 +505,39 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ProfileServiceUploadAvatarBody"
+              "$ref": "#/definitions/DonationServiceDonateToProfileBody"
             }
+          }
+        ],
+        "tags": [
+          "DonationService"
+        ]
+      }
+    },
+    "/profiles/{user_id}/posts": {
+      "get": {
+        "operationId": "ProfileService_ListProfilePosts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProfilePostsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -742,14 +545,36 @@
         ]
       }
     },
-    "/v1/sport-types": {
+    "/sport-types": {
       "get": {
-        "operationId": "ProfileService_ListSportTypes",
+        "operationId": "SportService_ListSportTypes",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListSportTypesResponse"
+              "$ref": "#/definitions/v1SportTypesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "SportService"
+        ]
+      }
+    },
+    "/trainers": {
+      "get": {
+        "operationId": "ProfileService_ListTrainers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTrainersResponse"
             }
           },
           "default": {
@@ -766,96 +591,40 @@
     }
   },
   "definitions": {
-    "ContentServiceCreateCommentBody": {
+    "DonationServiceDonateToProfileBody": {
       "type": "object",
       "properties": {
-        "authorUserId": {
+        "amount_value": {
           "type": "integer",
           "format": "int32"
         },
-        "viewerSubscriptionLevel": {
-          "type": "integer",
-          "format": "int32"
+        "currency": {
+          "type": "string"
         },
-        "body": {
+        "message": {
           "type": "string"
         }
       }
     },
-    "ContentServiceLikePostBody": {
+    "PostServiceUpdatePostBody": {
       "type": "object",
       "properties": {
-        "userId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "viewerSubscriptionLevel": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "ContentServiceUpdatePostBody": {
-      "type": "object",
-      "properties": {
-        "authorUserId": {
+        "min_tier_id": {
           "type": "integer",
           "format": "int32"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
-          "type": "integer",
-          "format": "int32"
+        "text_content": {
+          "type": "string"
         },
-        "clearRequiredSubscriptionLevel": {
-          "type": "boolean"
-        },
-        "blocks": {
+        "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1PostBlockInput"
+            "$ref": "#/definitions/v1CreatePostAttachmentRequest"
           }
-        },
-        "replaceBlocks": {
-          "type": "boolean"
-        }
-      }
-    },
-    "ProfileServiceUpdateProfileBody": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "bio": {
-          "type": "string"
-        },
-        "trainerDetails": {
-          "$ref": "#/definitions/v1TrainerDetails"
-        }
-      }
-    },
-    "ProfileServiceUploadAvatarBody": {
-      "type": "object",
-      "properties": {
-        "fileName": {
-          "type": "string"
-        },
-        "contentType": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string",
-          "format": "byte"
         }
       }
     },
@@ -887,194 +656,117 @@
         }
       }
     },
-    "v1AuthSessionResponse": {
+    "v1AuthResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/v1AuthUser"
-        },
-        "session": {
-          "$ref": "#/definitions/v1SessionInfo"
+          "$ref": "#/definitions/v1User"
         }
       }
     },
-    "v1AuthUser": {
+    "v1AvatarUploadResponse": {
       "type": "object",
       "properties": {
-        "userId": {
-          "type": "integer",
-          "format": "int32"
+        "avatar_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ClientRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
         },
         "email": {
           "type": "string"
         },
-        "username": {
+        "password": {
           "type": "string"
         },
-        "role": {
+        "password_repeat": {
           "type": "string"
         },
-        "status": {
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
           "type": "string"
         }
       }
     },
-    "v1AuthorSummary": {
+    "v1CreatePostAttachmentRequest": {
       "type": "object",
       "properties": {
-        "userId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "username": {
+        "kind": {
           "type": "string"
         },
-        "firstName": {
+        "file_url": {
           "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "bio": {
-          "type": "string"
-        },
-        "avatarUrl": {
-          "type": "string"
-        },
-        "trainerDetails": {
-          "$ref": "#/definitions/v1TrainerDetails"
         }
       }
-    },
-    "v1Comment": {
-      "type": "object",
-      "properties": {
-        "commentId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "postId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "authorUserId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "body": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "v1CommentResponse": {
-      "type": "object",
-      "properties": {
-        "comment": {
-          "$ref": "#/definitions/v1Comment"
-        }
-      }
-    },
-    "v1ContentBlockKind": {
-      "type": "string",
-      "enum": [
-        "CONTENT_BLOCK_KIND_UNSPECIFIED",
-        "CONTENT_BLOCK_KIND_TEXT",
-        "CONTENT_BLOCK_KIND_IMAGE",
-        "CONTENT_BLOCK_KIND_VIDEO",
-        "CONTENT_BLOCK_KIND_DOCUMENT"
-      ],
-      "default": "CONTENT_BLOCK_KIND_UNSPECIFIED"
     },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
-        "authorUserId": {
+        "min_tier_id": {
           "type": "integer",
           "format": "int32"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
+        "text_content": {
+          "type": "string"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CreatePostAttachmentRequest"
+          }
+        }
+      }
+    },
+    "v1DonationResponse": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
           "type": "integer",
           "format": "int32"
         },
-        "blocks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1PostBlockInput"
-          }
-        }
-      }
-    },
-    "v1CreateProfileRequest": {
-      "type": "object",
-      "properties": {
-        "userId": {
+        "sender_user_id": {
           "type": "integer",
           "format": "int32"
         },
-        "username": {
+        "recipient_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
           "type": "string"
         },
-        "firstName": {
+        "message": {
           "type": "string"
         },
-        "lastName": {
-          "type": "string"
-        },
-        "bio": {
-          "type": "string"
-        },
-        "isTrainer": {
-          "type": "boolean"
-        },
-        "trainerDetails": {
-          "$ref": "#/definitions/v1TrainerDetails"
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
-    "v1ListAuthorPostsResponse": {
+    "v1GetTrainersResponse": {
       "type": "object",
       "properties": {
-        "posts": {
+        "trainers": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1PostSummary"
-          }
-        }
-      }
-    },
-    "v1ListCommentsResponse": {
-      "type": "object",
-      "properties": {
-        "comments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Comment"
-          }
-        }
-      }
-    },
-    "v1ListSportTypesResponse": {
-      "type": "object",
-      "properties": {
-        "sportTypes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1SportType"
+            "$ref": "#/definitions/v1TrainerListItem"
           }
         }
       }
@@ -1090,302 +782,169 @@
         }
       }
     },
-    "v1LogoutRequest": {
+    "v1PostAttachment": {
       "type": "object",
       "properties": {
-        "sessionToken": {
+        "post_attachment_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "file_url": {
           "type": "string"
         }
       }
     },
-    "v1Post": {
+    "v1PostLikeResponse": {
       "type": "object",
       "properties": {
-        "postId": {
+        "post_id": {
           "type": "integer",
           "format": "int32"
         },
-        "authorUserId": {
+        "likes_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "is_liked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1PostListItem": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "min_tier_id": {
           "type": "integer",
           "format": "int32"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "canView": {
+        "can_view": {
           "type": "boolean"
         },
-        "likesCount": {
+        "likes_count": {
           "type": "integer",
           "format": "int32"
         },
-        "isLiked": {
+        "is_liked": {
           "type": "boolean"
-        },
-        "commentsCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "blocks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1PostBlock"
-          }
-        }
-      }
-    },
-    "v1PostBlock": {
-      "type": "object",
-      "properties": {
-        "postBlockId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "position": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "kind": {
-          "$ref": "#/definitions/v1ContentBlockKind"
-        },
-        "textContent": {
-          "type": "string"
-        },
-        "fileUrl": {
-          "type": "string"
-        }
-      }
-    },
-    "v1PostBlockInput": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "$ref": "#/definitions/v1ContentBlockKind"
-        },
-        "textContent": {
-          "type": "string"
-        },
-        "fileUrl": {
-          "type": "string"
-        }
-      }
-    },
-    "v1PostLikeState": {
-      "type": "object",
-      "properties": {
-        "postId": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "likesCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "isLiked": {
-          "type": "boolean"
-        }
-      }
-    },
-    "v1PostLikeStateResponse": {
-      "type": "object",
-      "properties": {
-        "state": {
-          "$ref": "#/definitions/v1PostLikeState"
         }
       }
     },
     "v1PostResponse": {
       "type": "object",
       "properties": {
-        "post": {
-          "$ref": "#/definitions/v1Post"
-        }
-      }
-    },
-    "v1PostSummary": {
-      "type": "object",
-      "properties": {
-        "postId": {
+        "post_id": {
           "type": "integer",
           "format": "int32"
         },
-        "authorUserId": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "min_tier_id": {
           "type": "integer",
           "format": "int32"
         },
         "title": {
           "type": "string"
         },
-        "requiredSubscriptionLevel": {
-          "type": "integer",
-          "format": "int32"
+        "text_content": {
+          "type": "string"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "canView": {
-          "type": "boolean"
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         },
-        "likesCount": {
+        "likes_count": {
           "type": "integer",
           "format": "int32"
         },
-        "isLiked": {
+        "is_liked": {
           "type": "boolean"
         },
-        "commentsCount": {
-          "type": "integer",
-          "format": "int32"
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostAttachment"
+          }
         }
       }
     },
-    "v1Profile": {
+    "v1ProfilePostsResponse": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "integer",
           "format": "int32"
         },
-        "username": {
-          "type": "string"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "bio": {
-          "type": "string"
-        },
-        "avatarUrl": {
-          "type": "string"
-        },
-        "isTrainer": {
-          "type": "boolean"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "trainerDetails": {
-          "$ref": "#/definitions/v1TrainerDetails"
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostListItem"
+          }
         }
       }
     },
     "v1ProfileResponse": {
       "type": "object",
       "properties": {
-        "profile": {
-          "$ref": "#/definitions/v1Profile"
-        }
-      }
-    },
-    "v1RegisterRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "is_me": {
+          "type": "boolean"
+        },
+        "is_trainer": {
+          "type": "boolean"
         },
         "username": {
           "type": "string"
         },
-        "password": {
+        "first_name": {
           "type": "string"
         },
-        "role": {
-          "type": "string"
-        }
-      }
-    },
-    "v1ResolveSessionRequest": {
-      "type": "object",
-      "properties": {
-        "sessionToken": {
-          "type": "string"
-        }
-      }
-    },
-    "v1ResolveSessionResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/v1AuthUser"
-        },
-        "session": {
-          "$ref": "#/definitions/v1SessionInfo"
-        }
-      }
-    },
-    "v1SearchAuthorsRequest": {
-      "type": "object",
-      "properties": {
-        "query": {
+        "last_name": {
           "type": "string"
         },
-        "sportTypeIds": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "v1SearchAuthorsResponse": {
-      "type": "object",
-      "properties": {
-        "authors": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1AuthorSummary"
-          }
-        }
-      }
-    },
-    "v1SessionInfo": {
-      "type": "object",
-      "properties": {
-        "sessionToken": {
+        "bio": {
           "type": "string"
         },
-        "expiresAt": {
-          "type": "string",
-          "format": "date-time"
+        "avatar_url": {
+          "type": "string"
+        },
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
         }
       }
     },
     "v1SportType": {
       "type": "object",
       "properties": {
-        "sportTypeId": {
+        "sport_type_id": {
           "type": "integer",
           "format": "int32"
         },
@@ -1394,15 +953,26 @@
         }
       }
     },
+    "v1SportTypesResponse": {
+      "type": "object",
+      "properties": {
+        "sport_types": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SportType"
+          }
+        }
+      }
+    },
     "v1TrainerDetails": {
       "type": "object",
       "properties": {
-        "educationDegree": {
+        "education_degree": {
           "type": "string"
         },
-        "careerSinceDate": {
-          "type": "string",
-          "format": "date-time"
+        "career_since_date": {
+          "type": "string"
         },
         "sports": {
           "type": "array",
@@ -1413,18 +983,150 @@
         }
       }
     },
+    "v1TrainerListItem": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "is_trainer": {
+          "type": "boolean"
+        },
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "bio": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": "string"
+        },
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
+    "v1TrainerRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "password_repeat": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
     "v1TrainerSport": {
       "type": "object",
       "properties": {
-        "sportTypeId": {
+        "sport_type_id": {
           "type": "integer",
           "format": "int32"
         },
-        "experienceYears": {
+        "experience_years": {
           "type": "integer",
           "format": "int32"
         },
-        "sportsRank": {
+        "sports_rank": {
+          "type": "string"
+        }
+      }
+    },
+    "v1UpdateMyProfileRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "bio": {
+          "type": "string"
+        },
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
+    "v1UploadMyAvatarRequest": {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "type": "string",
+          "format": "byte"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_trainer": {
+          "type": "boolean"
+        },
+        "is_admin": {
+          "type": "boolean"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "bio": {
+          "type": "string"
+        },
+        "avatar_url": {
           "type": "string"
         }
       }

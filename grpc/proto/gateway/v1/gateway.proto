@@ -8,55 +8,33 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-enum ContentBlockKind {
-  CONTENT_BLOCK_KIND_UNSPECIFIED = 0;
-  CONTENT_BLOCK_KIND_TEXT = 1;
-  CONTENT_BLOCK_KIND_IMAGE = 2;
-  CONTENT_BLOCK_KIND_VIDEO = 3;
-  CONTENT_BLOCK_KIND_DOCUMENT = 4;
+message ValidationErrorField {
+  string field = 1;
+  string message = 2;
 }
 
-message AuthUser {
+message Error {
+  string code = 1;
+  string message = 2;
+  repeated ValidationErrorField fields = 3;
+}
+
+message ErrorResponse {
+  Error error = 1;
+}
+
+message User {
   int32 user_id = 1;
-  string email = 2;
-  string username = 3;
-  string role = 4;
-  string status = 5;
-}
-
-message SessionInfo {
-  string session_token = 1;
-  google.protobuf.Timestamp expires_at = 2;
-}
-
-message AuthSessionResponse {
-  AuthUser user = 1;
-  SessionInfo session = 2;
-}
-
-message RegisterRequest {
-  string email = 1;
   string username = 2;
-  string password = 3;
-  string role = 4;
-}
-
-message LoginRequest {
-  string email = 1;
-  string password = 2;
-}
-
-message LogoutRequest {
-  string session_token = 1;
-}
-
-message ResolveSessionRequest {
-  string session_token = 1;
-}
-
-message ResolveSessionResponse {
-  AuthUser user = 1;
-  SessionInfo session = 2;
+  string email = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  bool is_trainer = 6;
+  bool is_admin = 7;
+  string first_name = 8;
+  string last_name = 9;
+  optional string bio = 10;
+  optional string avatar_url = 11;
 }
 
 message TrainerSport {
@@ -67,31 +45,85 @@ message TrainerSport {
 
 message TrainerDetails {
   optional string education_degree = 1;
-  optional google.protobuf.Timestamp career_since_date = 2;
+  optional string career_since_date = 2;
   repeated TrainerSport sports = 3;
 }
 
-message Profile {
-  int32 user_id = 1;
-  string username = 2;
-  string first_name = 3;
-  string last_name = 4;
-  optional string bio = 5;
-  optional string avatar_url = 6;
-  bool is_trainer = 7;
-  google.protobuf.Timestamp created_at = 8;
-  google.protobuf.Timestamp updated_at = 9;
-  optional TrainerDetails trainer_details = 10;
+message ClientRegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string password_repeat = 4;
+  string first_name = 5;
+  string last_name = 6;
 }
 
-message AuthorSummary {
+message TrainerRegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string password_repeat = 4;
+  string first_name = 5;
+  string last_name = 6;
+  TrainerDetails trainer_details = 7;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  User user = 1;
+}
+
+message GetProfileRequest {
   int32 user_id = 1;
-  string username = 2;
-  string first_name = 3;
-  string last_name = 4;
-  optional string bio = 5;
-  optional string avatar_url = 6;
-  optional TrainerDetails trainer_details = 7;
+}
+
+message ProfileResponse {
+  int32 user_id = 1;
+  bool is_me = 2;
+  bool is_trainer = 3;
+  string username = 4;
+  string first_name = 5;
+  string last_name = 6;
+  optional string bio = 7;
+  optional string avatar_url = 8;
+  optional TrainerDetails trainer_details = 9;
+}
+
+message TrainerListItem {
+  int32 user_id = 1;
+  bool is_trainer = 2;
+  string username = 3;
+  string first_name = 4;
+  string last_name = 5;
+  optional string bio = 6;
+  optional string avatar_url = 7;
+  optional TrainerDetails trainer_details = 8;
+}
+
+message GetTrainersResponse {
+  repeated TrainerListItem trainers = 1;
+}
+
+message UpdateMyProfileRequest {
+  optional string username = 1;
+  optional string first_name = 2;
+  optional string last_name = 3;
+  optional string bio = 4;
+  optional TrainerDetails trainer_details = 5;
+}
+
+message UploadMyAvatarRequest {
+  bytes avatar = 1;
+  string file_name = 2;
+  string content_type = 3;
+}
+
+message AvatarUploadResponse {
+  string avatar_url = 1;
 }
 
 message SportType {
@@ -99,315 +131,206 @@ message SportType {
   string name = 2;
 }
 
-message ProfileResponse {
-  Profile profile = 1;
-}
-
-message CreateProfileRequest {
-  int32 user_id = 1;
-  string username = 2;
-  string first_name = 3;
-  string last_name = 4;
-  optional string bio = 5;
-  bool is_trainer = 6;
-  optional TrainerDetails trainer_details = 7;
-}
-
-message GetProfileRequest {
-  int32 user_id = 1;
-}
-
-message UpdateProfileRequest {
-  int32 user_id = 1;
-  optional string username = 2;
-  optional string first_name = 3;
-  optional string last_name = 4;
-  optional string bio = 5;
-  optional TrainerDetails trainer_details = 6;
-}
-
-message SearchAuthorsRequest {
-  string query = 1;
-  repeated int32 sport_type_ids = 2;
-  int32 limit = 3;
-  int32 offset = 4;
-}
-
-message SearchAuthorsResponse {
-  repeated AuthorSummary authors = 1;
-}
-
-message UploadAvatarRequest {
-  int32 user_id = 1;
-  string file_name = 2;
-  string content_type = 3;
-  bytes content = 4;
-}
-
-message DeleteAvatarRequest {
-  int32 user_id = 1;
-}
-
-message ListSportTypesResponse {
+message SportTypesResponse {
   repeated SportType sport_types = 1;
 }
 
-message PostBlockInput {
-  ContentBlockKind kind = 1;
-  optional string text_content = 2;
-  optional string file_url = 3;
-}
-
-message PostBlock {
-  int32 post_block_id = 1;
-  int32 position = 2;
-  ContentBlockKind kind = 3;
-  optional string text_content = 4;
-  optional string file_url = 5;
-}
-
-message Post {
-  int32 post_id = 1;
-  int32 author_user_id = 2;
-  string title = 3;
-  optional int32 required_subscription_level = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-  bool can_view = 7;
-  int32 likes_count = 8;
-  bool is_liked = 9;
-  int32 comments_count = 10;
-  repeated PostBlock blocks = 11;
-}
-
-message PostSummary {
-  int32 post_id = 1;
-  int32 author_user_id = 2;
-  string title = 3;
-  optional int32 required_subscription_level = 4;
-  google.protobuf.Timestamp created_at = 5;
-  bool can_view = 6;
-  int32 likes_count = 7;
-  bool is_liked = 8;
-  int32 comments_count = 9;
-}
-
-message Comment {
-  int32 comment_id = 1;
-  int32 post_id = 2;
-  int32 author_user_id = 3;
-  string body = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-}
-
-message PostResponse {
-  Post post = 1;
-}
-
-message ListAuthorPostsRequest {
-  int32 author_user_id = 1;
-  int32 viewer_user_id = 2;
-  optional int32 viewer_subscription_level = 3;
-  int32 limit = 4;
-  int32 offset = 5;
-}
-
-message ListAuthorPostsResponse {
-  repeated PostSummary posts = 1;
+message CreatePostAttachmentRequest {
+  string kind = 1;
+  string file_url = 2;
 }
 
 message CreatePostRequest {
-  int32 author_user_id = 1;
+  optional int32 min_tier_id = 1;
   string title = 2;
-  optional int32 required_subscription_level = 3;
-  repeated PostBlockInput blocks = 4;
-}
-
-message GetPostRequest {
-  int32 post_id = 1;
-  int32 viewer_user_id = 2;
-  optional int32 viewer_subscription_level = 3;
+  string text_content = 3;
+  repeated CreatePostAttachmentRequest attachments = 4;
 }
 
 message UpdatePostRequest {
   int32 post_id = 1;
-  int32 author_user_id = 2;
+  optional int32 min_tier_id = 2;
   optional string title = 3;
-  optional int32 required_subscription_level = 4;
-  bool clear_required_subscription_level = 5;
-  repeated PostBlockInput blocks = 6;
-  bool replace_blocks = 7;
+  optional string text_content = 4;
+  repeated CreatePostAttachmentRequest attachments = 5;
+}
+
+message PostAttachment {
+  int32 post_attachment_id = 1;
+  string kind = 2;
+  string file_url = 3;
+}
+
+message PostListItem {
+  int32 post_id = 1;
+  int32 trainer_id = 2;
+  optional int32 min_tier_id = 3;
+  string title = 4;
+  google.protobuf.Timestamp created_at = 5;
+  bool can_view = 6;
+  int32 likes_count = 7;
+  bool is_liked = 8;
+}
+
+message ProfilePostsResponse {
+  int32 user_id = 1;
+  repeated PostListItem posts = 2;
+}
+
+message PostResponse {
+  int32 post_id = 1;
+  int32 trainer_id = 2;
+  optional int32 min_tier_id = 3;
+  string title = 4;
+  string text_content = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  int32 likes_count = 8;
+  bool is_liked = 9;
+  repeated PostAttachment attachments = 10;
+}
+
+message GetPostRequest {
+  int32 post_id = 1;
 }
 
 message DeletePostRequest {
   int32 post_id = 1;
-  int32 author_user_id = 2;
 }
 
-message LikePostRequest {
+message PostLikeRequest {
   int32 post_id = 1;
-  int32 user_id = 2;
-  optional int32 viewer_subscription_level = 3;
 }
 
-message UnlikePostRequest {
-  int32 post_id = 1;
-  int32 user_id = 2;
-  optional int32 viewer_subscription_level = 3;
-}
-
-message PostLikeState {
+message PostLikeResponse {
   int32 post_id = 1;
   int32 likes_count = 2;
   bool is_liked = 3;
 }
 
-message PostLikeStateResponse {
-  PostLikeState state = 1;
+message DonateToProfileRequest {
+  int32 user_id = 1;
+  int32 amount_value = 2;
+  string currency = 3;
+  optional string message = 4;
 }
 
-message CreateCommentRequest {
-  int32 post_id = 1;
-  int32 author_user_id = 2;
-  optional int32 viewer_subscription_level = 3;
-  string body = 4;
-}
-
-message CommentResponse {
-  Comment comment = 1;
-}
-
-message ListCommentsRequest {
-  int32 post_id = 1;
-  int32 viewer_user_id = 2;
-  optional int32 viewer_subscription_level = 3;
-  int32 limit = 4;
-  int32 offset = 5;
-}
-
-message ListCommentsResponse {
-  repeated Comment comments = 1;
+message DonationResponse {
+  int32 donation_id = 1;
+  int32 sender_user_id = 2;
+  int32 recipient_user_id = 3;
+  int32 amount_value = 4;
+  string currency = 5;
+  optional string message = 6;
+  google.protobuf.Timestamp created_at = 7;
 }
 
 service AuthService {
-  rpc Register(RegisterRequest) returns (AuthSessionResponse) {
+  rpc RegisterClient(ClientRegisterRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/register"
+      post: "/auth/register/client"
       body: "*"
     };
   }
 
-  rpc Login(LoginRequest) returns (AuthSessionResponse) {
+  rpc RegisterTrainer(TrainerRegisterRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/login"
+      post: "/auth/register/trainer"
       body: "*"
     };
   }
 
-  rpc Logout(LogoutRequest) returns (google.protobuf.Empty) {
+  rpc Login(LoginRequest) returns (AuthResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/logout"
+      post: "/auth/login"
       body: "*"
     };
   }
 
-  rpc ResolveSession(ResolveSessionRequest) returns (ResolveSessionResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/sessions:resolve"
-      body: "*"
-    };
+  rpc GetMe(google.protobuf.Empty) returns (AuthResponse) {
+    option (google.api.http).get = "/auth/me";
+  }
+
+  rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http).post = "/auth/logout";
   }
 }
 
 service ProfileService {
-  rpc CreateProfile(CreateProfileRequest) returns (ProfileResponse) {
-    option (google.api.http) = {
-      post: "/v1/profiles"
-      body: "*"
-    };
-  }
-
   rpc GetProfile(GetProfileRequest) returns (ProfileResponse) {
-    option (google.api.http).get = "/v1/profiles/{user_id}";
+    option (google.api.http).get = "/profiles/{user_id}";
   }
 
-  rpc UpdateProfile(UpdateProfileRequest) returns (ProfileResponse) {
+  rpc ListTrainers(google.protobuf.Empty) returns (GetTrainersResponse) {
+    option (google.api.http).get = "/trainers";
+  }
+
+  rpc UpdateMyProfile(UpdateMyProfileRequest) returns (ProfileResponse) {
     option (google.api.http) = {
-      patch: "/v1/profiles/{user_id}"
+      patch: "/profiles/me"
       body: "*"
     };
   }
 
-  rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse) {
+  rpc UploadMyAvatar(UploadMyAvatarRequest) returns (AvatarUploadResponse) {
     option (google.api.http) = {
-      post: "/v1/authors:search"
+      post: "/profiles/me/avatar"
       body: "*"
     };
   }
 
-  rpc UploadAvatar(UploadAvatarRequest) returns (ProfileResponse) {
-    option (google.api.http) = {
-      post: "/v1/profiles/{user_id}/avatar"
-      body: "*"
-    };
+  rpc DeleteMyAvatar(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/profiles/me/avatar";
   }
 
-  rpc DeleteAvatar(DeleteAvatarRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/profiles/{user_id}/avatar";
-  }
-
-  rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
-    option (google.api.http).get = "/v1/sport-types";
+  rpc ListProfilePosts(GetProfileRequest) returns (ProfilePostsResponse) {
+    option (google.api.http).get = "/profiles/{user_id}/posts";
   }
 }
 
-service ContentService {
-  rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
-    option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
-  }
-
+service PostService {
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
-      post: "/v1/posts"
+      post: "/posts"
       body: "*"
     };
   }
 
   rpc GetPost(GetPostRequest) returns (PostResponse) {
-    option (google.api.http).get = "/v1/posts/{post_id}";
+    option (google.api.http).get = "/posts/{post_id}";
   }
 
   rpc UpdatePost(UpdatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
-      patch: "/v1/posts/{post_id}"
+      patch: "/posts/{post_id}"
       body: "*"
     };
   }
 
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/posts/{post_id}";
+    option (google.api.http).delete = "/posts/{post_id}";
   }
 
-  rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
+  rpc LikePost(PostLikeRequest) returns (PostLikeResponse) {
+    option (google.api.http).post = "/posts/{post_id}/likes";
+  }
+
+  rpc UnlikePost(PostLikeRequest) returns (PostLikeResponse) {
+    option (google.api.http).delete = "/posts/{post_id}/likes";
+  }
+}
+
+service SportService {
+  rpc ListSportTypes(google.protobuf.Empty) returns (SportTypesResponse) {
+    option (google.api.http).get = "/sport-types";
+  }
+}
+
+service DonationService {
+  rpc DonateToProfile(DonateToProfileRequest) returns (DonationResponse) {
     option (google.api.http) = {
-      post: "/v1/posts/{post_id}/likes"
+      post: "/profiles/{user_id}/donations"
       body: "*"
     };
-  }
-
-  rpc UnlikePost(UnlikePostRequest) returns (PostLikeStateResponse) {
-    option (google.api.http).delete = "/v1/posts/{post_id}/likes/{user_id}";
-  }
-
-  rpc CreateComment(CreateCommentRequest) returns (CommentResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts/{post_id}/comments"
-      body: "*"
-    };
-  }
-
-  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
-    option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
 }
