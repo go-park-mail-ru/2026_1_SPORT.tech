@@ -34,6 +34,21 @@ type profileResponse struct {
 	TrainerDetails *trainerDetailsResponse `json:"trainer_details"`
 }
 
+type getTrainersResponse struct {
+	Trainers []trainerListItemResponse `json:"trainers"`
+}
+
+type trainerListItemResponse struct {
+	UserID         int64                   `json:"user_id"`
+	IsTrainer      bool                    `json:"is_trainer"`
+	Username       string                  `json:"username"`
+	FirstName      string                  `json:"first_name"`
+	LastName       string                  `json:"last_name"`
+	Bio            *string                 `json:"bio"`
+	AvatarURL      *string                 `json:"avatar_url"`
+	TrainerDetails *trainerDetailsResponse `json:"trainer_details"`
+}
+
 type trainerSportResponse struct {
 	SportTypeID     int64   `json:"sport_type_id"`
 	ExperienceYears int     `json:"experience_years"`
@@ -48,6 +63,23 @@ type trainerDetailsResponse struct {
 
 type avatarUploadResponse struct {
 	AvatarURL string `json:"avatar_url"`
+}
+
+func (handler *Handler) handleGetTrainers(writer http.ResponseWriter, request *http.Request) {
+	trainers, err := handler.userUseCase.ListTrainers(request.Context())
+	if err != nil {
+		writeInternalError(writer)
+		return
+	}
+
+	response := getTrainersResponse{
+		Trainers: make([]trainerListItemResponse, 0, len(trainers)),
+	}
+	for _, trainer := range trainers {
+		response.Trainers = append(response.Trainers, handler.newTrainerListItemResponse(trainer))
+	}
+
+	writeJSON(writer, http.StatusOK, response)
 }
 
 func (handler *Handler) handleGetProfile(writer http.ResponseWriter, request *http.Request) {
@@ -218,23 +250,7 @@ func (handler *Handler) handleDeleteProfileAvatar(writer http.ResponseWriter, re
 }
 
 func (handler *Handler) newProfileResponse(user domain.User, isMe bool) profileResponse {
-	var trainerDetails *trainerDetailsResponse
-	if user.TrainerDetails != nil {
-		sports := make([]trainerSportResponse, 0, len(user.TrainerDetails.Sports))
-		for _, sport := range user.TrainerDetails.Sports {
-			sports = append(sports, trainerSportResponse{
-				SportTypeID:     sport.SportTypeID,
-				ExperienceYears: sport.ExperienceYears,
-				SportsRank:      sport.SportsRank,
-			})
-		}
-
-		trainerDetails = &trainerDetailsResponse{
-			EducationDegree: user.TrainerDetails.EducationDegree,
-			CareerSinceDate: user.TrainerDetails.CareerSinceDate.Format("2006-01-02"),
-			Sports:          sports,
-		}
-	}
+	trainerDetails := newTrainerDetailsResponse(user.TrainerDetails)
 
 	return profileResponse{
 		UserID:         user.ID,
@@ -246,6 +262,40 @@ func (handler *Handler) newProfileResponse(user domain.User, isMe bool) profileR
 		Bio:            user.Bio,
 		AvatarURL:      handler.normalizePublicURL(user.AvatarURL),
 		TrainerDetails: trainerDetails,
+	}
+}
+
+func (handler *Handler) newTrainerListItemResponse(trainer domain.TrainerListItem) trainerListItemResponse {
+	return trainerListItemResponse{
+		UserID:         trainer.ID,
+		IsTrainer:      true,
+		Username:       trainer.Username,
+		FirstName:      trainer.FirstName,
+		LastName:       trainer.LastName,
+		Bio:            trainer.Bio,
+		AvatarURL:      handler.normalizePublicURL(trainer.AvatarURL),
+		TrainerDetails: newTrainerDetailsResponse(trainer.TrainerDetails),
+	}
+}
+
+func newTrainerDetailsResponse(details *domain.TrainerDetails) *trainerDetailsResponse {
+	if details == nil {
+		return nil
+	}
+
+	sports := make([]trainerSportResponse, 0, len(details.Sports))
+	for _, sport := range details.Sports {
+		sports = append(sports, trainerSportResponse{
+			SportTypeID:     sport.SportTypeID,
+			ExperienceYears: sport.ExperienceYears,
+			SportsRank:      sport.SportsRank,
+		})
+	}
+
+	return &trainerDetailsResponse{
+		EducationDegree: details.EducationDegree,
+		CareerSinceDate: details.CareerSinceDate.Format("2006-01-02"),
+		Sports:          sports,
 	}
 }
 

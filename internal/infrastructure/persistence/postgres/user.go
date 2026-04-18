@@ -24,6 +24,113 @@ func NewUserRepository(db *sql.DB, logger *slog.Logger) *UserRepository {
 	}
 }
 
+func (repository *UserRepository) ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error) {
+	const query = `
+		SELECT
+			u.user_id,
+			up.username,
+			up.first_name,
+			up.last_name,
+			up.bio,
+			up.avatar_url,
+			td.education_degree,
+			td.career_since_date,
+			tts.sport_type_id,
+			tts.experience_years,
+			tts.sports_rank
+		FROM "user" u
+		JOIN user_profile up ON up.user_id = u.user_id
+		JOIN trainer_details td ON td.trainer_user_id = u.user_id
+		LEFT JOIN trainer_to_sport_type tts ON tts.trainer_id = u.user_id
+		ORDER BY u.user_id DESC, tts.sport_type_id
+	`
+
+	rows, err := queryContext(ctx, repository.db, repository.logger, "user.list_trainers", query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	trainers := make([]domain.TrainerListItem, 0)
+	indexByID := make(map[int64]int)
+	for rows.Next() {
+		var (
+			userID          int64
+			username        string
+			firstName       string
+			lastName        string
+			bio             sql.NullString
+			avatarURL       sql.NullString
+			educationDegree sql.NullString
+			careerSinceDate time.Time
+			sportTypeID     sql.NullInt64
+			experienceYears sql.NullInt64
+			sportsRank      sql.NullString
+		)
+
+		if err := rows.Scan(
+			&userID,
+			&username,
+			&firstName,
+			&lastName,
+			&bio,
+			&avatarURL,
+			&educationDegree,
+			&careerSinceDate,
+			&sportTypeID,
+			&experienceYears,
+			&sportsRank,
+		); err != nil {
+			return nil, err
+		}
+
+		trainerIndex, ok := indexByID[userID]
+		if !ok {
+			trainer := domain.TrainerListItem{
+				ID:        userID,
+				Username:  username,
+				FirstName: firstName,
+				LastName:  lastName,
+				TrainerDetails: &domain.TrainerDetails{
+					CareerSinceDate: careerSinceDate,
+					Sports:          make([]domain.TrainerSport, 0),
+				},
+			}
+			if bio.Valid {
+				trainer.Bio = &bio.String
+			}
+			if avatarURL.Valid {
+				trainer.AvatarURL = &avatarURL.String
+			}
+			if educationDegree.Valid {
+				trainer.TrainerDetails.EducationDegree = &educationDegree.String
+			}
+
+			trainers = append(trainers, trainer)
+			trainerIndex = len(trainers) - 1
+			indexByID[userID] = trainerIndex
+		}
+
+		if sportTypeID.Valid {
+			sport := domain.TrainerSport{
+				SportTypeID:     sportTypeID.Int64,
+				ExperienceYears: int(experienceYears.Int64),
+			}
+			if sportsRank.Valid {
+				sport.SportsRank = &sportsRank.String
+			}
+
+			trainers[trainerIndex].TrainerDetails.Sports = append(trainers[trainerIndex].TrainerDetails.Sports, sport)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return trainers, nil
+}
+
 func (repository *UserRepository) GetByID(ctx context.Context, userID int64) (domain.User, error) {
 	const query = `
 		SELECT

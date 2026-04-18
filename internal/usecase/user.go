@@ -91,6 +91,10 @@ func NewUserUseCase(userRepository userRepository, avatarStorage avatarStorage) 
 	}
 }
 
+func (useCase *UserUseCase) ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error) {
+	return useCase.userRepository.ListTrainers(ctx)
+}
+
 func (useCase *UserUseCase) GetByID(ctx context.Context, userID int64) (domain.User, error) {
 	user, err := useCase.userRepository.GetByID(ctx, userID)
 	if err != nil {

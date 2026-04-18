@@ -52,6 +52,7 @@ func (handler *Handler) Routes() http.Handler {
 	mux.HandleFunc("GET /docs/openapi.yml", handler.handleGetOpenAPISpec)
 	mux.HandleFunc("GET /health", handler.handleHealth)
 	mux.HandleFunc("GET /sport-types", handler.handleGetSportTypes)
+	mux.HandleFunc("GET /trainers", handler.handleGetTrainers)
 	mux.HandleFunc("GET /profiles/{user_id}", handler.handleGetProfile)
 	mux.Handle("PATCH /profiles/me", handler.AuthMiddleware(http.HandlerFunc(handler.handlePatchProfileMe)))
 	mux.Handle("POST /profiles/me/avatar", handler.AuthMiddleware(http.HandlerFunc(handler.handlePostProfileAvatar)))

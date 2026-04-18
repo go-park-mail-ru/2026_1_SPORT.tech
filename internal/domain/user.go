@@ -14,6 +14,16 @@ type TrainerDetails struct {
 	Sports          []TrainerSport
 }
 
+type TrainerListItem struct {
+	ID             int64
+	Username       string
+	FirstName      string
+	LastName       string
+	Bio            *string
+	AvatarURL      *string
+	TrainerDetails *TrainerDetails
+}
+
 type User struct {
 	ID             int64
 	Username       string

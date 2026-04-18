@@ -42,6 +42,7 @@ func (stub *sessionUseCaseStub) RevokeSession(ctx context.Context, sessionID str
 }
 
 type userUseCaseStub struct {
+	listTrainersFunc    func(ctx context.Context) ([]domain.TrainerListItem, error)
 	getByIDFunc         func(ctx context.Context, userID int64) (domain.User, error)
 	registerClientFunc  func(ctx context.Context, command usecase.RegisterClientCommand) (domain.User, error)
 	registerTrainerFunc func(ctx context.Context, command usecase.RegisterTrainerCommand) (domain.User, error)
@@ -51,6 +52,9 @@ type userUseCaseStub struct {
 	deleteAvatarFunc    func(ctx context.Context, userID int64) error
 }
 
+func (stub *userUseCaseStub) ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error) {
+	return stub.listTrainersFunc(ctx)
+}
 func (stub *userUseCaseStub) GetByID(ctx context.Context, userID int64) (domain.User, error) {
 	return stub.getByIDFunc(ctx, userID)
 }
@@ -501,6 +505,37 @@ func TestAuthHandlers(t *testing.T) {
 
 func TestProfileAndPostHandlers(t *testing.T) {
 	now := time.Now()
+
+	t.Run("get trainers success", func(t *testing.T) {
+		handler := &Handler{
+			storagePublicBaseURL: "http://example.com/avatars",
+			userUseCase: &userUseCaseStub{
+				listTrainersFunc: func(ctx context.Context) ([]domain.TrainerListItem, error) {
+					return []domain.TrainerListItem{{
+						ID:        7,
+						Username:  "coach",
+						FirstName: "John",
+						LastName:  "Doe",
+						Bio:       stringPtr("Тренер по бегу"),
+						AvatarURL: stringPtr("http://localhost:8000/avatars/users/7/avatar.jpg"),
+						TrainerDetails: &domain.TrainerDetails{
+							CareerSinceDate: time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+							Sports: []domain.TrainerSport{{
+								SportTypeID:     1,
+								ExperienceYears: 5,
+							}},
+						},
+					}}, nil
+				},
+			},
+		}
+
+		recorder := httptest.NewRecorder()
+		handler.handleGetTrainers(recorder, httptest.NewRequest(http.MethodGet, "/trainers", nil))
+		if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), "\"trainers\"") || !strings.Contains(recorder.Body.String(), "example.com") {
+			t.Fatalf("unexpected response: %d %s", recorder.Code, recorder.Body.String())
+		}
+	})
 
 	t.Run("get profile success", func(t *testing.T) {
 		handler := &Handler{

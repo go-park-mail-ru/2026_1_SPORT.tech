@@ -29,6 +29,23 @@ func TestUserUseCaseGetByIDMapsNotFound(t *testing.T) {
 	}
 }
 
+func TestUserUseCaseListTrainers(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	repository := gen.NewMockuserRepository(ctrl)
+	expected := []domain.TrainerListItem{{ID: 7, Username: "coach"}}
+	repository.EXPECT().ListTrainers(gomock.Any()).Return(expected, nil)
+
+	useCase := usecase.NewUserUseCase(repository, nil)
+
+	trainers, err := useCase.ListTrainers(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(trainers) != 1 || trainers[0].ID != 7 {
+		t.Fatalf("unexpected trainers: %+v", trainers)
+	}
+}
+
 func TestUserUseCaseRegisterClientSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	repository := gen.NewMockuserRepository(ctrl)

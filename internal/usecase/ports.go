@@ -32,6 +32,7 @@ type donationRepository interface {
 }
 
 type userRepository interface {
+	ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error)
 	GetByID(ctx context.Context, userID int64) (domain.User, error)
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
 	CreateClient(ctx context.Context, params CreateClientCommand) (int64, error)

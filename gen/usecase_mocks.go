@@ -379,6 +379,21 @@ func (mr *MockuserRepositoryMockRecorder) GetByID(ctx, userID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockuserRepository)(nil).GetByID), ctx, userID)
 }
 
+// ListTrainers mocks base method.
+func (m *MockuserRepository) ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTrainers", ctx)
+	ret0, _ := ret[0].([]domain.TrainerListItem)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTrainers indicates an expected call of ListTrainers.
+func (mr *MockuserRepositoryMockRecorder) ListTrainers(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrainers", reflect.TypeOf((*MockuserRepository)(nil).ListTrainers), ctx)
+}
+
 // UpdateAvatarURL mocks base method.
 func (m *MockuserRepository) UpdateAvatarURL(ctx context.Context, userID int64, avatarURL string) error {
 	m.ctrl.T.Helper()

@@ -326,6 +326,50 @@ components:
             - $ref: "#/components/schemas/TrainerProfileDetails"
           nullable: true
 
+    TrainerListItem:
+      type: object
+      required: [user_id, is_trainer, username, first_name, last_name]
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        is_trainer:
+          type: boolean
+          description: всегда true для элементов списка тренеров
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9_]{3,30}$'
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+        avatar_url:
+          type: string
+          nullable: true
+        trainer_details:
+          allOf:
+            - $ref: "#/components/schemas/TrainerProfileDetails"
+          nullable: true
+
+    GetTrainersResponse:
+      type: object
+      required: [trainers]
+      properties:
+        trainers:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainerListItem"
+
     TrainerProfileSport:
       type: object
       required: [sport_type_id, experience_years]
@@ -1107,6 +1151,37 @@ paths:
                     error:
                       code: not_found
                       message: Пользователь не найден
+
+  /trainers:
+    get:
+      tags: [profile]
+      summary: Список тренеров
+      description: Возвращает список тренеров для каталога и перехода в их профиль.
+      responses:
+        "200":
+          description: Список тренеров
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTrainersResponse"
+              examples:
+                success:
+                  value:
+                    trainers:
+                      - user_id: 123
+                        is_trainer: true
+                        username: john_doe
+                        first_name: John
+                        last_name: Doe
+                        bio: Тренер по бегу
+                        avatar_url: "https://cdn.example.com/avatars/john_doe.jpg"
+                        trainer_details:
+                          education_degree: Bachelor of Sports Science
+                          career_since_date: "2020-01-01"
+                          sports:
+                            - sport_type_id: 1
+                              experience_years: 5
+                              sports_rank: КМС
 
   /profiles/me:
     patch:

@@ -19,6 +19,7 @@ type sessionUseCase interface {
 }
 
 type userUseCase interface {
+	ListTrainers(ctx context.Context) ([]domain.TrainerListItem, error)
 	GetByID(ctx context.Context, userID int64) (domain.User, error)
 	RegisterClient(ctx context.Context, command usecase.RegisterClientCommand) (domain.User, error)
 	RegisterTrainer(ctx context.Context, command usecase.RegisterTrainerCommand) (domain.User, error)

@@ -77,6 +77,55 @@ func TestUserRepositoryGetByIDWithTrainerDetails(t *testing.T) {
 	}
 }
 
+func TestUserRepositoryListTrainers(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock.New: %v", err)
+	}
+	defer db.Close()
+
+	repository := NewUserRepository(db, nil)
+	careerSince := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	rows := sqlmock.NewRows([]string{
+		"user_id", "username", "first_name", "last_name", "bio", "avatar_url",
+		"education_degree", "career_since_date", "sport_type_id", "experience_years", "sports_rank",
+	}).
+		AddRow(int64(7), "coach", "John", "Doe", "bio", "http://example.com/avatar.jpg", "Bachelor", careerSince, int64(1), int64(5), "КМС").
+		AddRow(int64(7), "coach", "John", "Doe", "bio", "http://example.com/avatar.jpg", "Bachelor", careerSince, int64(2), int64(3), nil)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`
+		SELECT
+			u.user_id,
+			up.username,
+			up.first_name,
+			up.last_name,
+			up.bio,
+			up.avatar_url,
+			td.education_degree,
+			td.career_since_date,
+			tts.sport_type_id,
+			tts.experience_years,
+			tts.sports_rank
+		FROM "user" u
+		JOIN user_profile up ON up.user_id = u.user_id
+		JOIN trainer_details td ON td.trainer_user_id = u.user_id
+		LEFT JOIN trainer_to_sport_type tts ON tts.trainer_id = u.user_id
+		ORDER BY u.user_id DESC, tts.sport_type_id
+	`)).WillReturnRows(rows)
+
+	trainers, err := repository.ListTrainers(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(trainers) != 1 || trainers[0].TrainerDetails == nil || len(trainers[0].TrainerDetails.Sports) != 2 {
+		t.Fatalf("unexpected trainers: %+v", trainers)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet expectations: %v", err)
+	}
+}
+
 func TestUserRepositoryGetByEmail(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
