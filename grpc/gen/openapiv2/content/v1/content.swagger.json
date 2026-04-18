@@ -1,0 +1,747 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "content/v1/content.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ContentService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/authors/{author_user_id}/posts": {
+      "get": {
+        "operationId": "ContentService_ListAuthorPosts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListAuthorPostsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "author_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/posts": {
+      "post": {
+        "operationId": "ContentService_CreatePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreatePostRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/posts/{post_id}": {
+      "get": {
+        "operationId": "ContentService_GetPost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "delete": {
+        "operationId": "ContentService_DeletePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "author_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "patch": {
+        "operationId": "ContentService_UpdatePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceUpdatePostBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/posts/{post_id}/comments": {
+      "get": {
+        "operationId": "ContentService_ListComments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListCommentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "post": {
+        "operationId": "ContentService_CreateComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CommentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceCreateCommentBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/posts/{post_id}/likes": {
+      "post": {
+        "operationId": "ContentService_LikePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostLikeStateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceLikePostBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/posts/{post_id}/likes/{user_id}": {
+      "delete": {
+        "operationId": "ContentService_UnlikePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostLikeStateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ContentServiceCreateCommentBody": {
+      "type": "object",
+      "properties": {
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "viewer_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "ContentServiceLikePostBody": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "viewer_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ContentServiceUpdatePostBody": {
+      "type": "object",
+      "properties": {
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "clear_required_subscription_level": {
+          "type": "boolean"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostBlockInput"
+          }
+        },
+        "replace_blocks": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1Comment": {
+      "type": "object",
+      "properties": {
+        "comment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1CommentResponse": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/v1Comment"
+        }
+      }
+    },
+    "v1ContentBlockKind": {
+      "type": "string",
+      "enum": [
+        "CONTENT_BLOCK_KIND_UNSPECIFIED",
+        "CONTENT_BLOCK_KIND_TEXT",
+        "CONTENT_BLOCK_KIND_IMAGE",
+        "CONTENT_BLOCK_KIND_VIDEO",
+        "CONTENT_BLOCK_KIND_DOCUMENT"
+      ],
+      "default": "CONTENT_BLOCK_KIND_UNSPECIFIED"
+    },
+    "v1CreatePostRequest": {
+      "type": "object",
+      "properties": {
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostBlockInput"
+          }
+        }
+      }
+    },
+    "v1ListAuthorPostsResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostSummary"
+          }
+        }
+      }
+    },
+    "v1ListCommentsResponse": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Comment"
+          }
+        }
+      }
+    },
+    "v1Post": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "can_view": {
+          "type": "boolean"
+        },
+        "likes_count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_liked": {
+          "type": "boolean"
+        },
+        "comments_count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostBlock"
+          }
+        }
+      }
+    },
+    "v1PostBlock": {
+      "type": "object",
+      "properties": {
+        "post_block_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "position": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "kind": {
+          "$ref": "#/definitions/v1ContentBlockKind"
+        },
+        "text_content": {
+          "type": "string"
+        },
+        "file_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PostBlockInput": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/v1ContentBlockKind"
+        },
+        "text_content": {
+          "type": "string"
+        },
+        "file_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PostLikeState": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "likes_count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_liked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1PostLikeStateResponse": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/v1PostLikeState"
+        }
+      }
+    },
+    "v1PostResponse": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/v1Post"
+        }
+      }
+    },
+    "v1PostSummary": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "can_view": {
+          "type": "boolean"
+        },
+        "likes_count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_liked": {
+          "type": "boolean"
+        },
+        "comments_count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}
