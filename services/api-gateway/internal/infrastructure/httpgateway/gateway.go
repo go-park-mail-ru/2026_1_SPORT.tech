@@ -240,7 +240,7 @@ func addCSRFHeaders(document map[string]any) {
 				continue
 			}
 
-			if !requiresOpenAPICSRFHeader(strings.ToLower(method), path) {
+			if !requiresOpenAPICSRFHeader(method, path) {
 				continue
 			}
 
