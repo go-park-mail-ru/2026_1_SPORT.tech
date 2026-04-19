@@ -3,7 +3,6 @@ package httpgateway_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/api-gateway/internal/infrastructure/httpgateway"
@@ -15,7 +14,6 @@ func TestCSRFMiddlewareRejectsUnsafeRequestWithoutToken(t *testing.T) {
 	}))
 
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/posts", nil)
-	request.AddCookie(&http.Cookie{Name: "sid", Value: "session-token"})
 
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, request)
@@ -43,13 +41,12 @@ func TestCSRFMiddlewareAllowsUnsafeRequestWithMatchingToken(t *testing.T) {
 	}
 }
 
-func TestCSRFMiddlewareBootstrapsTokenOnSafeRequest(t *testing.T) {
+func TestCSRFMiddlewareDoesNotRequireTokenOnSafeRequest(t *testing.T) {
 	handler := httpgateway.CSRFMiddleware(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusOK)
 	}))
 
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/auth/me", nil)
-	request.AddCookie(&http.Cookie{Name: "sid", Value: "session-token"})
 
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, request)
@@ -57,10 +54,11 @@ func TestCSRFMiddlewareBootstrapsTokenOnSafeRequest(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("unexpected status: %d", recorder.Code)
 	}
-	if csrfHeader := recorder.Header().Get("X-CSRF-Token"); strings.TrimSpace(csrfHeader) == "" {
-		t.Fatalf("expected X-CSRF-Token header")
+
+	if csrfHeader := recorder.Header().Get("X-CSRF-Token"); csrfHeader != "" {
+		t.Fatalf("did not expect X-CSRF-Token header, got %q", csrfHeader)
 	}
-	if setCookie := recorder.Header().Values("Set-Cookie"); len(setCookie) == 0 || !strings.Contains(strings.Join(setCookie, ";"), "csrf_token=") {
-		t.Fatalf("expected csrf cookie, got %q", setCookie)
+	if setCookie := recorder.Header().Values("Set-Cookie"); len(setCookie) != 0 {
+		t.Fatalf("did not expect csrf cookie, got %q", setCookie)
 	}
 }

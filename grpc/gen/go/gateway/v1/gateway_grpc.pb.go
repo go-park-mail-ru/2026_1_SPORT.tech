@@ -20,6 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	AuthService_GetCSRFToken_FullMethodName    = "/sporttech.gateway.v1.AuthService/GetCSRFToken"
 	AuthService_RegisterClient_FullMethodName  = "/sporttech.gateway.v1.AuthService/RegisterClient"
 	AuthService_RegisterTrainer_FullMethodName = "/sporttech.gateway.v1.AuthService/RegisterTrainer"
 	AuthService_Login_FullMethodName           = "/sporttech.gateway.v1.AuthService/Login"
@@ -31,6 +32,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
+	GetCSRFToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CSRFTokenResponse, error)
 	RegisterClient(ctx context.Context, in *ClientRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	RegisterTrainer(ctx context.Context, in *TrainerRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error)
@@ -44,6 +46,16 @@ type authServiceClient struct {
 
 func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
+}
+
+func (c *authServiceClient) GetCSRFToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CSRFTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CSRFTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetCSRFToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *authServiceClient) RegisterClient(ctx context.Context, in *ClientRegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
@@ -100,6 +112,7 @@ func (c *authServiceClient) Logout(ctx context.Context, in *emptypb.Empty, opts 
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
+	GetCSRFToken(context.Context, *emptypb.Empty) (*CSRFTokenResponse, error)
 	RegisterClient(context.Context, *ClientRegisterRequest) (*AuthResponse, error)
 	RegisterTrainer(context.Context, *TrainerRegisterRequest) (*AuthResponse, error)
 	Login(context.Context, *LoginRequest) (*AuthResponse, error)
@@ -114,6 +127,9 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
+func (UnimplementedAuthServiceServer) GetCSRFToken(context.Context, *emptypb.Empty) (*CSRFTokenResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCSRFToken not implemented")
+}
 func (UnimplementedAuthServiceServer) RegisterClient(context.Context, *ClientRegisterRequest) (*AuthResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RegisterClient not implemented")
 }
@@ -147,6 +163,24 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&AuthService_ServiceDesc, srv)
+}
+
+func _AuthService_GetCSRFToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetCSRFToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetCSRFToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetCSRFToken(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AuthService_RegisterClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -246,6 +280,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "sporttech.gateway.v1.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetCSRFToken",
+			Handler:    _AuthService_GetCSRFToken_Handler,
+		},
 		{
 			MethodName: "RegisterClient",
 			Handler:    _AuthService_RegisterClient_Handler,

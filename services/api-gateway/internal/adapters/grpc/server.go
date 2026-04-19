@@ -210,6 +210,21 @@ func setCSRFHeader(ctx context.Context, csrfToken string) error {
 	return grpc.SetHeader(ctx, metadata.Pairs(httpMetadataHeaderKey, csrfHeaderName+":"+csrfToken))
 }
 
+func issueCSRFToken(ctx context.Context, expiresAt *timestamppb.Timestamp) (string, error) {
+	csrfToken, err := newCSRFToken()
+	if err != nil {
+		return "", status.Errorf(codes.Internal, "generate csrf token: %v", err)
+	}
+	if err := setCSRFCookie(ctx, csrfToken, expiresAt); err != nil {
+		return "", status.Errorf(codes.Internal, "set csrf cookie: %v", err)
+	}
+	if err := setCSRFHeader(ctx, csrfToken); err != nil {
+		return "", status.Errorf(codes.Internal, "set csrf header: %v", err)
+	}
+
+	return csrfToken, nil
+}
+
 func clearCSRFCookie(ctx context.Context) error {
 	cookie := &http.Cookie{
 		Name:     csrfCookieName,

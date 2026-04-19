@@ -11,6 +11,15 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (server *Server) GetCSRFToken(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.CSRFTokenResponse, error) {
+	csrfToken, err := issueCSRFToken(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &gatewayv1.CSRFTokenResponse{CsrfToken: csrfToken}, nil
+}
+
 func (server *Server) RegisterClient(ctx context.Context, request *gatewayv1.ClientRegisterRequest) (*gatewayv1.AuthResponse, error) {
 	if !mappers.PasswordsMatch(request.GetPassword(), request.GetPasswordRepeat()) {
 		return nil, status.Error(codes.InvalidArgument, "passwords do not match")
@@ -38,18 +47,8 @@ func (server *Server) RegisterClient(ctx context.Context, request *gatewayv1.Cli
 		return nil, err
 	}
 
-	csrfToken, err := newCSRFToken()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
-	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
-	}
-	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
-	}
-	if err := setCSRFHeader(ctx, csrfToken); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 	if err := setHTTPStatus(ctx, 201); err != nil {
 		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
@@ -85,18 +84,8 @@ func (server *Server) RegisterTrainer(ctx context.Context, request *gatewayv1.Tr
 		return nil, err
 	}
 
-	csrfToken, err := newCSRFToken()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
-	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
-	}
-	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
-	}
-	if err := setCSRFHeader(ctx, csrfToken); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 	if err := setHTTPStatus(ctx, 201); err != nil {
 		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
@@ -116,18 +105,8 @@ func (server *Server) Login(ctx context.Context, request *gatewayv1.LoginRequest
 		return nil, err
 	}
 
-	csrfToken, err := newCSRFToken()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "generate csrf token: %v", err)
-	}
 	if err := setSessionCookie(ctx, authResponse.GetSession().GetSessionToken(), authResponse.GetSession().GetExpiresAt()); err != nil {
 		return nil, status.Errorf(codes.Internal, "set session cookie: %v", err)
-	}
-	if err := setCSRFCookie(ctx, csrfToken, authResponse.GetSession().GetExpiresAt()); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf cookie: %v", err)
-	}
-	if err := setCSRFHeader(ctx, csrfToken); err != nil {
-		return nil, status.Errorf(codes.Internal, "set csrf header: %v", err)
 	}
 
 	return mappers.AuthResponseFromServices(authResponse.GetUser(), profile)

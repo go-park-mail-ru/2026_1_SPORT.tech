@@ -28,6 +28,28 @@
     "application/json"
   ],
   "paths": {
+    "/v1/auth/csrf": {
+      "get": {
+        "operationId": "AuthService_GetCSRFToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CSRFTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/v1/auth/login": {
       "post": {
         "operationId": "AuthService_Login",
@@ -668,6 +690,14 @@
       "type": "object",
       "properties": {
         "avatar_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CSRFTokenResponse": {
+      "type": "object",
+      "properties": {
+        "csrf_token": {
           "type": "string"
         }
       }
