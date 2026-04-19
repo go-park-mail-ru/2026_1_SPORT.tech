@@ -252,7 +252,7 @@ func addCSRFHeaders(document map[string]any) {
 }
 
 func requiresOpenAPICSRFHeader(method string, path string) bool {
-	switch method {
+	switch strings.ToUpper(method) {
 	case http.MethodGet, http.MethodHead, http.MethodOptions:
 		return false
 	default:
