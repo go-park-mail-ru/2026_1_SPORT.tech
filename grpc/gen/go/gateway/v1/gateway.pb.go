@@ -696,6 +696,50 @@ func (x *AuthResponse) GetUser() *User {
 	return nil
 }
 
+type CSRFTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CsrfToken     string                 `protobuf:"bytes,1,opt,name=csrf_token,json=csrfToken,proto3" json:"csrf_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CSRFTokenResponse) Reset() {
+	*x = CSRFTokenResponse{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CSRFTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CSRFTokenResponse) ProtoMessage() {}
+
+func (x *CSRFTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CSRFTokenResponse.ProtoReflect.Descriptor instead.
+func (*CSRFTokenResponse) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CSRFTokenResponse) GetCsrfToken() string {
+	if x != nil {
+		return x.CsrfToken
+	}
+	return ""
+}
+
 type GetProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -705,7 +749,7 @@ type GetProfileRequest struct {
 
 func (x *GetProfileRequest) Reset() {
 	*x = GetProfileRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +761,7 @@ func (x *GetProfileRequest) String() string {
 func (*GetProfileRequest) ProtoMessage() {}
 
 func (x *GetProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +774,7 @@ func (x *GetProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetProfileRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetProfileRequest) GetUserId() int32 {
@@ -757,7 +801,7 @@ type ProfileResponse struct {
 
 func (x *ProfileResponse) Reset() {
 	*x = ProfileResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -769,7 +813,7 @@ func (x *ProfileResponse) String() string {
 func (*ProfileResponse) ProtoMessage() {}
 
 func (x *ProfileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -782,7 +826,7 @@ func (x *ProfileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileResponse.ProtoReflect.Descriptor instead.
 func (*ProfileResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ProfileResponse) GetUserId() int32 {
@@ -864,7 +908,7 @@ type TrainerListItem struct {
 
 func (x *TrainerListItem) Reset() {
 	*x = TrainerListItem{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -876,7 +920,7 @@ func (x *TrainerListItem) String() string {
 func (*TrainerListItem) ProtoMessage() {}
 
 func (x *TrainerListItem) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -889,7 +933,7 @@ func (x *TrainerListItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrainerListItem.ProtoReflect.Descriptor instead.
 func (*TrainerListItem) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *TrainerListItem) GetUserId() int32 {
@@ -957,7 +1001,7 @@ type GetTrainersResponse struct {
 
 func (x *GetTrainersResponse) Reset() {
 	*x = GetTrainersResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +1013,7 @@ func (x *GetTrainersResponse) String() string {
 func (*GetTrainersResponse) ProtoMessage() {}
 
 func (x *GetTrainersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +1026,7 @@ func (x *GetTrainersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTrainersResponse.ProtoReflect.Descriptor instead.
 func (*GetTrainersResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetTrainersResponse) GetTrainers() []*TrainerListItem {
@@ -1005,7 +1049,7 @@ type UpdateMyProfileRequest struct {
 
 func (x *UpdateMyProfileRequest) Reset() {
 	*x = UpdateMyProfileRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1017,7 +1061,7 @@ func (x *UpdateMyProfileRequest) String() string {
 func (*UpdateMyProfileRequest) ProtoMessage() {}
 
 func (x *UpdateMyProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1030,7 +1074,7 @@ func (x *UpdateMyProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMyProfileRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMyProfileRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdateMyProfileRequest) GetUsername() string {
@@ -1079,7 +1123,7 @@ type UploadMyAvatarRequest struct {
 
 func (x *UploadMyAvatarRequest) Reset() {
 	*x = UploadMyAvatarRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1091,7 +1135,7 @@ func (x *UploadMyAvatarRequest) String() string {
 func (*UploadMyAvatarRequest) ProtoMessage() {}
 
 func (x *UploadMyAvatarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1104,7 +1148,7 @@ func (x *UploadMyAvatarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadMyAvatarRequest.ProtoReflect.Descriptor instead.
 func (*UploadMyAvatarRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UploadMyAvatarRequest) GetAvatar() []byte {
@@ -1137,7 +1181,7 @@ type AvatarUploadResponse struct {
 
 func (x *AvatarUploadResponse) Reset() {
 	*x = AvatarUploadResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1149,7 +1193,7 @@ func (x *AvatarUploadResponse) String() string {
 func (*AvatarUploadResponse) ProtoMessage() {}
 
 func (x *AvatarUploadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1162,7 +1206,7 @@ func (x *AvatarUploadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AvatarUploadResponse.ProtoReflect.Descriptor instead.
 func (*AvatarUploadResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{16}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AvatarUploadResponse) GetAvatarUrl() string {
@@ -1182,7 +1226,7 @@ type SportType struct {
 
 func (x *SportType) Reset() {
 	*x = SportType{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1194,7 +1238,7 @@ func (x *SportType) String() string {
 func (*SportType) ProtoMessage() {}
 
 func (x *SportType) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1207,7 +1251,7 @@ func (x *SportType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SportType.ProtoReflect.Descriptor instead.
 func (*SportType) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{17}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SportType) GetSportTypeId() int32 {
@@ -1233,7 +1277,7 @@ type SportTypesResponse struct {
 
 func (x *SportTypesResponse) Reset() {
 	*x = SportTypesResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1245,7 +1289,7 @@ func (x *SportTypesResponse) String() string {
 func (*SportTypesResponse) ProtoMessage() {}
 
 func (x *SportTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1258,7 +1302,7 @@ func (x *SportTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SportTypesResponse.ProtoReflect.Descriptor instead.
 func (*SportTypesResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{18}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SportTypesResponse) GetSportTypes() []*SportType {
@@ -1278,7 +1322,7 @@ type CreatePostAttachmentRequest struct {
 
 func (x *CreatePostAttachmentRequest) Reset() {
 	*x = CreatePostAttachmentRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1290,7 +1334,7 @@ func (x *CreatePostAttachmentRequest) String() string {
 func (*CreatePostAttachmentRequest) ProtoMessage() {}
 
 func (x *CreatePostAttachmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1303,7 +1347,7 @@ func (x *CreatePostAttachmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePostAttachmentRequest.ProtoReflect.Descriptor instead.
 func (*CreatePostAttachmentRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{19}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CreatePostAttachmentRequest) GetKind() string {
@@ -1332,7 +1376,7 @@ type CreatePostRequest struct {
 
 func (x *CreatePostRequest) Reset() {
 	*x = CreatePostRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1344,7 +1388,7 @@ func (x *CreatePostRequest) String() string {
 func (*CreatePostRequest) ProtoMessage() {}
 
 func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1357,7 +1401,7 @@ func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePostRequest.ProtoReflect.Descriptor instead.
 func (*CreatePostRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CreatePostRequest) GetMinTierId() int32 {
@@ -1401,7 +1445,7 @@ type UpdatePostRequest struct {
 
 func (x *UpdatePostRequest) Reset() {
 	*x = UpdatePostRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1413,7 +1457,7 @@ func (x *UpdatePostRequest) String() string {
 func (*UpdatePostRequest) ProtoMessage() {}
 
 func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1426,7 +1470,7 @@ func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePostRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *UpdatePostRequest) GetPostId() int32 {
@@ -1475,7 +1519,7 @@ type PostAttachment struct {
 
 func (x *PostAttachment) Reset() {
 	*x = PostAttachment{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1487,7 +1531,7 @@ func (x *PostAttachment) String() string {
 func (*PostAttachment) ProtoMessage() {}
 
 func (x *PostAttachment) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1500,7 +1544,7 @@ func (x *PostAttachment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostAttachment.ProtoReflect.Descriptor instead.
 func (*PostAttachment) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *PostAttachment) GetPostAttachmentId() int32 {
@@ -1540,7 +1584,7 @@ type PostListItem struct {
 
 func (x *PostListItem) Reset() {
 	*x = PostListItem{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1552,7 +1596,7 @@ func (x *PostListItem) String() string {
 func (*PostListItem) ProtoMessage() {}
 
 func (x *PostListItem) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1565,7 +1609,7 @@ func (x *PostListItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostListItem.ProtoReflect.Descriptor instead.
 func (*PostListItem) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *PostListItem) GetPostId() int32 {
@@ -1634,7 +1678,7 @@ type ProfilePostsResponse struct {
 
 func (x *ProfilePostsResponse) Reset() {
 	*x = ProfilePostsResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1646,7 +1690,7 @@ func (x *ProfilePostsResponse) String() string {
 func (*ProfilePostsResponse) ProtoMessage() {}
 
 func (x *ProfilePostsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1659,7 +1703,7 @@ func (x *ProfilePostsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfilePostsResponse.ProtoReflect.Descriptor instead.
 func (*ProfilePostsResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ProfilePostsResponse) GetUserId() int32 {
@@ -1694,7 +1738,7 @@ type PostResponse struct {
 
 func (x *PostResponse) Reset() {
 	*x = PostResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1706,7 +1750,7 @@ func (x *PostResponse) String() string {
 func (*PostResponse) ProtoMessage() {}
 
 func (x *PostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1719,7 +1763,7 @@ func (x *PostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostResponse.ProtoReflect.Descriptor instead.
 func (*PostResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *PostResponse) GetPostId() int32 {
@@ -1801,7 +1845,7 @@ type GetPostRequest struct {
 
 func (x *GetPostRequest) Reset() {
 	*x = GetPostRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1813,7 +1857,7 @@ func (x *GetPostRequest) String() string {
 func (*GetPostRequest) ProtoMessage() {}
 
 func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1826,7 +1870,7 @@ func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPostRequest.ProtoReflect.Descriptor instead.
 func (*GetPostRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetPostRequest) GetPostId() int32 {
@@ -1845,7 +1889,7 @@ type DeletePostRequest struct {
 
 func (x *DeletePostRequest) Reset() {
 	*x = DeletePostRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1857,7 +1901,7 @@ func (x *DeletePostRequest) String() string {
 func (*DeletePostRequest) ProtoMessage() {}
 
 func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1870,7 +1914,7 @@ func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePostRequest.ProtoReflect.Descriptor instead.
 func (*DeletePostRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *DeletePostRequest) GetPostId() int32 {
@@ -1889,7 +1933,7 @@ type PostLikeRequest struct {
 
 func (x *PostLikeRequest) Reset() {
 	*x = PostLikeRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1901,7 +1945,7 @@ func (x *PostLikeRequest) String() string {
 func (*PostLikeRequest) ProtoMessage() {}
 
 func (x *PostLikeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1914,7 +1958,7 @@ func (x *PostLikeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeRequest.ProtoReflect.Descriptor instead.
 func (*PostLikeRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *PostLikeRequest) GetPostId() int32 {
@@ -1935,7 +1979,7 @@ type PostLikeResponse struct {
 
 func (x *PostLikeResponse) Reset() {
 	*x = PostLikeResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1947,7 +1991,7 @@ func (x *PostLikeResponse) String() string {
 func (*PostLikeResponse) ProtoMessage() {}
 
 func (x *PostLikeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1960,7 +2004,7 @@ func (x *PostLikeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeResponse.ProtoReflect.Descriptor instead.
 func (*PostLikeResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *PostLikeResponse) GetPostId() int32 {
@@ -1996,7 +2040,7 @@ type DonateToProfileRequest struct {
 
 func (x *DonateToProfileRequest) Reset() {
 	*x = DonateToProfileRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2008,7 +2052,7 @@ func (x *DonateToProfileRequest) String() string {
 func (*DonateToProfileRequest) ProtoMessage() {}
 
 func (x *DonateToProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2021,7 +2065,7 @@ func (x *DonateToProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DonateToProfileRequest.ProtoReflect.Descriptor instead.
 func (*DonateToProfileRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DonateToProfileRequest) GetUserId() int32 {
@@ -2067,7 +2111,7 @@ type DonationResponse struct {
 
 func (x *DonationResponse) Reset() {
 	*x = DonationResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2079,7 +2123,7 @@ func (x *DonationResponse) String() string {
 func (*DonationResponse) ProtoMessage() {}
 
 func (x *DonationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2092,7 +2136,7 @@ func (x *DonationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DonationResponse.ProtoReflect.Descriptor instead.
 func (*DonationResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *DonationResponse) GetDonationId() int32 {
@@ -2211,7 +2255,10 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\">\n" +
 	"\fAuthResponse\x12.\n" +
-	"\x04user\x18\x01 \x01(\v2\x1a.sporttech.gateway.v1.UserR\x04user\",\n" +
+	"\x04user\x18\x01 \x01(\v2\x1a.sporttech.gateway.v1.UserR\x04user\"2\n" +
+	"\x11CSRFTokenResponse\x12\x1d\n" +
+	"\n" +
+	"csrf_token\x18\x01 \x01(\tR\tcsrfToken\",\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\"\xf0\x02\n" +
 	"\x0fProfileResponse\x12\x17\n" +
@@ -2357,8 +2404,9 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\n" +
 	"\n" +
-	"\b_message2\xbb\x04\n" +
-	"\vAuthService\x12\x86\x01\n" +
+	"\b_message2\xa3\x05\n" +
+	"\vAuthService\x12f\n" +
+	"\fGetCSRFToken\x12\x16.google.protobuf.Empty\x1a'.sporttech.gateway.v1.CSRFTokenResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/auth/csrf\x12\x86\x01\n" +
 	"\x0eRegisterClient\x12+.sporttech.gateway.v1.ClientRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/v1/auth/register/client\x12\x89\x01\n" +
 	"\x0fRegisterTrainer\x12,.sporttech.gateway.v1.TrainerRegisterRequest\x1a\".sporttech.gateway.v1.AuthResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/register/trainer\x12j\n" +
 	"\x05Login\x12\".sporttech.gateway.v1.LoginRequest\x1a\".sporttech.gateway.v1.AuthResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12X\n" +
@@ -2400,7 +2448,7 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 	return file_gateway_v1_gateway_proto_rawDescData
 }
 
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*ValidationErrorField)(nil),        // 0: sporttech.gateway.v1.ValidationErrorField
 	(*Error)(nil),                       // 1: sporttech.gateway.v1.Error
@@ -2412,92 +2460,95 @@ var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*TrainerRegisterRequest)(nil),      // 7: sporttech.gateway.v1.TrainerRegisterRequest
 	(*LoginRequest)(nil),                // 8: sporttech.gateway.v1.LoginRequest
 	(*AuthResponse)(nil),                // 9: sporttech.gateway.v1.AuthResponse
-	(*GetProfileRequest)(nil),           // 10: sporttech.gateway.v1.GetProfileRequest
-	(*ProfileResponse)(nil),             // 11: sporttech.gateway.v1.ProfileResponse
-	(*TrainerListItem)(nil),             // 12: sporttech.gateway.v1.TrainerListItem
-	(*GetTrainersResponse)(nil),         // 13: sporttech.gateway.v1.GetTrainersResponse
-	(*UpdateMyProfileRequest)(nil),      // 14: sporttech.gateway.v1.UpdateMyProfileRequest
-	(*UploadMyAvatarRequest)(nil),       // 15: sporttech.gateway.v1.UploadMyAvatarRequest
-	(*AvatarUploadResponse)(nil),        // 16: sporttech.gateway.v1.AvatarUploadResponse
-	(*SportType)(nil),                   // 17: sporttech.gateway.v1.SportType
-	(*SportTypesResponse)(nil),          // 18: sporttech.gateway.v1.SportTypesResponse
-	(*CreatePostAttachmentRequest)(nil), // 19: sporttech.gateway.v1.CreatePostAttachmentRequest
-	(*CreatePostRequest)(nil),           // 20: sporttech.gateway.v1.CreatePostRequest
-	(*UpdatePostRequest)(nil),           // 21: sporttech.gateway.v1.UpdatePostRequest
-	(*PostAttachment)(nil),              // 22: sporttech.gateway.v1.PostAttachment
-	(*PostListItem)(nil),                // 23: sporttech.gateway.v1.PostListItem
-	(*ProfilePostsResponse)(nil),        // 24: sporttech.gateway.v1.ProfilePostsResponse
-	(*PostResponse)(nil),                // 25: sporttech.gateway.v1.PostResponse
-	(*GetPostRequest)(nil),              // 26: sporttech.gateway.v1.GetPostRequest
-	(*DeletePostRequest)(nil),           // 27: sporttech.gateway.v1.DeletePostRequest
-	(*PostLikeRequest)(nil),             // 28: sporttech.gateway.v1.PostLikeRequest
-	(*PostLikeResponse)(nil),            // 29: sporttech.gateway.v1.PostLikeResponse
-	(*DonateToProfileRequest)(nil),      // 30: sporttech.gateway.v1.DonateToProfileRequest
-	(*DonationResponse)(nil),            // 31: sporttech.gateway.v1.DonationResponse
-	(*timestamppb.Timestamp)(nil),       // 32: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),               // 33: google.protobuf.Empty
+	(*CSRFTokenResponse)(nil),           // 10: sporttech.gateway.v1.CSRFTokenResponse
+	(*GetProfileRequest)(nil),           // 11: sporttech.gateway.v1.GetProfileRequest
+	(*ProfileResponse)(nil),             // 12: sporttech.gateway.v1.ProfileResponse
+	(*TrainerListItem)(nil),             // 13: sporttech.gateway.v1.TrainerListItem
+	(*GetTrainersResponse)(nil),         // 14: sporttech.gateway.v1.GetTrainersResponse
+	(*UpdateMyProfileRequest)(nil),      // 15: sporttech.gateway.v1.UpdateMyProfileRequest
+	(*UploadMyAvatarRequest)(nil),       // 16: sporttech.gateway.v1.UploadMyAvatarRequest
+	(*AvatarUploadResponse)(nil),        // 17: sporttech.gateway.v1.AvatarUploadResponse
+	(*SportType)(nil),                   // 18: sporttech.gateway.v1.SportType
+	(*SportTypesResponse)(nil),          // 19: sporttech.gateway.v1.SportTypesResponse
+	(*CreatePostAttachmentRequest)(nil), // 20: sporttech.gateway.v1.CreatePostAttachmentRequest
+	(*CreatePostRequest)(nil),           // 21: sporttech.gateway.v1.CreatePostRequest
+	(*UpdatePostRequest)(nil),           // 22: sporttech.gateway.v1.UpdatePostRequest
+	(*PostAttachment)(nil),              // 23: sporttech.gateway.v1.PostAttachment
+	(*PostListItem)(nil),                // 24: sporttech.gateway.v1.PostListItem
+	(*ProfilePostsResponse)(nil),        // 25: sporttech.gateway.v1.ProfilePostsResponse
+	(*PostResponse)(nil),                // 26: sporttech.gateway.v1.PostResponse
+	(*GetPostRequest)(nil),              // 27: sporttech.gateway.v1.GetPostRequest
+	(*DeletePostRequest)(nil),           // 28: sporttech.gateway.v1.DeletePostRequest
+	(*PostLikeRequest)(nil),             // 29: sporttech.gateway.v1.PostLikeRequest
+	(*PostLikeResponse)(nil),            // 30: sporttech.gateway.v1.PostLikeResponse
+	(*DonateToProfileRequest)(nil),      // 31: sporttech.gateway.v1.DonateToProfileRequest
+	(*DonationResponse)(nil),            // 32: sporttech.gateway.v1.DonationResponse
+	(*timestamppb.Timestamp)(nil),       // 33: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),               // 34: google.protobuf.Empty
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	0,  // 0: sporttech.gateway.v1.Error.fields:type_name -> sporttech.gateway.v1.ValidationErrorField
 	1,  // 1: sporttech.gateway.v1.ErrorResponse.error:type_name -> sporttech.gateway.v1.Error
-	32, // 2: sporttech.gateway.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	32, // 3: sporttech.gateway.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	33, // 2: sporttech.gateway.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	33, // 3: sporttech.gateway.v1.User.updated_at:type_name -> google.protobuf.Timestamp
 	4,  // 4: sporttech.gateway.v1.TrainerDetails.sports:type_name -> sporttech.gateway.v1.TrainerSport
 	5,  // 5: sporttech.gateway.v1.TrainerRegisterRequest.trainer_details:type_name -> sporttech.gateway.v1.TrainerDetails
 	3,  // 6: sporttech.gateway.v1.AuthResponse.user:type_name -> sporttech.gateway.v1.User
 	5,  // 7: sporttech.gateway.v1.ProfileResponse.trainer_details:type_name -> sporttech.gateway.v1.TrainerDetails
 	5,  // 8: sporttech.gateway.v1.TrainerListItem.trainer_details:type_name -> sporttech.gateway.v1.TrainerDetails
-	12, // 9: sporttech.gateway.v1.GetTrainersResponse.trainers:type_name -> sporttech.gateway.v1.TrainerListItem
+	13, // 9: sporttech.gateway.v1.GetTrainersResponse.trainers:type_name -> sporttech.gateway.v1.TrainerListItem
 	5,  // 10: sporttech.gateway.v1.UpdateMyProfileRequest.trainer_details:type_name -> sporttech.gateway.v1.TrainerDetails
-	17, // 11: sporttech.gateway.v1.SportTypesResponse.sport_types:type_name -> sporttech.gateway.v1.SportType
-	19, // 12: sporttech.gateway.v1.CreatePostRequest.attachments:type_name -> sporttech.gateway.v1.CreatePostAttachmentRequest
-	19, // 13: sporttech.gateway.v1.UpdatePostRequest.attachments:type_name -> sporttech.gateway.v1.CreatePostAttachmentRequest
-	32, // 14: sporttech.gateway.v1.PostListItem.created_at:type_name -> google.protobuf.Timestamp
-	23, // 15: sporttech.gateway.v1.ProfilePostsResponse.posts:type_name -> sporttech.gateway.v1.PostListItem
-	32, // 16: sporttech.gateway.v1.PostResponse.created_at:type_name -> google.protobuf.Timestamp
-	32, // 17: sporttech.gateway.v1.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 18: sporttech.gateway.v1.PostResponse.attachments:type_name -> sporttech.gateway.v1.PostAttachment
-	32, // 19: sporttech.gateway.v1.DonationResponse.created_at:type_name -> google.protobuf.Timestamp
-	6,  // 20: sporttech.gateway.v1.AuthService.RegisterClient:input_type -> sporttech.gateway.v1.ClientRegisterRequest
-	7,  // 21: sporttech.gateway.v1.AuthService.RegisterTrainer:input_type -> sporttech.gateway.v1.TrainerRegisterRequest
-	8,  // 22: sporttech.gateway.v1.AuthService.Login:input_type -> sporttech.gateway.v1.LoginRequest
-	33, // 23: sporttech.gateway.v1.AuthService.GetMe:input_type -> google.protobuf.Empty
-	33, // 24: sporttech.gateway.v1.AuthService.Logout:input_type -> google.protobuf.Empty
-	10, // 25: sporttech.gateway.v1.ProfileService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
-	33, // 26: sporttech.gateway.v1.ProfileService.ListTrainers:input_type -> google.protobuf.Empty
-	14, // 27: sporttech.gateway.v1.ProfileService.UpdateMyProfile:input_type -> sporttech.gateway.v1.UpdateMyProfileRequest
-	15, // 28: sporttech.gateway.v1.ProfileService.UploadMyAvatar:input_type -> sporttech.gateway.v1.UploadMyAvatarRequest
-	33, // 29: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:input_type -> google.protobuf.Empty
-	10, // 30: sporttech.gateway.v1.ProfileService.ListProfilePosts:input_type -> sporttech.gateway.v1.GetProfileRequest
-	20, // 31: sporttech.gateway.v1.PostService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
-	26, // 32: sporttech.gateway.v1.PostService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
-	21, // 33: sporttech.gateway.v1.PostService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
-	27, // 34: sporttech.gateway.v1.PostService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
-	28, // 35: sporttech.gateway.v1.PostService.LikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
-	28, // 36: sporttech.gateway.v1.PostService.UnlikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
-	33, // 37: sporttech.gateway.v1.SportService.ListSportTypes:input_type -> google.protobuf.Empty
-	30, // 38: sporttech.gateway.v1.DonationService.DonateToProfile:input_type -> sporttech.gateway.v1.DonateToProfileRequest
-	9,  // 39: sporttech.gateway.v1.AuthService.RegisterClient:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 40: sporttech.gateway.v1.AuthService.RegisterTrainer:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 41: sporttech.gateway.v1.AuthService.Login:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 42: sporttech.gateway.v1.AuthService.GetMe:output_type -> sporttech.gateway.v1.AuthResponse
-	33, // 43: sporttech.gateway.v1.AuthService.Logout:output_type -> google.protobuf.Empty
-	11, // 44: sporttech.gateway.v1.ProfileService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	13, // 45: sporttech.gateway.v1.ProfileService.ListTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
-	11, // 46: sporttech.gateway.v1.ProfileService.UpdateMyProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	16, // 47: sporttech.gateway.v1.ProfileService.UploadMyAvatar:output_type -> sporttech.gateway.v1.AvatarUploadResponse
-	33, // 48: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:output_type -> google.protobuf.Empty
-	24, // 49: sporttech.gateway.v1.ProfileService.ListProfilePosts:output_type -> sporttech.gateway.v1.ProfilePostsResponse
-	25, // 50: sporttech.gateway.v1.PostService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
-	25, // 51: sporttech.gateway.v1.PostService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
-	25, // 52: sporttech.gateway.v1.PostService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
-	33, // 53: sporttech.gateway.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
-	29, // 54: sporttech.gateway.v1.PostService.LikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
-	29, // 55: sporttech.gateway.v1.PostService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
-	18, // 56: sporttech.gateway.v1.SportService.ListSportTypes:output_type -> sporttech.gateway.v1.SportTypesResponse
-	31, // 57: sporttech.gateway.v1.DonationService.DonateToProfile:output_type -> sporttech.gateway.v1.DonationResponse
-	39, // [39:58] is the sub-list for method output_type
-	20, // [20:39] is the sub-list for method input_type
+	18, // 11: sporttech.gateway.v1.SportTypesResponse.sport_types:type_name -> sporttech.gateway.v1.SportType
+	20, // 12: sporttech.gateway.v1.CreatePostRequest.attachments:type_name -> sporttech.gateway.v1.CreatePostAttachmentRequest
+	20, // 13: sporttech.gateway.v1.UpdatePostRequest.attachments:type_name -> sporttech.gateway.v1.CreatePostAttachmentRequest
+	33, // 14: sporttech.gateway.v1.PostListItem.created_at:type_name -> google.protobuf.Timestamp
+	24, // 15: sporttech.gateway.v1.ProfilePostsResponse.posts:type_name -> sporttech.gateway.v1.PostListItem
+	33, // 16: sporttech.gateway.v1.PostResponse.created_at:type_name -> google.protobuf.Timestamp
+	33, // 17: sporttech.gateway.v1.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
+	23, // 18: sporttech.gateway.v1.PostResponse.attachments:type_name -> sporttech.gateway.v1.PostAttachment
+	33, // 19: sporttech.gateway.v1.DonationResponse.created_at:type_name -> google.protobuf.Timestamp
+	34, // 20: sporttech.gateway.v1.AuthService.GetCSRFToken:input_type -> google.protobuf.Empty
+	6,  // 21: sporttech.gateway.v1.AuthService.RegisterClient:input_type -> sporttech.gateway.v1.ClientRegisterRequest
+	7,  // 22: sporttech.gateway.v1.AuthService.RegisterTrainer:input_type -> sporttech.gateway.v1.TrainerRegisterRequest
+	8,  // 23: sporttech.gateway.v1.AuthService.Login:input_type -> sporttech.gateway.v1.LoginRequest
+	34, // 24: sporttech.gateway.v1.AuthService.GetMe:input_type -> google.protobuf.Empty
+	34, // 25: sporttech.gateway.v1.AuthService.Logout:input_type -> google.protobuf.Empty
+	11, // 26: sporttech.gateway.v1.ProfileService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
+	34, // 27: sporttech.gateway.v1.ProfileService.ListTrainers:input_type -> google.protobuf.Empty
+	15, // 28: sporttech.gateway.v1.ProfileService.UpdateMyProfile:input_type -> sporttech.gateway.v1.UpdateMyProfileRequest
+	16, // 29: sporttech.gateway.v1.ProfileService.UploadMyAvatar:input_type -> sporttech.gateway.v1.UploadMyAvatarRequest
+	34, // 30: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:input_type -> google.protobuf.Empty
+	11, // 31: sporttech.gateway.v1.ProfileService.ListProfilePosts:input_type -> sporttech.gateway.v1.GetProfileRequest
+	21, // 32: sporttech.gateway.v1.PostService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
+	27, // 33: sporttech.gateway.v1.PostService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
+	22, // 34: sporttech.gateway.v1.PostService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
+	28, // 35: sporttech.gateway.v1.PostService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
+	29, // 36: sporttech.gateway.v1.PostService.LikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
+	29, // 37: sporttech.gateway.v1.PostService.UnlikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
+	34, // 38: sporttech.gateway.v1.SportService.ListSportTypes:input_type -> google.protobuf.Empty
+	31, // 39: sporttech.gateway.v1.DonationService.DonateToProfile:input_type -> sporttech.gateway.v1.DonateToProfileRequest
+	10, // 40: sporttech.gateway.v1.AuthService.GetCSRFToken:output_type -> sporttech.gateway.v1.CSRFTokenResponse
+	9,  // 41: sporttech.gateway.v1.AuthService.RegisterClient:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 42: sporttech.gateway.v1.AuthService.RegisterTrainer:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 43: sporttech.gateway.v1.AuthService.Login:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 44: sporttech.gateway.v1.AuthService.GetMe:output_type -> sporttech.gateway.v1.AuthResponse
+	34, // 45: sporttech.gateway.v1.AuthService.Logout:output_type -> google.protobuf.Empty
+	12, // 46: sporttech.gateway.v1.ProfileService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	14, // 47: sporttech.gateway.v1.ProfileService.ListTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
+	12, // 48: sporttech.gateway.v1.ProfileService.UpdateMyProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	17, // 49: sporttech.gateway.v1.ProfileService.UploadMyAvatar:output_type -> sporttech.gateway.v1.AvatarUploadResponse
+	34, // 50: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:output_type -> google.protobuf.Empty
+	25, // 51: sporttech.gateway.v1.ProfileService.ListProfilePosts:output_type -> sporttech.gateway.v1.ProfilePostsResponse
+	26, // 52: sporttech.gateway.v1.PostService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
+	26, // 53: sporttech.gateway.v1.PostService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
+	26, // 54: sporttech.gateway.v1.PostService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
+	34, // 55: sporttech.gateway.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
+	30, // 56: sporttech.gateway.v1.PostService.LikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
+	30, // 57: sporttech.gateway.v1.PostService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
+	19, // 58: sporttech.gateway.v1.SportService.ListSportTypes:output_type -> sporttech.gateway.v1.SportTypesResponse
+	32, // 59: sporttech.gateway.v1.DonationService.DonateToProfile:output_type -> sporttech.gateway.v1.DonationResponse
+	40, // [40:60] is the sub-list for method output_type
+	20, // [20:40] is the sub-list for method input_type
 	20, // [20:20] is the sub-list for extension type_name
 	20, // [20:20] is the sub-list for extension extendee
 	0,  // [0:20] is the sub-list for field type_name
@@ -2511,22 +2562,22 @@ func file_gateway_v1_gateway_proto_init() {
 	file_gateway_v1_gateway_proto_msgTypes[3].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[4].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[5].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[11].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[12].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[14].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[20].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[13].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[15].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[21].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[23].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[25].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[30].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[22].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[24].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[26].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[31].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[32].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   32,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   5,
 		},

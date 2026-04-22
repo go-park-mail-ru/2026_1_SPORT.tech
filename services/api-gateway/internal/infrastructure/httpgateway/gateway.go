@@ -216,9 +216,48 @@ func rewriteOpenAPISpec(data []byte, tagAliases map[string]string, basePath stri
 	if basePath != "" {
 		document["basePath"] = basePath
 	}
+	addCSRFHeaders(document)
 	rewriteAvatarUploadOperation(document)
 
 	return json.Marshal(document)
+}
+
+func addCSRFHeaders(document map[string]any) {
+	paths, ok := document["paths"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	for path, rawPathItem := range paths {
+		pathItem, ok := rawPathItem.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		for method, rawOperation := range pathItem {
+			operation, ok := rawOperation.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			if !requiresOpenAPICSRFHeader(method, path) {
+				continue
+			}
+
+			parameters, _ := operation["parameters"].([]any)
+			parameters = append(parameters, csrfHeaderParameter())
+			operation["parameters"] = parameters
+		}
+	}
+}
+
+func requiresOpenAPICSRFHeader(method string, path string) bool {
+	switch strings.ToUpper(method) {
+	case http.MethodGet, http.MethodHead, http.MethodOptions:
+		return false
+	default:
+		return true
+	}
 }
 
 func rewriteAvatarUploadOperation(document map[string]any) {
@@ -245,5 +284,16 @@ func rewriteAvatarUploadOperation(document map[string]any) {
 			"required": true,
 			"type":     "file",
 		},
+		csrfHeaderParameter(),
+	}
+}
+
+func csrfHeaderParameter() map[string]any {
+	return map[string]any{
+		"name":        csrfHeaderName,
+		"in":          "header",
+		"required":    true,
+		"type":        "string",
+		"description": "CSRF token from the csrf_token cookie",
 	}
 }

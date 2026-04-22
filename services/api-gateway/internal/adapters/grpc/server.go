@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -20,9 +22,12 @@ import (
 
 const (
 	sessionCookieName          = "sid"
+	csrfCookieName             = "csrf_token"
+	csrfHeaderName             = "X-CSRF-Token"
 	httpMetadataStatusCodeKey  = "x-http-status-code"
 	httpMetadataSetCookieKey   = "x-http-set-cookie"
 	httpMetadataClearCookieKey = "x-http-clear-cookie"
+	httpMetadataHeaderKey      = "x-http-header"
 )
 
 type Principal struct {
@@ -176,6 +181,71 @@ func clearSessionCookie(ctx context.Context) error {
 	}
 
 	return grpc.SetHeader(ctx, metadata.Pairs(httpMetadataClearCookieKey, cookie.String()))
+}
+
+func setCSRFCookie(ctx context.Context, csrfToken string, expiresAt *timestamppb.Timestamp) error {
+	if csrfToken == "" {
+		return nil
+	}
+
+	cookie := &http.Cookie{
+		Name:     csrfCookieName,
+		Value:    csrfToken,
+		Path:     "/",
+		HttpOnly: false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	if expiresAt != nil {
+		cookie.Expires = expiresAt.AsTime().UTC()
+	}
+
+	return grpc.SetHeader(ctx, metadata.Pairs(httpMetadataSetCookieKey, cookie.String()))
+}
+
+func setCSRFHeader(ctx context.Context, csrfToken string) error {
+	if csrfToken == "" {
+		return nil
+	}
+
+	return grpc.SetHeader(ctx, metadata.Pairs(httpMetadataHeaderKey, csrfHeaderName+":"+csrfToken))
+}
+
+func issueCSRFToken(ctx context.Context, expiresAt *timestamppb.Timestamp) (string, error) {
+	csrfToken, err := newCSRFToken()
+	if err != nil {
+		return "", status.Errorf(codes.Internal, "generate csrf token: %v", err)
+	}
+	if err := setCSRFCookie(ctx, csrfToken, expiresAt); err != nil {
+		return "", status.Errorf(codes.Internal, "set csrf cookie: %v", err)
+	}
+	if err := setCSRFHeader(ctx, csrfToken); err != nil {
+		return "", status.Errorf(codes.Internal, "set csrf header: %v", err)
+	}
+
+	return csrfToken, nil
+}
+
+func clearCSRFCookie(ctx context.Context) error {
+	cookie := &http.Cookie{
+		Name:     csrfCookieName,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: false,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1,
+		Expires:  time.Unix(0, 0).UTC(),
+	}
+
+	return grpc.SetHeader(ctx, metadata.Pairs(httpMetadataClearCookieKey, cookie.String()))
+}
+
+func newCSRFToken() (string, error) {
+	buffer := make([]byte, 32)
+	if _, err := rand.Read(buffer); err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(buffer), nil
 }
 
 func isIgnorablePublicSessionError(err error) bool {

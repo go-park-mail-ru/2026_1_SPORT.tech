@@ -172,6 +172,33 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		t.Fatalf("expected sid cookie, got %q", setCookie)
 	}
 
+	csrfResponse, err := http.Get(server.URL + "/api/v1/auth/csrf")
+	if err != nil {
+		t.Fatalf("get csrf token: %v", err)
+	}
+	defer csrfResponse.Body.Close()
+
+	if csrfResponse.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(csrfResponse.Body)
+		t.Fatalf("unexpected csrf status: %d body=%s", csrfResponse.StatusCode, string(body))
+	}
+
+	var csrfPayload struct {
+		CSRFToken string `json:"csrf_token"`
+	}
+	if err := json.NewDecoder(csrfResponse.Body).Decode(&csrfPayload); err != nil {
+		t.Fatalf("decode csrf response: %v", err)
+	}
+	if strings.TrimSpace(csrfPayload.CSRFToken) == "" {
+		t.Fatalf("expected csrf token in response body")
+	}
+	if csrfHeader := csrfResponse.Header.Get("X-CSRF-Token"); csrfHeader != csrfPayload.CSRFToken {
+		t.Fatalf("expected csrf header %q, got %q", csrfPayload.CSRFToken, csrfHeader)
+	}
+	if setCookies := csrfResponse.Header.Values("Set-Cookie"); len(setCookies) == 0 || !strings.Contains(strings.Join(setCookies, ";"), "csrf_token="+csrfPayload.CSRFToken) {
+		t.Fatalf("expected csrf cookie, got %q", setCookies)
+	}
+
 	profileResponse, err := http.Get(server.URL + "/api/v1/profiles/7")
 	if err != nil {
 		t.Fatalf("get profile: %v", err)

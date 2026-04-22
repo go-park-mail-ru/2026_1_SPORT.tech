@@ -77,6 +77,10 @@ message AuthResponse {
   User user = 1;
 }
 
+message CSRFTokenResponse {
+  string csrf_token = 1;
+}
+
 message GetProfileRequest {
   int32 user_id = 1;
 }
@@ -226,6 +230,10 @@ message DonationResponse {
 }
 
 service AuthService {
+  rpc GetCSRFToken(google.protobuf.Empty) returns (CSRFTokenResponse) {
+    option (google.api.http).get = "/v1/auth/csrf";
+  }
+
   rpc RegisterClient(ClientRegisterRequest) returns (AuthResponse) {
     option (google.api.http) = {
       post: "/v1/auth/register/client"
