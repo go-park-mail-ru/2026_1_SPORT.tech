@@ -96,9 +96,12 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.CSRFMiddleware(httpgateway.MultipartAvatarHandler(gatewayService, apiHandler)))
 	httpMux.Handle("/api/", protectedAPIHandler)
 
+	handler := metricsSet.HTTPMiddleware(httpMux)
+	handler = httpgateway.CORSMiddleware(handler)
+
 	httpServer := &http.Server{
 		Addr:              cfg.Server.HTTPAddress(),
-		Handler:           metricsSet.HTTPMiddleware(httpMux),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      20 * time.Second,
