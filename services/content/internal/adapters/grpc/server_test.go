@@ -17,6 +17,7 @@ import (
 type stubContentUseCase struct {
 	listAuthorPostsFunc func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
 	createPostFunc      func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
+	uploadPostMediaFunc func(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
 	getPostFunc         func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	updatePostFunc      func(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	deletePostFunc      func(ctx context.Context, command usecase.DeletePostCommand) error
@@ -32,6 +33,10 @@ func (stub stubContentUseCase) ListAuthorPosts(ctx context.Context, query usecas
 
 func (stub stubContentUseCase) CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
 	return stub.createPostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) UploadPostMedia(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error) {
+	return stub.uploadPostMediaFunc(ctx, command)
 }
 
 func (stub stubContentUseCase) GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
@@ -70,6 +75,9 @@ func TestServerGetPost(t *testing.T) {
 		},
 		createPostFunc: func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
 			return domain.Post{}, errors.New("not implemented")
+		},
+		uploadPostMediaFunc: func(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error) {
+			return domain.PostMedia{}, errors.New("not implemented")
 		},
 		getPostFunc: func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
 			return domain.Post{
@@ -117,6 +125,9 @@ func TestServerGetPostMapsForbidden(t *testing.T) {
 		},
 		createPostFunc: func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
 			return domain.Post{}, nil
+		},
+		uploadPostMediaFunc: func(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error) {
+			return domain.PostMedia{}, nil
 		},
 		getPostFunc: func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
 			return domain.Post{}, domain.ErrPostForbidden

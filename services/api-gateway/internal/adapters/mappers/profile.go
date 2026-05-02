@@ -136,6 +136,15 @@ func GetTrainersResponseFromProfile(response *profilev1.SearchAuthorsResponse) (
 	return &gatewayv1.GetTrainersResponse{Trainers: trainers}, nil
 }
 
+func ListTrainersRequestToProfile(request *gatewayv1.ListTrainersRequest) *profilev1.SearchAuthorsRequest {
+	return &profilev1.SearchAuthorsRequest{
+		Query:        request.GetQuery(),
+		SportTypeIds: int32SliceToInt64Slice(request.GetSportTypeIds()),
+		Limit:        request.GetLimit(),
+		Offset:       request.GetOffset(),
+	}
+}
+
 func SportTypesResponseFromProfile(response *profilev1.ListSportTypesResponse) (*gatewayv1.SportTypesResponse, error) {
 	if response == nil {
 		return &gatewayv1.SportTypesResponse{}, nil

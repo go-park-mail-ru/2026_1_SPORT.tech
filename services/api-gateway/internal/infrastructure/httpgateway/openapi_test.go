@@ -116,6 +116,46 @@ func TestGatewayOpenAPIHandlerAddsCSRFOnlyToUnsafeMethods(t *testing.T) {
 	}
 }
 
+func TestGatewayOpenAPIHandlerRewritesPostMediaUpload(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	specPath := filepath.Join(dir, "gateway.swagger.json")
+	spec := `{
+		"swagger":"2.0",
+		"tags":[{"name":"PostService"}],
+		"paths":{
+			"/v1/posts/media":{"post":{"tags":["PostService"],"parameters":[]}}
+		}
+	}`
+	if err := os.WriteFile(specPath, []byte(spec), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/api/openapi/gateway.swagger.json", nil)
+
+	httpgateway.GatewayOpenAPIHandler(specPath).ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("unexpected status: %d", recorder.Code)
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+
+	paths := payload["paths"].(map[string]any)
+	postOperation := paths["/v1/posts/media"].(map[string]any)["post"].(map[string]any)
+	if !hasFormFileParameter(postOperation["parameters"], "file") {
+		t.Fatalf("expected multipart file parameter: %#v", postOperation["parameters"])
+	}
+	if !hasHeaderParameter(postOperation["parameters"], "X-CSRF-Token") {
+		t.Fatalf("expected csrf header parameter: %#v", postOperation["parameters"])
+	}
+}
+
 func hasHeaderParameter(raw any, name string) bool {
 	parameters, ok := raw.([]any)
 	if !ok {
@@ -128,6 +168,25 @@ func hasHeaderParameter(raw any, name string) bool {
 			continue
 		}
 		if parameter["in"] == "header" && parameter["name"] == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func hasFormFileParameter(raw any, name string) bool {
+	parameters, ok := raw.([]any)
+	if !ok {
+		return false
+	}
+
+	for _, rawParameter := range parameters {
+		parameter, ok := rawParameter.(map[string]any)
+		if !ok {
+			continue
+		}
+		if parameter["in"] == "formData" && parameter["name"] == name && parameter["type"] == "file" {
 			return true
 		}
 	}

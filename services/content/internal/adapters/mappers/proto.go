@@ -31,6 +31,15 @@ func CreatePostRequestToCommand(request *contentv1.CreatePostRequest) usecase.Cr
 	}
 }
 
+func UploadPostMediaRequestToCommand(request *contentv1.UploadPostMediaRequest) usecase.UploadPostMediaCommand {
+	return usecase.UploadPostMediaCommand{
+		AuthorUserID: request.GetAuthorUserId(),
+		FileName:     request.GetFileName(),
+		ContentType:  request.GetContentType(),
+		Content:      request.GetFile(),
+	}
+}
+
 func GetPostRequestToQuery(request *contentv1.GetPostRequest) usecase.GetPostQuery {
 	return usecase.GetPostQuery{
 		PostID:                  request.GetPostId(),
@@ -110,6 +119,17 @@ func NewPostResponse(post domain.Post) *contentv1.PostResponse {
 	}
 }
 
+func NewPostMediaResponse(media domain.PostMedia) *contentv1.PostMediaResponse {
+	return &contentv1.PostMediaResponse{
+		Media: &contentv1.PostMedia{
+			FileUrl:     media.FileURL,
+			Kind:        blockKindToProto(media.Kind),
+			ContentType: media.ContentType,
+			SizeBytes:   media.SizeBytes,
+		},
+	}
+}
+
 func NewPostLikeStateResponse(state domain.PostLikeState) *contentv1.PostLikeStateResponse {
 	return &contentv1.PostLikeStateResponse{
 		State: &contentv1.PostLikeState{
@@ -156,6 +176,11 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidLimit),
 		errors.Is(err, usecase.ErrInvalidOffset),
 		errors.Is(err, usecase.ErrInvalidCommentBody),
+		errors.Is(err, usecase.ErrPostMediaFileNameRequired),
+		errors.Is(err, usecase.ErrPostMediaContentTypeRequired),
+		errors.Is(err, usecase.ErrPostMediaContentRequired),
+		errors.Is(err, usecase.ErrPostMediaTooLarge),
+		errors.Is(err, usecase.ErrPostMediaContentTypeUnsupported),
 		errors.Is(err, domain.ErrInvalidBlockKind),
 		errors.Is(err, domain.ErrInvalidBlockData):
 		return status.Error(codes.InvalidArgument, err.Error())
@@ -163,6 +188,8 @@ func ErrorToStatus(err error) error {
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
+	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable):
+		return status.Error(codes.Unavailable, err.Error())
 	default:
 		return status.Error(codes.Internal, "internal error")
 	}

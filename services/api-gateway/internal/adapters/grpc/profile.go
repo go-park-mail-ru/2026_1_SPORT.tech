@@ -34,10 +34,10 @@ func (server *Server) GetProfile(ctx context.Context, request *gatewayv1.GetProf
 	return mappers.ProfileResponseFromProfile(response.GetProfile(), currentUserID)
 }
 
-func (server *Server) ListTrainers(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.GetTrainersResponse, error) {
+func (server *Server) ListTrainers(ctx context.Context, request *gatewayv1.ListTrainersRequest) (*gatewayv1.GetTrainersResponse, error) {
 	response, err := server.profileClient.SearchAuthors(
 		forwardContext(ctx),
-		&profilev1.SearchAuthorsRequest{Limit: 100},
+		mappers.ListTrainersRequestToProfile(request),
 	)
 	if err != nil {
 		return nil, err
@@ -134,14 +134,19 @@ func (server *Server) ListProfilePosts(ctx context.Context, request *gatewayv1.G
 	if principal != nil && principal.User != nil {
 		viewerUserID = principal.User.GetUserId()
 	}
+	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	response, err := server.contentClient.ListAuthorPosts(
 		forwardContext(ctx),
 		&contentv1.ListAuthorPostsRequest{
-			AuthorUserId: int64(request.GetUserId()),
-			ViewerUserId: viewerUserID,
-			Limit:        20,
-			Offset:       0,
+			AuthorUserId:            int64(request.GetUserId()),
+			ViewerUserId:            viewerUserID,
+			ViewerSubscriptionLevel: viewerSubscriptionLevel,
+			Limit:                   20,
+			Offset:                  0,
 		},
 	)
 	if err != nil {

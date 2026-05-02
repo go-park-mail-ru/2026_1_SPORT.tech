@@ -13,6 +13,7 @@ import (
 type ContentUseCase interface {
 	ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
 	CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
+	UploadPostMedia(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
 	GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	UpdatePost(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	DeletePost(ctx context.Context, command usecase.DeletePostCommand) error
@@ -47,6 +48,15 @@ func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreateP
 	}
 
 	return mappers.NewPostResponse(post), nil
+}
+
+func (server *Server) UploadPostMedia(ctx context.Context, request *contentv1.UploadPostMediaRequest) (*contentv1.PostMediaResponse, error) {
+	media, err := server.contentUseCase.UploadPostMedia(ctx, mappers.UploadPostMediaRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewPostMediaResponse(media), nil
 }
 
 func (server *Server) GetPost(ctx context.Context, request *contentv1.GetPostRequest) (*contentv1.PostResponse, error) {

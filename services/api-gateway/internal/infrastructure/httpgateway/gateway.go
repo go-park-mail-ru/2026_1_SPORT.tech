@@ -218,6 +218,7 @@ func rewriteOpenAPISpec(data []byte, tagAliases map[string]string, basePath stri
 	}
 	addCSRFHeaders(document)
 	rewriteAvatarUploadOperation(document)
+	rewritePostMediaUploadOperation(document)
 
 	return json.Marshal(document)
 }
@@ -261,12 +262,20 @@ func requiresOpenAPICSRFHeader(method string, path string) bool {
 }
 
 func rewriteAvatarUploadOperation(document map[string]any) {
+	rewriteMultipartUploadOperation(document, "/v1/profiles/me/avatar", "avatar")
+}
+
+func rewritePostMediaUploadOperation(document map[string]any) {
+	rewriteMultipartUploadOperation(document, "/v1/posts/media", "file")
+}
+
+func rewriteMultipartUploadOperation(document map[string]any, path string, fieldName string) {
 	paths, ok := document["paths"].(map[string]any)
 	if !ok {
 		return
 	}
 
-	pathItem, ok := paths["/v1/profiles/me/avatar"].(map[string]any)
+	pathItem, ok := paths[path].(map[string]any)
 	if !ok {
 		return
 	}
@@ -279,7 +288,7 @@ func rewriteAvatarUploadOperation(document map[string]any) {
 	postOperation["consumes"] = []any{"multipart/form-data"}
 	postOperation["parameters"] = []any{
 		map[string]any{
-			"name":     "avatar",
+			"name":     fieldName,
 			"in":       "formData",
 			"required": true,
 			"type":     "file",

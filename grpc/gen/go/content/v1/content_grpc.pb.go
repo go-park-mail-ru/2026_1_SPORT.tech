@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ContentService_ListAuthorPosts_FullMethodName = "/sporttech.content.v1.ContentService/ListAuthorPosts"
 	ContentService_CreatePost_FullMethodName      = "/sporttech.content.v1.ContentService/CreatePost"
+	ContentService_UploadPostMedia_FullMethodName = "/sporttech.content.v1.ContentService/UploadPostMedia"
 	ContentService_GetPost_FullMethodName         = "/sporttech.content.v1.ContentService/GetPost"
 	ContentService_UpdatePost_FullMethodName      = "/sporttech.content.v1.ContentService/UpdatePost"
 	ContentService_DeletePost_FullMethodName      = "/sporttech.content.v1.ContentService/DeletePost"
@@ -37,6 +38,7 @@ const (
 type ContentServiceClient interface {
 	ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error)
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
+	UploadPostMedia(ctx context.Context, in *UploadPostMediaRequest, opts ...grpc.CallOption) (*PostMediaResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -68,6 +70,16 @@ func (c *contentServiceClient) CreatePost(ctx context.Context, in *CreatePostReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostResponse)
 	err := c.cc.Invoke(ctx, ContentService_CreatePost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) UploadPostMedia(ctx context.Context, in *UploadPostMediaRequest, opts ...grpc.CallOption) (*PostMediaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostMediaResponse)
+	err := c.cc.Invoke(ctx, ContentService_UploadPostMedia_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +162,7 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 type ContentServiceServer interface {
 	ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error)
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
+	UploadPostMedia(context.Context, *UploadPostMediaRequest) (*PostMediaResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
 	UpdatePost(context.Context, *UpdatePostRequest) (*PostResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error)
@@ -171,6 +184,9 @@ func (UnimplementedContentServiceServer) ListAuthorPosts(context.Context, *ListA
 }
 func (UnimplementedContentServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePost not implemented")
+}
+func (UnimplementedContentServiceServer) UploadPostMedia(context.Context, *UploadPostMediaRequest) (*PostMediaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadPostMedia not implemented")
 }
 func (UnimplementedContentServiceServer) GetPost(context.Context, *GetPostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPost not implemented")
@@ -245,6 +261,24 @@ func _ContentService_CreatePost_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContentServiceServer).CreatePost(ctx, req.(*CreatePostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_UploadPostMedia_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadPostMediaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).UploadPostMedia(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_UploadPostMedia_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).UploadPostMedia(ctx, req.(*UploadPostMediaRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -389,6 +423,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePost",
 			Handler:    _ContentService_CreatePost_Handler,
+		},
+		{
+			MethodName: "UploadPostMedia",
+			Handler:    _ContentService_UploadPostMedia_Handler,
 		},
 		{
 			MethodName: "GetPost",

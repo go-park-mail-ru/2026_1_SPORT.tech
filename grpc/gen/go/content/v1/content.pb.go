@@ -215,6 +215,74 @@ func (x *PostBlock) GetFileUrl() string {
 	return ""
 }
 
+type PostMedia struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FileUrl       string                 `protobuf:"bytes,1,opt,name=file_url,json=fileUrl,proto3" json:"file_url,omitempty"`
+	Kind          ContentBlockKind       `protobuf:"varint,2,opt,name=kind,proto3,enum=sporttech.content.v1.ContentBlockKind" json:"kind,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	SizeBytes     int64                  `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostMedia) Reset() {
+	*x = PostMedia{}
+	mi := &file_content_v1_content_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostMedia) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostMedia) ProtoMessage() {}
+
+func (x *PostMedia) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostMedia.ProtoReflect.Descriptor instead.
+func (*PostMedia) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PostMedia) GetFileUrl() string {
+	if x != nil {
+		return x.FileUrl
+	}
+	return ""
+}
+
+func (x *PostMedia) GetKind() ContentBlockKind {
+	if x != nil {
+		return x.Kind
+	}
+	return ContentBlockKind_CONTENT_BLOCK_KIND_UNSPECIFIED
+}
+
+func (x *PostMedia) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *PostMedia) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
 type Post struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
 	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -234,7 +302,7 @@ type Post struct {
 
 func (x *Post) Reset() {
 	*x = Post{}
-	mi := &file_content_v1_content_proto_msgTypes[2]
+	mi := &file_content_v1_content_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +314,7 @@ func (x *Post) String() string {
 func (*Post) ProtoMessage() {}
 
 func (x *Post) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[2]
+	mi := &file_content_v1_content_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +327,7 @@ func (x *Post) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Post.ProtoReflect.Descriptor instead.
 func (*Post) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{2}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Post) GetPostId() int64 {
@@ -356,7 +424,7 @@ type PostSummary struct {
 
 func (x *PostSummary) Reset() {
 	*x = PostSummary{}
-	mi := &file_content_v1_content_proto_msgTypes[3]
+	mi := &file_content_v1_content_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -368,7 +436,7 @@ func (x *PostSummary) String() string {
 func (*PostSummary) ProtoMessage() {}
 
 func (x *PostSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[3]
+	mi := &file_content_v1_content_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -381,7 +449,7 @@ func (x *PostSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostSummary.ProtoReflect.Descriptor instead.
 func (*PostSummary) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{3}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PostSummary) GetPostId() int64 {
@@ -461,7 +529,7 @@ type Comment struct {
 
 func (x *Comment) Reset() {
 	*x = Comment{}
-	mi := &file_content_v1_content_proto_msgTypes[4]
+	mi := &file_content_v1_content_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -473,7 +541,7 @@ func (x *Comment) String() string {
 func (*Comment) ProtoMessage() {}
 
 func (x *Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[4]
+	mi := &file_content_v1_content_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -486,7 +554,7 @@ func (x *Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Comment.ProtoReflect.Descriptor instead.
 func (*Comment) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{4}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Comment) GetCommentId() int64 {
@@ -540,7 +608,7 @@ type PostResponse struct {
 
 func (x *PostResponse) Reset() {
 	*x = PostResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[5]
+	mi := &file_content_v1_content_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -552,7 +620,7 @@ func (x *PostResponse) String() string {
 func (*PostResponse) ProtoMessage() {}
 
 func (x *PostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[5]
+	mi := &file_content_v1_content_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,7 +633,7 @@ func (x *PostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostResponse.ProtoReflect.Descriptor instead.
 func (*PostResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{5}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PostResponse) GetPost() *Post {
@@ -588,7 +656,7 @@ type ListAuthorPostsRequest struct {
 
 func (x *ListAuthorPostsRequest) Reset() {
 	*x = ListAuthorPostsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[6]
+	mi := &file_content_v1_content_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +668,7 @@ func (x *ListAuthorPostsRequest) String() string {
 func (*ListAuthorPostsRequest) ProtoMessage() {}
 
 func (x *ListAuthorPostsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[6]
+	mi := &file_content_v1_content_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +681,7 @@ func (x *ListAuthorPostsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAuthorPostsRequest.ProtoReflect.Descriptor instead.
 func (*ListAuthorPostsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{6}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListAuthorPostsRequest) GetAuthorUserId() int64 {
@@ -660,7 +728,7 @@ type ListAuthorPostsResponse struct {
 
 func (x *ListAuthorPostsResponse) Reset() {
 	*x = ListAuthorPostsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[7]
+	mi := &file_content_v1_content_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +740,7 @@ func (x *ListAuthorPostsResponse) String() string {
 func (*ListAuthorPostsResponse) ProtoMessage() {}
 
 func (x *ListAuthorPostsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[7]
+	mi := &file_content_v1_content_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +753,7 @@ func (x *ListAuthorPostsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAuthorPostsResponse.ProtoReflect.Descriptor instead.
 func (*ListAuthorPostsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{7}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListAuthorPostsResponse) GetPosts() []*PostSummary {
@@ -707,7 +775,7 @@ type CreatePostRequest struct {
 
 func (x *CreatePostRequest) Reset() {
 	*x = CreatePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[8]
+	mi := &file_content_v1_content_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -719,7 +787,7 @@ func (x *CreatePostRequest) String() string {
 func (*CreatePostRequest) ProtoMessage() {}
 
 func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[8]
+	mi := &file_content_v1_content_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +800,7 @@ func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePostRequest.ProtoReflect.Descriptor instead.
 func (*CreatePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{8}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreatePostRequest) GetAuthorUserId() int64 {
@@ -763,6 +831,118 @@ func (x *CreatePostRequest) GetBlocks() []*PostBlockInput {
 	return nil
 }
 
+type UploadPostMediaRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthorUserId  int64                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	File          []byte                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	FileName      string                 `protobuf:"bytes,3,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
+	ContentType   string                 `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadPostMediaRequest) Reset() {
+	*x = UploadPostMediaRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadPostMediaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadPostMediaRequest) ProtoMessage() {}
+
+func (x *UploadPostMediaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadPostMediaRequest.ProtoReflect.Descriptor instead.
+func (*UploadPostMediaRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UploadPostMediaRequest) GetAuthorUserId() int64 {
+	if x != nil {
+		return x.AuthorUserId
+	}
+	return 0
+}
+
+func (x *UploadPostMediaRequest) GetFile() []byte {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
+func (x *UploadPostMediaRequest) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *UploadPostMediaRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+type PostMediaResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Media         *PostMedia             `protobuf:"bytes,1,opt,name=media,proto3" json:"media,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostMediaResponse) Reset() {
+	*x = PostMediaResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostMediaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostMediaResponse) ProtoMessage() {}
+
+func (x *PostMediaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostMediaResponse.ProtoReflect.Descriptor instead.
+func (*PostMediaResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *PostMediaResponse) GetMedia() *PostMedia {
+	if x != nil {
+		return x.Media
+	}
+	return nil
+}
+
 type GetPostRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
 	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -774,7 +954,7 @@ type GetPostRequest struct {
 
 func (x *GetPostRequest) Reset() {
 	*x = GetPostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[9]
+	mi := &file_content_v1_content_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -786,7 +966,7 @@ func (x *GetPostRequest) String() string {
 func (*GetPostRequest) ProtoMessage() {}
 
 func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[9]
+	mi := &file_content_v1_content_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -799,7 +979,7 @@ func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPostRequest.ProtoReflect.Descriptor instead.
 func (*GetPostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{9}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPostRequest) GetPostId() int64 {
@@ -838,7 +1018,7 @@ type UpdatePostRequest struct {
 
 func (x *UpdatePostRequest) Reset() {
 	*x = UpdatePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[10]
+	mi := &file_content_v1_content_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -850,7 +1030,7 @@ func (x *UpdatePostRequest) String() string {
 func (*UpdatePostRequest) ProtoMessage() {}
 
 func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[10]
+	mi := &file_content_v1_content_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -863,7 +1043,7 @@ func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePostRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{10}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdatePostRequest) GetPostId() int64 {
@@ -925,7 +1105,7 @@ type DeletePostRequest struct {
 
 func (x *DeletePostRequest) Reset() {
 	*x = DeletePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[11]
+	mi := &file_content_v1_content_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -937,7 +1117,7 @@ func (x *DeletePostRequest) String() string {
 func (*DeletePostRequest) ProtoMessage() {}
 
 func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[11]
+	mi := &file_content_v1_content_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -950,7 +1130,7 @@ func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePostRequest.ProtoReflect.Descriptor instead.
 func (*DeletePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{11}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeletePostRequest) GetPostId() int64 {
@@ -978,7 +1158,7 @@ type LikePostRequest struct {
 
 func (x *LikePostRequest) Reset() {
 	*x = LikePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[12]
+	mi := &file_content_v1_content_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -990,7 +1170,7 @@ func (x *LikePostRequest) String() string {
 func (*LikePostRequest) ProtoMessage() {}
 
 func (x *LikePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[12]
+	mi := &file_content_v1_content_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1003,7 +1183,7 @@ func (x *LikePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LikePostRequest.ProtoReflect.Descriptor instead.
 func (*LikePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{12}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *LikePostRequest) GetPostId() int64 {
@@ -1038,7 +1218,7 @@ type UnlikePostRequest struct {
 
 func (x *UnlikePostRequest) Reset() {
 	*x = UnlikePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[13]
+	mi := &file_content_v1_content_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1050,7 +1230,7 @@ func (x *UnlikePostRequest) String() string {
 func (*UnlikePostRequest) ProtoMessage() {}
 
 func (x *UnlikePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[13]
+	mi := &file_content_v1_content_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1063,7 +1243,7 @@ func (x *UnlikePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlikePostRequest.ProtoReflect.Descriptor instead.
 func (*UnlikePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{13}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UnlikePostRequest) GetPostId() int64 {
@@ -1098,7 +1278,7 @@ type PostLikeState struct {
 
 func (x *PostLikeState) Reset() {
 	*x = PostLikeState{}
-	mi := &file_content_v1_content_proto_msgTypes[14]
+	mi := &file_content_v1_content_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1110,7 +1290,7 @@ func (x *PostLikeState) String() string {
 func (*PostLikeState) ProtoMessage() {}
 
 func (x *PostLikeState) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[14]
+	mi := &file_content_v1_content_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1123,7 +1303,7 @@ func (x *PostLikeState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeState.ProtoReflect.Descriptor instead.
 func (*PostLikeState) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{14}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PostLikeState) GetPostId() int64 {
@@ -1156,7 +1336,7 @@ type PostLikeStateResponse struct {
 
 func (x *PostLikeStateResponse) Reset() {
 	*x = PostLikeStateResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[15]
+	mi := &file_content_v1_content_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1168,7 +1348,7 @@ func (x *PostLikeStateResponse) String() string {
 func (*PostLikeStateResponse) ProtoMessage() {}
 
 func (x *PostLikeStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[15]
+	mi := &file_content_v1_content_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1181,7 +1361,7 @@ func (x *PostLikeStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeStateResponse.ProtoReflect.Descriptor instead.
 func (*PostLikeStateResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{15}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *PostLikeStateResponse) GetState() *PostLikeState {
@@ -1203,7 +1383,7 @@ type CreateCommentRequest struct {
 
 func (x *CreateCommentRequest) Reset() {
 	*x = CreateCommentRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[16]
+	mi := &file_content_v1_content_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1215,7 +1395,7 @@ func (x *CreateCommentRequest) String() string {
 func (*CreateCommentRequest) ProtoMessage() {}
 
 func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[16]
+	mi := &file_content_v1_content_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1228,7 +1408,7 @@ func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommentRequest.ProtoReflect.Descriptor instead.
 func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{16}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CreateCommentRequest) GetPostId() int64 {
@@ -1268,7 +1448,7 @@ type CommentResponse struct {
 
 func (x *CommentResponse) Reset() {
 	*x = CommentResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[17]
+	mi := &file_content_v1_content_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1280,7 +1460,7 @@ func (x *CommentResponse) String() string {
 func (*CommentResponse) ProtoMessage() {}
 
 func (x *CommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[17]
+	mi := &file_content_v1_content_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1293,7 +1473,7 @@ func (x *CommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommentResponse.ProtoReflect.Descriptor instead.
 func (*CommentResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{17}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CommentResponse) GetComment() *Comment {
@@ -1316,7 +1496,7 @@ type ListCommentsRequest struct {
 
 func (x *ListCommentsRequest) Reset() {
 	*x = ListCommentsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[18]
+	mi := &file_content_v1_content_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1328,7 +1508,7 @@ func (x *ListCommentsRequest) String() string {
 func (*ListCommentsRequest) ProtoMessage() {}
 
 func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[18]
+	mi := &file_content_v1_content_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,7 +1521,7 @@ func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{18}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListCommentsRequest) GetPostId() int64 {
@@ -1388,7 +1568,7 @@ type ListCommentsResponse struct {
 
 func (x *ListCommentsResponse) Reset() {
 	*x = ListCommentsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[19]
+	mi := &file_content_v1_content_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1400,7 +1580,7 @@ func (x *ListCommentsResponse) String() string {
 func (*ListCommentsResponse) ProtoMessage() {}
 
 func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[19]
+	mi := &file_content_v1_content_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1413,7 +1593,7 @@ func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{19}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListCommentsResponse) GetComments() []*Comment {
@@ -1441,7 +1621,13 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\ftext_content\x18\x04 \x01(\tH\x00R\vtextContent\x88\x01\x01\x12\x1e\n" +
 	"\bfile_url\x18\x05 \x01(\tH\x01R\afileUrl\x88\x01\x01B\x0f\n" +
 	"\r_text_contentB\v\n" +
-	"\t_file_url\"\xed\x03\n" +
+	"\t_file_url\"\xa4\x01\n" +
+	"\tPostMedia\x12\x19\n" +
+	"\bfile_url\x18\x01 \x01(\tR\afileUrl\x12:\n" +
+	"\x04kind\x18\x02 \x01(\x0e2&.sporttech.content.v1.ContentBlockKindR\x04kind\x12!\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xed\x03\n" +
 	"\x04Post\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -1498,7 +1684,14 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x03 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x12<\n" +
 	"\x06blocks\x18\x04 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocksB\x1e\n" +
-	"\x1c_required_subscription_level\"\xae\x01\n" +
+	"\x1c_required_subscription_level\"\x92\x01\n" +
+	"\x16UploadPostMediaRequest\x12$\n" +
+	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12\x12\n" +
+	"\x04file\x18\x02 \x01(\fR\x04file\x12\x1b\n" +
+	"\tfile_name\x18\x03 \x01(\tR\bfileName\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\"J\n" +
+	"\x11PostMediaResponse\x125\n" +
+	"\x05media\x18\x01 \x01(\v2\x1f.sporttech.content.v1.PostMediaR\x05media\"\xae\x01\n" +
 	"\x0eGetPostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
@@ -1556,11 +1749,13 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x17CONTENT_BLOCK_KIND_TEXT\x10\x01\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_IMAGE\x10\x02\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_VIDEO\x10\x03\x12\x1f\n" +
-	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\xac\t\n" +
+	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\xb3\n" +
+	"\n" +
 	"\x0eContentService\x12\x9a\x01\n" +
 	"\x0fListAuthorPosts\x12,.sporttech.content.v1.ListAuthorPostsRequest\x1a-.sporttech.content.v1.ListAuthorPostsResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/authors/{author_user_id}/posts\x12o\n" +
 	"\n" +
-	"CreatePost\x12'.sporttech.content.v1.CreatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12p\n" +
+	"CreatePost\x12'.sporttech.content.v1.CreatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12\x84\x01\n" +
+	"\x0fUploadPostMedia\x12,.sporttech.content.v1.UploadPostMediaRequest\x1a'.sporttech.content.v1.PostMediaResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/posts/media\x12p\n" +
 	"\aGetPost\x12$.sporttech.content.v1.GetPostRequest\x1a\".sporttech.content.v1.PostResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/posts/{post_id}\x12y\n" +
 	"\n" +
 	"UpdatePost\x12'.sporttech.content.v1.UpdatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*2\x13/v1/posts/{post_id}\x12j\n" +
@@ -1585,71 +1780,78 @@ func file_content_v1_content_proto_rawDescGZIP() []byte {
 }
 
 var file_content_v1_content_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_content_v1_content_proto_goTypes = []any{
 	(ContentBlockKind)(0),           // 0: sporttech.content.v1.ContentBlockKind
 	(*PostBlockInput)(nil),          // 1: sporttech.content.v1.PostBlockInput
 	(*PostBlock)(nil),               // 2: sporttech.content.v1.PostBlock
-	(*Post)(nil),                    // 3: sporttech.content.v1.Post
-	(*PostSummary)(nil),             // 4: sporttech.content.v1.PostSummary
-	(*Comment)(nil),                 // 5: sporttech.content.v1.Comment
-	(*PostResponse)(nil),            // 6: sporttech.content.v1.PostResponse
-	(*ListAuthorPostsRequest)(nil),  // 7: sporttech.content.v1.ListAuthorPostsRequest
-	(*ListAuthorPostsResponse)(nil), // 8: sporttech.content.v1.ListAuthorPostsResponse
-	(*CreatePostRequest)(nil),       // 9: sporttech.content.v1.CreatePostRequest
-	(*GetPostRequest)(nil),          // 10: sporttech.content.v1.GetPostRequest
-	(*UpdatePostRequest)(nil),       // 11: sporttech.content.v1.UpdatePostRequest
-	(*DeletePostRequest)(nil),       // 12: sporttech.content.v1.DeletePostRequest
-	(*LikePostRequest)(nil),         // 13: sporttech.content.v1.LikePostRequest
-	(*UnlikePostRequest)(nil),       // 14: sporttech.content.v1.UnlikePostRequest
-	(*PostLikeState)(nil),           // 15: sporttech.content.v1.PostLikeState
-	(*PostLikeStateResponse)(nil),   // 16: sporttech.content.v1.PostLikeStateResponse
-	(*CreateCommentRequest)(nil),    // 17: sporttech.content.v1.CreateCommentRequest
-	(*CommentResponse)(nil),         // 18: sporttech.content.v1.CommentResponse
-	(*ListCommentsRequest)(nil),     // 19: sporttech.content.v1.ListCommentsRequest
-	(*ListCommentsResponse)(nil),    // 20: sporttech.content.v1.ListCommentsResponse
-	(*timestamppb.Timestamp)(nil),   // 21: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),           // 22: google.protobuf.Empty
+	(*PostMedia)(nil),               // 3: sporttech.content.v1.PostMedia
+	(*Post)(nil),                    // 4: sporttech.content.v1.Post
+	(*PostSummary)(nil),             // 5: sporttech.content.v1.PostSummary
+	(*Comment)(nil),                 // 6: sporttech.content.v1.Comment
+	(*PostResponse)(nil),            // 7: sporttech.content.v1.PostResponse
+	(*ListAuthorPostsRequest)(nil),  // 8: sporttech.content.v1.ListAuthorPostsRequest
+	(*ListAuthorPostsResponse)(nil), // 9: sporttech.content.v1.ListAuthorPostsResponse
+	(*CreatePostRequest)(nil),       // 10: sporttech.content.v1.CreatePostRequest
+	(*UploadPostMediaRequest)(nil),  // 11: sporttech.content.v1.UploadPostMediaRequest
+	(*PostMediaResponse)(nil),       // 12: sporttech.content.v1.PostMediaResponse
+	(*GetPostRequest)(nil),          // 13: sporttech.content.v1.GetPostRequest
+	(*UpdatePostRequest)(nil),       // 14: sporttech.content.v1.UpdatePostRequest
+	(*DeletePostRequest)(nil),       // 15: sporttech.content.v1.DeletePostRequest
+	(*LikePostRequest)(nil),         // 16: sporttech.content.v1.LikePostRequest
+	(*UnlikePostRequest)(nil),       // 17: sporttech.content.v1.UnlikePostRequest
+	(*PostLikeState)(nil),           // 18: sporttech.content.v1.PostLikeState
+	(*PostLikeStateResponse)(nil),   // 19: sporttech.content.v1.PostLikeStateResponse
+	(*CreateCommentRequest)(nil),    // 20: sporttech.content.v1.CreateCommentRequest
+	(*CommentResponse)(nil),         // 21: sporttech.content.v1.CommentResponse
+	(*ListCommentsRequest)(nil),     // 22: sporttech.content.v1.ListCommentsRequest
+	(*ListCommentsResponse)(nil),    // 23: sporttech.content.v1.ListCommentsResponse
+	(*timestamppb.Timestamp)(nil),   // 24: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),           // 25: google.protobuf.Empty
 }
 var file_content_v1_content_proto_depIdxs = []int32{
 	0,  // 0: sporttech.content.v1.PostBlockInput.kind:type_name -> sporttech.content.v1.ContentBlockKind
 	0,  // 1: sporttech.content.v1.PostBlock.kind:type_name -> sporttech.content.v1.ContentBlockKind
-	21, // 2: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
-	21, // 3: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 4: sporttech.content.v1.Post.blocks:type_name -> sporttech.content.v1.PostBlock
-	21, // 5: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
-	21, // 6: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
-	21, // 7: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
-	3,  // 8: sporttech.content.v1.PostResponse.post:type_name -> sporttech.content.v1.Post
-	4,  // 9: sporttech.content.v1.ListAuthorPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
-	1,  // 10: sporttech.content.v1.CreatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
-	1,  // 11: sporttech.content.v1.UpdatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
-	15, // 12: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
-	5,  // 13: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
-	5,  // 14: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
-	7,  // 15: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
-	9,  // 16: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
-	10, // 17: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
-	11, // 18: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
-	12, // 19: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
-	13, // 20: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
-	14, // 21: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
-	17, // 22: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
-	19, // 23: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
-	8,  // 24: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
-	6,  // 25: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
-	6,  // 26: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
-	6,  // 27: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
-	22, // 28: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
-	16, // 29: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	16, // 30: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	18, // 31: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
-	20, // 32: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
-	24, // [24:33] is the sub-list for method output_type
-	15, // [15:24] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	0,  // 2: sporttech.content.v1.PostMedia.kind:type_name -> sporttech.content.v1.ContentBlockKind
+	24, // 3: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
+	24, // 4: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 5: sporttech.content.v1.Post.blocks:type_name -> sporttech.content.v1.PostBlock
+	24, // 6: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
+	24, // 7: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
+	24, // 8: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
+	4,  // 9: sporttech.content.v1.PostResponse.post:type_name -> sporttech.content.v1.Post
+	5,  // 10: sporttech.content.v1.ListAuthorPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
+	1,  // 11: sporttech.content.v1.CreatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
+	3,  // 12: sporttech.content.v1.PostMediaResponse.media:type_name -> sporttech.content.v1.PostMedia
+	1,  // 13: sporttech.content.v1.UpdatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
+	18, // 14: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
+	6,  // 15: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
+	6,  // 16: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
+	8,  // 17: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
+	10, // 18: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
+	11, // 19: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
+	13, // 20: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
+	14, // 21: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
+	15, // 22: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
+	16, // 23: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
+	17, // 24: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
+	20, // 25: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
+	22, // 26: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
+	9,  // 27: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
+	7,  // 28: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
+	12, // 29: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
+	7,  // 30: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
+	7,  // 31: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
+	25, // 32: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
+	19, // 33: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	19, // 34: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	21, // 35: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
+	23, // 36: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
+	27, // [27:37] is the sub-list for method output_type
+	17, // [17:27] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_content_v1_content_proto_init() }
@@ -1659,23 +1861,23 @@ func file_content_v1_content_proto_init() {
 	}
 	file_content_v1_content_proto_msgTypes[0].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[1].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[2].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[3].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[6].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[8].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[4].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[7].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[9].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[10].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[12].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[13].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[15].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[16].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[18].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[19].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[21].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_content_v1_content_proto_rawDesc), len(file_content_v1_content_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   20,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

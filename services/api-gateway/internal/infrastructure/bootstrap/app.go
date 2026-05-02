@@ -94,6 +94,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	apiHandler := http.StripPrefix("/api", gatewayHandler)
 	protectedAPIHandler := httpgateway.CSRFMiddleware(apiHandler)
 	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.CSRFMiddleware(httpgateway.MultipartAvatarHandler(gatewayService, apiHandler)))
+	httpMux.Handle("/api/v1/posts/media", httpgateway.CSRFMiddleware(httpgateway.MultipartPostMediaHandler(gatewayService, apiHandler)))
 	httpMux.Handle("/api/", protectedAPIHandler)
 
 	handler := metricsSet.HTTPMiddleware(httpMux)

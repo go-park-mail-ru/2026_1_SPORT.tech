@@ -107,6 +107,38 @@
         ]
       }
     },
+    "/v1/posts/media": {
+      "post": {
+        "operationId": "ContentService_UploadPostMedia",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostMediaResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UploadPostMediaRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/posts/{post_id}": {
       "get": {
         "operationId": "ContentService_GetPost",
@@ -697,6 +729,32 @@
         }
       }
     },
+    "v1PostMedia": {
+      "type": "object",
+      "properties": {
+        "file_url": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/definitions/v1ContentBlockKind"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1PostMediaResponse": {
+      "type": "object",
+      "properties": {
+        "media": {
+          "$ref": "#/definitions/v1PostMedia"
+        }
+      }
+    },
     "v1PostResponse": {
       "type": "object",
       "properties": {
@@ -740,6 +798,25 @@
         "comments_count": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1UploadPostMediaRequest": {
+      "type": "object",
+      "properties": {
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "file": {
+          "type": "string",
+          "format": "byte"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
         }
       }
     }

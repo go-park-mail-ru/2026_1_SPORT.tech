@@ -30,6 +30,13 @@ message PostBlock {
   optional string file_url = 5;
 }
 
+message PostMedia {
+  string file_url = 1;
+  ContentBlockKind kind = 2;
+  string content_type = 3;
+  int64 size_bytes = 4;
+}
+
 message Post {
   int64 post_id = 1;
   int64 author_user_id = 2;
@@ -86,6 +93,17 @@ message CreatePostRequest {
   string title = 2;
   optional int32 required_subscription_level = 3;
   repeated PostBlockInput blocks = 4;
+}
+
+message UploadPostMediaRequest {
+  int64 author_user_id = 1;
+  bytes file = 2;
+  string file_name = 3;
+  string content_type = 4;
+}
+
+message PostMediaResponse {
+  PostMedia media = 1;
 }
 
 message GetPostRequest {
@@ -162,6 +180,13 @@ service ContentService {
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
       post: "/v1/posts"
+      body: "*"
+    };
+  }
+
+  rpc UploadPostMedia(UploadPostMediaRequest) returns (PostMediaResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/media"
       body: "*"
     };
   }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"io"
 	"testing"
 	"time"
 
@@ -62,6 +63,21 @@ func (repository stubContentRepository) ListComments(ctx context.Context, postID
 	return repository.listCommentsFunc(ctx, postID, limit, offset)
 }
 
+type stubPostMediaStorage struct {
+	uploadFunc func(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
+}
+
+func (storage stubPostMediaStorage) UploadPostMedia(
+	ctx context.Context,
+	authorUserID int64,
+	fileName string,
+	contentType string,
+	file io.Reader,
+	size int64,
+) (string, error) {
+	return storage.uploadFunc(ctx, authorUserID, fileName, contentType, file, size)
+}
+
 func TestServiceCreatePost(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 	requiredLevel := int32(2)
@@ -107,6 +123,7 @@ func TestServiceCreatePost(t *testing.T) {
 				return nil, nil
 			},
 		},
+		nil,
 	)
 
 	post, err := service.CreatePost(context.Background(), CreatePostCommand{
@@ -123,6 +140,50 @@ func TestServiceCreatePost(t *testing.T) {
 	}
 	if post.PostID != 101 {
 		t.Fatalf("unexpected post id: %d", post.PostID)
+	}
+}
+
+func TestServiceUploadPostMedia(t *testing.T) {
+	uploaded := false
+	service := NewService(
+		stubContentRepository{},
+		stubPostMediaStorage{
+			uploadFunc: func(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error) {
+				uploaded = true
+				if authorUserID != 7 || fileName != "run.png" || contentType != "image/png" || size != 4 {
+					t.Fatalf("unexpected upload args: authorUserID=%d fileName=%s contentType=%s size=%d", authorUserID, fileName, contentType, size)
+				}
+
+				content, err := io.ReadAll(file)
+				if err != nil {
+					t.Fatalf("read upload content: %v", err)
+				}
+				if string(content) != "data" {
+					t.Fatalf("unexpected upload content: %q", string(content))
+				}
+
+				return "http://storage/posts/7/run.png", nil
+			},
+		},
+	)
+
+	media, err := service.UploadPostMedia(context.Background(), UploadPostMediaCommand{
+		AuthorUserID: 7,
+		FileName:     " run.png ",
+		ContentType:  " image/png ",
+		Content:      []byte("data"),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !uploaded {
+		t.Fatal("expected upload to be called")
+	}
+	if media.FileURL != "http://storage/posts/7/run.png" ||
+		media.Kind != domain.BlockKindImage ||
+		media.ContentType != "image/png" ||
+		media.SizeBytes != 4 {
+		t.Fatalf("unexpected media: %+v", media)
 	}
 }
 
@@ -157,6 +218,7 @@ func TestServiceGetPostRejectsRestrictedAccess(t *testing.T) {
 				return nil, nil
 			},
 		},
+		nil,
 	)
 
 	_, err := service.GetPost(context.Background(), GetPostQuery{
@@ -204,6 +266,7 @@ func TestServiceCreateComment(t *testing.T) {
 				return nil, nil
 			},
 		},
+		nil,
 	)
 
 	comment, err := service.CreateComment(context.Background(), CreateCommentCommand{

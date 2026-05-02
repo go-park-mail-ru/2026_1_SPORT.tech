@@ -130,9 +130,16 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       CONTENT_DB_HOST: db
       CONTENT_DB_NAME: sporttech_content
+      CONTENT_STORAGE_HOST: minio
+      CONTENT_STORAGE_PORT: "8000"
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      CONTENT_STORAGE_PUBLIC_BASE_URL: ${CONTENT_STORAGE_PUBLIC_BASE_URL:-http://localhost:8000/post-media}
     depends_on:
       content-migrator:
         condition: service_completed_successfully
+      minio:
+        condition: service_started
     ports:
       - "8083:8083"
     restart: unless-stopped

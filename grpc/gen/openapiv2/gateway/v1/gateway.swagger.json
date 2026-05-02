@@ -223,6 +223,38 @@
         ]
       }
     },
+    "/v1/posts/media": {
+      "post": {
+        "operationId": "PostService_UploadPostMedia",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PostMediaUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UploadPostMediaRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/v1/posts/{post_id}": {
       "get": {
         "operationId": "PostService_GetPost",
@@ -606,6 +638,39 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sport_type_ids",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
         "tags": [
           "ProfileService"
         ]
@@ -638,15 +703,18 @@
         "title": {
           "type": "string"
         },
-        "text_content": {
-          "type": "string"
-        },
-        "attachments": {
+        "blocks": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1CreatePostAttachmentRequest"
+            "$ref": "#/definitions/v1PostBlockInput"
           }
+        },
+        "replace_blocks": {
+          "type": "boolean"
+        },
+        "clear_min_tier_id": {
+          "type": "boolean"
         }
       }
     },
@@ -725,17 +793,6 @@
         }
       }
     },
-    "v1CreatePostAttachmentRequest": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string"
-        },
-        "file_url": {
-          "type": "string"
-        }
-      }
-    },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
@@ -746,14 +803,11 @@
         "title": {
           "type": "string"
         },
-        "text_content": {
-          "type": "string"
-        },
-        "attachments": {
+        "blocks": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1CreatePostAttachmentRequest"
+            "$ref": "#/definitions/v1PostBlockInput"
           }
         }
       }
@@ -812,14 +866,35 @@
         }
       }
     },
-    "v1PostAttachment": {
+    "v1PostBlock": {
       "type": "object",
       "properties": {
-        "post_attachment_id": {
+        "post_block_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "position": {
           "type": "integer",
           "format": "int32"
         },
         "kind": {
+          "type": "string"
+        },
+        "text_content": {
+          "type": "string"
+        },
+        "file_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PostBlockInput": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "text_content": {
           "type": "string"
         },
         "file_url": {
@@ -874,6 +949,28 @@
         },
         "is_liked": {
           "type": "boolean"
+        },
+        "comments_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1PostMediaUploadResponse": {
+      "type": "object",
+      "properties": {
+        "file_url": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -895,9 +992,6 @@
         "title": {
           "type": "string"
         },
-        "text_content": {
-          "type": "string"
-        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -913,12 +1007,19 @@
         "is_liked": {
           "type": "boolean"
         },
-        "attachments": {
+        "blocks": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1PostAttachment"
+            "$ref": "#/definitions/v1PostBlock"
           }
+        },
+        "can_view": {
+          "type": "boolean"
+        },
+        "comments_count": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1109,6 +1210,21 @@
       "type": "object",
       "properties": {
         "avatar": {
+          "type": "string",
+          "format": "byte"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1UploadPostMediaRequest": {
+      "type": "object",
+      "properties": {
+        "file": {
           "type": "string",
           "format": "byte"
         },

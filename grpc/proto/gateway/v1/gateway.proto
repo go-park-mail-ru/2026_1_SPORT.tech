@@ -112,6 +112,13 @@ message GetTrainersResponse {
   repeated TrainerListItem trainers = 1;
 }
 
+message ListTrainersRequest {
+  string query = 1;
+  repeated int32 sport_type_ids = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
 message UpdateMyProfileRequest {
   optional string username = 1;
   optional string first_name = 2;
@@ -139,30 +146,46 @@ message SportTypesResponse {
   repeated SportType sport_types = 1;
 }
 
-message CreatePostAttachmentRequest {
+message PostBlockInput {
   string kind = 1;
-  string file_url = 2;
+  optional string text_content = 2;
+  optional string file_url = 3;
+}
+
+message UploadPostMediaRequest {
+  bytes file = 1;
+  string file_name = 2;
+  string content_type = 3;
+}
+
+message PostMediaUploadResponse {
+  string file_url = 1;
+  string kind = 2;
+  string content_type = 3;
+  int32 size_bytes = 4;
 }
 
 message CreatePostRequest {
   optional int32 min_tier_id = 1;
   string title = 2;
-  string text_content = 3;
-  repeated CreatePostAttachmentRequest attachments = 4;
+  repeated PostBlockInput blocks = 3;
 }
 
 message UpdatePostRequest {
   int32 post_id = 1;
   optional int32 min_tier_id = 2;
   optional string title = 3;
-  optional string text_content = 4;
-  repeated CreatePostAttachmentRequest attachments = 5;
+  repeated PostBlockInput blocks = 4;
+  bool replace_blocks = 5;
+  bool clear_min_tier_id = 6;
 }
 
-message PostAttachment {
-  int32 post_attachment_id = 1;
-  string kind = 2;
-  string file_url = 3;
+message PostBlock {
+  int32 post_block_id = 1;
+  int32 position = 2;
+  string kind = 3;
+  optional string text_content = 4;
+  optional string file_url = 5;
 }
 
 message PostListItem {
@@ -174,6 +197,7 @@ message PostListItem {
   bool can_view = 6;
   int32 likes_count = 7;
   bool is_liked = 8;
+  int32 comments_count = 9;
 }
 
 message ProfilePostsResponse {
@@ -186,12 +210,13 @@ message PostResponse {
   int32 trainer_id = 2;
   optional int32 min_tier_id = 3;
   string title = 4;
-  string text_content = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
-  int32 likes_count = 8;
-  bool is_liked = 9;
-  repeated PostAttachment attachments = 10;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  int32 likes_count = 7;
+  bool is_liked = 8;
+  repeated PostBlock blocks = 9;
+  bool can_view = 10;
+  int32 comments_count = 11;
 }
 
 message GetPostRequest {
@@ -269,7 +294,7 @@ service ProfileService {
     option (google.api.http).get = "/v1/profiles/{user_id}";
   }
 
-  rpc ListTrainers(google.protobuf.Empty) returns (GetTrainersResponse) {
+  rpc ListTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
     option (google.api.http).get = "/v1/trainers";
   }
 
@@ -300,6 +325,13 @@ service PostService {
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
       post: "/v1/posts"
+      body: "*"
+    };
+  }
+
+  rpc UploadPostMedia(UploadPostMediaRequest) returns (PostMediaUploadResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/media"
       body: "*"
     };
   }

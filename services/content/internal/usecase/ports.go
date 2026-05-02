@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"io"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
@@ -17,6 +18,10 @@ type ContentRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+}
+
+type PostMediaStorage interface {
+	UploadPostMedia(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
 }
 
 type PostBlockInput struct {
@@ -38,6 +43,13 @@ type CreatePostCommand struct {
 	Title                     string
 	RequiredSubscriptionLevel *int32
 	Blocks                    []PostBlockInput
+}
+
+type UploadPostMediaCommand struct {
+	AuthorUserID int64
+	FileName     string
+	ContentType  string
+	Content      []byte
 }
 
 type GetPostQuery struct {

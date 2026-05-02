@@ -15,5 +15,12 @@ postgres:
   max_idle_conns: 10
   conn_max_lifetime: 30m
 
+storage:
+  host: localhost
+  port: "8000"
+  bucket: post-media
+  public_base_url: http://localhost:8000/post-media
+  use_ssl: false
+
 openapi:
   file_path: grpc/gen/openapiv2/content/v1/content.swagger.json

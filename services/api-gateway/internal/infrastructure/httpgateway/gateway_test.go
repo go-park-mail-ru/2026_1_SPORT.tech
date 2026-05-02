@@ -84,6 +84,26 @@ func (server contentServer) GetPost(ctx context.Context, request *contentv1.GetP
 			CreatedAt:    timestamppb.New(now),
 			UpdatedAt:    timestamppb.New(now),
 			CanView:      true,
+			Blocks: []*contentv1.PostBlock{
+				{
+					PostBlockId: 1,
+					Position:    0,
+					Kind:        contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_TEXT,
+					TextContent: stringPtr("Warm-up"),
+				},
+				{
+					PostBlockId: 2,
+					Position:    1,
+					Kind:        contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_IMAGE,
+					FileUrl:     stringPtr("https://cdn.example/run.jpg"),
+				},
+				{
+					PostBlockId: 3,
+					Position:    2,
+					Kind:        contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_TEXT,
+					TextContent: stringPtr("Main set"),
+				},
+			},
 		},
 	}, nil
 }
@@ -231,12 +251,26 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 
 	var postPayload struct {
 		PostID int32 `json:"post_id"`
+		Blocks []struct {
+			Kind        string `json:"kind"`
+			TextContent string `json:"text_content"`
+			FileURL     string `json:"file_url"`
+		} `json:"blocks"`
 	}
 	if err := json.NewDecoder(postResponse.Body).Decode(&postPayload); err != nil {
 		t.Fatalf("decode post response: %v", err)
 	}
 	if postPayload.PostID != 11 {
 		t.Fatalf("unexpected post payload: %+v", postPayload)
+	}
+	if len(postPayload.Blocks) != 3 ||
+		postPayload.Blocks[0].Kind != "text" ||
+		postPayload.Blocks[0].TextContent != "Warm-up" ||
+		postPayload.Blocks[1].Kind != "image" ||
+		postPayload.Blocks[1].FileURL != "https://cdn.example/run.jpg" ||
+		postPayload.Blocks[2].Kind != "text" ||
+		postPayload.Blocks[2].TextContent != "Main set" {
+		t.Fatalf("unexpected post blocks: %+v", postPayload.Blocks)
 	}
 
 	sportTypesResponse, err := http.Get(server.URL + "/api/v1/sport-types")
@@ -271,4 +305,8 @@ func startGRPCServer(t *testing.T, register func(*grpc.Server)) string {
 	})
 
 	return listener.Addr().String()
+}
+
+func stringPtr(value string) *string {
+	return &value
 }

@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
@@ -11,14 +13,19 @@ const (
 	defaultPageLimit = 20
 	maxPageLimit     = 100
 	maxBlockCount    = 100
+	maxMediaFileSize = 10 * 1024 * 1024
 )
 
 type Service struct {
 	contentRepository ContentRepository
+	postMediaStorage  PostMediaStorage
 }
 
-func NewService(contentRepository ContentRepository) *Service {
-	return &Service{contentRepository: contentRepository}
+func NewService(contentRepository ContentRepository, postMediaStorage PostMediaStorage) *Service {
+	return &Service{
+		contentRepository: contentRepository,
+		postMediaStorage:  postMediaStorage,
+	}
 }
 
 func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPostsQuery) ([]domain.PostSummary, error) {
@@ -63,6 +70,57 @@ func (service *Service) CreatePost(ctx context.Context, command CreatePostComman
 	}
 
 	return service.contentRepository.GetPost(ctx, postID, command.AuthorUserID)
+}
+
+func (service *Service) UploadPostMedia(ctx context.Context, command UploadPostMediaCommand) (domain.PostMedia, error) {
+	if command.AuthorUserID <= 0 {
+		return domain.PostMedia{}, ErrInvalidUserID
+	}
+
+	fileName := normalizeRequiredText(command.FileName)
+	if fileName == "" {
+		return domain.PostMedia{}, ErrPostMediaFileNameRequired
+	}
+
+	contentType := strings.ToLower(normalizeRequiredText(command.ContentType))
+	if contentType == "" {
+		return domain.PostMedia{}, ErrPostMediaContentTypeRequired
+	}
+
+	if len(command.Content) == 0 {
+		return domain.PostMedia{}, ErrPostMediaContentRequired
+	}
+	if len(command.Content) > maxMediaFileSize {
+		return domain.PostMedia{}, ErrPostMediaTooLarge
+	}
+
+	kind, ok := postMediaKind(contentType)
+	if !ok {
+		return domain.PostMedia{}, ErrPostMediaContentTypeUnsupported
+	}
+
+	if service.postMediaStorage == nil {
+		return domain.PostMedia{}, ErrPostMediaStorageUnavailable
+	}
+
+	fileURL, err := service.postMediaStorage.UploadPostMedia(
+		ctx,
+		command.AuthorUserID,
+		fileName,
+		contentType,
+		bytes.NewReader(command.Content),
+		int64(len(command.Content)),
+	)
+	if err != nil {
+		return domain.PostMedia{}, fmt.Errorf("%w: %v", ErrPostMediaStorageUnavailable, err)
+	}
+
+	return domain.PostMedia{
+		FileURL:     fileURL,
+		Kind:        kind,
+		ContentType: contentType,
+		SizeBytes:   int64(len(command.Content)),
+	}, nil
 }
 
 func (service *Service) GetPost(ctx context.Context, query GetPostQuery) (domain.Post, error) {
@@ -353,4 +411,17 @@ func normalizePage(limit int32, offset int32) (int32, int32, error) {
 	}
 
 	return limit, offset, nil
+}
+
+func postMediaKind(contentType string) (domain.BlockKind, bool) {
+	switch contentType {
+	case "image/jpeg", "image/png", "image/webp":
+		return domain.BlockKindImage, true
+	case "video/mp4":
+		return domain.BlockKindVideo, true
+	case "application/pdf":
+		return domain.BlockKindDocument, true
+	default:
+		return "", false
+	}
 }

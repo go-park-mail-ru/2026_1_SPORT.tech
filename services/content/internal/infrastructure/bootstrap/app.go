@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	minioadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/client/minio"
 	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/grpc"
 	postgresadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/repository/postgres"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/infrastructure/config"
@@ -41,7 +42,12 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	}
 
 	contentRepository := postgresadapter.NewRepository(database)
-	contentUseCase := usecase.NewService(contentRepository)
+	postMediaStorage, err := minioadapter.NewPostMediaStorage(cfg.Storage)
+	if err != nil {
+		_ = database.Close()
+		return nil, fmt.Errorf("new post media storage: %w", err)
+	}
+	contentUseCase := usecase.NewService(contentRepository, postMediaStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
 	grpcHandler := grpcadapter.NewServer(contentUseCase)
