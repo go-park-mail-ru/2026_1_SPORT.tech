@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ContentService_ListAuthorPosts_FullMethodName = "/sporttech.content.v1.ContentService/ListAuthorPosts"
+	ContentService_SearchPosts_FullMethodName     = "/sporttech.content.v1.ContentService/SearchPosts"
 	ContentService_CreatePost_FullMethodName      = "/sporttech.content.v1.ContentService/CreatePost"
 	ContentService_UploadPostMedia_FullMethodName = "/sporttech.content.v1.ContentService/UploadPostMedia"
 	ContentService_GetPost_FullMethodName         = "/sporttech.content.v1.ContentService/GetPost"
@@ -37,6 +38,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContentServiceClient interface {
 	ListAuthorPosts(ctx context.Context, in *ListAuthorPostsRequest, opts ...grpc.CallOption) (*ListAuthorPostsResponse, error)
+	SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error)
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	UploadPostMedia(ctx context.Context, in *UploadPostMediaRequest, opts ...grpc.CallOption) (*PostMediaResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
@@ -60,6 +62,16 @@ func (c *contentServiceClient) ListAuthorPosts(ctx context.Context, in *ListAuth
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListAuthorPostsResponse)
 	err := c.cc.Invoke(ctx, ContentService_ListAuthorPosts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchPostsResponse)
+	err := c.cc.Invoke(ctx, ContentService_SearchPosts_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,6 +173,7 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 // for forward compatibility.
 type ContentServiceServer interface {
 	ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error)
+	SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error)
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
 	UploadPostMedia(context.Context, *UploadPostMediaRequest) (*PostMediaResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
@@ -181,6 +194,9 @@ type UnimplementedContentServiceServer struct{}
 
 func (UnimplementedContentServiceServer) ListAuthorPosts(context.Context, *ListAuthorPostsRequest) (*ListAuthorPostsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListAuthorPosts not implemented")
+}
+func (UnimplementedContentServiceServer) SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SearchPosts not implemented")
 }
 func (UnimplementedContentServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePost not implemented")
@@ -243,6 +259,24 @@ func _ContentService_ListAuthorPosts_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContentServiceServer).ListAuthorPosts(ctx, req.(*ListAuthorPostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_SearchPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SearchPosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_SearchPosts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SearchPosts(ctx, req.(*SearchPostsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -419,6 +453,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAuthorPosts",
 			Handler:    _ContentService_ListAuthorPosts_Handler,
+		},
+		{
+			MethodName: "SearchPosts",
+			Handler:    _ContentService_SearchPosts_Handler,
 		},
 		{
 			MethodName: "CreatePost",

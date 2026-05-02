@@ -312,6 +312,7 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 const (
 	ProfileService_GetProfile_FullMethodName       = "/sporttech.gateway.v1.ProfileService/GetProfile"
 	ProfileService_ListTrainers_FullMethodName     = "/sporttech.gateway.v1.ProfileService/ListTrainers"
+	ProfileService_SearchTrainers_FullMethodName   = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
 	ProfileService_UpdateMyProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
 	ProfileService_UploadMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
 	ProfileService_DeleteMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
@@ -324,6 +325,7 @@ const (
 type ProfileServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	ListTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
+	SearchTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	UpdateMyProfile(ctx context.Context, in *UpdateMyProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	UploadMyAvatar(ctx context.Context, in *UploadMyAvatarRequest, opts ...grpc.CallOption) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -352,6 +354,16 @@ func (c *profileServiceClient) ListTrainers(ctx context.Context, in *ListTrainer
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetTrainersResponse)
 	err := c.cc.Invoke(ctx, ProfileService_ListTrainers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) SearchTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTrainersResponse)
+	err := c.cc.Invoke(ctx, ProfileService_SearchTrainers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -404,6 +416,7 @@ func (c *profileServiceClient) ListProfilePosts(ctx context.Context, in *GetProf
 type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
 	ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
+	SearchTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
 	UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error)
 	UploadMyAvatar(context.Context, *UploadMyAvatarRequest) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
@@ -422,6 +435,9 @@ func (UnimplementedProfileServiceServer) GetProfile(context.Context, *GetProfile
 }
 func (UnimplementedProfileServiceServer) ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTrainers not implemented")
+}
+func (UnimplementedProfileServiceServer) SearchTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SearchTrainers not implemented")
 }
 func (UnimplementedProfileServiceServer) UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateMyProfile not implemented")
@@ -487,6 +503,24 @@ func _ProfileService_ListTrainers_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProfileServiceServer).ListTrainers(ctx, req.(*ListTrainersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_SearchTrainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTrainersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).SearchTrainers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_SearchTrainers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).SearchTrainers(ctx, req.(*ListTrainersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -579,6 +613,10 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProfileService_ListTrainers_Handler,
 		},
 		{
+			MethodName: "SearchTrainers",
+			Handler:    _ProfileService_SearchTrainers_Handler,
+		},
+		{
 			MethodName: "UpdateMyProfile",
 			Handler:    _ProfileService_UpdateMyProfile_Handler,
 		},
@@ -600,6 +638,7 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	PostService_SearchPosts_FullMethodName     = "/sporttech.gateway.v1.PostService/SearchPosts"
 	PostService_CreatePost_FullMethodName      = "/sporttech.gateway.v1.PostService/CreatePost"
 	PostService_UploadPostMedia_FullMethodName = "/sporttech.gateway.v1.PostService/UploadPostMedia"
 	PostService_GetPost_FullMethodName         = "/sporttech.gateway.v1.PostService/GetPost"
@@ -613,6 +652,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PostServiceClient interface {
+	SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error)
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	UploadPostMedia(ctx context.Context, in *UploadPostMediaRequest, opts ...grpc.CallOption) (*PostMediaUploadResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
@@ -628,6 +668,16 @@ type postServiceClient struct {
 
 func NewPostServiceClient(cc grpc.ClientConnInterface) PostServiceClient {
 	return &postServiceClient{cc}
+}
+
+func (c *postServiceClient) SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchPostsResponse)
+	err := c.cc.Invoke(ctx, PostService_SearchPosts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *postServiceClient) CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
@@ -704,6 +754,7 @@ func (c *postServiceClient) UnlikePost(ctx context.Context, in *PostLikeRequest,
 // All implementations should embed UnimplementedPostServiceServer
 // for forward compatibility.
 type PostServiceServer interface {
+	SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error)
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
 	UploadPostMedia(context.Context, *UploadPostMediaRequest) (*PostMediaUploadResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
@@ -720,6 +771,9 @@ type PostServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPostServiceServer struct{}
 
+func (UnimplementedPostServiceServer) SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SearchPosts not implemented")
+}
 func (UnimplementedPostServiceServer) CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePost not implemented")
 }
@@ -759,6 +813,24 @@ func RegisterPostServiceServer(s grpc.ServiceRegistrar, srv PostServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&PostService_ServiceDesc, srv)
+}
+
+func _PostService_SearchPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).SearchPosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_SearchPosts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).SearchPosts(ctx, req.(*SearchPostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _PostService_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -894,6 +966,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "sporttech.gateway.v1.PostService",
 	HandlerType: (*PostServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SearchPosts",
+			Handler:    _PostService_SearchPosts_Handler,
+		},
 		{
 			MethodName: "CreatePost",
 			Handler:    _PostService_CreatePost_Handler,

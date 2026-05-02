@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/repository/postgres"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
 	_ "github.com/lib/pq"
 )
 
@@ -167,6 +168,21 @@ func TestRepositoryIntegration(t *testing.T) {
 	}
 	if len(posts) != 1 || posts[0].PostID != postID {
 		t.Fatalf("unexpected author posts: %+v", posts)
+	}
+
+	searchPosts, err := repository.SearchPosts(context.Background(), usecase.SearchPostsQuery{
+		Query:         "updated",
+		AuthorUserIDs: []int64{7},
+		BlockKinds:    []domain.BlockKind{domain.BlockKindText},
+		OnlyAvailable: true,
+		ViewerUserID:  55,
+		Limit:         10,
+	})
+	if err != nil {
+		t.Fatalf("search posts: %v", err)
+	}
+	if len(searchPosts) != 1 || searchPosts[0].PostID != postID || !searchPosts[0].IsLiked || searchPosts[0].CommentsCount != 1 {
+		t.Fatalf("unexpected search posts: %+v", searchPosts)
 	}
 
 	if err := repository.DeletePost(context.Background(), postID, 7); err != nil {

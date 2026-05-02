@@ -11,6 +11,7 @@ type ContentRepository interface {
 	CreatePost(ctx context.Context, post domain.Post) (int64, error)
 	GetPost(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error)
 	ListAuthorPosts(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error)
+	SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
 	UpdatePost(ctx context.Context, post domain.Post, replaceBlocks bool) error
 	DeletePost(ctx context.Context, postID int64, authorUserID int64) error
 	UpsertLike(ctx context.Context, postID int64, userID int64) error
@@ -36,6 +37,19 @@ type ListAuthorPostsQuery struct {
 	ViewerSubscriptionLevel *int32
 	Limit                   int32
 	Offset                  int32
+}
+
+type SearchPostsQuery struct {
+	Query                        string
+	AuthorUserIDs                []int64
+	BlockKinds                   []domain.BlockKind
+	MinRequiredSubscriptionLevel *int32
+	MaxRequiredSubscriptionLevel *int32
+	OnlyAvailable                bool
+	ViewerUserID                 int64
+	ViewerSubscriptionLevel      *int32
+	Limit                        int32
+	Offset                       int32
 }
 
 type CreatePostCommand struct {

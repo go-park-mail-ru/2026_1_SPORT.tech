@@ -436,6 +436,17 @@
         "offset": {
           "type": "integer",
           "format": "int32"
+        },
+        "min_experience_years": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "max_experience_years": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "only_with_rank": {
+          "type": "boolean"
         }
       }
     },

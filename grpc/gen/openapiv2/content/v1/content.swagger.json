@@ -437,6 +437,38 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/posts:search": {
+      "post": {
+        "operationId": "ContentService_SearchPosts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SearchPostsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SearchPostsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -798,6 +830,66 @@
         "comments_count": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1SearchPostsRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "author_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "block_kinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ContentBlockKind"
+          }
+        },
+        "min_required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "max_required_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "only_available": {
+          "type": "boolean"
+        },
+        "viewer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "viewer_subscription_level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1SearchPostsResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostSummary"
+          }
         }
       }
     },

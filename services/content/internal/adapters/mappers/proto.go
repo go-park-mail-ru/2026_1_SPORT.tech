@@ -22,6 +22,21 @@ func ListAuthorPostsRequestToQuery(request *contentv1.ListAuthorPostsRequest) us
 	}
 }
 
+func SearchPostsRequestToQuery(request *contentv1.SearchPostsRequest) usecase.SearchPostsQuery {
+	return usecase.SearchPostsQuery{
+		Query:                        request.GetQuery(),
+		AuthorUserIDs:                request.GetAuthorUserIds(),
+		BlockKinds:                   blockKindsFromProto(request.GetBlockKinds()),
+		MinRequiredSubscriptionLevel: request.MinRequiredSubscriptionLevel,
+		MaxRequiredSubscriptionLevel: request.MaxRequiredSubscriptionLevel,
+		OnlyAvailable:                request.GetOnlyAvailable(),
+		ViewerUserID:                 request.GetViewerUserId(),
+		ViewerSubscriptionLevel:      request.ViewerSubscriptionLevel,
+		Limit:                        request.GetLimit(),
+		Offset:                       request.GetOffset(),
+	}
+}
+
 func CreatePostRequestToCommand(request *contentv1.CreatePostRequest) usecase.CreatePostCommand {
 	return usecase.CreatePostCommand{
 		AuthorUserID:              request.GetAuthorUserId(),
@@ -113,6 +128,17 @@ func NewListAuthorPostsResponse(posts []domain.PostSummary) *contentv1.ListAutho
 	return response
 }
 
+func NewSearchPostsResponse(posts []domain.PostSummary) *contentv1.SearchPostsResponse {
+	response := &contentv1.SearchPostsResponse{
+		Posts: make([]*contentv1.PostSummary, 0, len(posts)),
+	}
+	for _, post := range posts {
+		response.Posts = append(response.Posts, postSummaryToProto(post))
+	}
+
+	return response
+}
+
 func NewPostResponse(post domain.Post) *contentv1.PostResponse {
 	return &contentv1.PostResponse{
 		Post: postToProto(post),
@@ -175,6 +201,7 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrReplaceBlocksRequired),
 		errors.Is(err, usecase.ErrInvalidLimit),
 		errors.Is(err, usecase.ErrInvalidOffset),
+		errors.Is(err, usecase.ErrInvalidSearchFilter),
 		errors.Is(err, usecase.ErrInvalidCommentBody),
 		errors.Is(err, usecase.ErrPostMediaFileNameRequired),
 		errors.Is(err, usecase.ErrPostMediaContentTypeRequired),
@@ -289,6 +316,15 @@ func blockKindFromProto(kind contentv1.ContentBlockKind) domain.BlockKind {
 	default:
 		return domain.BlockKind("")
 	}
+}
+
+func blockKindsFromProto(kinds []contentv1.ContentBlockKind) []domain.BlockKind {
+	result := make([]domain.BlockKind, 0, len(kinds))
+	for _, kind := range kinds {
+		result = append(result, blockKindFromProto(kind))
+	}
+
+	return result
 }
 
 func blockKindToProto(kind domain.BlockKind) contentv1.ContentBlockKind {

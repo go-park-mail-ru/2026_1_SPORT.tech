@@ -7,11 +7,16 @@ import (
 )
 
 func TestListTrainersRequestToProfile(t *testing.T) {
+	minExperienceYears := int32(5)
+	maxExperienceYears := int32(10)
 	request := &gatewayv1.ListTrainersRequest{
-		Query:        "anna",
-		SportTypeIds: []int32{1, 2},
-		Limit:        10,
-		Offset:       20,
+		Query:              "anna",
+		SportTypeIds:       []int32{1, 2},
+		MinExperienceYears: &minExperienceYears,
+		MaxExperienceYears: &maxExperienceYears,
+		OnlyWithRank:       true,
+		Limit:              10,
+		Offset:             20,
 	}
 
 	mapped := ListTrainersRequestToProfile(request)
@@ -21,5 +26,10 @@ func TestListTrainersRequestToProfile(t *testing.T) {
 	}
 	if len(mapped.GetSportTypeIds()) != 2 || mapped.GetSportTypeIds()[0] != 1 || mapped.GetSportTypeIds()[1] != 2 {
 		t.Fatalf("unexpected sport filters: %+v", mapped.GetSportTypeIds())
+	}
+	if mapped.MinExperienceYears == nil || *mapped.MinExperienceYears != 5 ||
+		mapped.MaxExperienceYears == nil || *mapped.MaxExperienceYears != 10 ||
+		!mapped.GetOnlyWithRank() {
+		t.Fatalf("unexpected trainer filters: %+v", mapped)
 	}
 }

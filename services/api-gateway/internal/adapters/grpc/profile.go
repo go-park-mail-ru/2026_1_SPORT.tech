@@ -35,6 +35,14 @@ func (server *Server) GetProfile(ctx context.Context, request *gatewayv1.GetProf
 }
 
 func (server *Server) ListTrainers(ctx context.Context, request *gatewayv1.ListTrainersRequest) (*gatewayv1.GetTrainersResponse, error) {
+	return server.searchTrainers(ctx, request)
+}
+
+func (server *Server) SearchTrainers(ctx context.Context, request *gatewayv1.ListTrainersRequest) (*gatewayv1.GetTrainersResponse, error) {
+	return server.searchTrainers(ctx, request)
+}
+
+func (server *Server) searchTrainers(ctx context.Context, request *gatewayv1.ListTrainersRequest) (*gatewayv1.GetTrainersResponse, error) {
 	response, err := server.profileClient.SearchAuthors(
 		forwardContext(ctx),
 		mappers.ListTrainersRequestToProfile(request),

@@ -58,6 +58,56 @@ func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPos
 	return posts, nil
 }
 
+func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error) {
+	if query.ViewerUserID < 0 {
+		return nil, ErrInvalidUserID
+	}
+	for _, authorUserID := range query.AuthorUserIDs {
+		if authorUserID <= 0 {
+			return nil, ErrInvalidUserID
+		}
+	}
+	for _, kind := range query.BlockKinds {
+		if !kind.IsValid() {
+			return nil, domain.ErrInvalidBlockKind
+		}
+	}
+	if query.MinRequiredSubscriptionLevel != nil && *query.MinRequiredSubscriptionLevel < 0 {
+		return nil, ErrInvalidSearchFilter
+	}
+	if query.MaxRequiredSubscriptionLevel != nil && *query.MaxRequiredSubscriptionLevel < 0 {
+		return nil, ErrInvalidSearchFilter
+	}
+	if query.MinRequiredSubscriptionLevel != nil && query.MaxRequiredSubscriptionLevel != nil &&
+		*query.MinRequiredSubscriptionLevel > *query.MaxRequiredSubscriptionLevel {
+		return nil, ErrInvalidSearchFilter
+	}
+
+	limit, offset, err := normalizePage(query.Limit, query.Offset)
+	if err != nil {
+		return nil, err
+	}
+	query.Query = normalizeRequiredText(query.Query)
+	query.Limit = limit
+	query.Offset = offset
+
+	posts, err := service.contentRepository.SearchPosts(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	for index := range posts {
+		posts[index].CanView = domain.CanViewPost(
+			posts[index].RequiredSubscriptionLevel,
+			posts[index].AuthorUserID,
+			query.ViewerUserID,
+			query.ViewerSubscriptionLevel,
+		)
+	}
+
+	return posts, nil
+}
+
 func (service *Service) CreatePost(ctx context.Context, command CreatePostCommand) (domain.Post, error) {
 	post, err := buildPost(command)
 	if err != nil {

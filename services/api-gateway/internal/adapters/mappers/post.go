@@ -38,12 +38,48 @@ func UploadPostMediaRequestToContent(authorUserID int64, request *gatewayv1.Uplo
 	}
 }
 
+func SearchPostsRequestToContent(
+	viewerUserID int64,
+	viewerSubscriptionLevel *int32,
+	request *gatewayv1.SearchPostsRequest,
+) *contentv1.SearchPostsRequest {
+	return &contentv1.SearchPostsRequest{
+		Query:                        request.GetQuery(),
+		AuthorUserIds:                int32SliceToInt64Slice(request.GetTrainerIds()),
+		BlockKinds:                   blockKindsToContent(request.GetBlockKinds()),
+		MinRequiredSubscriptionLevel: request.MinTierId,
+		MaxRequiredSubscriptionLevel: request.MaxTierId,
+		OnlyAvailable:                request.GetOnlyAvailable(),
+		ViewerUserId:                 viewerUserID,
+		ViewerSubscriptionLevel:      viewerSubscriptionLevel,
+		Limit:                        request.GetLimit(),
+		Offset:                       request.GetOffset(),
+	}
+}
+
 func PostResponseFromContent(response *contentv1.PostResponse) (*gatewayv1.PostResponse, error) {
 	if response == nil || response.GetPost() == nil {
 		return nil, fmt.Errorf("post is required")
 	}
 
 	return postResponseFromContentPost(response.GetPost())
+}
+
+func SearchPostsResponseFromContent(response *contentv1.SearchPostsResponse) (*gatewayv1.SearchPostsResponse, error) {
+	posts := make([]*gatewayv1.PostListItem, 0)
+	if response != nil {
+		posts = make([]*gatewayv1.PostListItem, 0, len(response.GetPosts()))
+		for _, post := range response.GetPosts() {
+			mappedPost, err := postListItemFromContent(post)
+			if err != nil {
+				return nil, err
+			}
+
+			posts = append(posts, mappedPost)
+		}
+	}
+
+	return &gatewayv1.SearchPostsResponse{Posts: posts}, nil
 }
 
 func PostMediaUploadResponseFromContent(response *contentv1.PostMediaResponse) (*gatewayv1.PostMediaUploadResponse, error) {
@@ -231,6 +267,15 @@ func blockKindToContent(kind string) contentv1.ContentBlockKind {
 	default:
 		return contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_UNSPECIFIED
 	}
+}
+
+func blockKindsToContent(kinds []string) []contentv1.ContentBlockKind {
+	result := make([]contentv1.ContentBlockKind, 0, len(kinds))
+	for _, kind := range kinds {
+		result = append(result, blockKindToContent(kind))
+	}
+
+	return result
 }
 
 func blockKindFromContent(kind contentv1.ContentBlockKind) string {

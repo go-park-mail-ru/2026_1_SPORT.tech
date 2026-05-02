@@ -80,6 +80,9 @@ message SearchAuthorsRequest {
   repeated int64 sport_type_ids = 2;
   int32 limit = 3;
   int32 offset = 4;
+  optional int32 min_experience_years = 5;
+  optional int32 max_experience_years = 6;
+  bool only_with_rank = 7;
 }
 
 message SearchAuthorsResponse {

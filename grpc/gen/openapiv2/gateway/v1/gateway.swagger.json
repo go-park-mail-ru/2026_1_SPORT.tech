@@ -413,6 +413,38 @@
         ]
       }
     },
+    "/v1/posts:search": {
+      "post": {
+        "operationId": "PostService_SearchPosts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SearchPostsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SearchPostsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/v1/profiles/me": {
       "patch": {
         "operationId": "ProfileService_UpdateMyProfile",
@@ -669,6 +701,58 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "min_experience_years",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "max_experience_years",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "only_with_rank",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/trainers:search": {
+      "post": {
+        "operationId": "ProfileService_SearchTrainers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTrainersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ListTrainersRequest"
+            }
           }
         ],
         "tags": [
@@ -852,6 +936,40 @@
             "type": "object",
             "$ref": "#/definitions/v1TrainerListItem"
           }
+        }
+      }
+    },
+    "v1ListTrainersRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "min_experience_years": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "max_experience_years": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "only_with_rank": {
+          "type": "boolean"
         }
       }
     },
@@ -1069,6 +1187,58 @@
         },
         "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
+    "v1SearchPostsRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "trainer_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "block_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "max_tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "only_available": {
+          "type": "boolean"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1SearchPostsResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostListItem"
+          }
         }
       }
     },

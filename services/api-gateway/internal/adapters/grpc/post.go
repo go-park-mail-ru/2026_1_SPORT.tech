@@ -11,6 +11,32 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (server *Server) SearchPosts(ctx context.Context, request *gatewayv1.SearchPostsRequest) (*gatewayv1.SearchPostsResponse, error) {
+	principal, err := server.optionalSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var viewerUserID int64
+	if principal != nil && principal.User != nil {
+		viewerUserID = principal.User.GetUserId()
+	}
+	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.SearchPosts(
+		forwardContext(ctx),
+		mappers.SearchPostsRequestToContent(viewerUserID, viewerSubscriptionLevel, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.SearchPostsResponseFromContent(response)
+}
+
 func (server *Server) CreatePost(ctx context.Context, request *gatewayv1.CreatePostRequest) (*gatewayv1.PostResponse, error) {
 	principal, err := server.requireSession(ctx)
 	if err != nil {

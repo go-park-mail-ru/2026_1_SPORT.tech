@@ -88,6 +88,23 @@ message ListAuthorPostsResponse {
   repeated PostSummary posts = 1;
 }
 
+message SearchPostsRequest {
+  string query = 1;
+  repeated int64 author_user_ids = 2;
+  repeated ContentBlockKind block_kinds = 3;
+  optional int32 min_required_subscription_level = 4;
+  optional int32 max_required_subscription_level = 5;
+  bool only_available = 6;
+  int64 viewer_user_id = 7;
+  optional int32 viewer_subscription_level = 8;
+  int32 limit = 9;
+  int32 offset = 10;
+}
+
+message SearchPostsResponse {
+  repeated PostSummary posts = 1;
+}
+
 message CreatePostRequest {
   int64 author_user_id = 1;
   string title = 2;
@@ -175,6 +192,13 @@ message ListCommentsResponse {
 service ContentService {
   rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
     option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
+  }
+
+  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts:search"
+      body: "*"
+    };
   }
 
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {

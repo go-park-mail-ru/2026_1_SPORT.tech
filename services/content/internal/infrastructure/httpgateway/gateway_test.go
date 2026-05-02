@@ -17,6 +17,7 @@ import (
 
 type stubContentUseCase struct {
 	listAuthorPostsFunc func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
+	searchPostsFunc     func(ctx context.Context, query usecase.SearchPostsQuery) ([]domain.PostSummary, error)
 	createPostFunc      func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
 	uploadPostMediaFunc func(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
 	getPostFunc         func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
@@ -30,6 +31,10 @@ type stubContentUseCase struct {
 
 func (stub stubContentUseCase) ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
 	return stub.listAuthorPostsFunc(ctx, query)
+}
+
+func (stub stubContentUseCase) SearchPosts(ctx context.Context, query usecase.SearchPostsQuery) ([]domain.PostSummary, error) {
+	return stub.searchPostsFunc(ctx, query)
 }
 
 func (stub stubContentUseCase) CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {

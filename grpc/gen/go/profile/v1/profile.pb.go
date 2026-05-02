@@ -669,13 +669,16 @@ func (x *UpdateProfileRequest) GetTrainerDetails() *TrainerDetails {
 }
 
 type SearchAuthorsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	SportTypeIds  []int64                `protobuf:"varint,2,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
-	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Query              string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	SportTypeIds       []int64                `protobuf:"varint,2,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	Limit              int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset             int32                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	MinExperienceYears *int32                 `protobuf:"varint,5,opt,name=min_experience_years,json=minExperienceYears,proto3,oneof" json:"min_experience_years,omitempty"`
+	MaxExperienceYears *int32                 `protobuf:"varint,6,opt,name=max_experience_years,json=maxExperienceYears,proto3,oneof" json:"max_experience_years,omitempty"`
+	OnlyWithRank       bool                   `protobuf:"varint,7,opt,name=only_with_rank,json=onlyWithRank,proto3" json:"only_with_rank,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *SearchAuthorsRequest) Reset() {
@@ -734,6 +737,27 @@ func (x *SearchAuthorsRequest) GetOffset() int32 {
 		return x.Offset
 	}
 	return 0
+}
+
+func (x *SearchAuthorsRequest) GetMinExperienceYears() int32 {
+	if x != nil && x.MinExperienceYears != nil {
+		return *x.MinExperienceYears
+	}
+	return 0
+}
+
+func (x *SearchAuthorsRequest) GetMaxExperienceYears() int32 {
+	if x != nil && x.MaxExperienceYears != nil {
+		return *x.MaxExperienceYears
+	}
+	return 0
+}
+
+func (x *SearchAuthorsRequest) GetOnlyWithRank() bool {
+	if x != nil {
+		return x.OnlyWithRank
+	}
+	return false
 }
 
 type SearchAuthorsResponse struct {
@@ -1018,12 +1042,17 @@ const file_profile_v1_profile_proto_rawDesc = "" +
 	"\n" +
 	"_last_nameB\x06\n" +
 	"\x04_bioB\x12\n" +
-	"\x10_trainer_details\"\x80\x01\n" +
+	"\x10_trainer_details\"\xc6\x02\n" +
 	"\x14SearchAuthorsRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12$\n" +
 	"\x0esport_type_ids\x18\x02 \x03(\x03R\fsportTypeIds\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x04 \x01(\x05R\x06offset\"V\n" +
+	"\x06offset\x18\x04 \x01(\x05R\x06offset\x125\n" +
+	"\x14min_experience_years\x18\x05 \x01(\x05H\x00R\x12minExperienceYears\x88\x01\x01\x125\n" +
+	"\x14max_experience_years\x18\x06 \x01(\x05H\x01R\x12maxExperienceYears\x88\x01\x01\x12$\n" +
+	"\x0eonly_with_rank\x18\a \x01(\bR\fonlyWithRankB\x17\n" +
+	"\x15_min_experience_yearsB\x17\n" +
+	"\x15_max_experience_years\"V\n" +
 	"\x15SearchAuthorsResponse\x12=\n" +
 	"\aauthors\x18\x01 \x03(\v2#.sporttech.profile.v1.AuthorSummaryR\aauthors\"\x88\x01\n" +
 	"\x13UploadAvatarRequest\x12\x17\n" +
@@ -1121,6 +1150,7 @@ func file_profile_v1_profile_proto_init() {
 	file_profile_v1_profile_proto_msgTypes[3].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[6].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[8].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

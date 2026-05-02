@@ -117,6 +117,9 @@ message ListTrainersRequest {
   repeated int32 sport_type_ids = 2;
   int32 limit = 3;
   int32 offset = 4;
+  optional int32 min_experience_years = 5;
+  optional int32 max_experience_years = 6;
+  bool only_with_rank = 7;
 }
 
 message UpdateMyProfileRequest {
@@ -203,6 +206,21 @@ message PostListItem {
 message ProfilePostsResponse {
   int32 user_id = 1;
   repeated PostListItem posts = 2;
+}
+
+message SearchPostsRequest {
+  string query = 1;
+  repeated int32 trainer_ids = 2;
+  repeated string block_kinds = 3;
+  optional int32 min_tier_id = 4;
+  optional int32 max_tier_id = 5;
+  bool only_available = 6;
+  int32 limit = 7;
+  int32 offset = 8;
+}
+
+message SearchPostsResponse {
+  repeated PostListItem posts = 1;
 }
 
 message PostResponse {
@@ -298,6 +316,13 @@ service ProfileService {
     option (google.api.http).get = "/v1/trainers";
   }
 
+  rpc SearchTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
+    option (google.api.http) = {
+      post: "/v1/trainers:search"
+      body: "*"
+    };
+  }
+
   rpc UpdateMyProfile(UpdateMyProfileRequest) returns (ProfileResponse) {
     option (google.api.http) = {
       patch: "/v1/profiles/me"
@@ -322,6 +347,13 @@ service ProfileService {
 }
 
 service PostService {
+  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts:search"
+      body: "*"
+    };
+  }
+
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
       post: "/v1/posts"

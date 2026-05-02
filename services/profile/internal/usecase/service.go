@@ -98,9 +98,20 @@ func (service *Service) SearchAuthors(ctx context.Context, query SearchAuthorsQu
 	if query.Offset < 0 {
 		return nil, ErrInvalidSearchOffset
 	}
+	if query.MinExperienceYears != nil && *query.MinExperienceYears < 0 {
+		return nil, ErrInvalidExperienceYears
+	}
+	if query.MaxExperienceYears != nil && *query.MaxExperienceYears < 0 {
+		return nil, ErrInvalidExperienceYears
+	}
+	if query.MinExperienceYears != nil && query.MaxExperienceYears != nil &&
+		*query.MinExperienceYears > *query.MaxExperienceYears {
+		return nil, ErrInvalidExperienceYears
+	}
 	if query.Limit == 0 {
 		query.Limit = 20
 	}
+	query.Query = normalizeRequiredText(query.Query)
 
 	return service.profileRepository.SearchAuthors(ctx, query)
 }

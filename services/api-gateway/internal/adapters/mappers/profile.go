@@ -138,10 +138,13 @@ func GetTrainersResponseFromProfile(response *profilev1.SearchAuthorsResponse) (
 
 func ListTrainersRequestToProfile(request *gatewayv1.ListTrainersRequest) *profilev1.SearchAuthorsRequest {
 	return &profilev1.SearchAuthorsRequest{
-		Query:        request.GetQuery(),
-		SportTypeIds: int32SliceToInt64Slice(request.GetSportTypeIds()),
-		Limit:        request.GetLimit(),
-		Offset:       request.GetOffset(),
+		Query:              request.GetQuery(),
+		SportTypeIds:       int32SliceToInt64Slice(request.GetSportTypeIds()),
+		MinExperienceYears: request.MinExperienceYears,
+		MaxExperienceYears: request.MaxExperienceYears,
+		OnlyWithRank:       request.GetOnlyWithRank(),
+		Limit:              request.GetLimit(),
+		Offset:             request.GetOffset(),
 	}
 }
 

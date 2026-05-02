@@ -14,6 +14,7 @@ type stubContentRepository struct {
 	createPostFunc      func(ctx context.Context, post domain.Post) (int64, error)
 	getPostFunc         func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error)
 	listAuthorPostsFunc func(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error)
+	searchPostsFunc     func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
 	updatePostFunc      func(ctx context.Context, post domain.Post, replaceBlocks bool) error
 	deletePostFunc      func(ctx context.Context, postID int64, authorUserID int64) error
 	upsertLikeFunc      func(ctx context.Context, postID int64, userID int64) error
@@ -33,6 +34,10 @@ func (repository stubContentRepository) GetPost(ctx context.Context, postID int6
 
 func (repository stubContentRepository) ListAuthorPosts(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error) {
 	return repository.listAuthorPostsFunc(ctx, authorUserID, viewerUserID, limit, offset)
+}
+
+func (repository stubContentRepository) SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error) {
+	return repository.searchPostsFunc(ctx, query)
 }
 
 func (repository stubContentRepository) UpdatePost(ctx context.Context, post domain.Post, replaceBlocks bool) error {
@@ -184,6 +189,59 @@ func TestServiceUploadPostMedia(t *testing.T) {
 		media.ContentType != "image/png" ||
 		media.SizeBytes != 4 {
 		t.Fatalf("unexpected media: %+v", media)
+	}
+}
+
+func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
+	requiredLevel := int32(2)
+	repositoryCalled := false
+	service := NewService(
+		stubContentRepository{
+			searchPostsFunc: func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error) {
+				repositoryCalled = true
+				if query.Query != "темп" ||
+					len(query.AuthorUserIDs) != 1 ||
+					query.AuthorUserIDs[0] != 7 ||
+					len(query.BlockKinds) != 1 ||
+					query.BlockKinds[0] != domain.BlockKindImage ||
+					query.Limit != 20 ||
+					query.Offset != 10 ||
+					query.ViewerUserID != 13 ||
+					query.ViewerSubscriptionLevel == nil ||
+					*query.ViewerSubscriptionLevel != 2 ||
+					!query.OnlyAvailable {
+					t.Fatalf("unexpected search query: %+v", query)
+				}
+
+				return []domain.PostSummary{{
+					PostID:                    101,
+					AuthorUserID:              7,
+					Title:                     "Темповая тренировка",
+					RequiredSubscriptionLevel: &requiredLevel,
+				}}, nil
+			},
+		},
+		nil,
+	)
+
+	posts, err := service.SearchPosts(context.Background(), SearchPostsQuery{
+		Query:                   " темп ",
+		AuthorUserIDs:           []int64{7},
+		BlockKinds:              []domain.BlockKind{domain.BlockKindImage},
+		OnlyAvailable:           true,
+		ViewerUserID:            13,
+		ViewerSubscriptionLevel: &requiredLevel,
+		Limit:                   20,
+		Offset:                  10,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !repositoryCalled {
+		t.Fatal("expected repository search to be called")
+	}
+	if len(posts) != 1 || !posts[0].CanView {
+		t.Fatalf("unexpected posts: %+v", posts)
 	}
 }
 

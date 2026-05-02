@@ -13,6 +13,7 @@ var (
 	ErrReplaceBlocksRequired              = errors.New("replace_blocks must be true when blocks are provided")
 	ErrInvalidLimit                       = errors.New("invalid limit")
 	ErrInvalidOffset                      = errors.New("invalid offset")
+	ErrInvalidSearchFilter                = errors.New("invalid search filter")
 	ErrInvalidCommentBody                 = errors.New("invalid comment body")
 	ErrPostMediaFileNameRequired          = errors.New("post media file name is required")
 	ErrPostMediaContentTypeRequired       = errors.New("post media content type is required")

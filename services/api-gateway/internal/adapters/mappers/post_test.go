@@ -117,6 +117,43 @@ func TestPostMediaUploadResponseFromContent(t *testing.T) {
 	}
 }
 
+func TestSearchPostsRequestToContent(t *testing.T) {
+	minTierID := int32(1)
+	maxTierID := int32(2)
+	viewerLevel := int32(2)
+
+	mapped := SearchPostsRequestToContent(13, &viewerLevel, &gatewayv1.SearchPostsRequest{
+		Query:         "темп",
+		TrainerIds:    []int32{7, 9},
+		BlockKinds:    []string{"image", "document"},
+		MinTierId:     &minTierID,
+		MaxTierId:     &maxTierID,
+		OnlyAvailable: true,
+		Limit:         20,
+		Offset:        10,
+	})
+
+	if mapped.GetQuery() != "темп" ||
+		len(mapped.GetAuthorUserIds()) != 2 ||
+		mapped.GetAuthorUserIds()[0] != 7 ||
+		mapped.GetAuthorUserIds()[1] != 9 ||
+		len(mapped.GetBlockKinds()) != 2 ||
+		mapped.GetBlockKinds()[0] != contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_IMAGE ||
+		mapped.GetBlockKinds()[1] != contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_DOCUMENT ||
+		mapped.MinRequiredSubscriptionLevel == nil ||
+		*mapped.MinRequiredSubscriptionLevel != 1 ||
+		mapped.MaxRequiredSubscriptionLevel == nil ||
+		*mapped.MaxRequiredSubscriptionLevel != 2 ||
+		!mapped.GetOnlyAvailable() ||
+		mapped.GetViewerUserId() != 13 ||
+		mapped.ViewerSubscriptionLevel == nil ||
+		*mapped.ViewerSubscriptionLevel != 2 ||
+		mapped.GetLimit() != 20 ||
+		mapped.GetOffset() != 10 {
+		t.Fatalf("unexpected search request: %+v", mapped)
+	}
+}
+
 func stringPtr(value string) *string {
 	return &value
 }

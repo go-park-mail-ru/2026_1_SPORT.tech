@@ -4,9 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
+	"github.com/lib/pq"
 )
 
 type Repository struct {
@@ -158,6 +162,121 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 	`
 
 	rows, err := repository.db.QueryContext(ctx, query, authorUserID, viewerUserID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	posts := make([]domain.PostSummary, 0)
+	for rows.Next() {
+		var (
+			post          domain.PostSummary
+			requiredLevel sql.NullInt32
+		)
+
+		if err := rows.Scan(
+			&post.PostID,
+			&post.AuthorUserID,
+			&post.Title,
+			&requiredLevel,
+			&post.CreatedAt,
+			&post.LikesCount,
+			&post.IsLiked,
+			&post.CommentsCount,
+		); err != nil {
+			return nil, err
+		}
+		if requiredLevel.Valid {
+			post.RequiredSubscriptionLevel = &requiredLevel.Int32
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, rows.Err()
+}
+
+func (repository *Repository) SearchPosts(ctx context.Context, searchQuery usecase.SearchPostsQuery) ([]domain.PostSummary, error) {
+	const baseQuery = `
+		SELECT
+			p.post_id,
+			p.author_user_id,
+			p.title,
+			p.required_subscription_level,
+			p.created_at,
+			COALESCE(l.likes_count, 0),
+			EXISTS (
+				SELECT 1
+				FROM content_post_like viewer_like
+				WHERE viewer_like.post_id = p.post_id
+					AND viewer_like.user_id = $1
+			),
+			COALESCE(c.comments_count, 0)
+		FROM content_post p
+		LEFT JOIN (
+			SELECT post_id, COUNT(*) AS likes_count
+			FROM content_post_like
+			GROUP BY post_id
+		) l ON l.post_id = p.post_id
+		LEFT JOIN (
+			SELECT post_id, COUNT(*) AS comments_count
+			FROM content_comment
+			GROUP BY post_id
+		) c ON c.post_id = p.post_id
+	`
+
+	args := []any{searchQuery.ViewerUserID}
+	conditions := make([]string, 0, 6)
+
+	if trimmedQuery := strings.TrimSpace(searchQuery.Query); trimmedQuery != "" {
+		args = append(args, "%"+trimmedQuery+"%")
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(
+			conditions,
+			"(p.title ILIKE "+placeholder+" OR EXISTS (SELECT 1 FROM content_post_block search_block WHERE search_block.post_id = p.post_id AND search_block.kind = 'text' AND search_block.text_content ILIKE "+placeholder+"))",
+		)
+	}
+	if len(searchQuery.AuthorUserIDs) > 0 {
+		args = append(args, pq.Array(searchQuery.AuthorUserIDs))
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(conditions, "p.author_user_id = ANY("+placeholder+")")
+	}
+	if len(searchQuery.BlockKinds) > 0 {
+		args = append(args, pq.Array(blockKindStrings(searchQuery.BlockKinds)))
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(conditions, "EXISTS (SELECT 1 FROM content_post_block filter_block WHERE filter_block.post_id = p.post_id AND filter_block.kind::text = ANY("+placeholder+"))")
+	}
+	if searchQuery.MinRequiredSubscriptionLevel != nil {
+		args = append(args, *searchQuery.MinRequiredSubscriptionLevel)
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(conditions, "COALESCE(p.required_subscription_level, 0) >= "+placeholder)
+	}
+	if searchQuery.MaxRequiredSubscriptionLevel != nil {
+		args = append(args, *searchQuery.MaxRequiredSubscriptionLevel)
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(conditions, "COALESCE(p.required_subscription_level, 0) <= "+placeholder)
+	}
+	if searchQuery.OnlyAvailable {
+		if searchQuery.ViewerSubscriptionLevel == nil {
+			conditions = append(conditions, "(p.required_subscription_level IS NULL OR (p.author_user_id = $1 AND $1 > 0))")
+		} else {
+			args = append(args, *searchQuery.ViewerSubscriptionLevel)
+			placeholder := fmt.Sprintf("$%d", len(args))
+			conditions = append(conditions, "(p.required_subscription_level IS NULL OR (p.author_user_id = $1 AND $1 > 0) OR p.required_subscription_level <= "+placeholder+")")
+		}
+	}
+
+	queryBuilder := strings.Builder{}
+	queryBuilder.WriteString(baseQuery)
+	if len(conditions) > 0 {
+		queryBuilder.WriteString(" WHERE ")
+		queryBuilder.WriteString(strings.Join(conditions, " AND "))
+	}
+
+	args = append(args, searchQuery.Limit, searchQuery.Offset)
+	queryBuilder.WriteString(fmt.Sprintf(" ORDER BY p.created_at DESC, p.post_id DESC LIMIT $%d OFFSET $%d", len(args)-1, len(args)))
+
+	rows, err := repository.db.QueryContext(ctx, queryBuilder.String(), args...)
 	if err != nil {
 		return nil, err
 	}
@@ -508,4 +627,13 @@ func nullInt32(value *int32) sql.NullInt32 {
 		Int32: *value,
 		Valid: true,
 	}
+}
+
+func blockKindStrings(kinds []domain.BlockKind) []string {
+	result := make([]string, 0, len(kinds))
+	for _, kind := range kinds {
+		result = append(result, string(kind))
+	}
+
+	return result
 }
