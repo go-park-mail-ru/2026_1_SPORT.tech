@@ -1,0 +1,5 @@
+DELETE FROM auth_session
+WHERE user_id BETWEEN 1004 AND 1010;
+
+DELETE FROM auth_user
+WHERE user_id BETWEEN 1004 AND 1010;
