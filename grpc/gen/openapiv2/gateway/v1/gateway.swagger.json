@@ -18,6 +18,9 @@
       "name": "TierService"
     },
     {
+      "name": "SubscriptionService"
+    },
+    {
       "name": "SportService"
     },
     {
@@ -656,6 +659,60 @@
         ]
       }
     },
+    "/v1/subscriptions/me": {
+      "get": {
+        "operationId": "SubscriptionService_ListMySubscriptions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubscriptionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "SubscriptionService"
+        ]
+      }
+    },
+    "/v1/subscriptions/{subscription_id}": {
+      "delete": {
+        "operationId": "SubscriptionService_CancelSubscription",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "SubscriptionService"
+        ]
+      }
+    },
     "/v1/tiers": {
       "get": {
         "operationId": "TierService_ListTiers",
@@ -852,6 +909,76 @@
         ]
       }
     },
+    "/v1/trainers/{trainer_id}/subscribe": {
+      "post": {
+        "operationId": "SubscriptionService_SubscribeToTrainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Subscription"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SubscriptionServiceSubscribeToTrainerBody"
+            }
+          }
+        ],
+        "tags": [
+          "SubscriptionService"
+        ]
+      }
+    },
+    "/v1/trainers/{trainer_id}/tiers": {
+      "get": {
+        "operationId": "TierService_ListTrainerTiers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1TiersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TierService"
+        ]
+      }
+    },
     "/v1/trainers:search": {
       "post": {
         "operationId": "ProfileService_SearchTrainers",
@@ -930,6 +1057,15 @@
         },
         "clear_sport_type_id": {
           "type": "boolean"
+        }
+      }
+    },
+    "SubscriptionServiceSubscribeToTrainerBody": {
+      "type": "object",
+      "properties": {
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1445,6 +1581,57 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1SportType"
+          }
+        }
+      }
+    },
+    "v1Subscription": {
+      "type": "object",
+      "properties": {
+        "subscription_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1SubscriptionsResponse": {
+      "type": "object",
+      "properties": {
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Subscription"
           }
         }
       }

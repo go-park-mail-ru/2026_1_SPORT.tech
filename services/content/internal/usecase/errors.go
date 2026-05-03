@@ -28,4 +28,6 @@ var (
 	ErrInvalidSubscriptionTierPrice       = errors.New("invalid subscription tier price")
 	ErrInvalidSubscriptionTierDescription = errors.New("invalid subscription tier description")
 	ErrConflictingTierDescriptionUpdate   = errors.New("subscription tier description and clear flag cannot be used together")
+	ErrInvalidSubscriptionID              = errors.New("invalid subscription id")
+	ErrInvalidSubscriptionTarget          = errors.New("invalid subscription target")
 )

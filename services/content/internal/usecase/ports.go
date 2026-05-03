@@ -19,6 +19,10 @@ type ContentRepository interface {
 	CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error
+	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
+	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
+	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	UpsertLike(ctx context.Context, postID int64, userID int64) error
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
@@ -114,6 +118,21 @@ type UpdateSubscriptionTierCommand struct {
 type DeleteSubscriptionTierCommand struct {
 	TrainerUserID int64
 	TierID        int64
+}
+
+type SubscribeToTrainerCommand struct {
+	ClientUserID  int64
+	TrainerUserID int64
+	TierID        int64
+}
+
+type ListMySubscriptionsQuery struct {
+	ClientUserID int64
+}
+
+type CancelSubscriptionCommand struct {
+	ClientUserID   int64
+	SubscriptionID int64
 }
 
 type DeletePostCommand struct {

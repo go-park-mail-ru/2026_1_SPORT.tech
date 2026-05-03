@@ -112,6 +112,27 @@ func DeleteSubscriptionTierRequestToCommand(request *contentv1.DeleteSubscriptio
 	}
 }
 
+func SubscribeToTrainerRequestToCommand(request *contentv1.SubscribeToTrainerRequest) usecase.SubscribeToTrainerCommand {
+	return usecase.SubscribeToTrainerCommand{
+		ClientUserID:  request.GetClientUserId(),
+		TrainerUserID: request.GetTrainerUserId(),
+		TierID:        request.GetTierId(),
+	}
+}
+
+func ListMySubscriptionsRequestToQuery(request *contentv1.ListMySubscriptionsRequest) usecase.ListMySubscriptionsQuery {
+	return usecase.ListMySubscriptionsQuery{
+		ClientUserID: request.GetClientUserId(),
+	}
+}
+
+func CancelSubscriptionRequestToCommand(request *contentv1.CancelSubscriptionRequest) usecase.CancelSubscriptionCommand {
+	return usecase.CancelSubscriptionCommand{
+		ClientUserID:   request.GetClientUserId(),
+		SubscriptionID: request.GetSubscriptionId(),
+	}
+}
+
 func DeletePostRequestToCommand(request *contentv1.DeletePostRequest) usecase.DeletePostCommand {
 	return usecase.DeletePostCommand{
 		PostID:       request.GetPostId(),
@@ -218,6 +239,21 @@ func NewSubscriptionTierResponse(tier domain.SubscriptionTier) *contentv1.Subscr
 	return subscriptionTierToProto(tier)
 }
 
+func NewSubscriptionResponse(subscription domain.Subscription) *contentv1.Subscription {
+	return subscriptionToProto(subscription)
+}
+
+func NewListMySubscriptionsResponse(subscriptions []domain.Subscription) *contentv1.ListMySubscriptionsResponse {
+	response := &contentv1.ListMySubscriptionsResponse{
+		Subscriptions: make([]*contentv1.Subscription, 0, len(subscriptions)),
+	}
+	for _, subscription := range subscriptions {
+		response.Subscriptions = append(response.Subscriptions, subscriptionToProto(subscription))
+	}
+
+	return response
+}
+
 func NewCommentResponse(comment domain.Comment) *contentv1.CommentResponse {
 	return &contentv1.CommentResponse{
 		Comment: commentToProto(comment),
@@ -267,12 +303,15 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidSubscriptionTierPrice),
 		errors.Is(err, usecase.ErrInvalidSubscriptionTierDescription),
 		errors.Is(err, usecase.ErrConflictingTierDescriptionUpdate),
+		errors.Is(err, usecase.ErrInvalidSubscriptionID),
+		errors.Is(err, usecase.ErrInvalidSubscriptionTarget),
 		errors.Is(err, domain.ErrInvalidBlockKind),
 		errors.Is(err, domain.ErrInvalidBlockData):
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, domain.ErrPostNotFound),
 		errors.Is(err, domain.ErrCommentNotFound),
-		errors.Is(err, domain.ErrSubscriptionTierNotFound):
+		errors.Is(err, domain.ErrSubscriptionTierNotFound),
+		errors.Is(err, domain.ErrSubscriptionNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
@@ -359,6 +398,21 @@ func subscriptionTierToProto(tier domain.SubscriptionTier) *contentv1.Subscripti
 	}
 
 	return response
+}
+
+func subscriptionToProto(subscription domain.Subscription) *contentv1.Subscription {
+	return &contentv1.Subscription{
+		SubscriptionId: subscription.SubscriptionID,
+		ClientUserId:   subscription.ClientUserID,
+		TrainerUserId:  subscription.TrainerUserID,
+		TierId:         subscription.TierID,
+		TierName:       subscription.TierName,
+		Price:          subscription.Price,
+		Active:         subscription.Active,
+		ExpiresAt:      timestamppb.New(subscription.ExpiresAt),
+		CreatedAt:      timestamppb.New(subscription.CreatedAt),
+		UpdatedAt:      timestamppb.New(subscription.UpdatedAt),
+	}
 }
 
 func postBlockToProto(block domain.PostBlock) *contentv1.PostBlock {

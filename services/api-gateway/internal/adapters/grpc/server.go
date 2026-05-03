@@ -41,6 +41,7 @@ type Server struct {
 	gatewayv1.UnimplementedProfileServiceServer
 	gatewayv1.UnimplementedPostServiceServer
 	gatewayv1.UnimplementedTierServiceServer
+	gatewayv1.UnimplementedSubscriptionServiceServer
 	gatewayv1.UnimplementedSportServiceServer
 	gatewayv1.UnimplementedDonationServiceServer
 	authClient    authv1.AuthServiceClient

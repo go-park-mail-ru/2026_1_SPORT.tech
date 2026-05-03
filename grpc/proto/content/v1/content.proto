@@ -184,6 +184,38 @@ message DeleteSubscriptionTierRequest {
   int64 tier_id = 2;
 }
 
+message Subscription {
+  int64 subscription_id = 1;
+  int64 client_user_id = 2;
+  int64 trainer_user_id = 3;
+  int64 tier_id = 4;
+  string tier_name = 5;
+  int32 price = 6;
+  bool active = 7;
+  google.protobuf.Timestamp expires_at = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message SubscribeToTrainerRequest {
+  int64 client_user_id = 1;
+  int64 trainer_user_id = 2;
+  int64 tier_id = 3;
+}
+
+message ListMySubscriptionsRequest {
+  int64 client_user_id = 1;
+}
+
+message ListMySubscriptionsResponse {
+  repeated Subscription subscriptions = 1;
+}
+
+message CancelSubscriptionRequest {
+  int64 client_user_id = 1;
+  int64 subscription_id = 2;
+}
+
 message DeletePostRequest {
   int64 post_id = 1;
   int64 author_user_id = 2;
@@ -295,6 +327,21 @@ service ContentService {
 
   rpc DeleteSubscriptionTier(DeleteSubscriptionTierRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/trainers/{trainer_user_id}/tiers/{tier_id}";
+  }
+
+  rpc SubscribeToTrainer(SubscribeToTrainerRequest) returns (Subscription) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_user_id}/subscribe"
+      body: "*"
+    };
+  }
+
+  rpc ListMySubscriptions(ListMySubscriptionsRequest) returns (ListMySubscriptionsResponse) {
+    option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
+  }
+
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/users/{client_user_id}/subscriptions/{subscription_id}";
   }
 
   rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {

@@ -11,6 +11,22 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (server *Server) ListTrainerTiers(ctx context.Context, request *gatewayv1.TrainerTiersRequest) (*gatewayv1.TiersResponse, error) {
+	if request.GetTrainerId() <= 0 {
+		return nil, status.Error(codes.InvalidArgument, "invalid trainer id")
+	}
+
+	response, err := server.contentClient.ListSubscriptionTiers(
+		forwardContext(ctx),
+		&contentv1.ListSubscriptionTiersRequest{TrainerUserId: int64(request.GetTrainerId())},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.TiersResponseFromContent(response)
+}
+
 func (server *Server) ListTiers(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.TiersResponse, error) {
 	trainerUserID, err := server.requireTrainerUserID(ctx)
 	if err != nil {

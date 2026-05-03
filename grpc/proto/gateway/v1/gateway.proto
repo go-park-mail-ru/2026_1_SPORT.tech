@@ -292,6 +292,35 @@ message DeleteTierRequest {
   int32 tier_id = 1;
 }
 
+message TrainerTiersRequest {
+  int32 trainer_id = 1;
+}
+
+message SubscribeRequest {
+  int32 trainer_id = 1;
+  int32 tier_id = 2;
+}
+
+message Subscription {
+  int32 subscription_id = 1;
+  int32 trainer_id = 2;
+  int32 tier_id = 3;
+  string tier_name = 4;
+  int32 price = 5;
+  bool active = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message SubscriptionsResponse {
+  repeated Subscription subscriptions = 1;
+}
+
+message CancelSubscriptionRequest {
+  int32 subscription_id = 1;
+}
+
 message DonateToProfileRequest {
   int32 user_id = 1;
   int32 amount_value = 2;
@@ -430,6 +459,10 @@ service PostService {
 }
 
 service TierService {
+  rpc ListTrainerTiers(TrainerTiersRequest) returns (TiersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_id}/tiers";
+  }
+
   rpc ListTiers(google.protobuf.Empty) returns (TiersResponse) {
     option (google.api.http).get = "/v1/tiers";
   }
@@ -450,6 +483,23 @@ service TierService {
 
   rpc DeleteTier(DeleteTierRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/tiers/{tier_id}";
+  }
+}
+
+service SubscriptionService {
+  rpc SubscribeToTrainer(SubscribeRequest) returns (Subscription) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_id}/subscribe"
+      body: "*"
+    };
+  }
+
+  rpc ListMySubscriptions(google.protobuf.Empty) returns (SubscriptionsResponse) {
+    option (google.api.http).get = "/v1/subscriptions/me";
+  }
+
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/subscriptions/{subscription_id}";
   }
 }
 

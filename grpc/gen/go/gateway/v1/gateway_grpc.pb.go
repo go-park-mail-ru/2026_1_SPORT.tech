@@ -1004,16 +1004,18 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	TierService_ListTiers_FullMethodName  = "/sporttech.gateway.v1.TierService/ListTiers"
-	TierService_CreateTier_FullMethodName = "/sporttech.gateway.v1.TierService/CreateTier"
-	TierService_UpdateTier_FullMethodName = "/sporttech.gateway.v1.TierService/UpdateTier"
-	TierService_DeleteTier_FullMethodName = "/sporttech.gateway.v1.TierService/DeleteTier"
+	TierService_ListTrainerTiers_FullMethodName = "/sporttech.gateway.v1.TierService/ListTrainerTiers"
+	TierService_ListTiers_FullMethodName        = "/sporttech.gateway.v1.TierService/ListTiers"
+	TierService_CreateTier_FullMethodName       = "/sporttech.gateway.v1.TierService/CreateTier"
+	TierService_UpdateTier_FullMethodName       = "/sporttech.gateway.v1.TierService/UpdateTier"
+	TierService_DeleteTier_FullMethodName       = "/sporttech.gateway.v1.TierService/DeleteTier"
 )
 
 // TierServiceClient is the client API for TierService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TierServiceClient interface {
+	ListTrainerTiers(ctx context.Context, in *TrainerTiersRequest, opts ...grpc.CallOption) (*TiersResponse, error)
 	ListTiers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TiersResponse, error)
 	CreateTier(ctx context.Context, in *CreateTierRequest, opts ...grpc.CallOption) (*Tier, error)
 	UpdateTier(ctx context.Context, in *UpdateTierRequest, opts ...grpc.CallOption) (*Tier, error)
@@ -1026,6 +1028,16 @@ type tierServiceClient struct {
 
 func NewTierServiceClient(cc grpc.ClientConnInterface) TierServiceClient {
 	return &tierServiceClient{cc}
+}
+
+func (c *tierServiceClient) ListTrainerTiers(ctx context.Context, in *TrainerTiersRequest, opts ...grpc.CallOption) (*TiersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TiersResponse)
+	err := c.cc.Invoke(ctx, TierService_ListTrainerTiers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *tierServiceClient) ListTiers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TiersResponse, error) {
@@ -1072,6 +1084,7 @@ func (c *tierServiceClient) DeleteTier(ctx context.Context, in *DeleteTierReques
 // All implementations should embed UnimplementedTierServiceServer
 // for forward compatibility.
 type TierServiceServer interface {
+	ListTrainerTiers(context.Context, *TrainerTiersRequest) (*TiersResponse, error)
 	ListTiers(context.Context, *emptypb.Empty) (*TiersResponse, error)
 	CreateTier(context.Context, *CreateTierRequest) (*Tier, error)
 	UpdateTier(context.Context, *UpdateTierRequest) (*Tier, error)
@@ -1085,6 +1098,9 @@ type TierServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTierServiceServer struct{}
 
+func (UnimplementedTierServiceServer) ListTrainerTiers(context.Context, *TrainerTiersRequest) (*TiersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTrainerTiers not implemented")
+}
 func (UnimplementedTierServiceServer) ListTiers(context.Context, *emptypb.Empty) (*TiersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTiers not implemented")
 }
@@ -1115,6 +1131,24 @@ func RegisterTierServiceServer(s grpc.ServiceRegistrar, srv TierServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&TierService_ServiceDesc, srv)
+}
+
+func _TierService_ListTrainerTiers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TrainerTiersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TierServiceServer).ListTrainerTiers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TierService_ListTrainerTiers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TierServiceServer).ListTrainerTiers(ctx, req.(*TrainerTiersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _TierService_ListTiers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1197,6 +1231,10 @@ var TierService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TierServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "ListTrainerTiers",
+			Handler:    _TierService_ListTrainerTiers_Handler,
+		},
+		{
 			MethodName: "ListTiers",
 			Handler:    _TierService_ListTiers_Handler,
 		},
@@ -1211,6 +1249,182 @@ var TierService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTier",
 			Handler:    _TierService_DeleteTier_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	SubscriptionService_SubscribeToTrainer_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/SubscribeToTrainer"
+	SubscriptionService_ListMySubscriptions_FullMethodName = "/sporttech.gateway.v1.SubscriptionService/ListMySubscriptions"
+	SubscriptionService_CancelSubscription_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/CancelSubscription"
+)
+
+// SubscriptionServiceClient is the client API for SubscriptionService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type SubscriptionServiceClient interface {
+	SubscribeToTrainer(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*Subscription, error)
+	ListMySubscriptions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SubscriptionsResponse, error)
+	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type subscriptionServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewSubscriptionServiceClient(cc grpc.ClientConnInterface) SubscriptionServiceClient {
+	return &subscriptionServiceClient{cc}
+}
+
+func (c *subscriptionServiceClient) SubscribeToTrainer(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*Subscription, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Subscription)
+	err := c.cc.Invoke(ctx, SubscriptionService_SubscribeToTrainer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subscriptionServiceClient) ListMySubscriptions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SubscriptionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubscriptionsResponse)
+	err := c.cc.Invoke(ctx, SubscriptionService_ListMySubscriptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subscriptionServiceClient) CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, SubscriptionService_CancelSubscription_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SubscriptionServiceServer is the server API for SubscriptionService service.
+// All implementations should embed UnimplementedSubscriptionServiceServer
+// for forward compatibility.
+type SubscriptionServiceServer interface {
+	SubscribeToTrainer(context.Context, *SubscribeRequest) (*Subscription, error)
+	ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error)
+	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
+}
+
+// UnimplementedSubscriptionServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedSubscriptionServiceServer struct{}
+
+func (UnimplementedSubscriptionServiceServer) SubscribeToTrainer(context.Context, *SubscribeRequest) (*Subscription, error) {
+	return nil, status.Error(codes.Unimplemented, "method SubscribeToTrainer not implemented")
+}
+func (UnimplementedSubscriptionServiceServer) ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMySubscriptions not implemented")
+}
+func (UnimplementedSubscriptionServiceServer) CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelSubscription not implemented")
+}
+func (UnimplementedSubscriptionServiceServer) testEmbeddedByValue() {}
+
+// UnsafeSubscriptionServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SubscriptionServiceServer will
+// result in compilation errors.
+type UnsafeSubscriptionServiceServer interface {
+	mustEmbedUnimplementedSubscriptionServiceServer()
+}
+
+func RegisterSubscriptionServiceServer(s grpc.ServiceRegistrar, srv SubscriptionServiceServer) {
+	// If the following call panics, it indicates UnimplementedSubscriptionServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&SubscriptionService_ServiceDesc, srv)
+}
+
+func _SubscriptionService_SubscribeToTrainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubscribeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubscriptionServiceServer).SubscribeToTrainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubscriptionService_SubscribeToTrainer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubscriptionServiceServer).SubscribeToTrainer(ctx, req.(*SubscribeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubscriptionService_ListMySubscriptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubscriptionServiceServer).ListMySubscriptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubscriptionService_ListMySubscriptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubscriptionServiceServer).ListMySubscriptions(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubscriptionService_CancelSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelSubscriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubscriptionServiceServer).CancelSubscription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubscriptionService_CancelSubscription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubscriptionServiceServer).CancelSubscription(ctx, req.(*CancelSubscriptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// SubscriptionService_ServiceDesc is the grpc.ServiceDesc for SubscriptionService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var SubscriptionService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.SubscriptionService",
+	HandlerType: (*SubscriptionServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SubscribeToTrainer",
+			Handler:    _SubscriptionService_SubscribeToTrainer_Handler,
+		},
+		{
+			MethodName: "ListMySubscriptions",
+			Handler:    _SubscriptionService_ListMySubscriptions_Handler,
+		},
+		{
+			MethodName: "CancelSubscription",
+			Handler:    _SubscriptionService_CancelSubscription_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

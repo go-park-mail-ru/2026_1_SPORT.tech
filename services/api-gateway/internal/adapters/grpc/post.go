@@ -21,14 +21,10 @@ func (server *Server) SearchPosts(ctx context.Context, request *gatewayv1.Search
 	if principal != nil && principal.User != nil {
 		viewerUserID = principal.User.GetUserId()
 	}
-	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	response, err := server.contentClient.SearchPosts(
 		forwardContext(ctx),
-		mappers.SearchPostsRequestToContent(viewerUserID, viewerSubscriptionLevel, request),
+		mappers.SearchPostsRequestToContent(viewerUserID, nil, request),
 	)
 	if err != nil {
 		return nil, err
@@ -101,17 +97,12 @@ func (server *Server) GetPost(ctx context.Context, request *gatewayv1.GetPostReq
 	if principal != nil && principal.User != nil {
 		viewerUserID = principal.User.GetUserId()
 	}
-	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	response, err := server.contentClient.GetPost(
 		forwardContext(ctx),
 		&contentv1.GetPostRequest{
-			PostId:                  int64(request.GetPostId()),
-			ViewerUserId:            viewerUserID,
-			ViewerSubscriptionLevel: viewerSubscriptionLevel,
+			PostId:       int64(request.GetPostId()),
+			ViewerUserId: viewerUserID,
 		},
 	)
 	if err != nil {
@@ -187,17 +178,12 @@ func (server *Server) LikePost(ctx context.Context, request *gatewayv1.PostLikeR
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
-	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	response, err := server.contentClient.LikePost(
 		forwardContext(ctx),
 		&contentv1.LikePostRequest{
-			PostId:                  int64(request.GetPostId()),
-			UserId:                  userID,
-			ViewerSubscriptionLevel: viewerSubscriptionLevel,
+			PostId: int64(request.GetPostId()),
+			UserId: userID,
 		},
 	)
 	if err != nil {
@@ -217,17 +203,12 @@ func (server *Server) UnlikePost(ctx context.Context, request *gatewayv1.PostLik
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
-	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	response, err := server.contentClient.UnlikePost(
 		forwardContext(ctx),
 		&contentv1.UnlikePostRequest{
-			PostId:                  int64(request.GetPostId()),
-			UserId:                  userID,
-			ViewerSubscriptionLevel: viewerSubscriptionLevel,
+			PostId: int64(request.GetPostId()),
+			UserId: userID,
 		},
 	)
 	if err != nil {

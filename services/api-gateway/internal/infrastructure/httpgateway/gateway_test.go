@@ -143,7 +143,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		contentv1.NewContentServiceClient(contentConn),
 	)
 
-	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
+	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}

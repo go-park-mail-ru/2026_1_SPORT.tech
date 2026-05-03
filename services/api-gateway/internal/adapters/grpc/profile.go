@@ -142,19 +142,14 @@ func (server *Server) ListProfilePosts(ctx context.Context, request *gatewayv1.G
 	if principal != nil && principal.User != nil {
 		viewerUserID = principal.User.GetUserId()
 	}
-	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	response, err := server.contentClient.ListAuthorPosts(
 		forwardContext(ctx),
 		&contentv1.ListAuthorPostsRequest{
-			AuthorUserId:            int64(request.GetUserId()),
-			ViewerUserId:            viewerUserID,
-			ViewerSubscriptionLevel: viewerSubscriptionLevel,
-			Limit:                   20,
-			Offset:                  0,
+			AuthorUserId: int64(request.GetUserId()),
+			ViewerUserId: viewerUserID,
+			Limit:        20,
+			Offset:       0,
 		},
 	)
 	if err != nil {

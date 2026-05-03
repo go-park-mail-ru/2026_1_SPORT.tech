@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
@@ -49,12 +50,17 @@ func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPos
 	}
 
 	for index := range posts {
-		posts[index].CanView = domain.CanViewPost(
+		canView, err := service.canViewPost(
+			ctx,
 			posts[index].RequiredSubscriptionLevel,
 			posts[index].AuthorUserID,
 			query.ViewerUserID,
-			query.ViewerSubscriptionLevel,
 		)
+		if err != nil {
+			return nil, err
+		}
+
+		posts[index].CanView = canView
 	}
 
 	return posts, nil
@@ -104,12 +110,17 @@ func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery)
 	}
 
 	for index := range posts {
-		posts[index].CanView = domain.CanViewPost(
+		canView, err := service.canViewPost(
+			ctx,
 			posts[index].RequiredSubscriptionLevel,
 			posts[index].AuthorUserID,
 			query.ViewerUserID,
-			query.ViewerSubscriptionLevel,
 		)
+		if err != nil {
+			return nil, err
+		}
+
+		posts[index].CanView = canView
 	}
 
 	return posts, nil
@@ -195,7 +206,11 @@ func (service *Service) GetPost(ctx context.Context, query GetPostQuery) (domain
 	if err != nil {
 		return domain.Post{}, err
 	}
-	if !domain.CanViewPost(post.RequiredSubscriptionLevel, post.AuthorUserID, query.ViewerUserID, query.ViewerSubscriptionLevel) {
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, query.ViewerUserID)
+	if err != nil {
+		return domain.Post{}, err
+	}
+	if !canView {
 		return domain.Post{}, domain.ErrPostForbidden
 	}
 
@@ -350,6 +365,52 @@ func (service *Service) DeleteSubscriptionTier(ctx context.Context, command Dele
 	return service.contentRepository.DeleteSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 }
 
+func (service *Service) SubscribeToTrainer(ctx context.Context, command SubscribeToTrainerCommand) (domain.Subscription, error) {
+	if command.ClientUserID <= 0 {
+		return domain.Subscription{}, ErrInvalidUserID
+	}
+	if command.TrainerUserID <= 0 {
+		return domain.Subscription{}, ErrInvalidUserID
+	}
+	if command.ClientUserID == command.TrainerUserID {
+		return domain.Subscription{}, ErrInvalidSubscriptionTarget
+	}
+	if command.TierID <= 0 {
+		return domain.Subscription{}, ErrInvalidSubscriptionTierID
+	}
+
+	tier, err := service.contentRepository.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	if err != nil {
+		return domain.Subscription{}, err
+	}
+
+	return service.contentRepository.SubscribeToTrainer(ctx, domain.Subscription{
+		ClientUserID:  command.ClientUserID,
+		TrainerUserID: command.TrainerUserID,
+		TierID:        tier.TierID,
+		ExpiresAt:     time.Now().UTC().AddDate(0, 1, 0),
+	})
+}
+
+func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySubscriptionsQuery) ([]domain.Subscription, error) {
+	if query.ClientUserID <= 0 {
+		return nil, ErrInvalidUserID
+	}
+
+	return service.contentRepository.ListSubscriptions(ctx, query.ClientUserID)
+}
+
+func (service *Service) CancelSubscription(ctx context.Context, command CancelSubscriptionCommand) error {
+	if command.ClientUserID <= 0 {
+		return ErrInvalidUserID
+	}
+	if command.SubscriptionID <= 0 {
+		return ErrInvalidSubscriptionID
+	}
+
+	return service.contentRepository.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID)
+}
+
 func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (domain.PostLikeState, error) {
 	if command.PostID <= 0 {
 		return domain.PostLikeState{}, ErrInvalidPostID
@@ -362,7 +423,11 @@ func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (
 	if err != nil {
 		return domain.PostLikeState{}, err
 	}
-	if !domain.CanViewPost(post.RequiredSubscriptionLevel, post.AuthorUserID, command.UserID, command.ViewerSubscriptionLevel) {
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, command.UserID)
+	if err != nil {
+		return domain.PostLikeState{}, err
+	}
+	if !canView {
 		return domain.PostLikeState{}, domain.ErrPostForbidden
 	}
 
@@ -385,7 +450,11 @@ func (service *Service) UnlikePost(ctx context.Context, command LikePostCommand)
 	if err != nil {
 		return domain.PostLikeState{}, err
 	}
-	if !domain.CanViewPost(post.RequiredSubscriptionLevel, post.AuthorUserID, command.UserID, command.ViewerSubscriptionLevel) {
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, command.UserID)
+	if err != nil {
+		return domain.PostLikeState{}, err
+	}
+	if !canView {
 		return domain.PostLikeState{}, domain.ErrPostForbidden
 	}
 
@@ -413,7 +482,11 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 	if err != nil {
 		return domain.Comment{}, err
 	}
-	if !domain.CanViewPost(post.RequiredSubscriptionLevel, post.AuthorUserID, command.AuthorUserID, command.ViewerSubscriptionLevel) {
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, command.AuthorUserID)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	if !canView {
 		return domain.Comment{}, domain.ErrPostForbidden
 	}
 
@@ -441,7 +514,11 @@ func (service *Service) ListComments(ctx context.Context, query ListCommentsQuer
 	if err != nil {
 		return nil, err
 	}
-	if !domain.CanViewPost(post.RequiredSubscriptionLevel, post.AuthorUserID, query.ViewerUserID, query.ViewerSubscriptionLevel) {
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, query.ViewerUserID)
+	if err != nil {
+		return nil, err
+	}
+	if !canView {
 		return nil, domain.ErrPostForbidden
 	}
 
@@ -567,6 +644,30 @@ func (service *Service) ensureRequiredSubscriptionTier(ctx context.Context, trai
 
 	_, err := service.contentRepository.GetSubscriptionTier(ctx, trainerUserID, int64(*level))
 	return err
+}
+
+func (service *Service) canViewPost(
+	ctx context.Context,
+	requiredLevel *int32,
+	authorUserID int64,
+	viewerUserID int64,
+) (bool, error) {
+	if requiredLevel == nil {
+		return true, nil
+	}
+	if authorUserID == viewerUserID && authorUserID != 0 {
+		return true, nil
+	}
+	if viewerUserID <= 0 {
+		return false, nil
+	}
+
+	viewerSubscriptionLevel, err := service.contentRepository.GetActiveSubscriptionLevel(ctx, viewerUserID, authorUserID)
+	if err != nil {
+		return false, err
+	}
+
+	return domain.CanViewPost(requiredLevel, authorUserID, viewerUserID, viewerSubscriptionLevel), nil
 }
 
 func normalizeBlocks(inputs []PostBlockInput) []domain.PostBlock {

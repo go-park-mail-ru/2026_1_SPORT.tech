@@ -11,22 +11,26 @@ import (
 )
 
 type stubContentRepository struct {
-	createPostFunc      func(ctx context.Context, post domain.Post) (int64, error)
-	getPostFunc         func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error)
-	listAuthorPostsFunc func(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error)
-	searchPostsFunc     func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
-	updatePostFunc      func(ctx context.Context, post domain.Post, replaceBlocks bool) error
-	deletePostFunc      func(ctx context.Context, postID int64, authorUserID int64) error
-	listTiersFunc       func(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error)
-	getTierFunc         func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error)
-	createTierFunc      func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
-	updateTierFunc      func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
-	deleteTierFunc      func(ctx context.Context, trainerUserID int64, tierID int64) error
-	upsertLikeFunc      func(ctx context.Context, postID int64, userID int64) error
-	deleteLikeFunc      func(ctx context.Context, postID int64, userID int64) error
-	getLikeStateFunc    func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
-	createCommentFunc   func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
-	listCommentsFunc    func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	createPostFunc         func(ctx context.Context, post domain.Post) (int64, error)
+	getPostFunc            func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error)
+	listAuthorPostsFunc    func(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error)
+	searchPostsFunc        func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
+	updatePostFunc         func(ctx context.Context, post domain.Post, replaceBlocks bool) error
+	deletePostFunc         func(ctx context.Context, postID int64, authorUserID int64) error
+	listTiersFunc          func(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error)
+	getTierFunc            func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error)
+	createTierFunc         func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	updateTierFunc         func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	deleteTierFunc         func(ctx context.Context, trainerUserID int64, tierID int64) error
+	activeLevelFunc        func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
+	subscribeFunc          func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
+	listSubscriptionsFunc  func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	cancelSubscriptionFunc func(ctx context.Context, clientUserID int64, subscriptionID int64) error
+	upsertLikeFunc         func(ctx context.Context, postID int64, userID int64) error
+	deleteLikeFunc         func(ctx context.Context, postID int64, userID int64) error
+	getLikeStateFunc       func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
+	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
+	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
 }
 
 func (repository stubContentRepository) CreatePost(ctx context.Context, post domain.Post) (int64, error) {
@@ -86,6 +90,34 @@ func (repository stubContentRepository) DeleteSubscriptionTier(ctx context.Conte
 		return nil
 	}
 	return repository.deleteTierFunc(ctx, trainerUserID, tierID)
+}
+
+func (repository stubContentRepository) GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error) {
+	if repository.activeLevelFunc == nil {
+		return nil, nil
+	}
+	return repository.activeLevelFunc(ctx, clientUserID, trainerUserID)
+}
+
+func (repository stubContentRepository) SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+	if repository.subscribeFunc == nil {
+		return subscription, nil
+	}
+	return repository.subscribeFunc(ctx, subscription)
+}
+
+func (repository stubContentRepository) ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error) {
+	if repository.listSubscriptionsFunc == nil {
+		return nil, nil
+	}
+	return repository.listSubscriptionsFunc(ctx, clientUserID)
+}
+
+func (repository stubContentRepository) CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error {
+	if repository.cancelSubscriptionFunc == nil {
+		return nil
+	}
+	return repository.cancelSubscriptionFunc(ctx, clientUserID, subscriptionID)
 }
 
 func (repository stubContentRepository) UpsertLike(ctx context.Context, postID int64, userID int64) error {
@@ -269,6 +301,12 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 					RequiredSubscriptionLevel: &requiredLevel,
 				}}, nil
 			},
+			activeLevelFunc: func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error) {
+				if clientUserID != 13 || trainerUserID != 7 {
+					t.Fatalf("unexpected active subscription lookup: client=%d trainer=%d", clientUserID, trainerUserID)
+				}
+				return &requiredLevel, nil
+			},
 		},
 		nil,
 	)
@@ -325,6 +363,52 @@ func TestServiceCreateSubscriptionTier(t *testing.T) {
 	}
 	if tier.TierID != 2 {
 		t.Fatalf("unexpected tier id: %d", tier.TierID)
+	}
+}
+
+func TestServiceSubscribeToTrainer(t *testing.T) {
+	service := NewService(
+		stubContentRepository{
+			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+				if trainerUserID != 1001 || tierID != 2 {
+					t.Fatalf("unexpected tier lookup: trainer=%d tier=%d", trainerUserID, tierID)
+				}
+
+				return domain.SubscriptionTier{
+					TrainerUserID: trainerUserID,
+					TierID:        tierID,
+					Name:          "Продвинутый",
+					Price:         1500,
+				}, nil
+			},
+			subscribeFunc: func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+				if subscription.ClientUserID != 1002 ||
+					subscription.TrainerUserID != 1001 ||
+					subscription.TierID != 2 ||
+					subscription.ExpiresAt.IsZero() {
+					t.Fatalf("unexpected subscription: %+v", subscription)
+				}
+
+				subscription.SubscriptionID = 2401
+				subscription.TierName = "Продвинутый"
+				subscription.Price = 1500
+				subscription.Active = true
+				return subscription, nil
+			},
+		},
+		nil,
+	)
+
+	subscription, err := service.SubscribeToTrainer(context.Background(), SubscribeToTrainerCommand{
+		ClientUserID:  1002,
+		TrainerUserID: 1001,
+		TierID:        2,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if subscription.SubscriptionID != 2401 || !subscription.Active {
+		t.Fatalf("unexpected subscription result: %+v", subscription)
 	}
 }
 

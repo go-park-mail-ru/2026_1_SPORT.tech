@@ -2788,6 +2788,298 @@ func (x *DeleteTierRequest) GetTierId() int32 {
 	return 0
 }
 
+type TrainerTiersRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TrainerId     int32                  `protobuf:"varint,1,opt,name=trainer_id,json=trainerId,proto3" json:"trainer_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TrainerTiersRequest) Reset() {
+	*x = TrainerTiersRequest{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TrainerTiersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrainerTiersRequest) ProtoMessage() {}
+
+func (x *TrainerTiersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrainerTiersRequest.ProtoReflect.Descriptor instead.
+func (*TrainerTiersRequest) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *TrainerTiersRequest) GetTrainerId() int32 {
+	if x != nil {
+		return x.TrainerId
+	}
+	return 0
+}
+
+type SubscribeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TrainerId     int32                  `protobuf:"varint,1,opt,name=trainer_id,json=trainerId,proto3" json:"trainer_id,omitempty"`
+	TierId        int32                  `protobuf:"varint,2,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubscribeRequest) Reset() {
+	*x = SubscribeRequest{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscribeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscribeRequest) ProtoMessage() {}
+
+func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
+func (*SubscribeRequest) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *SubscribeRequest) GetTrainerId() int32 {
+	if x != nil {
+		return x.TrainerId
+	}
+	return 0
+}
+
+func (x *SubscribeRequest) GetTierId() int32 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+type Subscription struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId int32                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	TrainerId      int32                  `protobuf:"varint,2,opt,name=trainer_id,json=trainerId,proto3" json:"trainer_id,omitempty"`
+	TierId         int32                  `protobuf:"varint,3,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	TierName       string                 `protobuf:"bytes,4,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
+	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	Active         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
+	ExpiresAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Subscription) Reset() {
+	*x = Subscription{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Subscription) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Subscription) ProtoMessage() {}
+
+func (x *Subscription) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Subscription.ProtoReflect.Descriptor instead.
+func (*Subscription) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *Subscription) GetSubscriptionId() int32 {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTrainerId() int32 {
+	if x != nil {
+		return x.TrainerId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTierId() int32 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTierName() string {
+	if x != nil {
+		return x.TierName
+	}
+	return ""
+}
+
+func (x *Subscription) GetPrice() int32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *Subscription) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *Subscription) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *Subscription) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Subscription) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type SubscriptionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Subscriptions []*Subscription        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubscriptionsResponse) Reset() {
+	*x = SubscriptionsResponse{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscriptionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscriptionsResponse) ProtoMessage() {}
+
+func (x *SubscriptionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscriptionsResponse.ProtoReflect.Descriptor instead.
+func (*SubscriptionsResponse) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *SubscriptionsResponse) GetSubscriptions() []*Subscription {
+	if x != nil {
+		return x.Subscriptions
+	}
+	return nil
+}
+
+type CancelSubscriptionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId int32                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CancelSubscriptionRequest) Reset() {
+	*x = CancelSubscriptionRequest{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelSubscriptionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelSubscriptionRequest) ProtoMessage() {}
+
+func (x *CancelSubscriptionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelSubscriptionRequest.ProtoReflect.Descriptor instead.
+func (*CancelSubscriptionRequest) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *CancelSubscriptionRequest) GetSubscriptionId() int32 {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return 0
+}
+
 type DonateToProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -2800,7 +3092,7 @@ type DonateToProfileRequest struct {
 
 func (x *DonateToProfileRequest) Reset() {
 	*x = DonateToProfileRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2812,7 +3104,7 @@ func (x *DonateToProfileRequest) String() string {
 func (*DonateToProfileRequest) ProtoMessage() {}
 
 func (x *DonateToProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2825,7 +3117,7 @@ func (x *DonateToProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DonateToProfileRequest.ProtoReflect.Descriptor instead.
 func (*DonateToProfileRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{41}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *DonateToProfileRequest) GetUserId() int32 {
@@ -2871,7 +3163,7 @@ type DonationResponse struct {
 
 func (x *DonationResponse) Reset() {
 	*x = DonationResponse{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2883,7 +3175,7 @@ func (x *DonationResponse) String() string {
 func (*DonationResponse) ProtoMessage() {}
 
 func (x *DonationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2896,7 +3188,7 @@ func (x *DonationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DonationResponse.ProtoReflect.Descriptor instead.
 func (*DonationResponse) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{42}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *DonationResponse) GetDonationId() int32 {
@@ -3227,7 +3519,32 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06_priceB\x0e\n" +
 	"\f_description\",\n" +
 	"\x11DeleteTierRequest\x12\x17\n" +
-	"\atier_id\x18\x01 \x01(\x05R\x06tierId\"\x9b\x01\n" +
+	"\atier_id\x18\x01 \x01(\x05R\x06tierId\"4\n" +
+	"\x13TrainerTiersRequest\x12\x1d\n" +
+	"\n" +
+	"trainer_id\x18\x01 \x01(\x05R\ttrainerId\"J\n" +
+	"\x10SubscribeRequest\x12\x1d\n" +
+	"\n" +
+	"trainer_id\x18\x01 \x01(\x05R\ttrainerId\x12\x17\n" +
+	"\atier_id\x18\x02 \x01(\x05R\x06tierId\"\xeb\x02\n" +
+	"\fSubscription\x12'\n" +
+	"\x0fsubscription_id\x18\x01 \x01(\x05R\x0esubscriptionId\x12\x1d\n" +
+	"\n" +
+	"trainer_id\x18\x02 \x01(\x05R\ttrainerId\x12\x17\n" +
+	"\atier_id\x18\x03 \x01(\x05R\x06tierId\x12\x1b\n" +
+	"\ttier_name\x18\x04 \x01(\tR\btierName\x12\x14\n" +
+	"\x05price\x18\x05 \x01(\x05R\x05price\x12\x16\n" +
+	"\x06active\x18\x06 \x01(\bR\x06active\x129\n" +
+	"\n" +
+	"expires_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x129\n" +
+	"\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"a\n" +
+	"\x15SubscriptionsResponse\x12H\n" +
+	"\rsubscriptions\x18\x01 \x03(\v2\".sporttech.gateway.v1.SubscriptionR\rsubscriptions\"D\n" +
+	"\x19CancelSubscriptionRequest\x12'\n" +
+	"\x0fsubscription_id\x18\x01 \x01(\x05R\x0esubscriptionId\"\x9b\x01\n" +
 	"\x16DonateToProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12!\n" +
 	"\famount_value\x18\x02 \x01(\x05R\vamountValue\x12\x1a\n" +
@@ -3275,15 +3592,20 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"DeletePost\x12'.sporttech.gateway.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/posts/{post_id}\x12|\n" +
 	"\bLikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"!\x82\xd3\xe4\x93\x02\x1b\"\x19/v1/posts/{post_id}/likes\x12~\n" +
 	"\n" +
-	"UnlikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/posts/{post_id}/likes2\xb2\x03\n" +
-	"\vTierService\x12[\n" +
+	"UnlikePost\x12%.sporttech.gateway.v1.PostLikeRequest\x1a&.sporttech.gateway.v1.PostLikeResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/posts/{post_id}/likes2\xc0\x04\n" +
+	"\vTierService\x12\x8b\x01\n" +
+	"\x10ListTrainerTiers\x12).sporttech.gateway.v1.TrainerTiersRequest\x1a#.sporttech.gateway.v1.TiersResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/v1/trainers/{trainer_id}/tiers\x12[\n" +
 	"\tListTiers\x12\x16.google.protobuf.Empty\x1a#.sporttech.gateway.v1.TiersResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/v1/tiers\x12g\n" +
 	"\n" +
 	"CreateTier\x12'.sporttech.gateway.v1.CreateTierRequest\x1a\x1a.sporttech.gateway.v1.Tier\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/tiers\x12q\n" +
 	"\n" +
 	"UpdateTier\x12'.sporttech.gateway.v1.UpdateTierRequest\x1a\x1a.sporttech.gateway.v1.Tier\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*2\x13/v1/tiers/{tier_id}\x12j\n" +
 	"\n" +
-	"DeleteTier\x12'.sporttech.gateway.v1.DeleteTierRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/tiers/{tier_id}2{\n" +
+	"DeleteTier\x12'.sporttech.gateway.v1.DeleteTierRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/tiers/{tier_id}2\xaf\x03\n" +
+	"\x13SubscriptionService\x12\x90\x01\n" +
+	"\x12SubscribeToTrainer\x12&.sporttech.gateway.v1.SubscribeRequest\x1a\".sporttech.gateway.v1.Subscription\".\x82\xd3\xe4\x93\x02(:\x01*\"#/v1/trainers/{trainer_id}/subscribe\x12x\n" +
+	"\x13ListMySubscriptions\x12\x16.google.protobuf.Empty\x1a+.sporttech.gateway.v1.SubscriptionsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/subscriptions/me\x12\x8a\x01\n" +
+	"\x12CancelSubscription\x12/.sporttech.gateway.v1.CancelSubscriptionRequest\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%*#/v1/subscriptions/{subscription_id}2{\n" +
 	"\fSportService\x12k\n" +
 	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a(.sporttech.gateway.v1.SportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-types2\xa8\x01\n" +
 	"\x0fDonationService\x12\x94\x01\n" +
@@ -3301,59 +3623,64 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 	return file_gateway_v1_gateway_proto_rawDescData
 }
 
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
 var file_gateway_v1_gateway_proto_goTypes = []any{
-	(*ValidationErrorField)(nil),    // 0: sporttech.gateway.v1.ValidationErrorField
-	(*Error)(nil),                   // 1: sporttech.gateway.v1.Error
-	(*ErrorResponse)(nil),           // 2: sporttech.gateway.v1.ErrorResponse
-	(*User)(nil),                    // 3: sporttech.gateway.v1.User
-	(*TrainerSport)(nil),            // 4: sporttech.gateway.v1.TrainerSport
-	(*TrainerDetails)(nil),          // 5: sporttech.gateway.v1.TrainerDetails
-	(*ClientRegisterRequest)(nil),   // 6: sporttech.gateway.v1.ClientRegisterRequest
-	(*TrainerRegisterRequest)(nil),  // 7: sporttech.gateway.v1.TrainerRegisterRequest
-	(*LoginRequest)(nil),            // 8: sporttech.gateway.v1.LoginRequest
-	(*AuthResponse)(nil),            // 9: sporttech.gateway.v1.AuthResponse
-	(*CSRFTokenResponse)(nil),       // 10: sporttech.gateway.v1.CSRFTokenResponse
-	(*GetProfileRequest)(nil),       // 11: sporttech.gateway.v1.GetProfileRequest
-	(*ProfileResponse)(nil),         // 12: sporttech.gateway.v1.ProfileResponse
-	(*TrainerListItem)(nil),         // 13: sporttech.gateway.v1.TrainerListItem
-	(*GetTrainersResponse)(nil),     // 14: sporttech.gateway.v1.GetTrainersResponse
-	(*ListTrainersRequest)(nil),     // 15: sporttech.gateway.v1.ListTrainersRequest
-	(*UpdateMyProfileRequest)(nil),  // 16: sporttech.gateway.v1.UpdateMyProfileRequest
-	(*UploadMyAvatarRequest)(nil),   // 17: sporttech.gateway.v1.UploadMyAvatarRequest
-	(*AvatarUploadResponse)(nil),    // 18: sporttech.gateway.v1.AvatarUploadResponse
-	(*SportType)(nil),               // 19: sporttech.gateway.v1.SportType
-	(*SportTypesResponse)(nil),      // 20: sporttech.gateway.v1.SportTypesResponse
-	(*PostBlockInput)(nil),          // 21: sporttech.gateway.v1.PostBlockInput
-	(*UploadPostMediaRequest)(nil),  // 22: sporttech.gateway.v1.UploadPostMediaRequest
-	(*PostMediaUploadResponse)(nil), // 23: sporttech.gateway.v1.PostMediaUploadResponse
-	(*CreatePostRequest)(nil),       // 24: sporttech.gateway.v1.CreatePostRequest
-	(*UpdatePostRequest)(nil),       // 25: sporttech.gateway.v1.UpdatePostRequest
-	(*PostBlock)(nil),               // 26: sporttech.gateway.v1.PostBlock
-	(*PostListItem)(nil),            // 27: sporttech.gateway.v1.PostListItem
-	(*ProfilePostsResponse)(nil),    // 28: sporttech.gateway.v1.ProfilePostsResponse
-	(*SearchPostsRequest)(nil),      // 29: sporttech.gateway.v1.SearchPostsRequest
-	(*SearchPostsResponse)(nil),     // 30: sporttech.gateway.v1.SearchPostsResponse
-	(*PostResponse)(nil),            // 31: sporttech.gateway.v1.PostResponse
-	(*GetPostRequest)(nil),          // 32: sporttech.gateway.v1.GetPostRequest
-	(*DeletePostRequest)(nil),       // 33: sporttech.gateway.v1.DeletePostRequest
-	(*PostLikeRequest)(nil),         // 34: sporttech.gateway.v1.PostLikeRequest
-	(*PostLikeResponse)(nil),        // 35: sporttech.gateway.v1.PostLikeResponse
-	(*Tier)(nil),                    // 36: sporttech.gateway.v1.Tier
-	(*TiersResponse)(nil),           // 37: sporttech.gateway.v1.TiersResponse
-	(*CreateTierRequest)(nil),       // 38: sporttech.gateway.v1.CreateTierRequest
-	(*UpdateTierRequest)(nil),       // 39: sporttech.gateway.v1.UpdateTierRequest
-	(*DeleteTierRequest)(nil),       // 40: sporttech.gateway.v1.DeleteTierRequest
-	(*DonateToProfileRequest)(nil),  // 41: sporttech.gateway.v1.DonateToProfileRequest
-	(*DonationResponse)(nil),        // 42: sporttech.gateway.v1.DonationResponse
-	(*timestamppb.Timestamp)(nil),   // 43: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),           // 44: google.protobuf.Empty
+	(*ValidationErrorField)(nil),      // 0: sporttech.gateway.v1.ValidationErrorField
+	(*Error)(nil),                     // 1: sporttech.gateway.v1.Error
+	(*ErrorResponse)(nil),             // 2: sporttech.gateway.v1.ErrorResponse
+	(*User)(nil),                      // 3: sporttech.gateway.v1.User
+	(*TrainerSport)(nil),              // 4: sporttech.gateway.v1.TrainerSport
+	(*TrainerDetails)(nil),            // 5: sporttech.gateway.v1.TrainerDetails
+	(*ClientRegisterRequest)(nil),     // 6: sporttech.gateway.v1.ClientRegisterRequest
+	(*TrainerRegisterRequest)(nil),    // 7: sporttech.gateway.v1.TrainerRegisterRequest
+	(*LoginRequest)(nil),              // 8: sporttech.gateway.v1.LoginRequest
+	(*AuthResponse)(nil),              // 9: sporttech.gateway.v1.AuthResponse
+	(*CSRFTokenResponse)(nil),         // 10: sporttech.gateway.v1.CSRFTokenResponse
+	(*GetProfileRequest)(nil),         // 11: sporttech.gateway.v1.GetProfileRequest
+	(*ProfileResponse)(nil),           // 12: sporttech.gateway.v1.ProfileResponse
+	(*TrainerListItem)(nil),           // 13: sporttech.gateway.v1.TrainerListItem
+	(*GetTrainersResponse)(nil),       // 14: sporttech.gateway.v1.GetTrainersResponse
+	(*ListTrainersRequest)(nil),       // 15: sporttech.gateway.v1.ListTrainersRequest
+	(*UpdateMyProfileRequest)(nil),    // 16: sporttech.gateway.v1.UpdateMyProfileRequest
+	(*UploadMyAvatarRequest)(nil),     // 17: sporttech.gateway.v1.UploadMyAvatarRequest
+	(*AvatarUploadResponse)(nil),      // 18: sporttech.gateway.v1.AvatarUploadResponse
+	(*SportType)(nil),                 // 19: sporttech.gateway.v1.SportType
+	(*SportTypesResponse)(nil),        // 20: sporttech.gateway.v1.SportTypesResponse
+	(*PostBlockInput)(nil),            // 21: sporttech.gateway.v1.PostBlockInput
+	(*UploadPostMediaRequest)(nil),    // 22: sporttech.gateway.v1.UploadPostMediaRequest
+	(*PostMediaUploadResponse)(nil),   // 23: sporttech.gateway.v1.PostMediaUploadResponse
+	(*CreatePostRequest)(nil),         // 24: sporttech.gateway.v1.CreatePostRequest
+	(*UpdatePostRequest)(nil),         // 25: sporttech.gateway.v1.UpdatePostRequest
+	(*PostBlock)(nil),                 // 26: sporttech.gateway.v1.PostBlock
+	(*PostListItem)(nil),              // 27: sporttech.gateway.v1.PostListItem
+	(*ProfilePostsResponse)(nil),      // 28: sporttech.gateway.v1.ProfilePostsResponse
+	(*SearchPostsRequest)(nil),        // 29: sporttech.gateway.v1.SearchPostsRequest
+	(*SearchPostsResponse)(nil),       // 30: sporttech.gateway.v1.SearchPostsResponse
+	(*PostResponse)(nil),              // 31: sporttech.gateway.v1.PostResponse
+	(*GetPostRequest)(nil),            // 32: sporttech.gateway.v1.GetPostRequest
+	(*DeletePostRequest)(nil),         // 33: sporttech.gateway.v1.DeletePostRequest
+	(*PostLikeRequest)(nil),           // 34: sporttech.gateway.v1.PostLikeRequest
+	(*PostLikeResponse)(nil),          // 35: sporttech.gateway.v1.PostLikeResponse
+	(*Tier)(nil),                      // 36: sporttech.gateway.v1.Tier
+	(*TiersResponse)(nil),             // 37: sporttech.gateway.v1.TiersResponse
+	(*CreateTierRequest)(nil),         // 38: sporttech.gateway.v1.CreateTierRequest
+	(*UpdateTierRequest)(nil),         // 39: sporttech.gateway.v1.UpdateTierRequest
+	(*DeleteTierRequest)(nil),         // 40: sporttech.gateway.v1.DeleteTierRequest
+	(*TrainerTiersRequest)(nil),       // 41: sporttech.gateway.v1.TrainerTiersRequest
+	(*SubscribeRequest)(nil),          // 42: sporttech.gateway.v1.SubscribeRequest
+	(*Subscription)(nil),              // 43: sporttech.gateway.v1.Subscription
+	(*SubscriptionsResponse)(nil),     // 44: sporttech.gateway.v1.SubscriptionsResponse
+	(*CancelSubscriptionRequest)(nil), // 45: sporttech.gateway.v1.CancelSubscriptionRequest
+	(*DonateToProfileRequest)(nil),    // 46: sporttech.gateway.v1.DonateToProfileRequest
+	(*DonationResponse)(nil),          // 47: sporttech.gateway.v1.DonationResponse
+	(*timestamppb.Timestamp)(nil),     // 48: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),             // 49: google.protobuf.Empty
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	0,  // 0: sporttech.gateway.v1.Error.fields:type_name -> sporttech.gateway.v1.ValidationErrorField
 	1,  // 1: sporttech.gateway.v1.ErrorResponse.error:type_name -> sporttech.gateway.v1.Error
-	43, // 2: sporttech.gateway.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	43, // 3: sporttech.gateway.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	48, // 2: sporttech.gateway.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	48, // 3: sporttech.gateway.v1.User.updated_at:type_name -> google.protobuf.Timestamp
 	4,  // 4: sporttech.gateway.v1.TrainerDetails.sports:type_name -> sporttech.gateway.v1.TrainerSport
 	5,  // 5: sporttech.gateway.v1.TrainerRegisterRequest.trainer_details:type_name -> sporttech.gateway.v1.TrainerDetails
 	3,  // 6: sporttech.gateway.v1.AuthResponse.user:type_name -> sporttech.gateway.v1.User
@@ -3364,75 +3691,87 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	19, // 11: sporttech.gateway.v1.SportTypesResponse.sport_types:type_name -> sporttech.gateway.v1.SportType
 	21, // 12: sporttech.gateway.v1.CreatePostRequest.blocks:type_name -> sporttech.gateway.v1.PostBlockInput
 	21, // 13: sporttech.gateway.v1.UpdatePostRequest.blocks:type_name -> sporttech.gateway.v1.PostBlockInput
-	43, // 14: sporttech.gateway.v1.PostListItem.created_at:type_name -> google.protobuf.Timestamp
+	48, // 14: sporttech.gateway.v1.PostListItem.created_at:type_name -> google.protobuf.Timestamp
 	27, // 15: sporttech.gateway.v1.ProfilePostsResponse.posts:type_name -> sporttech.gateway.v1.PostListItem
 	27, // 16: sporttech.gateway.v1.SearchPostsResponse.posts:type_name -> sporttech.gateway.v1.PostListItem
-	43, // 17: sporttech.gateway.v1.PostResponse.created_at:type_name -> google.protobuf.Timestamp
-	43, // 18: sporttech.gateway.v1.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
+	48, // 17: sporttech.gateway.v1.PostResponse.created_at:type_name -> google.protobuf.Timestamp
+	48, // 18: sporttech.gateway.v1.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
 	26, // 19: sporttech.gateway.v1.PostResponse.blocks:type_name -> sporttech.gateway.v1.PostBlock
-	43, // 20: sporttech.gateway.v1.Tier.created_at:type_name -> google.protobuf.Timestamp
-	43, // 21: sporttech.gateway.v1.Tier.updated_at:type_name -> google.protobuf.Timestamp
+	48, // 20: sporttech.gateway.v1.Tier.created_at:type_name -> google.protobuf.Timestamp
+	48, // 21: sporttech.gateway.v1.Tier.updated_at:type_name -> google.protobuf.Timestamp
 	36, // 22: sporttech.gateway.v1.TiersResponse.tiers:type_name -> sporttech.gateway.v1.Tier
-	43, // 23: sporttech.gateway.v1.DonationResponse.created_at:type_name -> google.protobuf.Timestamp
-	44, // 24: sporttech.gateway.v1.AuthService.GetCSRFToken:input_type -> google.protobuf.Empty
-	6,  // 25: sporttech.gateway.v1.AuthService.RegisterClient:input_type -> sporttech.gateway.v1.ClientRegisterRequest
-	7,  // 26: sporttech.gateway.v1.AuthService.RegisterTrainer:input_type -> sporttech.gateway.v1.TrainerRegisterRequest
-	8,  // 27: sporttech.gateway.v1.AuthService.Login:input_type -> sporttech.gateway.v1.LoginRequest
-	44, // 28: sporttech.gateway.v1.AuthService.GetMe:input_type -> google.protobuf.Empty
-	44, // 29: sporttech.gateway.v1.AuthService.Logout:input_type -> google.protobuf.Empty
-	11, // 30: sporttech.gateway.v1.ProfileService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
-	15, // 31: sporttech.gateway.v1.ProfileService.ListTrainers:input_type -> sporttech.gateway.v1.ListTrainersRequest
-	15, // 32: sporttech.gateway.v1.ProfileService.SearchTrainers:input_type -> sporttech.gateway.v1.ListTrainersRequest
-	16, // 33: sporttech.gateway.v1.ProfileService.UpdateMyProfile:input_type -> sporttech.gateway.v1.UpdateMyProfileRequest
-	17, // 34: sporttech.gateway.v1.ProfileService.UploadMyAvatar:input_type -> sporttech.gateway.v1.UploadMyAvatarRequest
-	44, // 35: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:input_type -> google.protobuf.Empty
-	11, // 36: sporttech.gateway.v1.ProfileService.ListProfilePosts:input_type -> sporttech.gateway.v1.GetProfileRequest
-	29, // 37: sporttech.gateway.v1.PostService.SearchPosts:input_type -> sporttech.gateway.v1.SearchPostsRequest
-	24, // 38: sporttech.gateway.v1.PostService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
-	22, // 39: sporttech.gateway.v1.PostService.UploadPostMedia:input_type -> sporttech.gateway.v1.UploadPostMediaRequest
-	32, // 40: sporttech.gateway.v1.PostService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
-	25, // 41: sporttech.gateway.v1.PostService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
-	33, // 42: sporttech.gateway.v1.PostService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
-	34, // 43: sporttech.gateway.v1.PostService.LikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
-	34, // 44: sporttech.gateway.v1.PostService.UnlikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
-	44, // 45: sporttech.gateway.v1.TierService.ListTiers:input_type -> google.protobuf.Empty
-	38, // 46: sporttech.gateway.v1.TierService.CreateTier:input_type -> sporttech.gateway.v1.CreateTierRequest
-	39, // 47: sporttech.gateway.v1.TierService.UpdateTier:input_type -> sporttech.gateway.v1.UpdateTierRequest
-	40, // 48: sporttech.gateway.v1.TierService.DeleteTier:input_type -> sporttech.gateway.v1.DeleteTierRequest
-	44, // 49: sporttech.gateway.v1.SportService.ListSportTypes:input_type -> google.protobuf.Empty
-	41, // 50: sporttech.gateway.v1.DonationService.DonateToProfile:input_type -> sporttech.gateway.v1.DonateToProfileRequest
-	10, // 51: sporttech.gateway.v1.AuthService.GetCSRFToken:output_type -> sporttech.gateway.v1.CSRFTokenResponse
-	9,  // 52: sporttech.gateway.v1.AuthService.RegisterClient:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 53: sporttech.gateway.v1.AuthService.RegisterTrainer:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 54: sporttech.gateway.v1.AuthService.Login:output_type -> sporttech.gateway.v1.AuthResponse
-	9,  // 55: sporttech.gateway.v1.AuthService.GetMe:output_type -> sporttech.gateway.v1.AuthResponse
-	44, // 56: sporttech.gateway.v1.AuthService.Logout:output_type -> google.protobuf.Empty
-	12, // 57: sporttech.gateway.v1.ProfileService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	14, // 58: sporttech.gateway.v1.ProfileService.ListTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
-	14, // 59: sporttech.gateway.v1.ProfileService.SearchTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
-	12, // 60: sporttech.gateway.v1.ProfileService.UpdateMyProfile:output_type -> sporttech.gateway.v1.ProfileResponse
-	18, // 61: sporttech.gateway.v1.ProfileService.UploadMyAvatar:output_type -> sporttech.gateway.v1.AvatarUploadResponse
-	44, // 62: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:output_type -> google.protobuf.Empty
-	28, // 63: sporttech.gateway.v1.ProfileService.ListProfilePosts:output_type -> sporttech.gateway.v1.ProfilePostsResponse
-	30, // 64: sporttech.gateway.v1.PostService.SearchPosts:output_type -> sporttech.gateway.v1.SearchPostsResponse
-	31, // 65: sporttech.gateway.v1.PostService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
-	23, // 66: sporttech.gateway.v1.PostService.UploadPostMedia:output_type -> sporttech.gateway.v1.PostMediaUploadResponse
-	31, // 67: sporttech.gateway.v1.PostService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
-	31, // 68: sporttech.gateway.v1.PostService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
-	44, // 69: sporttech.gateway.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
-	35, // 70: sporttech.gateway.v1.PostService.LikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
-	35, // 71: sporttech.gateway.v1.PostService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
-	37, // 72: sporttech.gateway.v1.TierService.ListTiers:output_type -> sporttech.gateway.v1.TiersResponse
-	36, // 73: sporttech.gateway.v1.TierService.CreateTier:output_type -> sporttech.gateway.v1.Tier
-	36, // 74: sporttech.gateway.v1.TierService.UpdateTier:output_type -> sporttech.gateway.v1.Tier
-	44, // 75: sporttech.gateway.v1.TierService.DeleteTier:output_type -> google.protobuf.Empty
-	20, // 76: sporttech.gateway.v1.SportService.ListSportTypes:output_type -> sporttech.gateway.v1.SportTypesResponse
-	42, // 77: sporttech.gateway.v1.DonationService.DonateToProfile:output_type -> sporttech.gateway.v1.DonationResponse
-	51, // [51:78] is the sub-list for method output_type
-	24, // [24:51] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	48, // 23: sporttech.gateway.v1.Subscription.expires_at:type_name -> google.protobuf.Timestamp
+	48, // 24: sporttech.gateway.v1.Subscription.created_at:type_name -> google.protobuf.Timestamp
+	48, // 25: sporttech.gateway.v1.Subscription.updated_at:type_name -> google.protobuf.Timestamp
+	43, // 26: sporttech.gateway.v1.SubscriptionsResponse.subscriptions:type_name -> sporttech.gateway.v1.Subscription
+	48, // 27: sporttech.gateway.v1.DonationResponse.created_at:type_name -> google.protobuf.Timestamp
+	49, // 28: sporttech.gateway.v1.AuthService.GetCSRFToken:input_type -> google.protobuf.Empty
+	6,  // 29: sporttech.gateway.v1.AuthService.RegisterClient:input_type -> sporttech.gateway.v1.ClientRegisterRequest
+	7,  // 30: sporttech.gateway.v1.AuthService.RegisterTrainer:input_type -> sporttech.gateway.v1.TrainerRegisterRequest
+	8,  // 31: sporttech.gateway.v1.AuthService.Login:input_type -> sporttech.gateway.v1.LoginRequest
+	49, // 32: sporttech.gateway.v1.AuthService.GetMe:input_type -> google.protobuf.Empty
+	49, // 33: sporttech.gateway.v1.AuthService.Logout:input_type -> google.protobuf.Empty
+	11, // 34: sporttech.gateway.v1.ProfileService.GetProfile:input_type -> sporttech.gateway.v1.GetProfileRequest
+	15, // 35: sporttech.gateway.v1.ProfileService.ListTrainers:input_type -> sporttech.gateway.v1.ListTrainersRequest
+	15, // 36: sporttech.gateway.v1.ProfileService.SearchTrainers:input_type -> sporttech.gateway.v1.ListTrainersRequest
+	16, // 37: sporttech.gateway.v1.ProfileService.UpdateMyProfile:input_type -> sporttech.gateway.v1.UpdateMyProfileRequest
+	17, // 38: sporttech.gateway.v1.ProfileService.UploadMyAvatar:input_type -> sporttech.gateway.v1.UploadMyAvatarRequest
+	49, // 39: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:input_type -> google.protobuf.Empty
+	11, // 40: sporttech.gateway.v1.ProfileService.ListProfilePosts:input_type -> sporttech.gateway.v1.GetProfileRequest
+	29, // 41: sporttech.gateway.v1.PostService.SearchPosts:input_type -> sporttech.gateway.v1.SearchPostsRequest
+	24, // 42: sporttech.gateway.v1.PostService.CreatePost:input_type -> sporttech.gateway.v1.CreatePostRequest
+	22, // 43: sporttech.gateway.v1.PostService.UploadPostMedia:input_type -> sporttech.gateway.v1.UploadPostMediaRequest
+	32, // 44: sporttech.gateway.v1.PostService.GetPost:input_type -> sporttech.gateway.v1.GetPostRequest
+	25, // 45: sporttech.gateway.v1.PostService.UpdatePost:input_type -> sporttech.gateway.v1.UpdatePostRequest
+	33, // 46: sporttech.gateway.v1.PostService.DeletePost:input_type -> sporttech.gateway.v1.DeletePostRequest
+	34, // 47: sporttech.gateway.v1.PostService.LikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
+	34, // 48: sporttech.gateway.v1.PostService.UnlikePost:input_type -> sporttech.gateway.v1.PostLikeRequest
+	41, // 49: sporttech.gateway.v1.TierService.ListTrainerTiers:input_type -> sporttech.gateway.v1.TrainerTiersRequest
+	49, // 50: sporttech.gateway.v1.TierService.ListTiers:input_type -> google.protobuf.Empty
+	38, // 51: sporttech.gateway.v1.TierService.CreateTier:input_type -> sporttech.gateway.v1.CreateTierRequest
+	39, // 52: sporttech.gateway.v1.TierService.UpdateTier:input_type -> sporttech.gateway.v1.UpdateTierRequest
+	40, // 53: sporttech.gateway.v1.TierService.DeleteTier:input_type -> sporttech.gateway.v1.DeleteTierRequest
+	42, // 54: sporttech.gateway.v1.SubscriptionService.SubscribeToTrainer:input_type -> sporttech.gateway.v1.SubscribeRequest
+	49, // 55: sporttech.gateway.v1.SubscriptionService.ListMySubscriptions:input_type -> google.protobuf.Empty
+	45, // 56: sporttech.gateway.v1.SubscriptionService.CancelSubscription:input_type -> sporttech.gateway.v1.CancelSubscriptionRequest
+	49, // 57: sporttech.gateway.v1.SportService.ListSportTypes:input_type -> google.protobuf.Empty
+	46, // 58: sporttech.gateway.v1.DonationService.DonateToProfile:input_type -> sporttech.gateway.v1.DonateToProfileRequest
+	10, // 59: sporttech.gateway.v1.AuthService.GetCSRFToken:output_type -> sporttech.gateway.v1.CSRFTokenResponse
+	9,  // 60: sporttech.gateway.v1.AuthService.RegisterClient:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 61: sporttech.gateway.v1.AuthService.RegisterTrainer:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 62: sporttech.gateway.v1.AuthService.Login:output_type -> sporttech.gateway.v1.AuthResponse
+	9,  // 63: sporttech.gateway.v1.AuthService.GetMe:output_type -> sporttech.gateway.v1.AuthResponse
+	49, // 64: sporttech.gateway.v1.AuthService.Logout:output_type -> google.protobuf.Empty
+	12, // 65: sporttech.gateway.v1.ProfileService.GetProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	14, // 66: sporttech.gateway.v1.ProfileService.ListTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
+	14, // 67: sporttech.gateway.v1.ProfileService.SearchTrainers:output_type -> sporttech.gateway.v1.GetTrainersResponse
+	12, // 68: sporttech.gateway.v1.ProfileService.UpdateMyProfile:output_type -> sporttech.gateway.v1.ProfileResponse
+	18, // 69: sporttech.gateway.v1.ProfileService.UploadMyAvatar:output_type -> sporttech.gateway.v1.AvatarUploadResponse
+	49, // 70: sporttech.gateway.v1.ProfileService.DeleteMyAvatar:output_type -> google.protobuf.Empty
+	28, // 71: sporttech.gateway.v1.ProfileService.ListProfilePosts:output_type -> sporttech.gateway.v1.ProfilePostsResponse
+	30, // 72: sporttech.gateway.v1.PostService.SearchPosts:output_type -> sporttech.gateway.v1.SearchPostsResponse
+	31, // 73: sporttech.gateway.v1.PostService.CreatePost:output_type -> sporttech.gateway.v1.PostResponse
+	23, // 74: sporttech.gateway.v1.PostService.UploadPostMedia:output_type -> sporttech.gateway.v1.PostMediaUploadResponse
+	31, // 75: sporttech.gateway.v1.PostService.GetPost:output_type -> sporttech.gateway.v1.PostResponse
+	31, // 76: sporttech.gateway.v1.PostService.UpdatePost:output_type -> sporttech.gateway.v1.PostResponse
+	49, // 77: sporttech.gateway.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
+	35, // 78: sporttech.gateway.v1.PostService.LikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
+	35, // 79: sporttech.gateway.v1.PostService.UnlikePost:output_type -> sporttech.gateway.v1.PostLikeResponse
+	37, // 80: sporttech.gateway.v1.TierService.ListTrainerTiers:output_type -> sporttech.gateway.v1.TiersResponse
+	37, // 81: sporttech.gateway.v1.TierService.ListTiers:output_type -> sporttech.gateway.v1.TiersResponse
+	36, // 82: sporttech.gateway.v1.TierService.CreateTier:output_type -> sporttech.gateway.v1.Tier
+	36, // 83: sporttech.gateway.v1.TierService.UpdateTier:output_type -> sporttech.gateway.v1.Tier
+	49, // 84: sporttech.gateway.v1.TierService.DeleteTier:output_type -> google.protobuf.Empty
+	43, // 85: sporttech.gateway.v1.SubscriptionService.SubscribeToTrainer:output_type -> sporttech.gateway.v1.Subscription
+	44, // 86: sporttech.gateway.v1.SubscriptionService.ListMySubscriptions:output_type -> sporttech.gateway.v1.SubscriptionsResponse
+	49, // 87: sporttech.gateway.v1.SubscriptionService.CancelSubscription:output_type -> google.protobuf.Empty
+	20, // 88: sporttech.gateway.v1.SportService.ListSportTypes:output_type -> sporttech.gateway.v1.SportTypesResponse
+	47, // 89: sporttech.gateway.v1.DonationService.DonateToProfile:output_type -> sporttech.gateway.v1.DonationResponse
+	59, // [59:90] is the sub-list for method output_type
+	28, // [28:59] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -3457,17 +3796,17 @@ func file_gateway_v1_gateway_proto_init() {
 	file_gateway_v1_gateway_proto_msgTypes[36].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[38].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[39].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[41].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[42].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[46].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[47].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   43,
+			NumMessages:   48,
 			NumExtensions: 0,
-			NumServices:   6,
+			NumServices:   7,
 		},
 		GoTypes:           file_gateway_v1_gateway_proto_goTypes,
 		DependencyIndexes: file_gateway_v1_gateway_proto_depIdxs,

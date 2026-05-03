@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS content_post_like;
 DROP TABLE IF EXISTS content_comment;
 DROP TABLE IF EXISTS content_post_block;
 DROP TABLE IF EXISTS content_post;
+DROP TABLE IF EXISTS content_subscription;
 DROP TABLE IF EXISTS content_subscription_tier;
 DROP TYPE IF EXISTS content_block_kind;
 
@@ -75,6 +76,19 @@ CREATE TABLE content_post_like (
 	created_at TIMESTAMPTZ NOT NULL,
 	updated_at TIMESTAMPTZ NOT NULL,
 	PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE content_subscription (
+	subscription_id BIGSERIAL PRIMARY KEY,
+	client_user_id BIGINT NOT NULL,
+	trainer_user_id BIGINT NOT NULL,
+	tier_id INTEGER NOT NULL,
+	active BOOLEAN NOT NULL,
+	expires_at TIMESTAMPTZ NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL,
+	updated_at TIMESTAMPTZ NOT NULL,
+	FOREIGN KEY (trainer_user_id, tier_id)
+		REFERENCES content_subscription_tier(trainer_user_id, tier_id)
 );
 
 INSERT INTO content_subscription_tier (trainer_user_id, tier_id, name, price, description, created_at, updated_at)
@@ -225,6 +239,39 @@ func TestRepositoryIntegration(t *testing.T) {
 	}
 	if createdTier.TierID != 3 {
 		t.Fatalf("unexpected created tier: %+v", createdTier)
+	}
+
+	subscription, err := repository.SubscribeToTrainer(context.Background(), domain.Subscription{
+		ClientUserID:  55,
+		TrainerUserID: 7,
+		TierID:        2,
+		ExpiresAt:     updatedPost.CreatedAt.AddDate(0, 1, 0),
+	})
+	if err != nil {
+		t.Fatalf("subscribe: %v", err)
+	}
+	if subscription.SubscriptionID == 0 || !subscription.Active || subscription.TierName != "Продвинутый" {
+		t.Fatalf("unexpected subscription: %+v", subscription)
+	}
+
+	level, err := repository.GetActiveSubscriptionLevel(context.Background(), 55, 7)
+	if err != nil {
+		t.Fatalf("active subscription level: %v", err)
+	}
+	if level == nil || *level != 2 {
+		t.Fatalf("unexpected active subscription level: %v", level)
+	}
+
+	subscriptions, err := repository.ListSubscriptions(context.Background(), 55)
+	if err != nil {
+		t.Fatalf("list subscriptions: %v", err)
+	}
+	if len(subscriptions) != 1 || subscriptions[0].SubscriptionID != subscription.SubscriptionID {
+		t.Fatalf("unexpected subscriptions: %+v", subscriptions)
+	}
+
+	if err := repository.CancelSubscription(context.Background(), 55, subscription.SubscriptionID); err != nil {
+		t.Fatalf("cancel subscription: %v", err)
 	}
 
 	if err := repository.DeletePost(context.Background(), postID, 7); err != nil {
