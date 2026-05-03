@@ -34,9 +34,10 @@ func (repository *Repository) CreatePost(ctx context.Context, post domain.Post) 
 			author_user_id,
 			title,
 			required_subscription_level,
+			sport_type_id,
 			created_at,
 			updated_at
-		) VALUES ($1, $2, $3, $4, $4)
+		) VALUES ($1, $2, $3, $4, $5, $5)
 		RETURNING post_id
 	`
 
@@ -47,6 +48,7 @@ func (repository *Repository) CreatePost(ctx context.Context, post domain.Post) 
 		post.AuthorUserID,
 		post.Title,
 		nullInt32(post.RequiredSubscriptionLevel),
+		nullInt64(post.SportTypeID),
 		now,
 	).Scan(&postID)
 	if err != nil {
@@ -71,6 +73,7 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 			p.author_user_id,
 			p.title,
 			p.required_subscription_level,
+			p.sport_type_id,
 			p.created_at,
 			p.updated_at,
 			COALESCE(l.likes_count, 0),
@@ -98,12 +101,14 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 	var (
 		post          domain.Post
 		requiredLevel sql.NullInt32
+		sportTypeID   sql.NullInt64
 	)
 	err := repository.db.QueryRowContext(ctx, postQuery, postID, viewerUserID).Scan(
 		&post.PostID,
 		&post.AuthorUserID,
 		&post.Title,
 		&requiredLevel,
+		&sportTypeID,
 		&post.CreatedAt,
 		&post.UpdatedAt,
 		&post.LikesCount,
@@ -118,6 +123,9 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 	}
 	if requiredLevel.Valid {
 		post.RequiredSubscriptionLevel = &requiredLevel.Int32
+	}
+	if sportTypeID.Valid {
+		post.SportTypeID = &sportTypeID.Int64
 	}
 
 	blocks, err := repository.listBlocks(ctx, postID)
@@ -136,6 +144,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			p.author_user_id,
 			p.title,
 			p.required_subscription_level,
+			p.sport_type_id,
 			p.created_at,
 			COALESCE(l.likes_count, 0),
 			EXISTS (
@@ -172,6 +181,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 		var (
 			post          domain.PostSummary
 			requiredLevel sql.NullInt32
+			sportTypeID   sql.NullInt64
 		)
 
 		if err := rows.Scan(
@@ -179,6 +189,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			&post.AuthorUserID,
 			&post.Title,
 			&requiredLevel,
+			&sportTypeID,
 			&post.CreatedAt,
 			&post.LikesCount,
 			&post.IsLiked,
@@ -188,6 +199,9 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 		}
 		if requiredLevel.Valid {
 			post.RequiredSubscriptionLevel = &requiredLevel.Int32
+		}
+		if sportTypeID.Valid {
+			post.SportTypeID = &sportTypeID.Int64
 		}
 
 		posts = append(posts, post)
@@ -203,6 +217,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			p.author_user_id,
 			p.title,
 			p.required_subscription_level,
+			p.sport_type_id,
 			p.created_at,
 			COALESCE(l.likes_count, 0),
 			EXISTS (
@@ -240,6 +255,11 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 		args = append(args, pq.Array(searchQuery.AuthorUserIDs))
 		placeholder := fmt.Sprintf("$%d", len(args))
 		conditions = append(conditions, "p.author_user_id = ANY("+placeholder+")")
+	}
+	if len(searchQuery.SportTypeIDs) > 0 {
+		args = append(args, pq.Array(searchQuery.SportTypeIDs))
+		placeholder := fmt.Sprintf("$%d", len(args))
+		conditions = append(conditions, "p.sport_type_id = ANY("+placeholder+")")
 	}
 	if len(searchQuery.BlockKinds) > 0 {
 		args = append(args, pq.Array(blockKindStrings(searchQuery.BlockKinds)))
@@ -287,6 +307,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 		var (
 			post          domain.PostSummary
 			requiredLevel sql.NullInt32
+			sportTypeID   sql.NullInt64
 		)
 
 		if err := rows.Scan(
@@ -294,6 +315,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			&post.AuthorUserID,
 			&post.Title,
 			&requiredLevel,
+			&sportTypeID,
 			&post.CreatedAt,
 			&post.LikesCount,
 			&post.IsLiked,
@@ -303,6 +325,9 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 		}
 		if requiredLevel.Valid {
 			post.RequiredSubscriptionLevel = &requiredLevel.Int32
+		}
+		if sportTypeID.Valid {
+			post.SportTypeID = &sportTypeID.Int64
 		}
 
 		posts = append(posts, post)
@@ -323,7 +348,8 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 		UPDATE content_post
 		SET title = $3,
 			required_subscription_level = $4,
-			updated_at = $5
+			sport_type_id = $5,
+			updated_at = $6
 		WHERE post_id = $1
 			AND author_user_id = $2
 	`
@@ -335,6 +361,7 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 		post.AuthorUserID,
 		post.Title,
 		nullInt32(post.RequiredSubscriptionLevel),
+		nullInt64(post.SportTypeID),
 		now,
 	)
 	if err != nil {
@@ -376,6 +403,160 @@ func (repository *Repository) DeletePost(ctx context.Context, postID int64, auth
 	}
 	if rowsAffected == 0 {
 		return ensurePostOwnership(ctx, repository.db, postID, authorUserID)
+	}
+
+	return nil
+}
+
+func (repository *Repository) ListSubscriptionTiers(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error) {
+	rows, err := repository.db.QueryContext(
+		ctx,
+		`
+			SELECT tier_id, trainer_user_id, name, price, description, created_at, updated_at
+			FROM content_subscription_tier
+			WHERE trainer_user_id = $1
+			ORDER BY tier_id ASC
+		`,
+		trainerUserID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tiers := make([]domain.SubscriptionTier, 0)
+	for rows.Next() {
+		tier, err := scanSubscriptionTier(rows)
+		if err != nil {
+			return nil, err
+		}
+		tiers = append(tiers, tier)
+	}
+
+	return tiers, rows.Err()
+}
+
+func (repository *Repository) GetSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+	row := repository.db.QueryRowContext(
+		ctx,
+		`
+			SELECT tier_id, trainer_user_id, name, price, description, created_at, updated_at
+			FROM content_subscription_tier
+			WHERE trainer_user_id = $1
+				AND tier_id = $2
+		`,
+		trainerUserID,
+		tierID,
+	)
+
+	tier, err := scanSubscriptionTier(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.SubscriptionTier{}, domain.ErrSubscriptionTierNotFound
+		}
+		return domain.SubscriptionTier{}, err
+	}
+
+	return tier, nil
+}
+
+func (repository *Repository) CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+	now := time.Now().UTC()
+
+	row := repository.db.QueryRowContext(
+		ctx,
+		`
+			WITH next_tier AS (
+				SELECT COALESCE(MAX(tier_id), 0) + 1 AS tier_id
+				FROM content_subscription_tier
+				WHERE trainer_user_id = $1
+			)
+			INSERT INTO content_subscription_tier (
+				trainer_user_id,
+				tier_id,
+				name,
+				price,
+				description,
+				created_at,
+				updated_at
+			)
+			SELECT $1, next_tier.tier_id, $2, $3, $4, $5, $5
+			FROM next_tier
+			RETURNING tier_id, trainer_user_id, name, price, description, created_at, updated_at
+		`,
+		tier.TrainerUserID,
+		tier.Name,
+		tier.Price,
+		nullString(tier.Description),
+		now,
+	)
+
+	created, err := scanSubscriptionTier(row)
+	if err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+
+	return created, nil
+}
+
+func (repository *Repository) UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+	now := time.Now().UTC()
+
+	row := repository.db.QueryRowContext(
+		ctx,
+		`
+			UPDATE content_subscription_tier
+			SET name = $3,
+				price = $4,
+				description = $5,
+				updated_at = $6
+			WHERE trainer_user_id = $1
+				AND tier_id = $2
+			RETURNING tier_id, trainer_user_id, name, price, description, created_at, updated_at
+		`,
+		tier.TrainerUserID,
+		tier.TierID,
+		tier.Name,
+		tier.Price,
+		nullString(tier.Description),
+		now,
+	)
+
+	updated, err := scanSubscriptionTier(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.SubscriptionTier{}, domain.ErrSubscriptionTierNotFound
+		}
+		return domain.SubscriptionTier{}, err
+	}
+
+	return updated, nil
+}
+
+func (repository *Repository) DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error {
+	result, err := repository.db.ExecContext(
+		ctx,
+		`
+			DELETE FROM content_subscription_tier
+			WHERE trainer_user_id = $1
+				AND tier_id = $2
+		`,
+		trainerUserID,
+		tierID,
+	)
+	if err != nil {
+		if isForeignKeyViolation(err) {
+			return domain.ErrSubscriptionTierInUse
+		}
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrSubscriptionTierNotFound
 	}
 
 	return nil
@@ -518,6 +699,10 @@ type sqlQueryer interface {
 	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 }
 
+type sqlScanner interface {
+	Scan(dest ...any) error
+}
+
 func ensurePostOwnership(ctx context.Context, queryer sqlQueryer, postID int64, authorUserID int64) error {
 	var storedAuthorUserID int64
 	err := queryer.QueryRowContext(ctx, `SELECT author_user_id FROM content_post WHERE post_id = $1`, postID).Scan(&storedAuthorUserID)
@@ -576,6 +761,30 @@ func (repository *Repository) listBlocks(ctx context.Context, postID int64) ([]d
 	return blocks, rows.Err()
 }
 
+func scanSubscriptionTier(scanner sqlScanner) (domain.SubscriptionTier, error) {
+	var (
+		tier        domain.SubscriptionTier
+		description sql.NullString
+	)
+
+	if err := scanner.Scan(
+		&tier.TierID,
+		&tier.TrainerUserID,
+		&tier.Name,
+		&tier.Price,
+		&description,
+		&tier.CreatedAt,
+		&tier.UpdatedAt,
+	); err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+	if description.Valid {
+		tier.Description = &description.String
+	}
+
+	return tier, nil
+}
+
 func insertBlocks(ctx context.Context, tx *sql.Tx, postID int64, blocks []domain.PostBlock, now time.Time) error {
 	const insertBlockQuery = `
 		INSERT INTO content_post_block (
@@ -629,6 +838,17 @@ func nullInt32(value *int32) sql.NullInt32 {
 	}
 }
 
+func nullInt64(value *int64) sql.NullInt64 {
+	if value == nil {
+		return sql.NullInt64{}
+	}
+
+	return sql.NullInt64{
+		Int64: *value,
+		Valid: true,
+	}
+}
+
 func blockKindStrings(kinds []domain.BlockKind) []string {
 	result := make([]string, 0, len(kinds))
 	for _, kind := range kinds {
@@ -636,4 +856,9 @@ func blockKindStrings(kinds []domain.BlockKind) []string {
 	}
 
 	return result
+}
+
+func isForeignKeyViolation(err error) bool {
+	var pqErr *pq.Error
+	return errors.As(err, &pqErr) && pqErr.Code == "23503"
 }

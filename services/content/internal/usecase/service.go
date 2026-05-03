@@ -14,6 +14,8 @@ const (
 	maxPageLimit     = 100
 	maxBlockCount    = 100
 	maxMediaFileSize = 10 * 1024 * 1024
+	maxTierNameLen   = 80
+	maxTierDescLen   = 500
 )
 
 type Service struct {
@@ -67,6 +69,11 @@ func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery)
 			return nil, ErrInvalidUserID
 		}
 	}
+	for _, sportTypeID := range query.SportTypeIDs {
+		if sportTypeID <= 0 {
+			return nil, ErrInvalidSportTypeID
+		}
+	}
 	for _, kind := range query.BlockKinds {
 		if !kind.IsValid() {
 			return nil, domain.ErrInvalidBlockKind
@@ -111,6 +118,9 @@ func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery)
 func (service *Service) CreatePost(ctx context.Context, command CreatePostCommand) (domain.Post, error) {
 	post, err := buildPost(command)
 	if err != nil {
+		return domain.Post{}, err
+	}
+	if err := service.ensureRequiredSubscriptionTier(ctx, post.AuthorUserID, post.RequiredSubscriptionLevel); err != nil {
 		return domain.Post{}, err
 	}
 
@@ -204,6 +214,9 @@ func (service *Service) UpdatePost(ctx context.Context, command UpdatePostComman
 	if command.RequiredSubscriptionLevel != nil && command.ClearRequiredSubscriptionLevel {
 		return domain.Post{}, ErrConflictingSubscriptionLevelUpdate
 	}
+	if command.SportTypeID != nil && command.ClearSportTypeID {
+		return domain.Post{}, ErrConflictingSportTypeUpdate
+	}
 	if len(command.Blocks) > 0 && !command.ReplaceBlocks {
 		return domain.Post{}, ErrReplaceBlocksRequired
 	}
@@ -225,11 +238,20 @@ func (service *Service) UpdatePost(ctx context.Context, command UpdatePostComman
 	case command.RequiredSubscriptionLevel != nil:
 		post.RequiredSubscriptionLevel = normalizeSubscriptionLevel(command.RequiredSubscriptionLevel)
 	}
+	switch {
+	case command.ClearSportTypeID:
+		post.SportTypeID = nil
+	case command.SportTypeID != nil:
+		post.SportTypeID = normalizeSportTypeID(command.SportTypeID)
+	}
 	if command.ReplaceBlocks {
 		post.Blocks = normalizeBlocks(command.Blocks)
 	}
 
 	if err := validatePost(post); err != nil {
+		return domain.Post{}, err
+	}
+	if err := service.ensureRequiredSubscriptionTier(ctx, post.AuthorUserID, post.RequiredSubscriptionLevel); err != nil {
 		return domain.Post{}, err
 	}
 
@@ -257,6 +279,75 @@ func (service *Service) DeletePost(ctx context.Context, command DeletePostComman
 	}
 
 	return service.contentRepository.DeletePost(ctx, command.PostID, command.AuthorUserID)
+}
+
+func (service *Service) ListSubscriptionTiers(ctx context.Context, query ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error) {
+	if query.TrainerUserID <= 0 {
+		return nil, ErrInvalidUserID
+	}
+
+	return service.contentRepository.ListSubscriptionTiers(ctx, query.TrainerUserID)
+}
+
+func (service *Service) CreateSubscriptionTier(ctx context.Context, command CreateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
+	tier := domain.SubscriptionTier{
+		TrainerUserID: command.TrainerUserID,
+		Name:          normalizeRequiredText(command.Name),
+		Price:         command.Price,
+		Description:   normalizeOptionalText(command.Description),
+	}
+	if err := validateSubscriptionTier(tier); err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+
+	return service.contentRepository.CreateSubscriptionTier(ctx, tier)
+}
+
+func (service *Service) UpdateSubscriptionTier(ctx context.Context, command UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
+	if command.TrainerUserID <= 0 {
+		return domain.SubscriptionTier{}, ErrInvalidUserID
+	}
+	if command.TierID <= 0 {
+		return domain.SubscriptionTier{}, ErrInvalidSubscriptionTierID
+	}
+	if command.Description != nil && command.ClearDescription {
+		return domain.SubscriptionTier{}, ErrConflictingTierDescriptionUpdate
+	}
+
+	tier, err := service.contentRepository.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	if err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+
+	if command.Name != nil {
+		tier.Name = normalizeRequiredText(*command.Name)
+	}
+	if command.Price != nil {
+		tier.Price = *command.Price
+	}
+	switch {
+	case command.ClearDescription:
+		tier.Description = nil
+	case command.Description != nil:
+		tier.Description = normalizeOptionalText(command.Description)
+	}
+
+	if err := validateSubscriptionTier(tier); err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+
+	return service.contentRepository.UpdateSubscriptionTier(ctx, tier)
+}
+
+func (service *Service) DeleteSubscriptionTier(ctx context.Context, command DeleteSubscriptionTierCommand) error {
+	if command.TrainerUserID <= 0 {
+		return ErrInvalidUserID
+	}
+	if command.TierID <= 0 {
+		return ErrInvalidSubscriptionTierID
+	}
+
+	return service.contentRepository.DeleteSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 }
 
 func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (domain.PostLikeState, error) {
@@ -362,6 +453,7 @@ func buildPost(command CreatePostCommand) (domain.Post, error) {
 		AuthorUserID:              command.AuthorUserID,
 		Title:                     normalizeRequiredText(command.Title),
 		RequiredSubscriptionLevel: normalizeSubscriptionLevel(command.RequiredSubscriptionLevel),
+		SportTypeID:               normalizeSportTypeID(command.SportTypeID),
 		Blocks:                    normalizeBlocks(command.Blocks),
 	}
 
@@ -381,6 +473,9 @@ func validatePost(post domain.Post) error {
 	}
 	if post.RequiredSubscriptionLevel != nil && *post.RequiredSubscriptionLevel < 1 {
 		return ErrInvalidRequiredSubscriptionLevel
+	}
+	if post.SportTypeID != nil && *post.SportTypeID < 1 {
+		return ErrInvalidSportTypeID
 	}
 	if len(post.Blocks) == 0 {
 		return ErrBlocksRequired
@@ -403,6 +498,26 @@ func validatePost(post domain.Post) error {
 				return domain.ErrInvalidBlockData
 			}
 		}
+	}
+
+	return nil
+}
+
+func validateSubscriptionTier(tier domain.SubscriptionTier) error {
+	if tier.TrainerUserID <= 0 {
+		return ErrInvalidUserID
+	}
+	if tier.TierID < 0 {
+		return ErrInvalidSubscriptionTierID
+	}
+	if len(tier.Name) == 0 || len(tier.Name) > maxTierNameLen {
+		return ErrInvalidSubscriptionTierName
+	}
+	if tier.Price < 0 {
+		return ErrInvalidSubscriptionTierPrice
+	}
+	if tier.Description != nil && len(*tier.Description) > maxTierDescLen {
+		return ErrInvalidSubscriptionTierDescription
 	}
 
 	return nil
@@ -433,6 +548,25 @@ func normalizeSubscriptionLevel(value *int32) *int32 {
 	level := *value
 
 	return &level
+}
+
+func normalizeSportTypeID(value *int64) *int64 {
+	if value == nil {
+		return nil
+	}
+
+	sportTypeID := *value
+
+	return &sportTypeID
+}
+
+func (service *Service) ensureRequiredSubscriptionTier(ctx context.Context, trainerUserID int64, level *int32) error {
+	if level == nil {
+		return nil
+	}
+
+	_, err := service.contentRepository.GetSubscriptionTier(ctx, trainerUserID, int64(*level))
+	return err
 }
 
 func normalizeBlocks(inputs []PostBlockInput) []domain.PostBlock {

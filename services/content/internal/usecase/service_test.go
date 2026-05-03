@@ -17,6 +17,11 @@ type stubContentRepository struct {
 	searchPostsFunc     func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
 	updatePostFunc      func(ctx context.Context, post domain.Post, replaceBlocks bool) error
 	deletePostFunc      func(ctx context.Context, postID int64, authorUserID int64) error
+	listTiersFunc       func(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error)
+	getTierFunc         func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error)
+	createTierFunc      func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	updateTierFunc      func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	deleteTierFunc      func(ctx context.Context, trainerUserID int64, tierID int64) error
 	upsertLikeFunc      func(ctx context.Context, postID int64, userID int64) error
 	deleteLikeFunc      func(ctx context.Context, postID int64, userID int64) error
 	getLikeStateFunc    func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
@@ -46,6 +51,41 @@ func (repository stubContentRepository) UpdatePost(ctx context.Context, post dom
 
 func (repository stubContentRepository) DeletePost(ctx context.Context, postID int64, authorUserID int64) error {
 	return repository.deletePostFunc(ctx, postID, authorUserID)
+}
+
+func (repository stubContentRepository) ListSubscriptionTiers(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error) {
+	if repository.listTiersFunc == nil {
+		return nil, nil
+	}
+	return repository.listTiersFunc(ctx, trainerUserID)
+}
+
+func (repository stubContentRepository) GetSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+	if repository.getTierFunc == nil {
+		return domain.SubscriptionTier{}, nil
+	}
+	return repository.getTierFunc(ctx, trainerUserID, tierID)
+}
+
+func (repository stubContentRepository) CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+	if repository.createTierFunc == nil {
+		return tier, nil
+	}
+	return repository.createTierFunc(ctx, tier)
+}
+
+func (repository stubContentRepository) UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+	if repository.updateTierFunc == nil {
+		return tier, nil
+	}
+	return repository.updateTierFunc(ctx, tier)
+}
+
+func (repository stubContentRepository) DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error {
+	if repository.deleteTierFunc == nil {
+		return nil
+	}
+	return repository.deleteTierFunc(ctx, trainerUserID, tierID)
 }
 
 func (repository stubContentRepository) UpsertLike(ctx context.Context, postID int64, userID int64) error {
@@ -86,11 +126,16 @@ func (storage stubPostMediaStorage) UploadPostMedia(
 func TestServiceCreatePost(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 	requiredLevel := int32(2)
+	sportTypeID := int64(3001)
 
 	service := NewService(
 		stubContentRepository{
 			createPostFunc: func(ctx context.Context, post domain.Post) (int64, error) {
-				if post.AuthorUserID != 7 || post.Title != "Morning run" || len(post.Blocks) != 2 {
+				if post.AuthorUserID != 7 ||
+					post.Title != "Morning run" ||
+					post.SportTypeID == nil ||
+					*post.SportTypeID != 3001 ||
+					len(post.Blocks) != 2 {
 					t.Fatalf("unexpected post: %+v", post)
 				}
 				return 101, nil
@@ -101,6 +146,7 @@ func TestServiceCreatePost(t *testing.T) {
 					AuthorUserID:              viewerUserID,
 					Title:                     "Morning run",
 					RequiredSubscriptionLevel: &requiredLevel,
+					SportTypeID:               &sportTypeID,
 					CreatedAt:                 now,
 					UpdatedAt:                 now,
 					Blocks: []domain.PostBlock{{
@@ -135,6 +181,7 @@ func TestServiceCreatePost(t *testing.T) {
 		AuthorUserID:              7,
 		Title:                     " Morning run ",
 		RequiredSubscriptionLevel: &requiredLevel,
+		SportTypeID:               &sportTypeID,
 		Blocks: []PostBlockInput{
 			{Kind: domain.BlockKindText, TextContent: stringPtr(" Warm-up ")},
 			{Kind: domain.BlockKindImage, FileURL: stringPtr(" https://cdn.example/run.jpg ")},
@@ -202,6 +249,8 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 				if query.Query != "темп" ||
 					len(query.AuthorUserIDs) != 1 ||
 					query.AuthorUserIDs[0] != 7 ||
+					len(query.SportTypeIDs) != 1 ||
+					query.SportTypeIDs[0] != 3001 ||
 					len(query.BlockKinds) != 1 ||
 					query.BlockKinds[0] != domain.BlockKindImage ||
 					query.Limit != 20 ||
@@ -227,6 +276,7 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 	posts, err := service.SearchPosts(context.Background(), SearchPostsQuery{
 		Query:                   " темп ",
 		AuthorUserIDs:           []int64{7},
+		SportTypeIDs:            []int64{3001},
 		BlockKinds:              []domain.BlockKind{domain.BlockKindImage},
 		OnlyAvailable:           true,
 		ViewerUserID:            13,
@@ -242,6 +292,39 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 	}
 	if len(posts) != 1 || !posts[0].CanView {
 		t.Fatalf("unexpected posts: %+v", posts)
+	}
+}
+
+func TestServiceCreateSubscriptionTier(t *testing.T) {
+	service := NewService(
+		stubContentRepository{
+			createTierFunc: func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+				if tier.TrainerUserID != 7 ||
+					tier.Name != "Продвинутый" ||
+					tier.Price != 1500 ||
+					tier.Description == nil ||
+					*tier.Description != "Закрытые тренировки" {
+					t.Fatalf("unexpected tier: %+v", tier)
+				}
+
+				tier.TierID = 2
+				return tier, nil
+			},
+		},
+		nil,
+	)
+
+	tier, err := service.CreateSubscriptionTier(context.Background(), CreateSubscriptionTierCommand{
+		TrainerUserID: 7,
+		Name:          " Продвинутый ",
+		Price:         1500,
+		Description:   stringPtr(" Закрытые тренировки "),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if tier.TierID != 2 {
+		t.Fatalf("unexpected tier id: %d", tier.TierID)
 	}
 }
 

@@ -26,6 +26,7 @@ func SearchPostsRequestToQuery(request *contentv1.SearchPostsRequest) usecase.Se
 	return usecase.SearchPostsQuery{
 		Query:                        request.GetQuery(),
 		AuthorUserIDs:                request.GetAuthorUserIds(),
+		SportTypeIDs:                 request.GetSportTypeIds(),
 		BlockKinds:                   blockKindsFromProto(request.GetBlockKinds()),
 		MinRequiredSubscriptionLevel: request.MinRequiredSubscriptionLevel,
 		MaxRequiredSubscriptionLevel: request.MaxRequiredSubscriptionLevel,
@@ -42,6 +43,7 @@ func CreatePostRequestToCommand(request *contentv1.CreatePostRequest) usecase.Cr
 		AuthorUserID:              request.GetAuthorUserId(),
 		Title:                     request.GetTitle(),
 		RequiredSubscriptionLevel: request.RequiredSubscriptionLevel,
+		SportTypeID:               request.SportTypeId,
 		Blocks:                    postBlockInputsFromProto(request.GetBlocks()),
 	}
 }
@@ -70,8 +72,43 @@ func UpdatePostRequestToCommand(request *contentv1.UpdatePostRequest) usecase.Up
 		Title:                          request.Title,
 		RequiredSubscriptionLevel:      request.RequiredSubscriptionLevel,
 		ClearRequiredSubscriptionLevel: request.GetClearRequiredSubscriptionLevel(),
+		SportTypeID:                    request.SportTypeId,
+		ClearSportTypeID:               request.GetClearSportTypeId(),
 		Blocks:                         postBlockInputsFromProto(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
+	}
+}
+
+func ListSubscriptionTiersRequestToQuery(request *contentv1.ListSubscriptionTiersRequest) usecase.ListSubscriptionTiersQuery {
+	return usecase.ListSubscriptionTiersQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+	}
+}
+
+func CreateSubscriptionTierRequestToCommand(request *contentv1.CreateSubscriptionTierRequest) usecase.CreateSubscriptionTierCommand {
+	return usecase.CreateSubscriptionTierCommand{
+		TrainerUserID: request.GetTrainerUserId(),
+		Name:          request.GetName(),
+		Price:         request.GetPrice(),
+		Description:   request.Description,
+	}
+}
+
+func UpdateSubscriptionTierRequestToCommand(request *contentv1.UpdateSubscriptionTierRequest) usecase.UpdateSubscriptionTierCommand {
+	return usecase.UpdateSubscriptionTierCommand{
+		TrainerUserID:    request.GetTrainerUserId(),
+		TierID:           request.GetTierId(),
+		Name:             request.Name,
+		Price:            request.Price,
+		Description:      request.Description,
+		ClearDescription: request.GetClearDescription(),
+	}
+}
+
+func DeleteSubscriptionTierRequestToCommand(request *contentv1.DeleteSubscriptionTierRequest) usecase.DeleteSubscriptionTierCommand {
+	return usecase.DeleteSubscriptionTierCommand{
+		TrainerUserID: request.GetTrainerUserId(),
+		TierID:        request.GetTierId(),
 	}
 }
 
@@ -166,6 +203,21 @@ func NewPostLikeStateResponse(state domain.PostLikeState) *contentv1.PostLikeSta
 	}
 }
 
+func NewListSubscriptionTiersResponse(tiers []domain.SubscriptionTier) *contentv1.ListSubscriptionTiersResponse {
+	response := &contentv1.ListSubscriptionTiersResponse{
+		Tiers: make([]*contentv1.SubscriptionTier, 0, len(tiers)),
+	}
+	for _, tier := range tiers {
+		response.Tiers = append(response.Tiers, subscriptionTierToProto(tier))
+	}
+
+	return response
+}
+
+func NewSubscriptionTierResponse(tier domain.SubscriptionTier) *contentv1.SubscriptionTier {
+	return subscriptionTierToProto(tier)
+}
+
 func NewCommentResponse(comment domain.Comment) *contentv1.CommentResponse {
 	return &contentv1.CommentResponse{
 		Comment: commentToProto(comment),
@@ -196,6 +248,8 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidTitle),
 		errors.Is(err, usecase.ErrInvalidRequiredSubscriptionLevel),
 		errors.Is(err, usecase.ErrConflictingSubscriptionLevelUpdate),
+		errors.Is(err, usecase.ErrInvalidSportTypeID),
+		errors.Is(err, usecase.ErrConflictingSportTypeUpdate),
 		errors.Is(err, usecase.ErrBlocksRequired),
 		errors.Is(err, usecase.ErrTooManyBlocks),
 		errors.Is(err, usecase.ErrReplaceBlocksRequired),
@@ -208,13 +262,22 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrPostMediaContentRequired),
 		errors.Is(err, usecase.ErrPostMediaTooLarge),
 		errors.Is(err, usecase.ErrPostMediaContentTypeUnsupported),
+		errors.Is(err, usecase.ErrInvalidSubscriptionTierID),
+		errors.Is(err, usecase.ErrInvalidSubscriptionTierName),
+		errors.Is(err, usecase.ErrInvalidSubscriptionTierPrice),
+		errors.Is(err, usecase.ErrInvalidSubscriptionTierDescription),
+		errors.Is(err, usecase.ErrConflictingTierDescriptionUpdate),
 		errors.Is(err, domain.ErrInvalidBlockKind),
 		errors.Is(err, domain.ErrInvalidBlockData):
 		return status.Error(codes.InvalidArgument, err.Error())
-	case errors.Is(err, domain.ErrPostNotFound), errors.Is(err, domain.ErrCommentNotFound):
+	case errors.Is(err, domain.ErrPostNotFound),
+		errors.Is(err, domain.ErrCommentNotFound),
+		errors.Is(err, domain.ErrSubscriptionTierNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
+	case errors.Is(err, domain.ErrSubscriptionTierInUse):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable):
 		return status.Error(codes.Unavailable, err.Error())
 	default:
@@ -251,6 +314,9 @@ func postToProto(post domain.Post) *contentv1.Post {
 	if post.RequiredSubscriptionLevel != nil {
 		response.RequiredSubscriptionLevel = post.RequiredSubscriptionLevel
 	}
+	if post.SportTypeID != nil {
+		response.SportTypeId = post.SportTypeID
+	}
 	for _, block := range post.Blocks {
 		response.Blocks = append(response.Blocks, postBlockToProto(block))
 	}
@@ -271,6 +337,25 @@ func postSummaryToProto(post domain.PostSummary) *contentv1.PostSummary {
 	}
 	if post.RequiredSubscriptionLevel != nil {
 		response.RequiredSubscriptionLevel = post.RequiredSubscriptionLevel
+	}
+	if post.SportTypeID != nil {
+		response.SportTypeId = post.SportTypeID
+	}
+
+	return response
+}
+
+func subscriptionTierToProto(tier domain.SubscriptionTier) *contentv1.SubscriptionTier {
+	response := &contentv1.SubscriptionTier{
+		TierId:        tier.TierID,
+		TrainerUserId: tier.TrainerUserID,
+		Name:          tier.Name,
+		Price:         tier.Price,
+		CreatedAt:     timestamppb.New(tier.CreatedAt),
+		UpdatedAt:     timestamppb.New(tier.UpdatedAt),
+	}
+	if tier.Description != nil {
+		response.Description = tier.Description
 	}
 
 	return response

@@ -20,17 +20,32 @@ DROP TABLE IF EXISTS content_post_like;
 DROP TABLE IF EXISTS content_comment;
 DROP TABLE IF EXISTS content_post_block;
 DROP TABLE IF EXISTS content_post;
+DROP TABLE IF EXISTS content_subscription_tier;
 DROP TYPE IF EXISTS content_block_kind;
 
 CREATE TYPE content_block_kind AS ENUM ('text', 'image', 'video', 'document');
+
+CREATE TABLE content_subscription_tier (
+	trainer_user_id BIGINT NOT NULL,
+	tier_id INTEGER NOT NULL,
+	name TEXT NOT NULL,
+	price INTEGER NOT NULL,
+	description TEXT,
+	created_at TIMESTAMPTZ NOT NULL,
+	updated_at TIMESTAMPTZ NOT NULL,
+	PRIMARY KEY (trainer_user_id, tier_id)
+);
 
 CREATE TABLE content_post (
 	post_id BIGSERIAL PRIMARY KEY,
 	author_user_id BIGINT NOT NULL,
 	title TEXT NOT NULL,
 	required_subscription_level INTEGER,
+	sport_type_id BIGINT,
 	created_at TIMESTAMPTZ NOT NULL,
-	updated_at TIMESTAMPTZ NOT NULL
+	updated_at TIMESTAMPTZ NOT NULL,
+	FOREIGN KEY (author_user_id, required_subscription_level)
+		REFERENCES content_subscription_tier(trainer_user_id, tier_id)
 );
 
 CREATE TABLE content_post_block (
@@ -61,6 +76,9 @@ CREATE TABLE content_post_like (
 	updated_at TIMESTAMPTZ NOT NULL,
 	PRIMARY KEY (post_id, user_id)
 );
+
+INSERT INTO content_subscription_tier (trainer_user_id, tier_id, name, price, description, created_at, updated_at)
+VALUES (7, 2, 'Продвинутый', 1500, 'Закрытые тренировки', now(), now());
 `
 
 func TestRepositoryIntegration(t *testing.T) {
@@ -81,11 +99,13 @@ func TestRepositoryIntegration(t *testing.T) {
 
 	repository := postgres.NewRepository(db)
 	requiredLevel := int32(2)
+	sportTypeID := int64(3001)
 
 	postID, err := repository.CreatePost(context.Background(), domain.Post{
 		AuthorUserID:              7,
 		Title:                     "Morning run",
 		RequiredSubscriptionLevel: &requiredLevel,
+		SportTypeID:               &sportTypeID,
 		Blocks: []domain.PostBlock{
 			{
 				Position:    0,
@@ -107,7 +127,7 @@ func TestRepositoryIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get post: %v", err)
 	}
-	if post.Title != "Morning run" || len(post.Blocks) != 2 {
+	if post.Title != "Morning run" || post.SportTypeID == nil || *post.SportTypeID != 3001 || len(post.Blocks) != 2 {
 		t.Fatalf("unexpected post: %+v", post)
 	}
 
@@ -173,6 +193,7 @@ func TestRepositoryIntegration(t *testing.T) {
 	searchPosts, err := repository.SearchPosts(context.Background(), usecase.SearchPostsQuery{
 		Query:         "updated",
 		AuthorUserIDs: []int64{7},
+		SportTypeIDs:  []int64{3001},
 		BlockKinds:    []domain.BlockKind{domain.BlockKindText},
 		OnlyAvailable: true,
 		ViewerUserID:  55,
@@ -183,6 +204,27 @@ func TestRepositoryIntegration(t *testing.T) {
 	}
 	if len(searchPosts) != 1 || searchPosts[0].PostID != postID || !searchPosts[0].IsLiked || searchPosts[0].CommentsCount != 1 {
 		t.Fatalf("unexpected search posts: %+v", searchPosts)
+	}
+
+	tiers, err := repository.ListSubscriptionTiers(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("list tiers: %v", err)
+	}
+	if len(tiers) != 1 || tiers[0].TierID != 2 {
+		t.Fatalf("unexpected tiers: %+v", tiers)
+	}
+
+	createdTier, err := repository.CreateSubscriptionTier(context.Background(), domain.SubscriptionTier{
+		TrainerUserID: 7,
+		Name:          "Премиум",
+		Price:         2500,
+		Description:   stringPtr("Персональные разборы"),
+	})
+	if err != nil {
+		t.Fatalf("create tier: %v", err)
+	}
+	if createdTier.TierID != 3 {
+		t.Fatalf("unexpected created tier: %+v", createdTier)
 	}
 
 	if err := repository.DeletePost(context.Background(), postID, 7); err != nil {

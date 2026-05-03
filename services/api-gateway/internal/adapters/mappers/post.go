@@ -13,6 +13,7 @@ func CreatePostRequestToContent(authorUserID int64, request *gatewayv1.CreatePos
 		AuthorUserId:              authorUserID,
 		Title:                     request.GetTitle(),
 		RequiredSubscriptionLevel: request.MinTierId,
+		SportTypeId:               optionalInt32ToInt64(request.SportTypeId),
 		Blocks:                    postBlockInputsToContent(request.GetBlocks()),
 	}
 }
@@ -24,6 +25,8 @@ func UpdatePostRequestToContent(authorUserID int64, request *gatewayv1.UpdatePos
 		Title:                          request.Title,
 		RequiredSubscriptionLevel:      request.MinTierId,
 		ClearRequiredSubscriptionLevel: request.GetClearMinTierId(),
+		SportTypeId:                    optionalInt32ToInt64(request.SportTypeId),
+		ClearSportTypeId:               request.GetClearSportTypeId(),
 		Blocks:                         postBlockInputsToContent(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
 	}
@@ -46,6 +49,7 @@ func SearchPostsRequestToContent(
 	return &contentv1.SearchPostsRequest{
 		Query:                        request.GetQuery(),
 		AuthorUserIds:                int32SliceToInt64Slice(request.GetTrainerIds()),
+		SportTypeIds:                 int32SliceToInt64Slice(request.GetSportTypeIds()),
 		BlockKinds:                   blockKindsToContent(request.GetBlockKinds()),
 		MinRequiredSubscriptionLevel: request.MinTierId,
 		MaxRequiredSubscriptionLevel: request.MaxTierId,
@@ -162,6 +166,10 @@ func postResponseFromContentPost(post *contentv1.Post) (*gatewayv1.PostResponse,
 	if err != nil {
 		return nil, err
 	}
+	sportTypeID, err := optionalInt64ToInt32("content.post.sport_type_id", post.SportTypeId)
+	if err != nil {
+		return nil, err
+	}
 
 	blocks, err := postBlocksFromContent(post.GetBlocks())
 	if err != nil {
@@ -180,6 +188,7 @@ func postResponseFromContentPost(post *contentv1.Post) (*gatewayv1.PostResponse,
 		Blocks:        blocks,
 		CanView:       post.GetCanView(),
 		CommentsCount: commentsCount,
+		SportTypeId:   sportTypeID,
 	}, nil
 }
 
@@ -203,6 +212,10 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 	if err != nil {
 		return nil, err
 	}
+	sportTypeID, err := optionalInt64ToInt32("content.post_summary.sport_type_id", post.SportTypeId)
+	if err != nil {
+		return nil, err
+	}
 
 	return &gatewayv1.PostListItem{
 		PostId:        postID,
@@ -214,6 +227,7 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 		LikesCount:    likesCount,
 		IsLiked:       post.GetIsLiked(),
 		CommentsCount: commentsCount,
+		SportTypeId:   sportTypeID,
 	}, nil
 }
 

@@ -18,6 +18,10 @@ type ContentUseCase interface {
 	GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	UpdatePost(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	DeletePost(ctx context.Context, command usecase.DeletePostCommand) error
+	ListSubscriptionTiers(ctx context.Context, query usecase.ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error)
+	CreateSubscriptionTier(ctx context.Context, command usecase.CreateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	UpdateSubscriptionTier(ctx context.Context, command usecase.UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	DeleteSubscriptionTier(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
@@ -89,6 +93,41 @@ func (server *Server) UpdatePost(ctx context.Context, request *contentv1.UpdateP
 
 func (server *Server) DeletePost(ctx context.Context, request *contentv1.DeletePostRequest) (*emptypb.Empty, error) {
 	if err := server.contentUseCase.DeletePost(ctx, mappers.DeletePostRequestToCommand(request)); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.Empty(), nil
+}
+
+func (server *Server) ListSubscriptionTiers(ctx context.Context, request *contentv1.ListSubscriptionTiersRequest) (*contentv1.ListSubscriptionTiersResponse, error) {
+	tiers, err := server.contentUseCase.ListSubscriptionTiers(ctx, mappers.ListSubscriptionTiersRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListSubscriptionTiersResponse(tiers), nil
+}
+
+func (server *Server) CreateSubscriptionTier(ctx context.Context, request *contentv1.CreateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
+	tier, err := server.contentUseCase.CreateSubscriptionTier(ctx, mappers.CreateSubscriptionTierRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionTierResponse(tier), nil
+}
+
+func (server *Server) UpdateSubscriptionTier(ctx context.Context, request *contentv1.UpdateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
+	tier, err := server.contentUseCase.UpdateSubscriptionTier(ctx, mappers.UpdateSubscriptionTierRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionTierResponse(tier), nil
+}
+
+func (server *Server) DeleteSubscriptionTier(ctx context.Context, request *contentv1.DeleteSubscriptionTierRequest) (*emptypb.Empty, error) {
+	if err := server.contentUseCase.DeleteSubscriptionTier(ctx, mappers.DeleteSubscriptionTierRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 

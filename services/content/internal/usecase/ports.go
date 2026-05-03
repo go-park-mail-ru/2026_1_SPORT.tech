@@ -14,6 +14,11 @@ type ContentRepository interface {
 	SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
 	UpdatePost(ctx context.Context, post domain.Post, replaceBlocks bool) error
 	DeletePost(ctx context.Context, postID int64, authorUserID int64) error
+	ListSubscriptionTiers(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error)
+	GetSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error)
+	CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
+	DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error
 	UpsertLike(ctx context.Context, postID int64, userID int64) error
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
@@ -42,6 +47,7 @@ type ListAuthorPostsQuery struct {
 type SearchPostsQuery struct {
 	Query                        string
 	AuthorUserIDs                []int64
+	SportTypeIDs                 []int64
 	BlockKinds                   []domain.BlockKind
 	MinRequiredSubscriptionLevel *int32
 	MaxRequiredSubscriptionLevel *int32
@@ -56,6 +62,7 @@ type CreatePostCommand struct {
 	AuthorUserID              int64
 	Title                     string
 	RequiredSubscriptionLevel *int32
+	SportTypeID               *int64
 	Blocks                    []PostBlockInput
 }
 
@@ -78,8 +85,35 @@ type UpdatePostCommand struct {
 	Title                          *string
 	RequiredSubscriptionLevel      *int32
 	ClearRequiredSubscriptionLevel bool
+	SportTypeID                    *int64
+	ClearSportTypeID               bool
 	Blocks                         []PostBlockInput
 	ReplaceBlocks                  bool
+}
+
+type ListSubscriptionTiersQuery struct {
+	TrainerUserID int64
+}
+
+type CreateSubscriptionTierCommand struct {
+	TrainerUserID int64
+	Name          string
+	Price         int32
+	Description   *string
+}
+
+type UpdateSubscriptionTierCommand struct {
+	TrainerUserID    int64
+	TierID           int64
+	Name             *string
+	Price            *int32
+	Description      *string
+	ClearDescription bool
+}
+
+type DeleteSubscriptionTierCommand struct {
+	TrainerUserID int64
+	TierID        int64
 }
 
 type DeletePostCommand struct {

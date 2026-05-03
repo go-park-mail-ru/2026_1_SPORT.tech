@@ -23,6 +23,7 @@ func New(
 	authService gatewayv1.AuthServiceServer,
 	profileService gatewayv1.ProfileServiceServer,
 	postService gatewayv1.PostServiceServer,
+	tierService gatewayv1.TierServiceServer,
 	sportService gatewayv1.SportServiceServer,
 	donationService gatewayv1.DonationServiceServer,
 	metricSet *metrics.Metrics,
@@ -38,6 +39,7 @@ func New(
 	gatewayv1.RegisterAuthServiceServer(grpcServer, authService)
 	gatewayv1.RegisterProfileServiceServer(grpcServer, profileService)
 	gatewayv1.RegisterPostServiceServer(grpcServer, postService)
+	gatewayv1.RegisterTierServiceServer(grpcServer, tierService)
 	gatewayv1.RegisterSportServiceServer(grpcServer, sportService)
 	gatewayv1.RegisterDonationServiceServer(grpcServer, donationService)
 
@@ -46,6 +48,7 @@ func New(
 	healthServer.SetServingStatus(gatewayv1.AuthService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.ProfileService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.PostService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(gatewayv1.TierService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.SportService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.DonationService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	grpcHealthV1.RegisterHealthServer(grpcServer, healthServer)

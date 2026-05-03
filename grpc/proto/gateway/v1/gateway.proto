@@ -172,6 +172,7 @@ message CreatePostRequest {
   optional int32 min_tier_id = 1;
   string title = 2;
   repeated PostBlockInput blocks = 3;
+  optional int32 sport_type_id = 4;
 }
 
 message UpdatePostRequest {
@@ -181,6 +182,8 @@ message UpdatePostRequest {
   repeated PostBlockInput blocks = 4;
   bool replace_blocks = 5;
   bool clear_min_tier_id = 6;
+  optional int32 sport_type_id = 7;
+  bool clear_sport_type_id = 8;
 }
 
 message PostBlock {
@@ -201,6 +204,7 @@ message PostListItem {
   int32 likes_count = 7;
   bool is_liked = 8;
   int32 comments_count = 9;
+  optional int32 sport_type_id = 10;
 }
 
 message ProfilePostsResponse {
@@ -217,6 +221,7 @@ message SearchPostsRequest {
   bool only_available = 6;
   int32 limit = 7;
   int32 offset = 8;
+  repeated int32 sport_type_ids = 9;
 }
 
 message SearchPostsResponse {
@@ -235,6 +240,7 @@ message PostResponse {
   repeated PostBlock blocks = 9;
   bool can_view = 10;
   int32 comments_count = 11;
+  optional int32 sport_type_id = 12;
 }
 
 message GetPostRequest {
@@ -253,6 +259,37 @@ message PostLikeResponse {
   int32 post_id = 1;
   int32 likes_count = 2;
   bool is_liked = 3;
+}
+
+message Tier {
+  int32 tier_id = 1;
+  string name = 2;
+  int32 price = 3;
+  optional string description = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message TiersResponse {
+  repeated Tier tiers = 1;
+}
+
+message CreateTierRequest {
+  string name = 1;
+  int32 price = 2;
+  optional string description = 3;
+}
+
+message UpdateTierRequest {
+  int32 tier_id = 1;
+  optional string name = 2;
+  optional int32 price = 3;
+  optional string description = 4;
+  bool clear_description = 5;
+}
+
+message DeleteTierRequest {
+  int32 tier_id = 1;
 }
 
 message DonateToProfileRequest {
@@ -389,6 +426,30 @@ service PostService {
 
   rpc UnlikePost(PostLikeRequest) returns (PostLikeResponse) {
     option (google.api.http).delete = "/v1/posts/{post_id}/likes";
+  }
+}
+
+service TierService {
+  rpc ListTiers(google.protobuf.Empty) returns (TiersResponse) {
+    option (google.api.http).get = "/v1/tiers";
+  }
+
+  rpc CreateTier(CreateTierRequest) returns (Tier) {
+    option (google.api.http) = {
+      post: "/v1/tiers"
+      body: "*"
+    };
+  }
+
+  rpc UpdateTier(UpdateTierRequest) returns (Tier) {
+    option (google.api.http) = {
+      patch: "/v1/tiers/{tier_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteTier(DeleteTierRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/tiers/{tier_id}";
   }
 }
 

@@ -23,6 +23,10 @@ type stubContentUseCase struct {
 	getPostFunc         func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	updatePostFunc      func(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	deletePostFunc      func(ctx context.Context, command usecase.DeletePostCommand) error
+	listTiersFunc       func(ctx context.Context, query usecase.ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error)
+	createTierFunc      func(ctx context.Context, command usecase.CreateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	updateTierFunc      func(ctx context.Context, command usecase.UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	deleteTierFunc      func(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	likePostFunc        func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	unlikePostFunc      func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	createCommentFunc   func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
@@ -55,6 +59,34 @@ func (stub stubContentUseCase) UpdatePost(ctx context.Context, command usecase.U
 
 func (stub stubContentUseCase) DeletePost(ctx context.Context, command usecase.DeletePostCommand) error {
 	return stub.deletePostFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) ListSubscriptionTiers(ctx context.Context, query usecase.ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error) {
+	if stub.listTiersFunc == nil {
+		return nil, nil
+	}
+	return stub.listTiersFunc(ctx, query)
+}
+
+func (stub stubContentUseCase) CreateSubscriptionTier(ctx context.Context, command usecase.CreateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
+	if stub.createTierFunc == nil {
+		return domain.SubscriptionTier{}, nil
+	}
+	return stub.createTierFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) UpdateSubscriptionTier(ctx context.Context, command usecase.UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
+	if stub.updateTierFunc == nil {
+		return domain.SubscriptionTier{}, nil
+	}
+	return stub.updateTierFunc(ctx, command)
+}
+
+func (stub stubContentUseCase) DeleteSubscriptionTier(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error {
+	if stub.deleteTierFunc == nil {
+		return nil
+	}
+	return stub.deleteTierFunc(ctx, command)
 }
 
 func (stub stubContentUseCase) LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {

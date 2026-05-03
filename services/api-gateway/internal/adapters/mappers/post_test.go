@@ -10,8 +10,10 @@ import (
 )
 
 func TestCreatePostRequestToContentPreservesBlockOrder(t *testing.T) {
+	sportTypeID := int32(3001)
 	request := &gatewayv1.CreatePostRequest{
-		Title: "Workout",
+		Title:       "Workout",
+		SportTypeId: &sportTypeID,
 		Blocks: []*gatewayv1.PostBlockInput{
 			{Kind: "text", TextContent: stringPtr("Warm-up")},
 			{Kind: "image", FileUrl: stringPtr("https://cdn.example/warm-up.jpg")},
@@ -23,6 +25,9 @@ func TestCreatePostRequestToContentPreservesBlockOrder(t *testing.T) {
 
 	if mapped.GetAuthorUserId() != 7 {
 		t.Fatalf("unexpected author id: %d", mapped.GetAuthorUserId())
+	}
+	if mapped.SportTypeId == nil || mapped.GetSportTypeId() != 3001 {
+		t.Fatalf("unexpected sport type id: %+v", mapped.SportTypeId)
 	}
 	if len(mapped.GetBlocks()) != 3 {
 		t.Fatalf("unexpected blocks count: %d", len(mapped.GetBlocks()))
@@ -43,6 +48,7 @@ func TestCreatePostRequestToContentPreservesBlockOrder(t *testing.T) {
 
 func TestPostResponseFromContentPreservesBlockOrder(t *testing.T) {
 	now := timestamppb.New(time.Date(2026, time.May, 2, 12, 0, 0, 0, time.UTC))
+	sportTypeID := int64(3001)
 	response, err := PostResponseFromContent(&contentv1.PostResponse{
 		Post: &contentv1.Post{
 			PostId:        11,
@@ -53,6 +59,7 @@ func TestPostResponseFromContentPreservesBlockOrder(t *testing.T) {
 			CanView:       true,
 			LikesCount:    5,
 			CommentsCount: 2,
+			SportTypeId:   &sportTypeID,
 			Blocks: []*contentv1.PostBlock{
 				{
 					PostBlockId: 101,
@@ -81,6 +88,9 @@ func TestPostResponseFromContentPreservesBlockOrder(t *testing.T) {
 
 	if response.GetPostId() != 11 || response.GetTrainerId() != 7 || response.GetLikesCount() != 5 || response.GetCommentsCount() != 2 {
 		t.Fatalf("unexpected response counters: %+v", response)
+	}
+	if response.SportTypeId == nil || response.GetSportTypeId() != 3001 {
+		t.Fatalf("unexpected sport type id: %+v", response.SportTypeId)
 	}
 	if len(response.GetBlocks()) != 3 {
 		t.Fatalf("unexpected blocks count: %d", len(response.GetBlocks()))
@@ -125,6 +135,7 @@ func TestSearchPostsRequestToContent(t *testing.T) {
 	mapped := SearchPostsRequestToContent(13, &viewerLevel, &gatewayv1.SearchPostsRequest{
 		Query:         "темп",
 		TrainerIds:    []int32{7, 9},
+		SportTypeIds:  []int32{3001},
 		BlockKinds:    []string{"image", "document"},
 		MinTierId:     &minTierID,
 		MaxTierId:     &maxTierID,
@@ -137,6 +148,8 @@ func TestSearchPostsRequestToContent(t *testing.T) {
 		len(mapped.GetAuthorUserIds()) != 2 ||
 		mapped.GetAuthorUserIds()[0] != 7 ||
 		mapped.GetAuthorUserIds()[1] != 9 ||
+		len(mapped.GetSportTypeIds()) != 1 ||
+		mapped.GetSportTypeIds()[0] != 3001 ||
 		len(mapped.GetBlockKinds()) != 2 ||
 		mapped.GetBlockKinds()[0] != contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_IMAGE ||
 		mapped.GetBlockKinds()[1] != contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_DOCUMENT ||

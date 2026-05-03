@@ -15,6 +15,9 @@
       "name": "PostService"
     },
     {
+      "name": "TierService"
+    },
+    {
       "name": "SportService"
     },
     {
@@ -653,6 +656,127 @@
         ]
       }
     },
+    "/v1/tiers": {
+      "get": {
+        "operationId": "TierService_ListTiers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1TiersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "TierService"
+        ]
+      },
+      "post": {
+        "operationId": "TierService_CreateTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Tier"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateTierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TierService"
+        ]
+      }
+    },
+    "/v1/tiers/{tier_id}": {
+      "delete": {
+        "operationId": "TierService_DeleteTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tier_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TierService"
+        ]
+      },
+      "patch": {
+        "operationId": "TierService_UpdateTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Tier"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tier_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TierServiceUpdateTierBody"
+            }
+          }
+        ],
+        "tags": [
+          "TierService"
+        ]
+      }
+    },
     "/v1/trainers": {
       "get": {
         "operationId": "ProfileService_ListTrainers",
@@ -799,6 +923,31 @@
         },
         "clear_min_tier_id": {
           "type": "boolean"
+        },
+        "sport_type_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "clear_sport_type_id": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TierServiceUpdateTierBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "clear_description": {
+          "type": "boolean"
         }
       }
     },
@@ -893,6 +1042,25 @@
             "type": "object",
             "$ref": "#/definitions/v1PostBlockInput"
           }
+        },
+        "sport_type_id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1CreateTierRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
@@ -1071,6 +1239,10 @@
         "comments_count": {
           "type": "integer",
           "format": "int32"
+        },
+        "sport_type_id": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1136,6 +1308,10 @@
           "type": "boolean"
         },
         "comments_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sport_type_id": {
           "type": "integer",
           "format": "int32"
         }
@@ -1227,6 +1403,13 @@
         "offset": {
           "type": "integer",
           "format": "int32"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -1262,6 +1445,45 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1SportType"
+          }
+        }
+      }
+    },
+    "v1Tier": {
+      "type": "object",
+      "properties": {
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1TiersResponse": {
+      "type": "object",
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Tier"
           }
         }
       }

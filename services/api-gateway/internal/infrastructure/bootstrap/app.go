@@ -62,6 +62,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		gatewayService,
 		gatewayService,
 		gatewayService,
+		gatewayService,
 		metricsSet,
 	)
 	if err != nil {
@@ -71,7 +72,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, err
 	}
 
-	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService)
+	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()

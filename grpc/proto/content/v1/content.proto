@@ -49,6 +49,7 @@ message Post {
   bool is_liked = 9;
   int64 comments_count = 10;
   repeated PostBlock blocks = 11;
+  optional int64 sport_type_id = 12;
 }
 
 message PostSummary {
@@ -61,6 +62,7 @@ message PostSummary {
   int64 likes_count = 7;
   bool is_liked = 8;
   int64 comments_count = 9;
+  optional int64 sport_type_id = 10;
 }
 
 message Comment {
@@ -99,6 +101,7 @@ message SearchPostsRequest {
   optional int32 viewer_subscription_level = 8;
   int32 limit = 9;
   int32 offset = 10;
+  repeated int64 sport_type_ids = 11;
 }
 
 message SearchPostsResponse {
@@ -110,6 +113,7 @@ message CreatePostRequest {
   string title = 2;
   optional int32 required_subscription_level = 3;
   repeated PostBlockInput blocks = 4;
+  optional int64 sport_type_id = 5;
 }
 
 message UploadPostMediaRequest {
@@ -137,6 +141,47 @@ message UpdatePostRequest {
   bool clear_required_subscription_level = 5;
   repeated PostBlockInput blocks = 6;
   bool replace_blocks = 7;
+  optional int64 sport_type_id = 8;
+  bool clear_sport_type_id = 9;
+}
+
+message SubscriptionTier {
+  int64 tier_id = 1;
+  int64 trainer_user_id = 2;
+  string name = 3;
+  int32 price = 4;
+  optional string description = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message ListSubscriptionTiersRequest {
+  int64 trainer_user_id = 1;
+}
+
+message ListSubscriptionTiersResponse {
+  repeated SubscriptionTier tiers = 1;
+}
+
+message CreateSubscriptionTierRequest {
+  int64 trainer_user_id = 1;
+  string name = 2;
+  int32 price = 3;
+  optional string description = 4;
+}
+
+message UpdateSubscriptionTierRequest {
+  int64 trainer_user_id = 1;
+  int64 tier_id = 2;
+  optional string name = 3;
+  optional int32 price = 4;
+  optional string description = 5;
+  bool clear_description = 6;
+}
+
+message DeleteSubscriptionTierRequest {
+  int64 trainer_user_id = 1;
+  int64 tier_id = 2;
 }
 
 message DeletePostRequest {
@@ -228,6 +273,28 @@ service ContentService {
 
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/posts/{post_id}";
+  }
+
+  rpc ListSubscriptionTiers(ListSubscriptionTiersRequest) returns (ListSubscriptionTiersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_user_id}/tiers";
+  }
+
+  rpc CreateSubscriptionTier(CreateSubscriptionTierRequest) returns (SubscriptionTier) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_user_id}/tiers"
+      body: "*"
+    };
+  }
+
+  rpc UpdateSubscriptionTier(UpdateSubscriptionTierRequest) returns (SubscriptionTier) {
+    option (google.api.http) = {
+      patch: "/v1/trainers/{trainer_user_id}/tiers/{tier_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteSubscriptionTier(DeleteSubscriptionTierRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/trainers/{trainer_user_id}/tiers/{tier_id}";
   }
 
   rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {

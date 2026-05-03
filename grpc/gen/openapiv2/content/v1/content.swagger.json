@@ -469,6 +469,157 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/trainers/{trainer_user_id}/tiers": {
+      "get": {
+        "operationId": "ContentService_ListSubscriptionTiers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListSubscriptionTiersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "post": {
+        "operationId": "ContentService_CreateSubscriptionTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubscriptionTier"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceCreateSubscriptionTierBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/trainers/{trainer_user_id}/tiers/{tier_id}": {
+      "delete": {
+        "operationId": "ContentService_DeleteSubscriptionTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "tier_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "patch": {
+        "operationId": "ContentService_UpdateSubscriptionTier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubscriptionTier"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "tier_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceUpdateSubscriptionTierBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -484,6 +635,21 @@
           "format": "int32"
         },
         "body": {
+          "type": "string"
+        }
+      }
+    },
+    "ContentServiceCreateSubscriptionTierBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
           "type": "string"
         }
       }
@@ -526,6 +692,31 @@
           }
         },
         "replace_blocks": {
+          "type": "boolean"
+        },
+        "sport_type_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "clear_sport_type_id": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ContentServiceUpdateSubscriptionTierBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "clear_description": {
           "type": "boolean"
         }
       }
@@ -625,6 +816,10 @@
             "type": "object",
             "$ref": "#/definitions/v1PostBlockInput"
           }
+        },
+        "sport_type_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -648,6 +843,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1Comment"
+          }
+        }
+      }
+    },
+    "v1ListSubscriptionTiersResponse": {
+      "type": "object",
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubscriptionTier"
           }
         }
       }
@@ -698,6 +905,10 @@
             "type": "object",
             "$ref": "#/definitions/v1PostBlock"
           }
+        },
+        "sport_type_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -830,6 +1041,10 @@
         "comments_count": {
           "type": "string",
           "format": "int64"
+        },
+        "sport_type_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -878,6 +1093,13 @@
         "offset": {
           "type": "integer",
           "format": "int32"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -890,6 +1112,37 @@
             "type": "object",
             "$ref": "#/definitions/v1PostSummary"
           }
+        }
+      }
+    },
+    "v1SubscriptionTier": {
+      "type": "object",
+      "properties": {
+        "tier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
