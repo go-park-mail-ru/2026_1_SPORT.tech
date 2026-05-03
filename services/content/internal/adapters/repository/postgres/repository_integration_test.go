@@ -92,7 +92,9 @@ CREATE TABLE content_subscription (
 );
 
 INSERT INTO content_subscription_tier (trainer_user_id, tier_id, name, price, description, created_at, updated_at)
-VALUES (7, 2, 'Продвинутый', 1500, 'Закрытые тренировки', now(), now());
+VALUES
+	(7, 1, 'VIP', 3000, 'Самый дорогой уровень', now(), now()),
+	(7, 2, 'Продвинутый', 1500, 'Закрытые тренировки', now(), now());
 `
 
 func TestRepositoryIntegration(t *testing.T) {
@@ -224,7 +226,7 @@ func TestRepositoryIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list tiers: %v", err)
 	}
-	if len(tiers) != 1 || tiers[0].TierID != 2 {
+	if len(tiers) != 2 || tiers[0].TierID != 2 || tiers[1].TierID != 1 {
 		t.Fatalf("unexpected tiers: %+v", tiers)
 	}
 
@@ -254,11 +256,23 @@ func TestRepositoryIntegration(t *testing.T) {
 		t.Fatalf("unexpected subscription: %+v", subscription)
 	}
 
+	subscription, err = repository.UpdateSubscription(context.Background(), domain.Subscription{
+		SubscriptionID: subscription.SubscriptionID,
+		ClientUserID:   55,
+		TierID:         createdTier.TierID,
+	})
+	if err != nil {
+		t.Fatalf("update subscription: %v", err)
+	}
+	if subscription.TierID != createdTier.TierID || subscription.TierName != "Премиум" || subscription.Price != 2500 {
+		t.Fatalf("unexpected updated subscription: %+v", subscription)
+	}
+
 	level, err := repository.GetActiveSubscriptionLevel(context.Background(), 55, 7)
 	if err != nil {
 		t.Fatalf("active subscription level: %v", err)
 	}
-	if level == nil || *level != 2 {
+	if level == nil || *level != 3 {
 		t.Fatalf("unexpected active subscription level: %v", level)
 	}
 

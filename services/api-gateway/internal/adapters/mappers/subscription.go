@@ -15,6 +15,14 @@ func SubscribeRequestToContent(clientUserID int64, request *gatewayv1.SubscribeR
 	}
 }
 
+func UpdateSubscriptionRequestToContent(clientUserID int64, request *gatewayv1.UpdateSubscriptionRequest) *contentv1.UpdateSubscriptionRequest {
+	return &contentv1.UpdateSubscriptionRequest{
+		ClientUserId:   clientUserID,
+		SubscriptionId: int32ToInt64(request.GetSubscriptionId()),
+		TierId:         int32ToInt64(request.GetTierId()),
+	}
+}
+
 func SubscriptionFromContent(subscription *contentv1.Subscription) (*gatewayv1.Subscription, error) {
 	if subscription == nil {
 		return nil, fmt.Errorf("subscription is required")

@@ -12,14 +12,14 @@ import (
 )
 
 func (server *Server) SubscribeToTrainer(ctx context.Context, request *gatewayv1.SubscribeRequest) (*gatewayv1.Subscription, error) {
-	clientUserID, err := server.requireClientUserID(ctx)
+	userID, err := server.requireSubscriptionUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	response, err := server.contentClient.SubscribeToTrainer(
 		forwardContext(ctx),
-		mappers.SubscribeRequestToContent(clientUserID, request),
+		mappers.SubscribeRequestToContent(userID, request),
 	)
 	if err != nil {
 		return nil, err
@@ -33,14 +33,14 @@ func (server *Server) SubscribeToTrainer(ctx context.Context, request *gatewayv1
 }
 
 func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.SubscriptionsResponse, error) {
-	clientUserID, err := server.requireClientUserID(ctx)
+	userID, err := server.requireSubscriptionUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	response, err := server.contentClient.ListMySubscriptions(
 		forwardContext(ctx),
-		&contentv1.ListMySubscriptionsRequest{ClientUserId: clientUserID},
+		&contentv1.ListMySubscriptionsRequest{ClientUserId: userID},
 	)
 	if err != nil {
 		return nil, err
@@ -49,8 +49,25 @@ func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty)
 	return mappers.SubscriptionsResponseFromContent(response)
 }
 
+func (server *Server) UpdateSubscription(ctx context.Context, request *gatewayv1.UpdateSubscriptionRequest) (*gatewayv1.Subscription, error) {
+	userID, err := server.requireSubscriptionUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.UpdateSubscription(
+		forwardContext(ctx),
+		mappers.UpdateSubscriptionRequestToContent(userID, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.SubscriptionFromContent(response)
+}
+
 func (server *Server) CancelSubscription(ctx context.Context, request *gatewayv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {
-	clientUserID, err := server.requireClientUserID(ctx)
+	userID, err := server.requireSubscriptionUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +75,7 @@ func (server *Server) CancelSubscription(ctx context.Context, request *gatewayv1
 	if _, err := server.contentClient.CancelSubscription(
 		forwardContext(ctx),
 		&contentv1.CancelSubscriptionRequest{
-			ClientUserId:   clientUserID,
+			ClientUserId:   userID,
 			SubscriptionId: int64(request.GetSubscriptionId()),
 		},
 	); err != nil {
@@ -72,13 +89,10 @@ func (server *Server) CancelSubscription(ctx context.Context, request *gatewayv1
 	return &emptypb.Empty{}, nil
 }
 
-func (server *Server) requireClientUserID(ctx context.Context) (int64, error) {
+func (server *Server) requireSubscriptionUserID(ctx context.Context) (int64, error) {
 	principal, err := server.requireSession(ctx)
 	if err != nil {
 		return 0, err
-	}
-	if err := mappers.RequireClientRole(principal.User); err != nil {
-		return 0, status.Error(codes.PermissionDenied, err.Error())
 	}
 
 	userID, err := userIDFromPrincipal(principal)

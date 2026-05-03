@@ -211,6 +211,12 @@ message ListMySubscriptionsResponse {
   repeated Subscription subscriptions = 1;
 }
 
+message UpdateSubscriptionRequest {
+  int64 client_user_id = 1;
+  int64 subscription_id = 2;
+  int64 tier_id = 3;
+}
+
 message CancelSubscriptionRequest {
   int64 client_user_id = 1;
   int64 subscription_id = 2;
@@ -338,6 +344,13 @@ service ContentService {
 
   rpc ListMySubscriptions(ListMySubscriptionsRequest) returns (ListMySubscriptionsResponse) {
     option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
+  }
+
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+    option (google.api.http) = {
+      patch: "/v1/users/{client_user_id}/subscriptions/{subscription_id}"
+      body: "*"
+    };
   }
 
   rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {

@@ -24,6 +24,7 @@ type ContentUseCase interface {
 	DeleteSubscriptionTier(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	SubscribeToTrainer(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	ListMySubscriptions(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
@@ -153,6 +154,15 @@ func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv
 	}
 
 	return mappers.NewListMySubscriptionsResponse(subscriptions), nil
+}
+
+func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1.UpdateSubscriptionRequest) (*contentv1.Subscription, error) {
+	subscription, err := server.contentUseCase.UpdateSubscription(ctx, mappers.UpdateSubscriptionRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionResponse(subscription), nil
 }
 
 func (server *Server) CancelSubscription(ctx context.Context, request *contentv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {

@@ -1258,6 +1258,7 @@ var TierService_ServiceDesc = grpc.ServiceDesc{
 const (
 	SubscriptionService_SubscribeToTrainer_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/SubscribeToTrainer"
 	SubscriptionService_ListMySubscriptions_FullMethodName = "/sporttech.gateway.v1.SubscriptionService/ListMySubscriptions"
+	SubscriptionService_UpdateSubscription_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/UpdateSubscription"
 	SubscriptionService_CancelSubscription_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/CancelSubscription"
 )
 
@@ -1267,6 +1268,7 @@ const (
 type SubscriptionServiceClient interface {
 	SubscribeToTrainer(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*Subscription, error)
 	ListMySubscriptions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SubscriptionsResponse, error)
+	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -1298,6 +1300,16 @@ func (c *subscriptionServiceClient) ListMySubscriptions(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *subscriptionServiceClient) UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Subscription)
+	err := c.cc.Invoke(ctx, SubscriptionService_UpdateSubscription_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *subscriptionServiceClient) CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -1314,6 +1326,7 @@ func (c *subscriptionServiceClient) CancelSubscription(ctx context.Context, in *
 type SubscriptionServiceServer interface {
 	SubscribeToTrainer(context.Context, *SubscribeRequest) (*Subscription, error)
 	ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error)
+	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error)
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 }
 
@@ -1329,6 +1342,9 @@ func (UnimplementedSubscriptionServiceServer) SubscribeToTrainer(context.Context
 }
 func (UnimplementedSubscriptionServiceServer) ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMySubscriptions not implemented")
+}
+func (UnimplementedSubscriptionServiceServer) UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateSubscription not implemented")
 }
 func (UnimplementedSubscriptionServiceServer) CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method CancelSubscription not implemented")
@@ -1389,6 +1405,24 @@ func _SubscriptionService_ListMySubscriptions_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SubscriptionService_UpdateSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSubscriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubscriptionServiceServer).UpdateSubscription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubscriptionService_UpdateSubscription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubscriptionServiceServer).UpdateSubscription(ctx, req.(*UpdateSubscriptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SubscriptionService_CancelSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CancelSubscriptionRequest)
 	if err := dec(in); err != nil {
@@ -1421,6 +1455,10 @@ var SubscriptionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMySubscriptions",
 			Handler:    _SubscriptionService_ListMySubscriptions_Handler,
+		},
+		{
+			MethodName: "UpdateSubscription",
+			Handler:    _SubscriptionService_UpdateSubscription_Handler,
 		},
 		{
 			MethodName: "CancelSubscription",

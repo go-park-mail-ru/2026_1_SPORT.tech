@@ -400,6 +400,24 @@ func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySub
 	return service.contentRepository.ListSubscriptions(ctx, query.ClientUserID)
 }
 
+func (service *Service) UpdateSubscription(ctx context.Context, command UpdateSubscriptionCommand) (domain.Subscription, error) {
+	if command.ClientUserID <= 0 {
+		return domain.Subscription{}, ErrInvalidUserID
+	}
+	if command.SubscriptionID <= 0 {
+		return domain.Subscription{}, ErrInvalidSubscriptionID
+	}
+	if command.TierID <= 0 {
+		return domain.Subscription{}, ErrInvalidSubscriptionTierID
+	}
+
+	return service.contentRepository.UpdateSubscription(ctx, domain.Subscription{
+		SubscriptionID: command.SubscriptionID,
+		ClientUserID:   command.ClientUserID,
+		TierID:         command.TierID,
+	})
+}
+
 func (service *Service) CancelSubscription(ctx context.Context, command CancelSubscriptionCommand) error {
 	if command.ClientUserID <= 0 {
 		return ErrInvalidUserID

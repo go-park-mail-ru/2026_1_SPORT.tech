@@ -711,6 +711,43 @@
         "tags": [
           "SubscriptionService"
         ]
+      },
+      "patch": {
+        "operationId": "SubscriptionService_UpdateSubscription",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Subscription"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SubscriptionServiceUpdateSubscriptionBody"
+            }
+          }
+        ],
+        "tags": [
+          "SubscriptionService"
+        ]
       }
     },
     "/v1/tiers": {
@@ -1061,6 +1098,15 @@
       }
     },
     "SubscriptionServiceSubscribeToTrainerBody": {
+      "type": "object",
+      "properties": {
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "SubscriptionServiceUpdateSubscriptionBody": {
       "type": "object",
       "properties": {
         "tier_id": {

@@ -126,6 +126,14 @@ func ListMySubscriptionsRequestToQuery(request *contentv1.ListMySubscriptionsReq
 	}
 }
 
+func UpdateSubscriptionRequestToCommand(request *contentv1.UpdateSubscriptionRequest) usecase.UpdateSubscriptionCommand {
+	return usecase.UpdateSubscriptionCommand{
+		ClientUserID:   request.GetClientUserId(),
+		SubscriptionID: request.GetSubscriptionId(),
+		TierID:         request.GetTierId(),
+	}
+}
+
 func CancelSubscriptionRequestToCommand(request *contentv1.CancelSubscriptionRequest) usecase.CancelSubscriptionCommand {
 	return usecase.CancelSubscriptionCommand{
 		ClientUserID:   request.GetClientUserId(),

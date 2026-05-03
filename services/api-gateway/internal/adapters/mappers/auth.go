@@ -85,18 +85,6 @@ func RequireTrainerRole(user *authv1.AuthUser) error {
 	}
 }
 
-func RequireClientRole(user *authv1.AuthUser) error {
-	if user == nil {
-		return fmt.Errorf("user is required")
-	}
-
-	if user.GetRole() == authv1.UserRole_USER_ROLE_CLIENT {
-		return nil
-	}
-
-	return fmt.Errorf("only client can perform this action")
-}
-
 func NormalizeStatusCode(code string) string {
 	switch strings.ToLower(strings.TrimSpace(code)) {
 	case "", "bad_request":

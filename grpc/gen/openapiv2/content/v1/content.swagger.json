@@ -728,6 +728,50 @@
         "tags": [
           "ContentService"
         ]
+      },
+      "patch": {
+        "operationId": "ContentService_UpdateSubscription",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Subscription"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceUpdateSubscriptionBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
       }
     }
   },
@@ -822,6 +866,15 @@
         },
         "clear_sport_type_id": {
           "type": "boolean"
+        }
+      }
+    },
+    "ContentServiceUpdateSubscriptionBody": {
+      "type": "object",
+      "properties": {
+        "tier_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -22,6 +22,7 @@ type ContentRepository interface {
 	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	UpsertLike(ctx context.Context, postID int64, userID int64) error
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
@@ -128,6 +129,12 @@ type SubscribeToTrainerCommand struct {
 
 type ListMySubscriptionsQuery struct {
 	ClientUserID int64
+}
+
+type UpdateSubscriptionCommand struct {
+	ClientUserID   int64
+	SubscriptionID int64
+	TierID         int64
 }
 
 type CancelSubscriptionCommand struct {

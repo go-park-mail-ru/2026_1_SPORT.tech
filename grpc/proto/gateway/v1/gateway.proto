@@ -317,6 +317,11 @@ message SubscriptionsResponse {
   repeated Subscription subscriptions = 1;
 }
 
+message UpdateSubscriptionRequest {
+  int32 subscription_id = 1;
+  int32 tier_id = 2;
+}
+
 message CancelSubscriptionRequest {
   int32 subscription_id = 1;
 }
@@ -496,6 +501,13 @@ service SubscriptionService {
 
   rpc ListMySubscriptions(google.protobuf.Empty) returns (SubscriptionsResponse) {
     option (google.api.http).get = "/v1/subscriptions/me";
+  }
+
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+    option (google.api.http) = {
+      patch: "/v1/subscriptions/{subscription_id}"
+      body: "*"
+    };
   }
 
   rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {

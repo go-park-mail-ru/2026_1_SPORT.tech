@@ -25,6 +25,7 @@ type stubContentRepository struct {
 	activeLevelFunc        func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	subscribeFunc          func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	listSubscriptionsFunc  func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	updateSubscriptionFunc func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	cancelSubscriptionFunc func(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	upsertLikeFunc         func(ctx context.Context, postID int64, userID int64) error
 	deleteLikeFunc         func(ctx context.Context, postID int64, userID int64) error
@@ -111,6 +112,13 @@ func (repository stubContentRepository) ListSubscriptions(ctx context.Context, c
 		return nil, nil
 	}
 	return repository.listSubscriptionsFunc(ctx, clientUserID)
+}
+
+func (repository stubContentRepository) UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+	if repository.updateSubscriptionFunc == nil {
+		return subscription, nil
+	}
+	return repository.updateSubscriptionFunc(ctx, subscription)
 }
 
 func (repository stubContentRepository) CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error {
@@ -408,6 +416,39 @@ func TestServiceSubscribeToTrainer(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if subscription.SubscriptionID != 2401 || !subscription.Active {
+		t.Fatalf("unexpected subscription result: %+v", subscription)
+	}
+}
+
+func TestServiceUpdateSubscription(t *testing.T) {
+	service := NewService(
+		stubContentRepository{
+			updateSubscriptionFunc: func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+				if subscription.ClientUserID != 1002 ||
+					subscription.SubscriptionID != 2401 ||
+					subscription.TierID != 3 {
+					t.Fatalf("unexpected subscription update: %+v", subscription)
+				}
+
+				subscription.TrainerUserID = 1001
+				subscription.TierName = "Премиум"
+				subscription.Price = 2500
+				subscription.Active = true
+				return subscription, nil
+			},
+		},
+		nil,
+	)
+
+	subscription, err := service.UpdateSubscription(context.Background(), UpdateSubscriptionCommand{
+		ClientUserID:   1002,
+		SubscriptionID: 2401,
+		TierID:         3,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if subscription.TierID != 3 || subscription.TierName != "Премиум" || !subscription.Active {
 		t.Fatalf("unexpected subscription result: %+v", subscription)
 	}
 }

@@ -423,7 +423,7 @@ func (repository *Repository) ListSubscriptionTiers(ctx context.Context, trainer
 			SELECT tier_id, trainer_user_id, name, price, description, created_at, updated_at
 			FROM content_subscription_tier
 			WHERE trainer_user_id = $1
-			ORDER BY tier_id ASC
+			ORDER BY price ASC, tier_id ASC
 		`,
 		trainerUserID,
 	)
@@ -755,6 +755,103 @@ func (repository *Repository) ListSubscriptions(ctx context.Context, clientUserI
 	}
 
 	return subscriptions, rows.Err()
+}
+
+func (repository *Repository) UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+	now := time.Now().UTC()
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return domain.Subscription{}, err
+	}
+	defer tx.Rollback()
+
+	var trainerUserID int64
+	if err := tx.QueryRowContext(
+		ctx,
+		`
+			SELECT trainer_user_id
+			FROM content_subscription
+			WHERE client_user_id = $1
+				AND subscription_id = $2
+				AND active = TRUE
+			FOR UPDATE
+		`,
+		subscription.ClientUserID,
+		subscription.SubscriptionID,
+	).Scan(&trainerUserID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.Subscription{}, domain.ErrSubscriptionNotFound
+		}
+		return domain.Subscription{}, err
+	}
+
+	var tierExists bool
+	if err := tx.QueryRowContext(
+		ctx,
+		`
+			SELECT EXISTS (
+				SELECT 1
+				FROM content_subscription_tier
+				WHERE trainer_user_id = $1
+					AND tier_id = $2
+			)
+		`,
+		trainerUserID,
+		subscription.TierID,
+	).Scan(&tierExists); err != nil {
+		return domain.Subscription{}, err
+	}
+	if !tierExists {
+		return domain.Subscription{}, domain.ErrSubscriptionTierNotFound
+	}
+
+	row := tx.QueryRowContext(
+		ctx,
+		`
+			WITH updated AS (
+				UPDATE content_subscription
+				SET tier_id = $3,
+					updated_at = $4
+				WHERE client_user_id = $1
+					AND subscription_id = $2
+					AND active = TRUE
+				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+			)
+			SELECT
+				updated.subscription_id,
+				updated.client_user_id,
+				updated.trainer_user_id,
+				updated.tier_id,
+				tier.name,
+				tier.price,
+				updated.active,
+				updated.expires_at,
+				updated.created_at,
+				updated.updated_at
+			FROM updated
+			JOIN content_subscription_tier tier
+				ON tier.trainer_user_id = updated.trainer_user_id
+				AND tier.tier_id = updated.tier_id
+		`,
+		subscription.ClientUserID,
+		subscription.SubscriptionID,
+		subscription.TierID,
+		now,
+	)
+
+	updated, err := scanSubscription(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.Subscription{}, domain.ErrSubscriptionNotFound
+		}
+		return domain.Subscription{}, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return domain.Subscription{}, err
+	}
+
+	return updated, nil
 }
 
 func (repository *Repository) CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error {

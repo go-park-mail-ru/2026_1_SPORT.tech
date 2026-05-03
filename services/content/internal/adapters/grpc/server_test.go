@@ -28,6 +28,7 @@ type stubContentUseCase struct {
 	deleteTierFunc         func(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	subscribeFunc          func(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	listSubscriptionsFunc  func(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	updateSubscriptionFunc func(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	cancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	likePostFunc           func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	unlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
@@ -103,6 +104,13 @@ func (stub stubContentUseCase) ListMySubscriptions(ctx context.Context, query us
 		return nil, nil
 	}
 	return stub.listSubscriptionsFunc(ctx, query)
+}
+
+func (stub stubContentUseCase) UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error) {
+	if stub.updateSubscriptionFunc == nil {
+		return domain.Subscription{}, nil
+	}
+	return stub.updateSubscriptionFunc(ctx, command)
 }
 
 func (stub stubContentUseCase) CancelSubscription(ctx context.Context, command usecase.CancelSubscriptionCommand) error {
