@@ -88,10 +88,6 @@ func (server *Server) UploadPostMedia(ctx context.Context, request *gatewayv1.Up
 		return nil, err
 	}
 
-	if err := setHTTPStatus(ctx, 201); err != nil {
-		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
-	}
-
 	return mappers.PostMediaUploadResponseFromContent(response)
 }
 
