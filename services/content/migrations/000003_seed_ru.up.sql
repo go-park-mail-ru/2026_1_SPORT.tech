@@ -51,22 +51,6 @@ SET post_id = EXCLUDED.post_id,
     file_url = EXCLUDED.file_url,
     updated_at = NOW();
 
-INSERT INTO content_comment (comment_id, post_id, author_user_id, body)
-VALUES
-  (2203, 2004, 1008, 'После такого комплекса реально легче сидеть за ноутбуком. Спасибо!'),
-  (2204, 2006, 1009, 'Не думал, что работа ног настолько важна. Буду отрабатывать перед зеркалом.'),
-  (2205, 2008, 1002, 'Круговая тренировка зашла. Можно потом вариант посложнее?'),
-  (2206, 2010, 1008, 'Про каденс полезно, раньше всегда ехала слишком тяжело на высокой передаче.'),
-  (2207, 2001, 1009, 'Анна, а этот план подойдет, если я бегаю только два раза в неделю?'),
-  (2208, 2003, 1008, 'Поняла, почему быстро уставала в бассейне. Буду тренировать выдох.'),
-  (2209, 2006, 1006, 'Хорошая база. Я бы еще добавила разминку плеч перед ударной работой.'),
-  (2210, 2008, 1005, 'Отличный формат для новичков: коротко и без лишнего оборудования.')
-ON CONFLICT (comment_id) DO UPDATE
-SET post_id = EXCLUDED.post_id,
-    author_user_id = EXCLUDED.author_user_id,
-    body = EXCLUDED.body,
-    updated_at = NOW();
-
 INSERT INTO content_post_like (post_id, user_id)
 VALUES
   (2001, 1008),
@@ -89,11 +73,5 @@ SELECT setval(
 SELECT setval(
   pg_get_serial_sequence('content_post_block', 'post_block_id'),
   (SELECT GREATEST(COALESCE(MAX(post_block_id), 1), 2133) FROM content_post_block),
-  true
-);
-
-SELECT setval(
-  pg_get_serial_sequence('content_comment', 'comment_id'),
-  (SELECT GREATEST(COALESCE(MAX(comment_id), 1), 2210) FROM content_comment),
   true
 );
