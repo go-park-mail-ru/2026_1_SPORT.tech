@@ -241,7 +241,7 @@ services:
       - backend
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    image: gcr.io/cadvisor/cadvisor:v0.55.1
     command:
       - --docker=unix:///var/run/docker.sock
       - --docker_only=true
