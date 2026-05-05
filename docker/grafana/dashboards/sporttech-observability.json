@@ -409,8 +409,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]))",
-          "legendFormat": "{{name}}",
+          "expr": "label_replace(\n  sum by (container_label_com_docker_compose_service) (rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service!=\"\"}[5m])),\n  \"container_name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\"\n)\nor\nlabel_replace(\n  sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])),\n  \"container_name\", \"$1\", \"name\", \"/?(.+)\"\n)\nor\nlabel_replace(\n  sum by (container) (rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\"}[5m])),\n  \"container_name\", \"$1\", \"container\", \"(.+)\"\n)",
+          "legendFormat": "{{container_name}}",
           "range": true,
           "refId": "A"
         }
@@ -448,8 +448,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\"})",
-          "legendFormat": "{{name}}",
+          "expr": "label_replace(\n  sum by (container_label_com_docker_compose_service) (container_memory_working_set_bytes{container_label_com_docker_compose_service!=\"\"}),\n  \"container_name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\"\n)\nor\nlabel_replace(\n  sum by (name) (container_memory_working_set_bytes{name!=\"\"}),\n  \"container_name\", \"$1\", \"name\", \"/?(.+)\"\n)\nor\nlabel_replace(\n  sum by (container) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\"}),\n  \"container_name\", \"$1\", \"container\", \"(.+)\"\n)",
+          "legendFormat": "{{container_name}}",
           "range": true,
           "refId": "A"
         }
