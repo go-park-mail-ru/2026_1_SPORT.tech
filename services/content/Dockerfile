@@ -1,38 +1,34 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1
 
-FROM golang:1.25-bookworm AS builder
+FROM golang:1.25-bookworm AS build
 
-WORKDIR /workspace
+ENV GOCACHE=/tmp/go_cache
+
+WORKDIR /src
 
 COPY go.mod go.sum ./
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    update-ca-certificates && \
+
+RUN --mount=type=cache,target=/tmp/go_cache/ \
     go mod download
 
-COPY . ./
+COPY ./ ./
 
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux go build -v -o /workspace/bin/content-service ./services/content/cmd/service
+RUN --mount=type=cache,target=/tmp/go_cache/ \
+    CGO_ENABLED=0 GOOS=linux go build -o /out/content-service ./services/content/cmd/service
 
-FROM debian:bookworm-slim
+COPY ./services/content/configs/ /out/configs/
+COPY ./grpc/gen/openapiv2/ /out/grpc/gen/openapiv2/
 
-RUN set -eux; \
-    apt-get update; \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates; \
-    groupadd -r nonroot; \
-    useradd --no-log-init -r -g nonroot nonroot; \
-    rm -rf /var/lib/apt/lists/*
+FROM gcr.io/distroless/static-debian12 AS build-release-stage
 
-WORKDIR /app
+WORKDIR /opt/microservice
 
-COPY --from=builder --chown=nonroot:nonroot /workspace/bin/content-service /app/content-service
-COPY --from=builder --chown=nonroot:nonroot /workspace/services/content/configs /app/services/content/configs
-COPY --from=builder --chown=nonroot:nonroot /workspace/grpc/gen/openapiv2 /app/grpc/gen/openapiv2
+COPY --from=build /out/ ./
 
-ENV CONTENT_CONFIG_PATH=/app/services/content/configs/service.yml
+ENV CONTENT_CONFIG_PATH=/opt/microservice/configs/service.yml
 
 USER nonroot:nonroot
 
-CMD ["/app/content-service"]
+EXPOSE 8083 9093
+
+ENTRYPOINT ["./content-service"]
