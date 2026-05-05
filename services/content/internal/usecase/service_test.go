@@ -164,6 +164,14 @@ func (repository stubContentRepository) GetBalance(ctx context.Context, trainerU
 	return repository.getBalanceFunc(ctx, trainerUserID, currency)
 }
 
+func stubRepositories(repository stubContentRepository) Repositories {
+	return Repositories{
+		Posts:      repository,
+		Money:      repository,
+		Engagement: repository,
+	}
+}
+
 type stubPostMediaStorage struct {
 	uploadFunc func(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
 }
@@ -185,7 +193,7 @@ func TestServiceCreatePost(t *testing.T) {
 	sportTypeID := int64(3001)
 
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			createPostFunc: func(ctx context.Context, post domain.Post) (int64, error) {
 				if post.AuthorUserID != 7 ||
 					post.Title != "Morning run" ||
@@ -229,7 +237,7 @@ func TestServiceCreatePost(t *testing.T) {
 			listCommentsFunc: func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 				return nil, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -254,7 +262,7 @@ func TestServiceCreatePost(t *testing.T) {
 func TestServiceUploadPostMedia(t *testing.T) {
 	uploaded := false
 	service := NewService(
-		stubContentRepository{},
+		stubRepositories(stubContentRepository{}),
 		stubPostMediaStorage{
 			uploadFunc: func(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error) {
 				uploaded = true
@@ -299,7 +307,7 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 	requiredLevel := int32(2)
 	repositoryCalled := false
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			searchPostsFunc: func(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error) {
 				repositoryCalled = true
 				if query.Query != "темп" ||
@@ -331,7 +339,7 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 				}
 				return &requiredLevel, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -359,7 +367,7 @@ func TestServiceSearchPostsAppliesFiltersAndAccessFlags(t *testing.T) {
 
 func TestServiceCreateSubscriptionTier(t *testing.T) {
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			createTierFunc: func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
 				if tier.TrainerUserID != 7 ||
 					tier.Name != "Продвинутый" ||
@@ -372,7 +380,7 @@ func TestServiceCreateSubscriptionTier(t *testing.T) {
 				tier.TierID = 2
 				return tier, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -392,7 +400,7 @@ func TestServiceCreateSubscriptionTier(t *testing.T) {
 
 func TestServiceSubscribeToTrainer(t *testing.T) {
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
 				if trainerUserID != 1001 || tierID != 2 {
 					t.Fatalf("unexpected tier lookup: trainer=%d tier=%d", trainerUserID, tierID)
@@ -419,7 +427,7 @@ func TestServiceSubscribeToTrainer(t *testing.T) {
 				subscription.Active = true
 				return subscription, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -438,7 +446,7 @@ func TestServiceSubscribeToTrainer(t *testing.T) {
 
 func TestServiceUpdateSubscription(t *testing.T) {
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			updateSubscriptionFunc: func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
 				if subscription.ClientUserID != 1002 ||
 					subscription.SubscriptionID != 2401 ||
@@ -452,7 +460,7 @@ func TestServiceUpdateSubscription(t *testing.T) {
 				subscription.Active = true
 				return subscription, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -473,7 +481,7 @@ func TestServiceGetPostRejectsRestrictedAccess(t *testing.T) {
 	requiredLevel := int32(2)
 
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			createPostFunc: func(ctx context.Context, post domain.Post) (int64, error) { return 0, nil },
 			getPostFunc: func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error) {
 				return domain.Post{
@@ -499,7 +507,7 @@ func TestServiceGetPostRejectsRestrictedAccess(t *testing.T) {
 			listCommentsFunc: func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 				return nil, nil
 			},
-		},
+		}),
 		nil,
 	)
 
@@ -516,7 +524,7 @@ func TestServiceCreateComment(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 
 	service := NewService(
-		stubContentRepository{
+		stubRepositories(stubContentRepository{
 			createPostFunc: func(ctx context.Context, post domain.Post) (int64, error) { return 0, nil },
 			getPostFunc: func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error) {
 				return domain.Post{
@@ -547,7 +555,7 @@ func TestServiceCreateComment(t *testing.T) {
 			listCommentsFunc: func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 				return nil, nil
 			},
-		},
+		}),
 		nil,
 	)
 

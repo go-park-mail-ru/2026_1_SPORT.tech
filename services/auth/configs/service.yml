@@ -9,7 +9,6 @@ server:
 postgres:
   host: localhost
   port: "5432"
-  user: postgres
   db_name: sporttech_auth
   max_open_conns: 20
   max_idle_conns: 10

@@ -7,13 +7,22 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
 
-type ContentRepository interface {
+type Repositories struct {
+	Posts      PostRepository
+	Money      MonetizationRepository
+	Engagement EngagementRepository
+}
+
+type PostRepository interface {
 	CreatePost(ctx context.Context, post domain.Post) (int64, error)
 	GetPost(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error)
 	ListAuthorPosts(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error)
 	SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error)
 	UpdatePost(ctx context.Context, post domain.Post, replaceBlocks bool) error
 	DeletePost(ctx context.Context, postID int64, authorUserID int64) error
+}
+
+type MonetizationRepository interface {
 	ListSubscriptionTiers(ctx context.Context, trainerUserID int64) ([]domain.SubscriptionTier, error)
 	GetSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error)
 	CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
@@ -24,13 +33,16 @@ type ContentRepository interface {
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
+	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
+}
+
+type EngagementRepository interface {
 	UpsertLike(ctx context.Context, postID int64, userID int64) error
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
-	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
-	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 }
 
 type PostMediaStorage interface {

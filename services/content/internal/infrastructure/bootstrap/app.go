@@ -47,7 +47,11 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		_ = database.Close()
 		return nil, fmt.Errorf("new post media storage: %w", err)
 	}
-	contentUseCase := usecase.NewService(contentRepository, postMediaStorage)
+	contentUseCase := usecase.NewService(usecase.Repositories{
+		Posts:      contentRepository,
+		Money:      contentRepository,
+		Engagement: contentRepository,
+	}, postMediaStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
 	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{

@@ -3,15 +3,15 @@ package config
 import (
 	"fmt"
 	"net"
-	"os"
 	"time"
 
+	"github.com/go-playground/validator/v10"
+	"github.com/ilyakaznacheev/cleanenv"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	ServiceName string         `yaml:"service_name"`
+	ServiceName string         `yaml:"service_name" env:"SERVICE_NAME" env-default:"auth-service" validate:"required"`
 	Server      ServerConfig   `yaml:"server"`
 	Postgres    PostgresConfig `yaml:"postgres"`
 	Auth        AuthConfig     `yaml:"auth"`
@@ -19,108 +19,48 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Host            string `yaml:"host"`
-	GRPCPort        string `yaml:"grpc_port"`
-	HTTPPort        string `yaml:"http_port"`
-	ShutdownTimeout string `yaml:"shutdown_timeout"`
+	Host            string `yaml:"host" env:"AUTH_SERVER_HOST" env-default:"0.0.0.0" validate:"required"`
+	GRPCPort        string `yaml:"grpc_port" env:"AUTH_GRPC_PORT" env-default:"9091" validate:"required"`
+	HTTPPort        string `yaml:"http_port" env:"AUTH_HTTP_PORT" env-default:"8081" validate:"required"`
+	ShutdownTimeout string `yaml:"shutdown_timeout" env:"AUTH_SHUTDOWN_TIMEOUT" env-default:"10s" validate:"required"`
 }
 
 type PostgresConfig struct {
-	Host            string `yaml:"host"`
-	Port            string `yaml:"port"`
-	User            string `yaml:"user"`
-	Password        string
-	Name            string `yaml:"db_name"`
-	MaxOpenConns    int    `yaml:"max_open_conns"`
-	MaxIdleConns    int    `yaml:"max_idle_conns"`
-	ConnMaxLifetime string `yaml:"conn_max_lifetime"`
+	Host            string `yaml:"host" env:"AUTH_DB_HOST" env-default:"localhost" validate:"required"`
+	Port            string `yaml:"port" env:"AUTH_DB_PORT" env-default:"5432" validate:"required"`
+	User            string `yaml:"user" env:"DB_USER" validate:"required"`
+	Password        string `yaml:"password" env:"DB_PASSWORD" validate:"required"`
+	Name            string `yaml:"db_name" env:"AUTH_DB_NAME" env-default:"sporttech_auth" validate:"required"`
+	MaxOpenConns    int    `yaml:"max_open_conns" env:"AUTH_DB_MAX_OPEN_CONNS" env-default:"20" validate:"required"`
+	MaxIdleConns    int    `yaml:"max_idle_conns" env:"AUTH_DB_MAX_IDLE_CONNS" env-default:"10" validate:"required"`
+	ConnMaxLifetime string `yaml:"conn_max_lifetime" env:"AUTH_DB_CONN_MAX_LIFETIME" env-default:"30m" validate:"required"`
 }
 
 type AuthConfig struct {
-	SessionTTL string `yaml:"session_ttl"`
-	BcryptCost int    `yaml:"bcrypt_cost"`
+	SessionTTL string `yaml:"session_ttl" env:"AUTH_SESSION_TTL" env-default:"720h" validate:"required"`
+	BcryptCost int    `yaml:"bcrypt_cost" env:"AUTH_BCRYPT_COST" validate:"required"`
 }
 
 type OpenAPIConfig struct {
-	FilePath string `yaml:"file_path"`
+	FilePath string `yaml:"file_path" env:"AUTH_OPENAPI_FILE_PATH" env-default:"grpc/gen/openapiv2/auth/v1/auth.swagger.json" validate:"required"`
 }
 
 func NewConfig(path string) (Config, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
+	var cfg Config
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		return Config{}, fmt.Errorf("read config: %w", err)
 	}
-
-	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return Config{}, fmt.Errorf("unmarshal config: %w", err)
-	}
-
-	setDefaults(&cfg)
-	cfg.Postgres.Host = getEnv("AUTH_DB_HOST", getEnv("DB_HOST", cfg.Postgres.Host))
-	cfg.Postgres.Port = getEnv("AUTH_DB_PORT", getEnv("DB_PORT", cfg.Postgres.Port))
-	cfg.Postgres.User = getEnv("AUTH_DB_USER", getEnv("DB_USER", cfg.Postgres.User))
-	cfg.Postgres.Name = getEnv("AUTH_DB_NAME", cfg.Postgres.Name)
-	cfg.Postgres.Password = getEnv("AUTH_DB_PASSWORD", getEnv("DB_PASSWORD", "postgres"))
-
-	return cfg, nil
-}
-
-func setDefaults(cfg *Config) {
-	if cfg.ServiceName == "" {
-		cfg.ServiceName = "auth-service"
-	}
-	if cfg.Server.Host == "" {
-		cfg.Server.Host = "0.0.0.0"
-	}
-	if cfg.Server.GRPCPort == "" {
-		cfg.Server.GRPCPort = "9091"
-	}
-	if cfg.Server.HTTPPort == "" {
-		cfg.Server.HTTPPort = "8081"
-	}
-	if cfg.Server.ShutdownTimeout == "" {
-		cfg.Server.ShutdownTimeout = "10s"
-	}
-	if cfg.Postgres.Host == "" {
-		cfg.Postgres.Host = "localhost"
-	}
-	if cfg.Postgres.Port == "" {
-		cfg.Postgres.Port = "5432"
-	}
-	if cfg.Postgres.User == "" {
-		cfg.Postgres.User = "postgres"
-	}
-	if cfg.Postgres.Name == "" {
-		cfg.Postgres.Name = "sporttech_auth"
-	}
-	if cfg.Postgres.MaxOpenConns == 0 {
-		cfg.Postgres.MaxOpenConns = 20
-	}
-	if cfg.Postgres.MaxIdleConns == 0 {
-		cfg.Postgres.MaxIdleConns = 10
-	}
-	if cfg.Postgres.ConnMaxLifetime == "" {
-		cfg.Postgres.ConnMaxLifetime = "30m"
-	}
-	if cfg.Auth.SessionTTL == "" {
-		cfg.Auth.SessionTTL = "720h"
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
+		return Config{}, fmt.Errorf("read env: %w", err)
 	}
 	if cfg.Auth.BcryptCost == 0 {
 		cfg.Auth.BcryptCost = bcrypt.DefaultCost
 	}
-	if cfg.OpenAPI.FilePath == "" {
-		cfg.OpenAPI.FilePath = "grpc/gen/openapiv2/auth/v1/auth.swagger.json"
-	}
-}
-
-func getEnv(key string, fallback string) string {
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		return fallback
+	if err := validator.New().Struct(&cfg); err != nil {
+		return Config{}, fmt.Errorf("validate config: %w", err)
 	}
 
-	return value
+	return cfg, nil
 }
 
 func (cfg ServerConfig) GRPCAddress() string {

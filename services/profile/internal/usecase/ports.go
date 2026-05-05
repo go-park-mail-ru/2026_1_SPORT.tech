@@ -7,11 +7,25 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 )
 
+type Repositories struct {
+	Profiles ProfileRepository
+	Authors  AuthorRepository
+	Avatars  AvatarRepository
+	Sports   SportTypeRepository
+}
+
 type ProfileRepository interface {
 	Create(ctx context.Context, profile domain.Profile) error
 	GetByID(ctx context.Context, userID int64) (domain.Profile, error)
 	Update(ctx context.Context, profile domain.Profile) error
+}
+
+type AuthorRepository interface {
 	SearchAuthors(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error)
+}
+
+type AvatarRepository interface {
+	GetByID(ctx context.Context, userID int64) (domain.Profile, error)
 	UpdateAvatarURL(ctx context.Context, userID int64, avatarURL string) error
 	ClearAvatarURL(ctx context.Context, userID int64) error
 }
