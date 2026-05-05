@@ -1,3 +1,4 @@
+-- +goose Up
 ALTER TABLE content_post
 ADD COLUMN sport_type_id BIGINT;
 
@@ -67,3 +68,14 @@ FOREIGN KEY (author_user_id, required_subscription_level)
 REFERENCES content_subscription_tier(trainer_user_id, tier_id);
 
 CREATE INDEX content_post_sport_type_id_idx ON content_post(sport_type_id);
+
+-- +goose Down
+DROP INDEX IF EXISTS content_post_sport_type_id_idx;
+
+ALTER TABLE content_post
+DROP CONSTRAINT IF EXISTS content_post_required_subscription_tier_fkey;
+
+DROP TABLE IF EXISTS content_subscription_tier;
+
+ALTER TABLE content_post
+DROP COLUMN IF EXISTS sport_type_id;

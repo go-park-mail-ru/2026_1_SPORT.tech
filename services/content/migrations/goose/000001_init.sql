@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE TYPE content_block_kind AS ENUM ('text', 'image', 'video', 'document');
 
 CREATE TABLE content_post (
@@ -49,3 +50,10 @@ CREATE INDEX content_post_author_created_idx ON content_post(author_user_id, cre
 CREATE INDEX content_post_block_post_position_idx ON content_post_block(post_id, position);
 CREATE INDEX content_comment_post_created_idx ON content_comment(post_id, created_at ASC, comment_id ASC);
 CREATE INDEX content_post_like_post_idx ON content_post_like(post_id);
+
+-- +goose Down
+DROP TABLE IF EXISTS content_post_like;
+DROP TABLE IF EXISTS content_comment;
+DROP TABLE IF EXISTS content_post_block;
+DROP TABLE IF EXISTS content_post;
+DROP TYPE IF EXISTS content_block_kind;

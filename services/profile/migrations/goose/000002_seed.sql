@@ -1,3 +1,4 @@
+-- +goose Up
 INSERT INTO sport_type (sport_type_id, name)
 VALUES
   (3001, 'Running'),
@@ -27,3 +28,16 @@ SELECT setval(
   (SELECT GREATEST(COALESCE(MAX(sport_type_id), 1), 3004) FROM sport_type),
   true
 );
+
+-- +goose Down
+DELETE FROM trainer_sport
+WHERE user_id IN (1001, 1003);
+
+DELETE FROM trainer_profile
+WHERE user_id IN (1001, 1003);
+
+DELETE FROM profile
+WHERE user_id IN (1001, 1002, 1003);
+
+DELETE FROM sport_type
+WHERE sport_type_id IN (3001, 3002, 3003, 3004);

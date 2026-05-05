@@ -34,54 +34,64 @@ services:
       - backend
 
   auth-migrator:
-    image: migrate/migrate:4
+    image: 2026_1_sporttech-auth-service
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./services/auth/migrations:/migrations:ro
-    command:
-      [
-        "-path", "/migrations",
-        "-database", "postgres://${DB_USER:?DB_USER is required}:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/sporttech_auth?sslmode=disable",
-        "up"
-      ]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DBNAME: sporttech_auth
+      SSL_MODE: "false"
+    entrypoint: ["/bin/sh", "/opt/microservice/migrations.sh"]
     networks:
       - backend
 
   profile-migrator:
-    image: migrate/migrate:4
+    image: 2026_1_sporttech-profile-service
+    build:
+      context: .
+      dockerfile: services/profile/Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./services/profile/migrations:/migrations:ro
-    command:
-      [
-        "-path", "/migrations",
-        "-database", "postgres://${DB_USER:?DB_USER is required}:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/sporttech_profile?sslmode=disable",
-        "up"
-      ]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DBNAME: sporttech_profile
+      SSL_MODE: "false"
+    entrypoint: ["/bin/sh", "/opt/microservice/migrations.sh"]
     networks:
       - backend
 
   content-migrator:
-    image: migrate/migrate:4
+    image: 2026_1_sporttech-content-service
+    build:
+      context: .
+      dockerfile: services/content/Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./services/content/migrations:/migrations:ro
-    command:
-      [
-        "-path", "/migrations",
-        "-database", "postgres://${DB_USER:?DB_USER is required}:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/sporttech_content?sslmode=disable",
-        "up"
-      ]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DBNAME: sporttech_content
+      SSL_MODE: "false"
+    entrypoint: ["/bin/sh", "/opt/microservice/migrations.sh"]
     networks:
       - backend
 
   auth-service:
+    image: 2026_1_sporttech-auth-service
     build:
       context: .
       dockerfile: services/auth/Dockerfile
@@ -100,6 +110,7 @@ services:
       - backend
 
   profile-service:
+    image: 2026_1_sporttech-profile-service
     build:
       context: .
       dockerfile: services/profile/Dockerfile
@@ -125,6 +136,7 @@ services:
       - backend
 
   content-service:
+    image: 2026_1_sporttech-content-service
     build:
       context: .
       dockerfile: services/content/Dockerfile

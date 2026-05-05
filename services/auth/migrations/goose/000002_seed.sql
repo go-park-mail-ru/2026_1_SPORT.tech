@@ -1,3 +1,4 @@
+-- +goose Up
 INSERT INTO auth_user (user_id, email, username, password_hash, role, status)
 VALUES
   (1001, 'anna.coach@sporttech.local', 'coach_anna', '$2a$10$wyfCWjNi8FUDZt10JYydtON/VIMO2IsbMaQGzkj5QsT47DIpHeW6W', 'trainer', 'active'),
@@ -9,3 +10,10 @@ SELECT setval(
   (SELECT GREATEST(COALESCE(MAX(user_id), 1), 1003) FROM auth_user),
   true
 );
+
+-- +goose Down
+DELETE FROM auth_session
+WHERE user_id IN (1001, 1002, 1003);
+
+DELETE FROM auth_user
+WHERE user_id IN (1001, 1002, 1003);

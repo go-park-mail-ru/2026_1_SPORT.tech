@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE TABLE profile (
   user_id bigint PRIMARY KEY,
   username text NOT NULL CHECK (username ~ '^[A-Za-z0-9_]{3,30}$'),
@@ -40,3 +41,9 @@ CREATE TABLE trainer_sport (
 
 CREATE INDEX trainer_profile_user_id_idx ON trainer_profile(user_id);
 CREATE INDEX trainer_sport_sport_type_id_idx ON trainer_sport(sport_type_id);
+
+-- +goose Down
+DROP TABLE IF EXISTS trainer_sport;
+DROP TABLE IF EXISTS sport_type;
+DROP TABLE IF EXISTS trainer_profile;
+DROP TABLE IF EXISTS profile;

@@ -1,3 +1,4 @@
+-- +goose Up
 INSERT INTO auth_user (user_id, email, username, password_hash, role, status)
 VALUES
   (1004, 'elena.yoga@sporttech.local', 'yoga_elena', '$2a$10$wyfCWjNi8FUDZt10JYydtON/VIMO2IsbMaQGzkj5QsT47DIpHeW6W', 'trainer', 'active'),
@@ -20,3 +21,10 @@ SELECT setval(
   (SELECT GREATEST(COALESCE(MAX(user_id), 1), 1010) FROM auth_user),
   true
 );
+
+-- +goose Down
+DELETE FROM auth_session
+WHERE user_id BETWEEN 1004 AND 1010;
+
+DELETE FROM auth_user
+WHERE user_id BETWEEN 1004 AND 1010;

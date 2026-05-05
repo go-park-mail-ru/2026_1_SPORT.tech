@@ -1,3 +1,4 @@
+-- +goose Up
 INSERT INTO content_post (post_id, author_user_id, title, required_subscription_level)
 VALUES
   (2004, 1004, 'Утренняя йога для спины', NULL),
@@ -75,3 +76,15 @@ SELECT setval(
   (SELECT GREATEST(COALESCE(MAX(post_block_id), 1), 2133) FROM content_post_block),
   true
 );
+
+-- +goose Down
+DELETE FROM content_post_like
+WHERE (post_id BETWEEN 2004 AND 2011)
+   OR (post_id = 2001 AND user_id = 1008)
+   OR (post_id = 2003 AND user_id = 1008);
+
+DELETE FROM content_post_block
+WHERE post_block_id BETWEEN 2107 AND 2133;
+
+DELETE FROM content_post
+WHERE post_id BETWEEN 2004 AND 2011;
