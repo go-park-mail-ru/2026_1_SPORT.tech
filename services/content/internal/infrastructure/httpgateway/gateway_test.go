@@ -18,7 +18,7 @@ import (
 
 func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	handler := grpcadapter.NewServer(mocks.ContentUseCase{
+	contentUseCase := mocks.ContentUseCase{
 		ListAuthorPostsFunc: func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
 			return nil, errors.New("not implemented")
 		},
@@ -56,6 +56,13 @@ func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
 		ListCommentsFunc: func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
 			return nil, errors.New("not implemented")
 		},
+	}
+	handler := grpcadapter.NewServer(grpcadapter.UseCases{
+		Posts:         contentUseCase,
+		PostMedia:     contentUseCase,
+		Tiers:         contentUseCase,
+		Subscriptions: contentUseCase,
+		Comments:      contentUseCase,
 	})
 
 	mux, err := httpgateway.NewLocalMux(context.Background(), handler)

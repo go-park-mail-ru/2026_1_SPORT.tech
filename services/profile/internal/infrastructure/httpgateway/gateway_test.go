@@ -18,7 +18,7 @@ import (
 
 func TestNewLocalMuxExposesGeneratedGetProfileEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	handler := grpcadapter.NewServer(mocks.ProfileUseCase{
+	profileUseCase := mocks.ProfileUseCase{
 		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
 			return domain.Profile{}, errors.New("not implemented")
 		},
@@ -44,6 +44,12 @@ func TestNewLocalMuxExposesGeneratedGetProfileEndpoint(t *testing.T) {
 		},
 		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return errors.New("not implemented") },
 		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, errors.New("not implemented") },
+	}
+	handler := grpcadapter.NewServer(grpcadapter.UseCases{
+		Profiles: profileUseCase,
+		Authors:  profileUseCase,
+		Avatars:  profileUseCase,
+		Sports:   profileUseCase,
 	})
 
 	mux, err := httpgateway.NewLocalMux(context.Background(), handler)

@@ -17,7 +17,7 @@ import (
 
 func TestServerGetProfile(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	server := grpcadapter.NewServer(mocks.ProfileUseCase{
+	profileUseCase := mocks.ProfileUseCase{
 		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
 			return domain.Profile{}, errors.New("not implemented")
 		},
@@ -43,6 +43,12 @@ func TestServerGetProfile(t *testing.T) {
 		},
 		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return errors.New("not implemented") },
 		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, errors.New("not implemented") },
+	}
+	server := grpcadapter.NewServer(grpcadapter.UseCases{
+		Profiles: profileUseCase,
+		Authors:  profileUseCase,
+		Avatars:  profileUseCase,
+		Sports:   profileUseCase,
 	})
 
 	response, err := server.GetProfile(context.Background(), &profilev1.GetProfileRequest{UserId: 7})
@@ -55,7 +61,7 @@ func TestServerGetProfile(t *testing.T) {
 }
 
 func TestServerGetProfileMapsNotFound(t *testing.T) {
-	server := grpcadapter.NewServer(mocks.ProfileUseCase{
+	profileUseCase := mocks.ProfileUseCase{
 		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
 			return domain.Profile{}, nil
 		},
@@ -73,6 +79,12 @@ func TestServerGetProfileMapsNotFound(t *testing.T) {
 		},
 		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return nil },
 		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil },
+	}
+	server := grpcadapter.NewServer(grpcadapter.UseCases{
+		Profiles: profileUseCase,
+		Authors:  profileUseCase,
+		Avatars:  profileUseCase,
+		Sports:   profileUseCase,
 	})
 
 	_, err := server.GetProfile(context.Background(), &profilev1.GetProfileRequest{UserId: 7})

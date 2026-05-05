@@ -61,7 +61,11 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	)
 
 	metricsSet := metrics.New(cfg.ServiceName)
-	grpcHandler := grpcadapter.NewServer(authUseCase)
+	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{
+		Registration: authUseCase,
+		Login:        authUseCase,
+		Session:      authUseCase,
+	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 
 	grpcListener, err := net.Listen("tcp", cfg.Server.GRPCAddress())

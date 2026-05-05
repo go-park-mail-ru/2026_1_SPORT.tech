@@ -14,23 +14,39 @@ type ProfileUseCase interface {
 	CreateProfile(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error)
 	GetProfile(ctx context.Context, userID int64) (domain.Profile, error)
 	UpdateProfile(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error)
+}
+
+type AuthorUseCase interface {
 	SearchAuthors(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error)
+}
+
+type AvatarUseCase interface {
 	UploadAvatar(ctx context.Context, command usecase.UploadAvatarCommand) (domain.Profile, error)
 	DeleteAvatar(ctx context.Context, userID int64) error
+}
+
+type SportUseCase interface {
 	ListSportTypes(ctx context.Context) ([]domain.SportType, error)
+}
+
+type UseCases struct {
+	Profiles ProfileUseCase
+	Authors  AuthorUseCase
+	Avatars  AvatarUseCase
+	Sports   SportUseCase
 }
 
 type Server struct {
 	profilev1.UnimplementedProfileServiceServer
-	profileUseCase ProfileUseCase
+	useCases UseCases
 }
 
-func NewServer(profileUseCase ProfileUseCase) *Server {
-	return &Server{profileUseCase: profileUseCase}
+func NewServer(useCases UseCases) *Server {
+	return &Server{useCases: useCases}
 }
 
 func (server *Server) CreateProfile(ctx context.Context, request *profilev1.CreateProfileRequest) (*profilev1.ProfileResponse, error) {
-	profile, err := server.profileUseCase.CreateProfile(ctx, mappers.CreateProfileRequestToCommand(request))
+	profile, err := server.useCases.Profiles.CreateProfile(ctx, mappers.CreateProfileRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -39,7 +55,7 @@ func (server *Server) CreateProfile(ctx context.Context, request *profilev1.Crea
 }
 
 func (server *Server) GetProfile(ctx context.Context, request *profilev1.GetProfileRequest) (*profilev1.ProfileResponse, error) {
-	profile, err := server.profileUseCase.GetProfile(ctx, request.GetUserId())
+	profile, err := server.useCases.Profiles.GetProfile(ctx, request.GetUserId())
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -48,7 +64,7 @@ func (server *Server) GetProfile(ctx context.Context, request *profilev1.GetProf
 }
 
 func (server *Server) UpdateProfile(ctx context.Context, request *profilev1.UpdateProfileRequest) (*profilev1.ProfileResponse, error) {
-	profile, err := server.profileUseCase.UpdateProfile(ctx, mappers.UpdateProfileRequestToCommand(request))
+	profile, err := server.useCases.Profiles.UpdateProfile(ctx, mappers.UpdateProfileRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -57,7 +73,7 @@ func (server *Server) UpdateProfile(ctx context.Context, request *profilev1.Upda
 }
 
 func (server *Server) SearchAuthors(ctx context.Context, request *profilev1.SearchAuthorsRequest) (*profilev1.SearchAuthorsResponse, error) {
-	authors, err := server.profileUseCase.SearchAuthors(ctx, mappers.SearchAuthorsRequestToQuery(request))
+	authors, err := server.useCases.Authors.SearchAuthors(ctx, mappers.SearchAuthorsRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -66,7 +82,7 @@ func (server *Server) SearchAuthors(ctx context.Context, request *profilev1.Sear
 }
 
 func (server *Server) UploadAvatar(ctx context.Context, request *profilev1.UploadAvatarRequest) (*profilev1.ProfileResponse, error) {
-	profile, err := server.profileUseCase.UploadAvatar(ctx, mappers.UploadAvatarRequestToCommand(request))
+	profile, err := server.useCases.Avatars.UploadAvatar(ctx, mappers.UploadAvatarRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -75,7 +91,7 @@ func (server *Server) UploadAvatar(ctx context.Context, request *profilev1.Uploa
 }
 
 func (server *Server) DeleteAvatar(ctx context.Context, request *profilev1.DeleteAvatarRequest) (*emptypb.Empty, error) {
-	if err := server.profileUseCase.DeleteAvatar(ctx, request.GetUserId()); err != nil {
+	if err := server.useCases.Avatars.DeleteAvatar(ctx, request.GetUserId()); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 
@@ -83,7 +99,7 @@ func (server *Server) DeleteAvatar(ctx context.Context, request *profilev1.Delet
 }
 
 func (server *Server) ListSportTypes(ctx context.Context, request *emptypb.Empty) (*profilev1.ListSportTypesResponse, error) {
-	sportTypes, err := server.profileUseCase.ListSportTypes(ctx)
+	sportTypes, err := server.useCases.Sports.ListSportTypes(ctx)
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}

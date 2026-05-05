@@ -21,7 +21,7 @@ func TestNewLocalMuxExposesGeneratedLoginEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 	var capturedCommand usecase.LoginCommand
 
-	handler := grpcadapter.NewServer(mocks.AuthUseCase{
+	authUseCase := mocks.AuthUseCase{
 		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
 			return usecase.AuthResult{}, errors.New("not implemented")
 		},
@@ -45,6 +45,11 @@ func TestNewLocalMuxExposesGeneratedLoginEndpoint(t *testing.T) {
 		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
 			return usecase.SessionResult{}, errors.New("not implemented")
 		},
+	}
+	handler := grpcadapter.NewServer(grpcadapter.UseCases{
+		Registration: authUseCase,
+		Login:        authUseCase,
+		Session:      authUseCase,
 	})
 
 	mux, err := httpgateway.NewLocalMux(context.Background(), handler)

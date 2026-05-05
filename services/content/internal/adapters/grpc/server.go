@@ -10,39 +10,59 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type ContentUseCase interface {
+type PostUseCase interface {
 	ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
 	SearchPosts(ctx context.Context, query usecase.SearchPostsQuery) ([]domain.PostSummary, error)
 	CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
-	UploadPostMedia(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
 	GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	UpdatePost(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	DeletePost(ctx context.Context, command usecase.DeletePostCommand) error
+	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+}
+
+type PostMediaUseCase interface {
+	UploadPostMedia(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
+}
+
+type TierUseCase interface {
 	ListSubscriptionTiers(ctx context.Context, query usecase.ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error)
 	CreateSubscriptionTier(ctx context.Context, command usecase.CreateSubscriptionTierCommand) (domain.SubscriptionTier, error)
 	UpdateSubscriptionTier(ctx context.Context, command usecase.UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error)
 	DeleteSubscriptionTier(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
+}
+
+type SubscriptionUseCase interface {
 	SubscribeToTrainer(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	ListMySubscriptions(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, command usecase.CancelSubscriptionCommand) error
-	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
-	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+}
+
+type CommentUseCase interface {
 	CreateComment(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
 	ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
 }
 
-type Server struct {
-	contentv1.UnimplementedContentServiceServer
-	contentUseCase ContentUseCase
+type UseCases struct {
+	Posts         PostUseCase
+	PostMedia     PostMediaUseCase
+	Tiers         TierUseCase
+	Subscriptions SubscriptionUseCase
+	Comments      CommentUseCase
 }
 
-func NewServer(contentUseCase ContentUseCase) *Server {
-	return &Server{contentUseCase: contentUseCase}
+type Server struct {
+	contentv1.UnimplementedContentServiceServer
+	useCases UseCases
+}
+
+func NewServer(useCases UseCases) *Server {
+	return &Server{useCases: useCases}
 }
 
 func (server *Server) ListAuthorPosts(ctx context.Context, request *contentv1.ListAuthorPostsRequest) (*contentv1.ListAuthorPostsResponse, error) {
-	posts, err := server.contentUseCase.ListAuthorPosts(ctx, mappers.ListAuthorPostsRequestToQuery(request))
+	posts, err := server.useCases.Posts.ListAuthorPosts(ctx, mappers.ListAuthorPostsRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -51,7 +71,7 @@ func (server *Server) ListAuthorPosts(ctx context.Context, request *contentv1.Li
 }
 
 func (server *Server) SearchPosts(ctx context.Context, request *contentv1.SearchPostsRequest) (*contentv1.SearchPostsResponse, error) {
-	posts, err := server.contentUseCase.SearchPosts(ctx, mappers.SearchPostsRequestToQuery(request))
+	posts, err := server.useCases.Posts.SearchPosts(ctx, mappers.SearchPostsRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -60,7 +80,7 @@ func (server *Server) SearchPosts(ctx context.Context, request *contentv1.Search
 }
 
 func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreatePostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.contentUseCase.CreatePost(ctx, mappers.CreatePostRequestToCommand(request))
+	post, err := server.useCases.Posts.CreatePost(ctx, mappers.CreatePostRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -69,7 +89,7 @@ func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreateP
 }
 
 func (server *Server) UploadPostMedia(ctx context.Context, request *contentv1.UploadPostMediaRequest) (*contentv1.PostMediaResponse, error) {
-	media, err := server.contentUseCase.UploadPostMedia(ctx, mappers.UploadPostMediaRequestToCommand(request))
+	media, err := server.useCases.PostMedia.UploadPostMedia(ctx, mappers.UploadPostMediaRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -78,7 +98,7 @@ func (server *Server) UploadPostMedia(ctx context.Context, request *contentv1.Up
 }
 
 func (server *Server) GetPost(ctx context.Context, request *contentv1.GetPostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.contentUseCase.GetPost(ctx, mappers.GetPostRequestToQuery(request))
+	post, err := server.useCases.Posts.GetPost(ctx, mappers.GetPostRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -87,7 +107,7 @@ func (server *Server) GetPost(ctx context.Context, request *contentv1.GetPostReq
 }
 
 func (server *Server) UpdatePost(ctx context.Context, request *contentv1.UpdatePostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.contentUseCase.UpdatePost(ctx, mappers.UpdatePostRequestToCommand(request))
+	post, err := server.useCases.Posts.UpdatePost(ctx, mappers.UpdatePostRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -96,7 +116,7 @@ func (server *Server) UpdatePost(ctx context.Context, request *contentv1.UpdateP
 }
 
 func (server *Server) DeletePost(ctx context.Context, request *contentv1.DeletePostRequest) (*emptypb.Empty, error) {
-	if err := server.contentUseCase.DeletePost(ctx, mappers.DeletePostRequestToCommand(request)); err != nil {
+	if err := server.useCases.Posts.DeletePost(ctx, mappers.DeletePostRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 
@@ -104,7 +124,7 @@ func (server *Server) DeletePost(ctx context.Context, request *contentv1.DeleteP
 }
 
 func (server *Server) ListSubscriptionTiers(ctx context.Context, request *contentv1.ListSubscriptionTiersRequest) (*contentv1.ListSubscriptionTiersResponse, error) {
-	tiers, err := server.contentUseCase.ListSubscriptionTiers(ctx, mappers.ListSubscriptionTiersRequestToQuery(request))
+	tiers, err := server.useCases.Tiers.ListSubscriptionTiers(ctx, mappers.ListSubscriptionTiersRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -113,7 +133,7 @@ func (server *Server) ListSubscriptionTiers(ctx context.Context, request *conten
 }
 
 func (server *Server) CreateSubscriptionTier(ctx context.Context, request *contentv1.CreateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
-	tier, err := server.contentUseCase.CreateSubscriptionTier(ctx, mappers.CreateSubscriptionTierRequestToCommand(request))
+	tier, err := server.useCases.Tiers.CreateSubscriptionTier(ctx, mappers.CreateSubscriptionTierRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -122,7 +142,7 @@ func (server *Server) CreateSubscriptionTier(ctx context.Context, request *conte
 }
 
 func (server *Server) UpdateSubscriptionTier(ctx context.Context, request *contentv1.UpdateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
-	tier, err := server.contentUseCase.UpdateSubscriptionTier(ctx, mappers.UpdateSubscriptionTierRequestToCommand(request))
+	tier, err := server.useCases.Tiers.UpdateSubscriptionTier(ctx, mappers.UpdateSubscriptionTierRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -131,7 +151,7 @@ func (server *Server) UpdateSubscriptionTier(ctx context.Context, request *conte
 }
 
 func (server *Server) DeleteSubscriptionTier(ctx context.Context, request *contentv1.DeleteSubscriptionTierRequest) (*emptypb.Empty, error) {
-	if err := server.contentUseCase.DeleteSubscriptionTier(ctx, mappers.DeleteSubscriptionTierRequestToCommand(request)); err != nil {
+	if err := server.useCases.Tiers.DeleteSubscriptionTier(ctx, mappers.DeleteSubscriptionTierRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 
@@ -139,7 +159,7 @@ func (server *Server) DeleteSubscriptionTier(ctx context.Context, request *conte
 }
 
 func (server *Server) SubscribeToTrainer(ctx context.Context, request *contentv1.SubscribeToTrainerRequest) (*contentv1.Subscription, error) {
-	subscription, err := server.contentUseCase.SubscribeToTrainer(ctx, mappers.SubscribeToTrainerRequestToCommand(request))
+	subscription, err := server.useCases.Subscriptions.SubscribeToTrainer(ctx, mappers.SubscribeToTrainerRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -148,7 +168,7 @@ func (server *Server) SubscribeToTrainer(ctx context.Context, request *contentv1
 }
 
 func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv1.ListMySubscriptionsRequest) (*contentv1.ListMySubscriptionsResponse, error) {
-	subscriptions, err := server.contentUseCase.ListMySubscriptions(ctx, mappers.ListMySubscriptionsRequestToQuery(request))
+	subscriptions, err := server.useCases.Subscriptions.ListMySubscriptions(ctx, mappers.ListMySubscriptionsRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -157,7 +177,7 @@ func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv
 }
 
 func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1.UpdateSubscriptionRequest) (*contentv1.Subscription, error) {
-	subscription, err := server.contentUseCase.UpdateSubscription(ctx, mappers.UpdateSubscriptionRequestToCommand(request))
+	subscription, err := server.useCases.Subscriptions.UpdateSubscription(ctx, mappers.UpdateSubscriptionRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -166,7 +186,7 @@ func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1
 }
 
 func (server *Server) CancelSubscription(ctx context.Context, request *contentv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {
-	if err := server.contentUseCase.CancelSubscription(ctx, mappers.CancelSubscriptionRequestToCommand(request)); err != nil {
+	if err := server.useCases.Subscriptions.CancelSubscription(ctx, mappers.CancelSubscriptionRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 
@@ -174,7 +194,7 @@ func (server *Server) CancelSubscription(ctx context.Context, request *contentv1
 }
 
 func (server *Server) LikePost(ctx context.Context, request *contentv1.LikePostRequest) (*contentv1.PostLikeStateResponse, error) {
-	state, err := server.contentUseCase.LikePost(ctx, mappers.LikePostRequestToCommand(request))
+	state, err := server.useCases.Posts.LikePost(ctx, mappers.LikePostRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -183,7 +203,7 @@ func (server *Server) LikePost(ctx context.Context, request *contentv1.LikePostR
 }
 
 func (server *Server) UnlikePost(ctx context.Context, request *contentv1.UnlikePostRequest) (*contentv1.PostLikeStateResponse, error) {
-	state, err := server.contentUseCase.UnlikePost(ctx, mappers.UnlikePostRequestToCommand(request))
+	state, err := server.useCases.Posts.UnlikePost(ctx, mappers.UnlikePostRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -192,7 +212,7 @@ func (server *Server) UnlikePost(ctx context.Context, request *contentv1.UnlikeP
 }
 
 func (server *Server) CreateComment(ctx context.Context, request *contentv1.CreateCommentRequest) (*contentv1.CommentResponse, error) {
-	comment, err := server.contentUseCase.CreateComment(ctx, mappers.CreateCommentRequestToCommand(request))
+	comment, err := server.useCases.Comments.CreateComment(ctx, mappers.CreateCommentRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -201,7 +221,7 @@ func (server *Server) CreateComment(ctx context.Context, request *contentv1.Crea
 }
 
 func (server *Server) ListComments(ctx context.Context, request *contentv1.ListCommentsRequest) (*contentv1.ListCommentsResponse, error) {
-	comments, err := server.contentUseCase.ListComments(ctx, mappers.ListCommentsRequestToQuery(request))
+	comments, err := server.useCases.Comments.ListComments(ctx, mappers.ListCommentsRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}

@@ -18,7 +18,7 @@ import (
 func TestServerRegister(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 
-	server := grpcadapter.NewServer(mocks.AuthUseCase{
+	authUseCase := mocks.AuthUseCase{
 		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
 			if command.Email != "john@example.com" {
 				t.Fatalf("unexpected email: %s", command.Email)
@@ -46,6 +46,11 @@ func TestServerRegister(t *testing.T) {
 		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
 			return usecase.SessionResult{}, errors.New("not implemented")
 		},
+	}
+	server := grpcadapter.NewServer(grpcadapter.UseCases{
+		Registration: authUseCase,
+		Login:        authUseCase,
+		Session:      authUseCase,
 	})
 
 	response, err := server.Register(context.Background(), &authv1.RegisterRequest{
@@ -66,7 +71,7 @@ func TestServerRegister(t *testing.T) {
 }
 
 func TestServerRegisterInvalidRole(t *testing.T) {
-	server := grpcadapter.NewServer(mocks.AuthUseCase{
+	authUseCase := mocks.AuthUseCase{
 		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
 			return usecase.AuthResult{}, nil
 		},
@@ -77,6 +82,11 @@ func TestServerRegisterInvalidRole(t *testing.T) {
 		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
 			return usecase.SessionResult{}, nil
 		},
+	}
+	server := grpcadapter.NewServer(grpcadapter.UseCases{
+		Registration: authUseCase,
+		Login:        authUseCase,
+		Session:      authUseCase,
 	})
 
 	_, err := server.Register(context.Background(), &authv1.RegisterRequest{
