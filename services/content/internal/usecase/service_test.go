@@ -32,6 +32,8 @@ type stubContentRepository struct {
 	getLikeStateFunc       func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	getBalanceFunc         func(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 }
 
 func (repository stubContentRepository) CreatePost(ctx context.Context, post domain.Post) (int64, error) {
@@ -146,6 +148,20 @@ func (repository stubContentRepository) CreateComment(ctx context.Context, comme
 
 func (repository stubContentRepository) ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 	return repository.listCommentsFunc(ctx, postID, limit, offset)
+}
+
+func (repository stubContentRepository) CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error) {
+	if repository.createDonationFunc == nil {
+		return donation, nil
+	}
+	return repository.createDonationFunc(ctx, donation)
+}
+
+func (repository stubContentRepository) GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error) {
+	if repository.getBalanceFunc == nil {
+		return domain.Balance{TrainerUserID: trainerUserID, Currency: currency}, nil
+	}
+	return repository.getBalanceFunc(ctx, trainerUserID, currency)
 }
 
 type stubPostMediaStorage struct {

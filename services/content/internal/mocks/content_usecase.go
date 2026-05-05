@@ -23,6 +23,8 @@ type ContentUseCase struct {
 	ListSubscriptionsFunc  func(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
 	UpdateSubscriptionFunc func(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
+	DonateFunc             func(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
+	GetBalanceFunc         func(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
 	LikePostFunc           func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateCommentFunc      func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
@@ -111,6 +113,20 @@ func (mock ContentUseCase) CancelSubscription(ctx context.Context, command useca
 		return nil
 	}
 	return mock.CancelSubscriptionFunc(ctx, command)
+}
+
+func (mock ContentUseCase) DonateToProfile(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error) {
+	if mock.DonateFunc == nil {
+		return domain.Donation{}, nil
+	}
+	return mock.DonateFunc(ctx, command)
+}
+
+func (mock ContentUseCase) GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error) {
+	if mock.GetBalanceFunc == nil {
+		return domain.Balance{}, nil
+	}
+	return mock.GetBalanceFunc(ctx, query)
 }
 
 func (mock ContentUseCase) LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {

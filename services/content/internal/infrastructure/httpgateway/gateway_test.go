@@ -63,6 +63,7 @@ func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
 		Tiers:         contentUseCase,
 		Subscriptions: contentUseCase,
 		Comments:      contentUseCase,
+		Donations:     contentUseCase,
 	})
 
 	mux, err := httpgateway.NewLocalMux(context.Background(), handler)

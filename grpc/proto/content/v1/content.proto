@@ -8,6 +8,125 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+service ContentService {
+  rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
+    option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
+  }
+
+  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts:search"
+      body: "*"
+    };
+  }
+
+  rpc CreatePost(CreatePostRequest) returns (PostResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts"
+      body: "*"
+    };
+  }
+
+  rpc UploadPostMedia(UploadPostMediaRequest) returns (PostMediaResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/media"
+      body: "*"
+    };
+  }
+
+  rpc GetPost(GetPostRequest) returns (PostResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}";
+  }
+
+  rpc UpdatePost(UpdatePostRequest) returns (PostResponse) {
+    option (google.api.http) = {
+      patch: "/v1/posts/{post_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/posts/{post_id}";
+  }
+
+  rpc ListSubscriptionTiers(ListSubscriptionTiersRequest) returns (ListSubscriptionTiersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_user_id}/tiers";
+  }
+
+  rpc CreateSubscriptionTier(CreateSubscriptionTierRequest) returns (SubscriptionTier) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_user_id}/tiers"
+      body: "*"
+    };
+  }
+
+  rpc UpdateSubscriptionTier(UpdateSubscriptionTierRequest) returns (SubscriptionTier) {
+    option (google.api.http) = {
+      patch: "/v1/trainers/{trainer_user_id}/tiers/{tier_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteSubscriptionTier(DeleteSubscriptionTierRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/trainers/{trainer_user_id}/tiers/{tier_id}";
+  }
+
+  rpc SubscribeToTrainer(SubscribeToTrainerRequest) returns (Subscription) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_user_id}/subscribe"
+      body: "*"
+    };
+  }
+
+  rpc ListMySubscriptions(ListMySubscriptionsRequest) returns (ListMySubscriptionsResponse) {
+    option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
+  }
+
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+    option (google.api.http) = {
+      patch: "/v1/users/{client_user_id}/subscriptions/{subscription_id}"
+      body: "*"
+    };
+  }
+
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/users/{client_user_id}/subscriptions/{subscription_id}";
+  }
+
+  rpc DonateToProfile(DonateToProfileRequest) returns (DonationResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/{recipient_user_id}/donations"
+      body: "*"
+    };
+  }
+
+  rpc GetBalance(GetBalanceRequest) returns (BalanceResponse) {
+    option (google.api.http).get = "/v1/users/{trainer_user_id}/balance";
+  }
+
+  rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/{post_id}/likes"
+      body: "*"
+    };
+  }
+
+  rpc UnlikePost(UnlikePostRequest) returns (PostLikeStateResponse) {
+    option (google.api.http).delete = "/v1/posts/{post_id}/likes/{user_id}";
+  }
+
+  rpc CreateComment(CreateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/{post_id}/comments"
+      body: "*"
+    };
+  }
+
+  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/comments";
+  }
+}
+
 enum ContentBlockKind {
   CONTENT_BLOCK_KIND_UNSPECIFIED = 0;
   CONTENT_BLOCK_KIND_TEXT = 1;
@@ -246,6 +365,7 @@ message DonationResponse {
 
 message GetBalanceRequest {
   int64 trainer_user_id = 1;
+  string currency = 2;
 }
 
 message BalanceResponse {
@@ -302,123 +422,4 @@ message ListCommentsRequest {
 
 message ListCommentsResponse {
   repeated Comment comments = 1;
-}
-
-service ContentService {
-  rpc ListAuthorPosts(ListAuthorPostsRequest) returns (ListAuthorPostsResponse) {
-    option (google.api.http).get = "/v1/authors/{author_user_id}/posts";
-  }
-
-  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts:search"
-      body: "*"
-    };
-  }
-
-  rpc CreatePost(CreatePostRequest) returns (PostResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts"
-      body: "*"
-    };
-  }
-
-  rpc UploadPostMedia(UploadPostMediaRequest) returns (PostMediaResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts/media"
-      body: "*"
-    };
-  }
-
-  rpc GetPost(GetPostRequest) returns (PostResponse) {
-    option (google.api.http).get = "/v1/posts/{post_id}";
-  }
-
-  rpc UpdatePost(UpdatePostRequest) returns (PostResponse) {
-    option (google.api.http) = {
-      patch: "/v1/posts/{post_id}"
-      body: "*"
-    };
-  }
-
-  rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/posts/{post_id}";
-  }
-
-  rpc ListSubscriptionTiers(ListSubscriptionTiersRequest) returns (ListSubscriptionTiersResponse) {
-    option (google.api.http).get = "/v1/trainers/{trainer_user_id}/tiers";
-  }
-
-  rpc CreateSubscriptionTier(CreateSubscriptionTierRequest) returns (SubscriptionTier) {
-    option (google.api.http) = {
-      post: "/v1/trainers/{trainer_user_id}/tiers"
-      body: "*"
-    };
-  }
-
-  rpc UpdateSubscriptionTier(UpdateSubscriptionTierRequest) returns (SubscriptionTier) {
-    option (google.api.http) = {
-      patch: "/v1/trainers/{trainer_user_id}/tiers/{tier_id}"
-      body: "*"
-    };
-  }
-
-  rpc DeleteSubscriptionTier(DeleteSubscriptionTierRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/trainers/{trainer_user_id}/tiers/{tier_id}";
-  }
-
-  rpc SubscribeToTrainer(SubscribeToTrainerRequest) returns (Subscription) {
-    option (google.api.http) = {
-      post: "/v1/trainers/{trainer_user_id}/subscribe"
-      body: "*"
-    };
-  }
-
-  rpc ListMySubscriptions(ListMySubscriptionsRequest) returns (ListMySubscriptionsResponse) {
-    option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
-  }
-
-  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
-    option (google.api.http) = {
-      patch: "/v1/users/{client_user_id}/subscriptions/{subscription_id}"
-      body: "*"
-    };
-  }
-
-  rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/users/{client_user_id}/subscriptions/{subscription_id}";
-  }
-
-  rpc DonateToProfile(DonateToProfileRequest) returns (DonationResponse) {
-    option (google.api.http) = {
-      post: "/v1/users/{recipient_user_id}/donations"
-      body: "*"
-    };
-  }
-
-  rpc GetBalance(GetBalanceRequest) returns (BalanceResponse) {
-    option (google.api.http).get = "/v1/users/{trainer_user_id}/balance";
-  }
-
-  rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts/{post_id}/likes"
-      body: "*"
-    };
-  }
-
-  rpc UnlikePost(UnlikePostRequest) returns (PostLikeStateResponse) {
-    option (google.api.http).delete = "/v1/posts/{post_id}/likes/{user_id}";
-  }
-
-  rpc CreateComment(CreateCommentRequest) returns (CommentResponse) {
-    option (google.api.http) = {
-      post: "/v1/posts/{post_id}/comments"
-      body: "*"
-    };
-  }
-
-  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
-    option (google.api.http).get = "/v1/posts/{post_id}/comments";
-  }
 }

@@ -44,12 +44,18 @@ type CommentUseCase interface {
 	ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
 }
 
+type DonationUseCase interface {
+	DonateToProfile(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
+	GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
+}
+
 type UseCases struct {
 	Posts         PostUseCase
 	PostMedia     PostMediaUseCase
 	Tiers         TierUseCase
 	Subscriptions SubscriptionUseCase
 	Comments      CommentUseCase
+	Donations     DonationUseCase
 }
 
 type Server struct {
@@ -191,6 +197,24 @@ func (server *Server) CancelSubscription(ctx context.Context, request *contentv1
 	}
 
 	return mappers.Empty(), nil
+}
+
+func (server *Server) DonateToProfile(ctx context.Context, request *contentv1.DonateToProfileRequest) (*contentv1.DonationResponse, error) {
+	donation, err := server.useCases.Donations.DonateToProfile(ctx, mappers.DonateToProfileRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewDonationResponse(donation), nil
+}
+
+func (server *Server) GetBalance(ctx context.Context, request *contentv1.GetBalanceRequest) (*contentv1.BalanceResponse, error) {
+	balance, err := server.useCases.Donations.GetBalance(ctx, mappers.GetBalanceRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewBalanceResponse(balance), nil
 }
 
 func (server *Server) LikePost(ctx context.Context, request *contentv1.LikePostRequest) (*contentv1.PostLikeStateResponse, error) {

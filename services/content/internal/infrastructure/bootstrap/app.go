@@ -56,6 +56,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Tiers:         contentUseCase,
 		Subscriptions: contentUseCase,
 		Comments:      contentUseCase,
+		Donations:     contentUseCase,
 	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 

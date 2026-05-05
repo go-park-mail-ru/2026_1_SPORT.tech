@@ -773,6 +773,82 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/users/{recipient_user_id}/donations": {
+      "post": {
+        "operationId": "ContentService_DonateToProfile",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DonationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "recipient_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceDonateToProfileBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{trainer_user_id}/balance": {
+      "get": {
+        "operationId": "ContentService_GetBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -803,6 +879,25 @@
           "format": "int32"
         },
         "description": {
+          "type": "string"
+        }
+      }
+    },
+    "ContentServiceDonateToProfileBody": {
+      "type": "object",
+      "properties": {
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
           "type": "string"
         }
       }
@@ -924,6 +1019,22 @@
         }
       }
     },
+    "v1BalanceResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
     "v1Comment": {
       "type": "object",
       "properties": {
@@ -995,6 +1106,45 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1Donation": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "recipient_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1DonationResponse": {
+      "type": "object",
+      "properties": {
+        "donation": {
+          "$ref": "#/definitions/v1Donation"
         }
       }
     },

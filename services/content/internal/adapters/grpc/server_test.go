@@ -62,6 +62,7 @@ func TestServerGetPost(t *testing.T) {
 		Tiers:         contentUseCase,
 		Subscriptions: contentUseCase,
 		Comments:      contentUseCase,
+		Donations:     contentUseCase,
 	})
 
 	response, err := server.GetPost(context.Background(), &contentv1.GetPostRequest{PostId: 7, ViewerUserId: 7})
@@ -110,6 +111,7 @@ func TestServerGetPostMapsForbidden(t *testing.T) {
 		Tiers:         contentUseCase,
 		Subscriptions: contentUseCase,
 		Comments:      contentUseCase,
+		Donations:     contentUseCase,
 	})
 
 	_, err := server.GetPost(context.Background(), &contentv1.GetPostRequest{PostId: 7, ViewerUserId: 3})
