@@ -255,6 +255,8 @@ services:
       - /sys:/sys:ro
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/docker:/var/lib/docker:ro
+      - /var/lib/docker/image/overlay2:/rootfs/var/lib/docker/image/overlayfs:ro
+      - /var/lib/docker/overlay2:/rootfs/var/lib/docker/overlayfs:ro
       - /dev/disk:/dev/disk:ro
     devices:
       - /dev/kmsg:/dev/kmsg
