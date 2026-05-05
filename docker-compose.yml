@@ -243,8 +243,11 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.52.1
     command:
+      - --docker=unix:///var/run/docker.sock
       - --docker_only=true
       - --store_container_labels=true
+    cgroup: host
+    pid: host
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
