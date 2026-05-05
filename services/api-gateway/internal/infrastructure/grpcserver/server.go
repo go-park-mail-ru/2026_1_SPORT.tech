@@ -57,6 +57,7 @@ func New(
 	grpcHealthV1.RegisterHealthServer(grpcServer, healthServer)
 
 	reflection.Register(grpcServer)
+	metricSet.InitializeGRPCMetrics(grpcServer)
 
 	return &Server{
 		server:   grpcServer,

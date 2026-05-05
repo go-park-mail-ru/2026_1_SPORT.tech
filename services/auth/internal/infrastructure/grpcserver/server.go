@@ -22,6 +22,7 @@ func New(authService authv1.AuthServiceServer, metricSet *metrics.Metrics) *grpc
 	healthServer.SetServingStatus(authv1.AuthService_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	reflection.Register(server)
+	metricSet.InitializeGRPCMetrics(server)
 
 	return server
 }

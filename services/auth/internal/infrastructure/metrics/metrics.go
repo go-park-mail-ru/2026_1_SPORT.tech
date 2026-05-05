@@ -123,6 +123,20 @@ func (metrics *Metrics) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
+func (metrics *Metrics) InitializeGRPCMetrics(server *grpc.Server) {
+	for serviceName, serviceInfo := range server.GetServiceInfo() {
+		for _, methodInfo := range serviceInfo.Methods {
+			if methodInfo.IsClientStream || methodInfo.IsServerStream {
+				continue
+			}
+
+			fullMethod := "/" + serviceName + "/" + methodInfo.Name
+			metrics.grpcRequests.WithLabelValues(fullMethod, "OK").Add(0)
+			metrics.grpcLatency.WithLabelValues(fullMethod, "OK")
+		}
+	}
+}
+
 type statusRecorder struct {
 	http.ResponseWriter
 	statusCode   int
