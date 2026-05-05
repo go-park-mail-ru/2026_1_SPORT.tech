@@ -36,12 +36,6 @@ coverage:
 coverage-html: coverage
 	go tool cover -html=coverage.out -o coverage.html
 
-.PHONY: test-integration
-test-integration:
-	go test -tags integration ./services/auth/internal/adapters/repository/postgres/...
-	go test -tags integration ./services/profile/internal/adapters/repository/postgres/...
-	go test -tags integration ./services/content/internal/adapters/repository/postgres/...
-
 .PHONY: compose-up
 compose-up:
 	docker compose up --build -d
