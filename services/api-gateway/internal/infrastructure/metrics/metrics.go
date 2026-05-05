@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
@@ -96,6 +98,9 @@ func (metrics *Metrics) HTTPMiddleware(next http.Handler) http.Handler {
 		if path == "" {
 			path = request.Pattern
 		}
+		if path == "" || path == "/api/" {
+			path = normalizedHTTPPath(request.URL.Path)
+		}
 		if path == "" {
 			path = request.URL.Path
 		}
@@ -103,6 +108,45 @@ func (metrics *Metrics) HTTPMiddleware(next http.Handler) http.Handler {
 		metrics.httpRequests.WithLabelValues(request.Method, path, statusCode).Inc()
 		metrics.httpLatency.WithLabelValues(request.Method, path, statusCode).Observe(time.Since(startedAt).Seconds())
 	})
+}
+
+func normalizedHTTPPath(path string) string {
+	if path == "" || path == "/" {
+		return path
+	}
+
+	segments := strings.Split(path, "/")
+	for index, segment := range segments {
+		if isDynamicPathSegment(segment) {
+			segments[index] = "{id}"
+		}
+	}
+
+	return strings.Join(segments, "/")
+}
+
+func isDynamicPathSegment(segment string) bool {
+	if segment == "" {
+		return false
+	}
+
+	hasDigit := false
+	for _, char := range segment {
+		switch {
+		case unicode.IsDigit(char):
+			hasDigit = true
+		case char == '-' || char == '_':
+			continue
+		case char >= 'a' && char <= 'f':
+			continue
+		case char >= 'A' && char <= 'F':
+			continue
+		default:
+			return false
+		}
+	}
+
+	return hasDigit
 }
 
 func (metrics *Metrics) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
