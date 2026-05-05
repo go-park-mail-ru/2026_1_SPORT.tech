@@ -343,6 +343,12 @@ message DonationResponse {
   google.protobuf.Timestamp created_at = 7;
 }
 
+message BalanceResponse {
+  int32 trainer_id = 1;
+  int32 amount_value = 2;
+  string currency = 3;
+}
+
 service AuthService {
   rpc GetCSRFToken(google.protobuf.Empty) returns (CSRFTokenResponse) {
     option (google.api.http).get = "/v1/auth/csrf";
@@ -527,5 +533,9 @@ service DonationService {
       post: "/v1/profiles/{user_id}/donations"
       body: "*"
     };
+  }
+
+  rpc GetMyBalance(google.protobuf.Empty) returns (BalanceResponse) {
+    option (google.api.http).get = "/v1/balance";
   }
 }

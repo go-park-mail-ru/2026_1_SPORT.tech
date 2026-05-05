@@ -29,6 +29,8 @@ type ContentRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 }
 
 type PostMediaStorage interface {
@@ -140,6 +142,19 @@ type UpdateSubscriptionCommand struct {
 type CancelSubscriptionCommand struct {
 	ClientUserID   int64
 	SubscriptionID int64
+}
+
+type DonateToProfileCommand struct {
+	SenderUserID    int64
+	RecipientUserID int64
+	AmountValue     int32
+	Currency        string
+	Message         *string
+}
+
+type GetBalanceQuery struct {
+	TrainerUserID int64
+	Currency      string
 }
 
 type DeletePostCommand struct {

@@ -3,14 +3,10 @@ package usecase
 import (
 	"bytes"
 	"context"
-	"regexp"
 	"strings"
-	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 )
-
-var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 
 type Service struct {
 	profileRepository   ProfileRepository
@@ -44,16 +40,16 @@ func (service *Service) CreateProfile(ctx context.Context, command CreateProfile
 }
 
 func (service *Service) GetProfile(ctx context.Context, userID int64) (domain.Profile, error) {
-	if userID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
+	if err := validateUserID(userID); err != nil {
+		return domain.Profile{}, err
 	}
 
 	return service.profileRepository.GetByID(ctx, userID)
 }
 
 func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfileCommand) (domain.Profile, error) {
-	if command.UserID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.Profile{}, err
 	}
 
 	profile, err := service.profileRepository.GetByID(ctx, command.UserID)
@@ -92,21 +88,8 @@ func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfile
 }
 
 func (service *Service) SearchAuthors(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
-	if query.Limit < 0 || query.Limit > 100 {
-		return nil, ErrInvalidSearchLimit
-	}
-	if query.Offset < 0 {
-		return nil, ErrInvalidSearchOffset
-	}
-	if query.MinExperienceYears != nil && *query.MinExperienceYears < 0 {
-		return nil, ErrInvalidExperienceYears
-	}
-	if query.MaxExperienceYears != nil && *query.MaxExperienceYears < 0 {
-		return nil, ErrInvalidExperienceYears
-	}
-	if query.MinExperienceYears != nil && query.MaxExperienceYears != nil &&
-		*query.MinExperienceYears > *query.MaxExperienceYears {
-		return nil, ErrInvalidExperienceYears
+	if err := validateSearchAuthorsQuery(query); err != nil {
+		return nil, err
 	}
 	if query.Limit == 0 {
 		query.Limit = 20
@@ -117,17 +100,8 @@ func (service *Service) SearchAuthors(ctx context.Context, query SearchAuthorsQu
 }
 
 func (service *Service) UploadAvatar(ctx context.Context, command UploadAvatarCommand) (domain.Profile, error) {
-	if command.UserID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
-	}
-	if strings.TrimSpace(command.FileName) == "" {
-		return domain.Profile{}, ErrAvatarFileNameRequired
-	}
-	if strings.TrimSpace(command.ContentType) == "" {
-		return domain.Profile{}, ErrAvatarContentTypeRequired
-	}
-	if len(command.Content) == 0 {
-		return domain.Profile{}, ErrAvatarContentRequired
+	if err := validateUploadAvatarCommand(command); err != nil {
+		return domain.Profile{}, err
 	}
 	if service.avatarStorage == nil {
 		return domain.Profile{}, ErrAvatarStorageUnavailable
@@ -161,8 +135,8 @@ func (service *Service) UploadAvatar(ctx context.Context, command UploadAvatarCo
 }
 
 func (service *Service) DeleteAvatar(ctx context.Context, userID int64) error {
-	if userID <= 0 {
-		return ErrInvalidUserID
+	if err := validateUserID(userID); err != nil {
+		return err
 	}
 	profile, err := service.profileRepository.GetByID(ctx, userID)
 	if err != nil {
@@ -201,42 +175,6 @@ func buildProfile(command CreateProfileCommand) (domain.Profile, error) {
 	}
 
 	return profile, nil
-}
-
-func validateProfile(profile domain.Profile) error {
-	if profile.UserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if !usernamePattern.MatchString(profile.Username) {
-		return ErrInvalidUsername
-	}
-	if len(profile.FirstName) == 0 || len(profile.FirstName) > 100 {
-		return ErrInvalidFirstName
-	}
-	if len(profile.LastName) == 0 || len(profile.LastName) > 100 {
-		return ErrInvalidLastName
-	}
-	if profile.Bio != nil && len(*profile.Bio) > 1000 {
-		return ErrInvalidBio
-	}
-	if !profile.IsTrainer && profile.TrainerDetails != nil {
-		return domain.ErrTrainerProfileForbidden
-	}
-	if profile.TrainerDetails != nil {
-		if profile.TrainerDetails.EducationDegree != nil && len(*profile.TrainerDetails.EducationDegree) > 255 {
-			return ErrInvalidEducationDegree
-		}
-		if profile.TrainerDetails.CareerSinceDate != nil && profile.TrainerDetails.CareerSinceDate.After(time.Now().UTC()) {
-			return ErrInvalidCareerSinceDate
-		}
-		for _, sport := range profile.TrainerDetails.Sports {
-			if sport.SportTypeID <= 0 || sport.ExperienceYears < 0 {
-				return ErrInvalidExperienceYears
-			}
-		}
-	}
-
-	return nil
 }
 
 func normalizeRequiredText(value string) string {
