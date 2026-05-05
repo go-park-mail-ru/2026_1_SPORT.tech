@@ -21,8 +21,8 @@ func (server *Server) GetCSRFToken(ctx context.Context, _ *emptypb.Empty) (*gate
 }
 
 func (server *Server) RegisterClient(ctx context.Context, request *gatewayv1.ClientRegisterRequest) (*gatewayv1.AuthResponse, error) {
-	if !mappers.PasswordsMatch(request.GetPassword(), request.GetPasswordRepeat()) {
-		return nil, status.Error(codes.InvalidArgument, "passwords do not match")
+	if err := mappers.ValidateClientRegisterRequest(request); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	authResponse, err := server.authClient.Register(forwardContext(ctx), mappers.RegisterClientRequestToAuth(request))
@@ -58,8 +58,8 @@ func (server *Server) RegisterClient(ctx context.Context, request *gatewayv1.Cli
 }
 
 func (server *Server) RegisterTrainer(ctx context.Context, request *gatewayv1.TrainerRegisterRequest) (*gatewayv1.AuthResponse, error) {
-	if !mappers.PasswordsMatch(request.GetPassword(), request.GetPasswordRepeat()) {
-		return nil, status.Error(codes.InvalidArgument, "passwords do not match")
+	if err := mappers.ValidateTrainerRegisterRequest(request); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	authResponse, err := server.authClient.Register(forwardContext(ctx), mappers.RegisterTrainerRequestToAuth(request))

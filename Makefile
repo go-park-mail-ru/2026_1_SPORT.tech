@@ -3,6 +3,7 @@ PROTO_GEN_GO_DIR := grpc/gen/go
 PROTO_GEN_OPENAPI_DIR := grpc/gen/openapiv2
 PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/content $(PROTO_DIR)/gateway
 PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
+COVER_PACKAGES := $(shell go list ./... | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
 GO_BIN := $(HOME)/go/bin
 
 .PHONY: generate
@@ -21,69 +22,25 @@ proto:
 		$(PROTO_FILES)
 	rm -rf $(PROTO_GEN_OPENAPI_DIR)/google $(PROTO_GEN_OPENAPI_DIR)/protoc-gen-openapiv2
 
-.PHONY: auth-build
-auth-build:
-	mkdir -p bin
-	GOSUMDB=off GOPROXY=off go build -o ./bin/auth-service ./services/auth/cmd/service
+.PHONY: test
+test:
+	go test ./...
 
-.PHONY: auth-run
-auth-run:
-	GOSUMDB=off GOPROXY=off AUTH_CONFIG_PATH=services/auth/configs/service.yml go run ./services/auth/cmd/service
+.PHONY: coverage
+coverage:
+	go test -covermode=atomic -coverprofile=coverage.tmp $(COVER_PACKAGES)
+	grep -v -E '(/internal/mocks/|/grpc/gen/|_easyjson\.go|easyjson\.go|\.pb\.go|\.pb\.gw\.go|_grpc\.pb\.go)' coverage.tmp > coverage.out
+	go tool cover -func=coverage.out | tail -n 1
 
-.PHONY: auth-test
-auth-test:
-	GOSUMDB=off GOPROXY=off go test ./services/auth/...
+.PHONY: coverage-html
+coverage-html: coverage
+	go tool cover -html=coverage.out -o coverage.html
 
-.PHONY: auth-test-integration
-auth-test-integration:
-	GOSUMDB=off GOPROXY=off go test -tags integration ./services/auth/internal/adapters/repository/postgres/...
-
-.PHONY: profile-build
-profile-build:
-	mkdir -p bin
-	GOSUMDB=off GOPROXY=off go build -o ./bin/profile-service ./services/profile/cmd/service
-
-.PHONY: profile-run
-profile-run:
-	GOSUMDB=off GOPROXY=off PROFILE_CONFIG_PATH=services/profile/configs/service.yml go run ./services/profile/cmd/service
-
-.PHONY: profile-test
-profile-test:
-	GOSUMDB=off GOPROXY=off go test ./services/profile/...
-
-.PHONY: profile-test-integration
-profile-test-integration:
-	GOSUMDB=off GOPROXY=off go test -tags integration ./services/profile/internal/adapters/repository/postgres/...
-
-.PHONY: content-build
-content-build:
-	mkdir -p bin
-	GOSUMDB=off GOPROXY=off go build -o ./bin/content-service ./services/content/cmd/service
-
-.PHONY: content-run
-content-run:
-	GOSUMDB=off GOPROXY=off CONTENT_CONFIG_PATH=services/content/configs/service.yml go run ./services/content/cmd/service
-
-.PHONY: content-test
-content-test:
-	GOSUMDB=off GOPROXY=off go test ./services/content/...
-
-.PHONY: content-test-integration
-content-test-integration:
-	GOSUMDB=off GOPROXY=off go test -tags integration ./services/content/internal/adapters/repository/postgres/...
-
-.PHONY: api-gateway-build
-api-gateway-build:
-	mkdir -p bin
-	GOSUMDB=off GOPROXY=off go build -o ./bin/api-gateway ./services/api-gateway/cmd/service
-
-.PHONY: api-gateway-run
-api-gateway-run:
-	GOSUMDB=off GOPROXY=off API_GATEWAY_CONFIG_PATH=services/api-gateway/configs/service.yml go run ./services/api-gateway/cmd/service
-
-.PHONY: api-gateway-test
-api-gateway-test:
-	GOSUMDB=off GOPROXY=off go test ./services/api-gateway/...
+.PHONY: test-integration
+test-integration:
+	go test -tags integration ./services/auth/internal/adapters/repository/postgres/...
+	go test -tags integration ./services/profile/internal/adapters/repository/postgres/...
+	go test -tags integration ./services/content/internal/adapters/repository/postgres/...
 
 .PHONY: compose-up
 compose-up:

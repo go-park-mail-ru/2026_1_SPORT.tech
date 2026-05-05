@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
+	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -58,6 +59,42 @@ func TestRequireSubscriptionUserIDAllowsTrainer(t *testing.T) {
 	}
 	if userID != 10 {
 		t.Fatalf("unexpected user id: %d", userID)
+	}
+}
+
+func TestRegisterClientRejectsInvalidProfileBeforeAuthWrite(t *testing.T) {
+	server := NewServer(stubAuthServiceClient{}, nil, nil)
+
+	_, err := server.RegisterClient(context.Background(), &gatewayv1.ClientRegisterRequest{
+		Username:       "valid_user",
+		Email:          "client@example.com",
+		Password:       "supersecret123",
+		PasswordRepeat: "supersecret123",
+		FirstName:      "",
+		LastName:       "User",
+	})
+	if status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("unexpected status: %s", status.Code(err))
+	}
+}
+
+func TestRegisterTrainerRejectsInvalidDetailsBeforeAuthWrite(t *testing.T) {
+	server := NewServer(stubAuthServiceClient{}, nil, nil)
+	futureDate := "2999-01-01"
+
+	_, err := server.RegisterTrainer(context.Background(), &gatewayv1.TrainerRegisterRequest{
+		Username:       "coach_valid",
+		Email:          "trainer@example.com",
+		Password:       "supersecret123",
+		PasswordRepeat: "supersecret123",
+		FirstName:      "Coach",
+		LastName:       "Valid",
+		TrainerDetails: &gatewayv1.TrainerDetails{
+			CareerSinceDate: &futureDate,
+		},
+	})
+	if status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("unexpected status: %s", status.Code(err))
 	}
 }
 
