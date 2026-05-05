@@ -112,6 +112,16 @@ message GetTrainersResponse {
   repeated TrainerListItem trainers = 1;
 }
 
+message ListTrainersRequest {
+  string query = 1;
+  repeated int32 sport_type_ids = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+  optional int32 min_experience_years = 5;
+  optional int32 max_experience_years = 6;
+  bool only_with_rank = 7;
+}
+
 message UpdateMyProfileRequest {
   optional string username = 1;
   optional string first_name = 2;
@@ -139,30 +149,49 @@ message SportTypesResponse {
   repeated SportType sport_types = 1;
 }
 
-message CreatePostAttachmentRequest {
+message PostBlockInput {
   string kind = 1;
-  string file_url = 2;
+  optional string text_content = 2;
+  optional string file_url = 3;
+}
+
+message UploadPostMediaRequest {
+  bytes file = 1;
+  string file_name = 2;
+  string content_type = 3;
+}
+
+message PostMediaUploadResponse {
+  string file_url = 1;
+  string kind = 2;
+  string content_type = 3;
+  int32 size_bytes = 4;
 }
 
 message CreatePostRequest {
   optional int32 min_tier_id = 1;
   string title = 2;
-  string text_content = 3;
-  repeated CreatePostAttachmentRequest attachments = 4;
+  repeated PostBlockInput blocks = 3;
+  optional int32 sport_type_id = 4;
 }
 
 message UpdatePostRequest {
   int32 post_id = 1;
   optional int32 min_tier_id = 2;
   optional string title = 3;
-  optional string text_content = 4;
-  repeated CreatePostAttachmentRequest attachments = 5;
+  repeated PostBlockInput blocks = 4;
+  bool replace_blocks = 5;
+  bool clear_min_tier_id = 6;
+  optional int32 sport_type_id = 7;
+  bool clear_sport_type_id = 8;
 }
 
-message PostAttachment {
-  int32 post_attachment_id = 1;
-  string kind = 2;
-  string file_url = 3;
+message PostBlock {
+  int32 post_block_id = 1;
+  int32 position = 2;
+  string kind = 3;
+  optional string text_content = 4;
+  optional string file_url = 5;
 }
 
 message PostListItem {
@@ -174,6 +203,8 @@ message PostListItem {
   bool can_view = 6;
   int32 likes_count = 7;
   bool is_liked = 8;
+  int32 comments_count = 9;
+  optional int32 sport_type_id = 10;
 }
 
 message ProfilePostsResponse {
@@ -181,17 +212,35 @@ message ProfilePostsResponse {
   repeated PostListItem posts = 2;
 }
 
+message SearchPostsRequest {
+  string query = 1;
+  repeated int32 trainer_ids = 2;
+  repeated string block_kinds = 3;
+  optional int32 min_tier_id = 4;
+  optional int32 max_tier_id = 5;
+  bool only_available = 6;
+  int32 limit = 7;
+  int32 offset = 8;
+  repeated int32 sport_type_ids = 9;
+}
+
+message SearchPostsResponse {
+  repeated PostListItem posts = 1;
+}
+
 message PostResponse {
   int32 post_id = 1;
   int32 trainer_id = 2;
   optional int32 min_tier_id = 3;
   string title = 4;
-  string text_content = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
-  int32 likes_count = 8;
-  bool is_liked = 9;
-  repeated PostAttachment attachments = 10;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  int32 likes_count = 7;
+  bool is_liked = 8;
+  repeated PostBlock blocks = 9;
+  bool can_view = 10;
+  int32 comments_count = 11;
+  optional int32 sport_type_id = 12;
 }
 
 message GetPostRequest {
@@ -210,6 +259,71 @@ message PostLikeResponse {
   int32 post_id = 1;
   int32 likes_count = 2;
   bool is_liked = 3;
+}
+
+message Tier {
+  int32 tier_id = 1;
+  string name = 2;
+  int32 price = 3;
+  optional string description = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message TiersResponse {
+  repeated Tier tiers = 1;
+}
+
+message CreateTierRequest {
+  string name = 1;
+  int32 price = 2;
+  optional string description = 3;
+}
+
+message UpdateTierRequest {
+  int32 tier_id = 1;
+  optional string name = 2;
+  optional int32 price = 3;
+  optional string description = 4;
+  bool clear_description = 5;
+}
+
+message DeleteTierRequest {
+  int32 tier_id = 1;
+}
+
+message TrainerTiersRequest {
+  int32 trainer_id = 1;
+}
+
+message SubscribeRequest {
+  int32 trainer_id = 1;
+  int32 tier_id = 2;
+}
+
+message Subscription {
+  int32 subscription_id = 1;
+  int32 trainer_id = 2;
+  int32 tier_id = 3;
+  string tier_name = 4;
+  int32 price = 5;
+  bool active = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message SubscriptionsResponse {
+  repeated Subscription subscriptions = 1;
+}
+
+message UpdateSubscriptionRequest {
+  int32 subscription_id = 1;
+  int32 tier_id = 2;
+}
+
+message CancelSubscriptionRequest {
+  int32 subscription_id = 1;
 }
 
 message DonateToProfileRequest {
@@ -269,8 +383,15 @@ service ProfileService {
     option (google.api.http).get = "/v1/profiles/{user_id}";
   }
 
-  rpc ListTrainers(google.protobuf.Empty) returns (GetTrainersResponse) {
+  rpc ListTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
     option (google.api.http).get = "/v1/trainers";
+  }
+
+  rpc SearchTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
+    option (google.api.http) = {
+      post: "/v1/trainers:search"
+      body: "*"
+    };
   }
 
   rpc UpdateMyProfile(UpdateMyProfileRequest) returns (ProfileResponse) {
@@ -297,9 +418,23 @@ service ProfileService {
 }
 
 service PostService {
+  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts:search"
+      body: "*"
+    };
+  }
+
   rpc CreatePost(CreatePostRequest) returns (PostResponse) {
     option (google.api.http) = {
       post: "/v1/posts"
+      body: "*"
+    };
+  }
+
+  rpc UploadPostMedia(UploadPostMediaRequest) returns (PostMediaUploadResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/media"
       body: "*"
     };
   }
@@ -325,6 +460,58 @@ service PostService {
 
   rpc UnlikePost(PostLikeRequest) returns (PostLikeResponse) {
     option (google.api.http).delete = "/v1/posts/{post_id}/likes";
+  }
+}
+
+service TierService {
+  rpc ListTrainerTiers(TrainerTiersRequest) returns (TiersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_id}/tiers";
+  }
+
+  rpc ListTiers(google.protobuf.Empty) returns (TiersResponse) {
+    option (google.api.http).get = "/v1/tiers";
+  }
+
+  rpc CreateTier(CreateTierRequest) returns (Tier) {
+    option (google.api.http) = {
+      post: "/v1/tiers"
+      body: "*"
+    };
+  }
+
+  rpc UpdateTier(UpdateTierRequest) returns (Tier) {
+    option (google.api.http) = {
+      patch: "/v1/tiers/{tier_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteTier(DeleteTierRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/tiers/{tier_id}";
+  }
+}
+
+service SubscriptionService {
+  rpc SubscribeToTrainer(SubscribeRequest) returns (Subscription) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_id}/subscribe"
+      body: "*"
+    };
+  }
+
+  rpc ListMySubscriptions(google.protobuf.Empty) returns (SubscriptionsResponse) {
+    option (google.api.http).get = "/v1/subscriptions/me";
+  }
+
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+    option (google.api.http) = {
+      patch: "/v1/subscriptions/{subscription_id}"
+      body: "*"
+    };
+  }
+
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/subscriptions/{subscription_id}";
   }
 }
 

@@ -40,6 +40,8 @@ type Server struct {
 	gatewayv1.UnimplementedAuthServiceServer
 	gatewayv1.UnimplementedProfileServiceServer
 	gatewayv1.UnimplementedPostServiceServer
+	gatewayv1.UnimplementedTierServiceServer
+	gatewayv1.UnimplementedSubscriptionServiceServer
 	gatewayv1.UnimplementedSportServiceServer
 	gatewayv1.UnimplementedDonationServiceServer
 	authClient    authv1.AuthServiceClient
@@ -144,6 +146,26 @@ func sessionTokenFromContext(ctx context.Context) string {
 	}
 
 	return values[0]
+}
+
+func subscriptionLevelFromContext(ctx context.Context) (*int32, error) {
+	incomingMD, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, nil
+	}
+
+	values := incomingMD.Get("x-subscription-level")
+	if len(values) == 0 || values[0] == "" {
+		return nil, nil
+	}
+
+	parsedValue, err := strconv.ParseInt(values[0], 10, 32)
+	if err != nil || parsedValue < 1 {
+		return nil, status.Error(codes.InvalidArgument, "invalid subscription level")
+	}
+
+	level := int32(parsedValue)
+	return &level, nil
 }
 
 func setHTTPStatus(ctx context.Context, httpStatusCode int) error {

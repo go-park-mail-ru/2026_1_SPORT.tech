@@ -12,10 +12,20 @@ import (
 
 type ContentUseCase interface {
 	ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error)
+	SearchPosts(ctx context.Context, query usecase.SearchPostsQuery) ([]domain.PostSummary, error)
 	CreatePost(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error)
+	UploadPostMedia(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error)
 	GetPost(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error)
 	UpdatePost(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error)
 	DeletePost(ctx context.Context, command usecase.DeletePostCommand) error
+	ListSubscriptionTiers(ctx context.Context, query usecase.ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error)
+	CreateSubscriptionTier(ctx context.Context, command usecase.CreateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	UpdateSubscriptionTier(ctx context.Context, command usecase.UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error)
+	DeleteSubscriptionTier(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
+	SubscribeToTrainer(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
+	ListMySubscriptions(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
+	CancelSubscription(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
@@ -40,6 +50,15 @@ func (server *Server) ListAuthorPosts(ctx context.Context, request *contentv1.Li
 	return mappers.NewListAuthorPostsResponse(posts), nil
 }
 
+func (server *Server) SearchPosts(ctx context.Context, request *contentv1.SearchPostsRequest) (*contentv1.SearchPostsResponse, error) {
+	posts, err := server.contentUseCase.SearchPosts(ctx, mappers.SearchPostsRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSearchPostsResponse(posts), nil
+}
+
 func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreatePostRequest) (*contentv1.PostResponse, error) {
 	post, err := server.contentUseCase.CreatePost(ctx, mappers.CreatePostRequestToCommand(request))
 	if err != nil {
@@ -47,6 +66,15 @@ func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreateP
 	}
 
 	return mappers.NewPostResponse(post), nil
+}
+
+func (server *Server) UploadPostMedia(ctx context.Context, request *contentv1.UploadPostMediaRequest) (*contentv1.PostMediaResponse, error) {
+	media, err := server.contentUseCase.UploadPostMedia(ctx, mappers.UploadPostMediaRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewPostMediaResponse(media), nil
 }
 
 func (server *Server) GetPost(ctx context.Context, request *contentv1.GetPostRequest) (*contentv1.PostResponse, error) {
@@ -69,6 +97,76 @@ func (server *Server) UpdatePost(ctx context.Context, request *contentv1.UpdateP
 
 func (server *Server) DeletePost(ctx context.Context, request *contentv1.DeletePostRequest) (*emptypb.Empty, error) {
 	if err := server.contentUseCase.DeletePost(ctx, mappers.DeletePostRequestToCommand(request)); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.Empty(), nil
+}
+
+func (server *Server) ListSubscriptionTiers(ctx context.Context, request *contentv1.ListSubscriptionTiersRequest) (*contentv1.ListSubscriptionTiersResponse, error) {
+	tiers, err := server.contentUseCase.ListSubscriptionTiers(ctx, mappers.ListSubscriptionTiersRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListSubscriptionTiersResponse(tiers), nil
+}
+
+func (server *Server) CreateSubscriptionTier(ctx context.Context, request *contentv1.CreateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
+	tier, err := server.contentUseCase.CreateSubscriptionTier(ctx, mappers.CreateSubscriptionTierRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionTierResponse(tier), nil
+}
+
+func (server *Server) UpdateSubscriptionTier(ctx context.Context, request *contentv1.UpdateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
+	tier, err := server.contentUseCase.UpdateSubscriptionTier(ctx, mappers.UpdateSubscriptionTierRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionTierResponse(tier), nil
+}
+
+func (server *Server) DeleteSubscriptionTier(ctx context.Context, request *contentv1.DeleteSubscriptionTierRequest) (*emptypb.Empty, error) {
+	if err := server.contentUseCase.DeleteSubscriptionTier(ctx, mappers.DeleteSubscriptionTierRequestToCommand(request)); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.Empty(), nil
+}
+
+func (server *Server) SubscribeToTrainer(ctx context.Context, request *contentv1.SubscribeToTrainerRequest) (*contentv1.Subscription, error) {
+	subscription, err := server.contentUseCase.SubscribeToTrainer(ctx, mappers.SubscribeToTrainerRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionResponse(subscription), nil
+}
+
+func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv1.ListMySubscriptionsRequest) (*contentv1.ListMySubscriptionsResponse, error) {
+	subscriptions, err := server.contentUseCase.ListMySubscriptions(ctx, mappers.ListMySubscriptionsRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListMySubscriptionsResponse(subscriptions), nil
+}
+
+func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1.UpdateSubscriptionRequest) (*contentv1.Subscription, error) {
+	subscription, err := server.contentUseCase.UpdateSubscription(ctx, mappers.UpdateSubscriptionRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewSubscriptionResponse(subscription), nil
+}
+
+func (server *Server) CancelSubscription(ctx context.Context, request *contentv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {
+	if err := server.contentUseCase.CancelSubscription(ctx, mappers.CancelSubscriptionRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 

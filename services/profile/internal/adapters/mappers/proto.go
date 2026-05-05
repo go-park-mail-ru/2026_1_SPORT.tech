@@ -46,10 +46,13 @@ func UpdateProfileRequestToCommand(request *profilev1.UpdateProfileRequest) usec
 
 func SearchAuthorsRequestToQuery(request *profilev1.SearchAuthorsRequest) usecase.SearchAuthorsQuery {
 	return usecase.SearchAuthorsQuery{
-		Query:        request.GetQuery(),
-		SportTypeIDs: request.GetSportTypeIds(),
-		Limit:        request.GetLimit(),
-		Offset:       request.GetOffset(),
+		Query:              request.GetQuery(),
+		SportTypeIDs:       request.GetSportTypeIds(),
+		MinExperienceYears: request.MinExperienceYears,
+		MaxExperienceYears: request.MaxExperienceYears,
+		OnlyWithRank:       request.GetOnlyWithRank(),
+		Limit:              request.GetLimit(),
+		Offset:             request.GetOffset(),
 	}
 }
 

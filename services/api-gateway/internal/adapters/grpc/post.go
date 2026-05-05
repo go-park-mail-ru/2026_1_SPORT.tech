@@ -11,6 +11,28 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (server *Server) SearchPosts(ctx context.Context, request *gatewayv1.SearchPostsRequest) (*gatewayv1.SearchPostsResponse, error) {
+	principal, err := server.optionalSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var viewerUserID int64
+	if principal != nil && principal.User != nil {
+		viewerUserID = principal.User.GetUserId()
+	}
+
+	response, err := server.contentClient.SearchPosts(
+		forwardContext(ctx),
+		mappers.SearchPostsRequestToContent(viewerUserID, nil, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.SearchPostsResponseFromContent(response)
+}
+
 func (server *Server) CreatePost(ctx context.Context, request *gatewayv1.CreatePostRequest) (*gatewayv1.PostResponse, error) {
 	principal, err := server.requireSession(ctx)
 	if err != nil {
@@ -38,6 +60,31 @@ func (server *Server) CreatePost(ctx context.Context, request *gatewayv1.CreateP
 	}
 
 	return mappers.PostResponseFromContent(response)
+}
+
+func (server *Server) UploadPostMedia(ctx context.Context, request *gatewayv1.UploadPostMediaRequest) (*gatewayv1.PostMediaUploadResponse, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := mappers.RequireTrainerRole(principal.User); err != nil {
+		return nil, status.Error(codes.PermissionDenied, err.Error())
+	}
+
+	userID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	response, err := server.contentClient.UploadPostMedia(
+		forwardContext(ctx),
+		mappers.UploadPostMediaRequestToContent(userID, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.PostMediaUploadResponseFromContent(response)
 }
 
 func (server *Server) GetPost(ctx context.Context, request *gatewayv1.GetPostRequest) (*gatewayv1.PostResponse, error) {
