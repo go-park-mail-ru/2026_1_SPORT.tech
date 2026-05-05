@@ -195,6 +195,13 @@ func (repository *ProfileRepository) Update(ctx context.Context, profile domain.
 
 func (repository *ProfileRepository) SearchAuthors(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
 	const baseQuery = `
+		WITH filtered_authors AS (
+			SELECT p.user_id
+			FROM profile p
+			WHERE p.is_trainer = TRUE
+	`
+	const selectQuery = `
+		)
 		SELECT
 			p.user_id,
 			p.username,
@@ -207,10 +214,10 @@ func (repository *ProfileRepository) SearchAuthors(ctx context.Context, query us
 			ts.sport_type_id,
 			ts.experience_years,
 			ts.sports_rank
-		FROM profile p
+		FROM filtered_authors fa
+		JOIN profile p ON p.user_id = fa.user_id
 		LEFT JOIN trainer_profile tp ON tp.user_id = p.user_id
 		LEFT JOIN trainer_sport ts ON ts.user_id = p.user_id
-		WHERE p.is_trainer = TRUE
 	`
 
 	args := []any{}
@@ -219,12 +226,30 @@ func (repository *ProfileRepository) SearchAuthors(ctx context.Context, query us
 	if trimmedQuery := strings.TrimSpace(query.Query); trimmedQuery != "" {
 		args = append(args, "%"+trimmedQuery+"%")
 		placeholder := fmt.Sprintf("$%d", len(args))
-		conditions = append(conditions, "(p.username ILIKE "+placeholder+" OR p.first_name ILIKE "+placeholder+" OR p.last_name ILIKE "+placeholder+")")
+		conditions = append(conditions, "(p.username ILIKE "+placeholder+" OR p.first_name ILIKE "+placeholder+" OR p.last_name ILIKE "+placeholder+" OR p.bio ILIKE "+placeholder+")")
 	}
-	if len(query.SportTypeIDs) > 0 {
-		args = append(args, pq.Array(query.SportTypeIDs))
-		placeholder := fmt.Sprintf("$%d", len(args))
-		conditions = append(conditions, "EXISTS (SELECT 1 FROM trainer_sport filter_ts WHERE filter_ts.user_id = p.user_id AND filter_ts.sport_type_id = ANY("+placeholder+"))")
+	if len(query.SportTypeIDs) > 0 || query.MinExperienceYears != nil || query.MaxExperienceYears != nil || query.OnlyWithRank {
+		sportConditions := []string{"filter_ts.user_id = p.user_id"}
+		if len(query.SportTypeIDs) > 0 {
+			args = append(args, pq.Array(query.SportTypeIDs))
+			placeholder := fmt.Sprintf("$%d", len(args))
+			sportConditions = append(sportConditions, "filter_ts.sport_type_id = ANY("+placeholder+")")
+		}
+		if query.MinExperienceYears != nil {
+			args = append(args, *query.MinExperienceYears)
+			placeholder := fmt.Sprintf("$%d", len(args))
+			sportConditions = append(sportConditions, "filter_ts.experience_years >= "+placeholder)
+		}
+		if query.MaxExperienceYears != nil {
+			args = append(args, *query.MaxExperienceYears)
+			placeholder := fmt.Sprintf("$%d", len(args))
+			sportConditions = append(sportConditions, "filter_ts.experience_years <= "+placeholder)
+		}
+		if query.OnlyWithRank {
+			sportConditions = append(sportConditions, "filter_ts.sports_rank IS NOT NULL AND btrim(filter_ts.sports_rank) <> ''")
+		}
+
+		conditions = append(conditions, "EXISTS (SELECT 1 FROM trainer_sport filter_ts WHERE "+strings.Join(sportConditions, " AND ")+")")
 	}
 
 	queryBuilder := strings.Builder{}
@@ -235,7 +260,9 @@ func (repository *ProfileRepository) SearchAuthors(ctx context.Context, query us
 	}
 
 	args = append(args, query.Limit, query.Offset)
-	queryBuilder.WriteString(fmt.Sprintf(" ORDER BY p.user_id DESC, ts.sport_type_id LIMIT $%d OFFSET $%d", len(args)-1, len(args)))
+	queryBuilder.WriteString(fmt.Sprintf(" ORDER BY p.user_id DESC LIMIT $%d OFFSET $%d", len(args)-1, len(args)))
+	queryBuilder.WriteString(selectQuery)
+	queryBuilder.WriteString(" ORDER BY p.user_id DESC, ts.sport_type_id")
 
 	rows, err := repository.db.QueryContext(ctx, queryBuilder.String(), args...)
 	if err != nil {

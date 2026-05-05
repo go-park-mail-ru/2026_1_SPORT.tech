@@ -215,6 +215,74 @@ func (x *PostBlock) GetFileUrl() string {
 	return ""
 }
 
+type PostMedia struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FileUrl       string                 `protobuf:"bytes,1,opt,name=file_url,json=fileUrl,proto3" json:"file_url,omitempty"`
+	Kind          ContentBlockKind       `protobuf:"varint,2,opt,name=kind,proto3,enum=sporttech.content.v1.ContentBlockKind" json:"kind,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	SizeBytes     int64                  `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostMedia) Reset() {
+	*x = PostMedia{}
+	mi := &file_content_v1_content_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostMedia) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostMedia) ProtoMessage() {}
+
+func (x *PostMedia) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostMedia.ProtoReflect.Descriptor instead.
+func (*PostMedia) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PostMedia) GetFileUrl() string {
+	if x != nil {
+		return x.FileUrl
+	}
+	return ""
+}
+
+func (x *PostMedia) GetKind() ContentBlockKind {
+	if x != nil {
+		return x.Kind
+	}
+	return ContentBlockKind_CONTENT_BLOCK_KIND_UNSPECIFIED
+}
+
+func (x *PostMedia) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *PostMedia) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
 type Post struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
 	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -228,13 +296,14 @@ type Post struct {
 	IsLiked                   bool                   `protobuf:"varint,9,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	CommentsCount             int64                  `protobuf:"varint,10,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	Blocks                    []*PostBlock           `protobuf:"bytes,11,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	SportTypeId               *int64                 `protobuf:"varint,12,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Post) Reset() {
 	*x = Post{}
-	mi := &file_content_v1_content_proto_msgTypes[2]
+	mi := &file_content_v1_content_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +315,7 @@ func (x *Post) String() string {
 func (*Post) ProtoMessage() {}
 
 func (x *Post) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[2]
+	mi := &file_content_v1_content_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +328,7 @@ func (x *Post) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Post.ProtoReflect.Descriptor instead.
 func (*Post) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{2}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Post) GetPostId() int64 {
@@ -339,6 +408,13 @@ func (x *Post) GetBlocks() []*PostBlock {
 	return nil
 }
 
+func (x *Post) GetSportTypeId() int64 {
+	if x != nil && x.SportTypeId != nil {
+		return *x.SportTypeId
+	}
+	return 0
+}
+
 type PostSummary struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
 	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -350,13 +426,14 @@ type PostSummary struct {
 	LikesCount                int64                  `protobuf:"varint,7,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
 	IsLiked                   bool                   `protobuf:"varint,8,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	CommentsCount             int64                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
+	SportTypeId               *int64                 `protobuf:"varint,10,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *PostSummary) Reset() {
 	*x = PostSummary{}
-	mi := &file_content_v1_content_proto_msgTypes[3]
+	mi := &file_content_v1_content_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -368,7 +445,7 @@ func (x *PostSummary) String() string {
 func (*PostSummary) ProtoMessage() {}
 
 func (x *PostSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[3]
+	mi := &file_content_v1_content_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -381,7 +458,7 @@ func (x *PostSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostSummary.ProtoReflect.Descriptor instead.
 func (*PostSummary) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{3}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PostSummary) GetPostId() int64 {
@@ -447,6 +524,13 @@ func (x *PostSummary) GetCommentsCount() int64 {
 	return 0
 }
 
+func (x *PostSummary) GetSportTypeId() int64 {
+	if x != nil && x.SportTypeId != nil {
+		return *x.SportTypeId
+	}
+	return 0
+}
+
 type Comment struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CommentId     int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
@@ -461,7 +545,7 @@ type Comment struct {
 
 func (x *Comment) Reset() {
 	*x = Comment{}
-	mi := &file_content_v1_content_proto_msgTypes[4]
+	mi := &file_content_v1_content_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -473,7 +557,7 @@ func (x *Comment) String() string {
 func (*Comment) ProtoMessage() {}
 
 func (x *Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[4]
+	mi := &file_content_v1_content_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -486,7 +570,7 @@ func (x *Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Comment.ProtoReflect.Descriptor instead.
 func (*Comment) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{4}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Comment) GetCommentId() int64 {
@@ -540,7 +624,7 @@ type PostResponse struct {
 
 func (x *PostResponse) Reset() {
 	*x = PostResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[5]
+	mi := &file_content_v1_content_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -552,7 +636,7 @@ func (x *PostResponse) String() string {
 func (*PostResponse) ProtoMessage() {}
 
 func (x *PostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[5]
+	mi := &file_content_v1_content_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,7 +649,7 @@ func (x *PostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostResponse.ProtoReflect.Descriptor instead.
 func (*PostResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{5}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PostResponse) GetPost() *Post {
@@ -588,7 +672,7 @@ type ListAuthorPostsRequest struct {
 
 func (x *ListAuthorPostsRequest) Reset() {
 	*x = ListAuthorPostsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[6]
+	mi := &file_content_v1_content_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +684,7 @@ func (x *ListAuthorPostsRequest) String() string {
 func (*ListAuthorPostsRequest) ProtoMessage() {}
 
 func (x *ListAuthorPostsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[6]
+	mi := &file_content_v1_content_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +697,7 @@ func (x *ListAuthorPostsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAuthorPostsRequest.ProtoReflect.Descriptor instead.
 func (*ListAuthorPostsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{6}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListAuthorPostsRequest) GetAuthorUserId() int64 {
@@ -660,7 +744,7 @@ type ListAuthorPostsResponse struct {
 
 func (x *ListAuthorPostsResponse) Reset() {
 	*x = ListAuthorPostsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[7]
+	mi := &file_content_v1_content_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +756,7 @@ func (x *ListAuthorPostsResponse) String() string {
 func (*ListAuthorPostsResponse) ProtoMessage() {}
 
 func (x *ListAuthorPostsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[7]
+	mi := &file_content_v1_content_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,10 +769,178 @@ func (x *ListAuthorPostsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAuthorPostsResponse.ProtoReflect.Descriptor instead.
 func (*ListAuthorPostsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{7}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListAuthorPostsResponse) GetPosts() []*PostSummary {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
+}
+
+type SearchPostsRequest struct {
+	state                        protoimpl.MessageState `protogen:"open.v1"`
+	Query                        string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	AuthorUserIds                []int64                `protobuf:"varint,2,rep,packed,name=author_user_ids,json=authorUserIds,proto3" json:"author_user_ids,omitempty"`
+	BlockKinds                   []ContentBlockKind     `protobuf:"varint,3,rep,packed,name=block_kinds,json=blockKinds,proto3,enum=sporttech.content.v1.ContentBlockKind" json:"block_kinds,omitempty"`
+	MinRequiredSubscriptionLevel *int32                 `protobuf:"varint,4,opt,name=min_required_subscription_level,json=minRequiredSubscriptionLevel,proto3,oneof" json:"min_required_subscription_level,omitempty"`
+	MaxRequiredSubscriptionLevel *int32                 `protobuf:"varint,5,opt,name=max_required_subscription_level,json=maxRequiredSubscriptionLevel,proto3,oneof" json:"max_required_subscription_level,omitempty"`
+	OnlyAvailable                bool                   `protobuf:"varint,6,opt,name=only_available,json=onlyAvailable,proto3" json:"only_available,omitempty"`
+	ViewerUserId                 int64                  `protobuf:"varint,7,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	ViewerSubscriptionLevel      *int32                 `protobuf:"varint,8,opt,name=viewer_subscription_level,json=viewerSubscriptionLevel,proto3,oneof" json:"viewer_subscription_level,omitempty"`
+	Limit                        int32                  `protobuf:"varint,9,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset                       int32                  `protobuf:"varint,10,opt,name=offset,proto3" json:"offset,omitempty"`
+	SportTypeIds                 []int64                `protobuf:"varint,11,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *SearchPostsRequest) Reset() {
+	*x = SearchPostsRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPostsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPostsRequest) ProtoMessage() {}
+
+func (x *SearchPostsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPostsRequest.ProtoReflect.Descriptor instead.
+func (*SearchPostsRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SearchPostsRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *SearchPostsRequest) GetAuthorUserIds() []int64 {
+	if x != nil {
+		return x.AuthorUserIds
+	}
+	return nil
+}
+
+func (x *SearchPostsRequest) GetBlockKinds() []ContentBlockKind {
+	if x != nil {
+		return x.BlockKinds
+	}
+	return nil
+}
+
+func (x *SearchPostsRequest) GetMinRequiredSubscriptionLevel() int32 {
+	if x != nil && x.MinRequiredSubscriptionLevel != nil {
+		return *x.MinRequiredSubscriptionLevel
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetMaxRequiredSubscriptionLevel() int32 {
+	if x != nil && x.MaxRequiredSubscriptionLevel != nil {
+		return *x.MaxRequiredSubscriptionLevel
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetOnlyAvailable() bool {
+	if x != nil {
+		return x.OnlyAvailable
+	}
+	return false
+}
+
+func (x *SearchPostsRequest) GetViewerUserId() int64 {
+	if x != nil {
+		return x.ViewerUserId
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetViewerSubscriptionLevel() int32 {
+	if x != nil && x.ViewerSubscriptionLevel != nil {
+		return *x.ViewerSubscriptionLevel
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *SearchPostsRequest) GetSportTypeIds() []int64 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
+}
+
+type SearchPostsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Posts         []*PostSummary         `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPostsResponse) Reset() {
+	*x = SearchPostsResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPostsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPostsResponse) ProtoMessage() {}
+
+func (x *SearchPostsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPostsResponse.ProtoReflect.Descriptor instead.
+func (*SearchPostsResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SearchPostsResponse) GetPosts() []*PostSummary {
 	if x != nil {
 		return x.Posts
 	}
@@ -701,13 +953,14 @@ type CreatePostRequest struct {
 	Title                     string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	RequiredSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	Blocks                    []*PostBlockInput      `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	SportTypeId               *int64                 `protobuf:"varint,5,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *CreatePostRequest) Reset() {
 	*x = CreatePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[8]
+	mi := &file_content_v1_content_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -719,7 +972,7 @@ func (x *CreatePostRequest) String() string {
 func (*CreatePostRequest) ProtoMessage() {}
 
 func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[8]
+	mi := &file_content_v1_content_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +985,7 @@ func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePostRequest.ProtoReflect.Descriptor instead.
 func (*CreatePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{8}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CreatePostRequest) GetAuthorUserId() int64 {
@@ -763,6 +1016,125 @@ func (x *CreatePostRequest) GetBlocks() []*PostBlockInput {
 	return nil
 }
 
+func (x *CreatePostRequest) GetSportTypeId() int64 {
+	if x != nil && x.SportTypeId != nil {
+		return *x.SportTypeId
+	}
+	return 0
+}
+
+type UploadPostMediaRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthorUserId  int64                  `protobuf:"varint,1,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	File          []byte                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	FileName      string                 `protobuf:"bytes,3,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
+	ContentType   string                 `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadPostMediaRequest) Reset() {
+	*x = UploadPostMediaRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadPostMediaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadPostMediaRequest) ProtoMessage() {}
+
+func (x *UploadPostMediaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadPostMediaRequest.ProtoReflect.Descriptor instead.
+func (*UploadPostMediaRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *UploadPostMediaRequest) GetAuthorUserId() int64 {
+	if x != nil {
+		return x.AuthorUserId
+	}
+	return 0
+}
+
+func (x *UploadPostMediaRequest) GetFile() []byte {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
+func (x *UploadPostMediaRequest) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *UploadPostMediaRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+type PostMediaResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Media         *PostMedia             `protobuf:"bytes,1,opt,name=media,proto3" json:"media,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostMediaResponse) Reset() {
+	*x = PostMediaResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostMediaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostMediaResponse) ProtoMessage() {}
+
+func (x *PostMediaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostMediaResponse.ProtoReflect.Descriptor instead.
+func (*PostMediaResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PostMediaResponse) GetMedia() *PostMedia {
+	if x != nil {
+		return x.Media
+	}
+	return nil
+}
+
 type GetPostRequest struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
 	PostId                  int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -774,7 +1146,7 @@ type GetPostRequest struct {
 
 func (x *GetPostRequest) Reset() {
 	*x = GetPostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[9]
+	mi := &file_content_v1_content_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -786,7 +1158,7 @@ func (x *GetPostRequest) String() string {
 func (*GetPostRequest) ProtoMessage() {}
 
 func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[9]
+	mi := &file_content_v1_content_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -799,7 +1171,7 @@ func (x *GetPostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPostRequest.ProtoReflect.Descriptor instead.
 func (*GetPostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{9}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetPostRequest) GetPostId() int64 {
@@ -832,13 +1204,15 @@ type UpdatePostRequest struct {
 	ClearRequiredSubscriptionLevel bool                   `protobuf:"varint,5,opt,name=clear_required_subscription_level,json=clearRequiredSubscriptionLevel,proto3" json:"clear_required_subscription_level,omitempty"`
 	Blocks                         []*PostBlockInput      `protobuf:"bytes,6,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	ReplaceBlocks                  bool                   `protobuf:"varint,7,opt,name=replace_blocks,json=replaceBlocks,proto3" json:"replace_blocks,omitempty"`
+	SportTypeId                    *int64                 `protobuf:"varint,8,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	ClearSportTypeId               bool                   `protobuf:"varint,9,opt,name=clear_sport_type_id,json=clearSportTypeId,proto3" json:"clear_sport_type_id,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *UpdatePostRequest) Reset() {
 	*x = UpdatePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[10]
+	mi := &file_content_v1_content_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -850,7 +1224,7 @@ func (x *UpdatePostRequest) String() string {
 func (*UpdatePostRequest) ProtoMessage() {}
 
 func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[10]
+	mi := &file_content_v1_content_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -863,7 +1237,7 @@ func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePostRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{10}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdatePostRequest) GetPostId() int64 {
@@ -915,6 +1289,780 @@ func (x *UpdatePostRequest) GetReplaceBlocks() bool {
 	return false
 }
 
+func (x *UpdatePostRequest) GetSportTypeId() int64 {
+	if x != nil && x.SportTypeId != nil {
+		return *x.SportTypeId
+	}
+	return 0
+}
+
+func (x *UpdatePostRequest) GetClearSportTypeId() bool {
+	if x != nil {
+		return x.ClearSportTypeId
+	}
+	return false
+}
+
+type SubscriptionTier struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TierId        int64                  `protobuf:"varint,1,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	TrainerUserId int64                  `protobuf:"varint,2,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Price         int32                  `protobuf:"varint,4,opt,name=price,proto3" json:"price,omitempty"`
+	Description   *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubscriptionTier) Reset() {
+	*x = SubscriptionTier{}
+	mi := &file_content_v1_content_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscriptionTier) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscriptionTier) ProtoMessage() {}
+
+func (x *SubscriptionTier) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscriptionTier.ProtoReflect.Descriptor instead.
+func (*SubscriptionTier) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *SubscriptionTier) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+func (x *SubscriptionTier) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *SubscriptionTier) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SubscriptionTier) GetPrice() int32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *SubscriptionTier) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *SubscriptionTier) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *SubscriptionTier) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type ListSubscriptionTiersRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TrainerUserId int64                  `protobuf:"varint,1,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSubscriptionTiersRequest) Reset() {
+	*x = ListSubscriptionTiersRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSubscriptionTiersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSubscriptionTiersRequest) ProtoMessage() {}
+
+func (x *ListSubscriptionTiersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSubscriptionTiersRequest.ProtoReflect.Descriptor instead.
+func (*ListSubscriptionTiersRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ListSubscriptionTiersRequest) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+type ListSubscriptionTiersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tiers         []*SubscriptionTier    `protobuf:"bytes,1,rep,name=tiers,proto3" json:"tiers,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSubscriptionTiersResponse) Reset() {
+	*x = ListSubscriptionTiersResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSubscriptionTiersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSubscriptionTiersResponse) ProtoMessage() {}
+
+func (x *ListSubscriptionTiersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSubscriptionTiersResponse.ProtoReflect.Descriptor instead.
+func (*ListSubscriptionTiersResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ListSubscriptionTiersResponse) GetTiers() []*SubscriptionTier {
+	if x != nil {
+		return x.Tiers
+	}
+	return nil
+}
+
+type CreateSubscriptionTierRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TrainerUserId int64                  `protobuf:"varint,1,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Price         int32                  `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
+	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSubscriptionTierRequest) Reset() {
+	*x = CreateSubscriptionTierRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSubscriptionTierRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSubscriptionTierRequest) ProtoMessage() {}
+
+func (x *CreateSubscriptionTierRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSubscriptionTierRequest.ProtoReflect.Descriptor instead.
+func (*CreateSubscriptionTierRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CreateSubscriptionTierRequest) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *CreateSubscriptionTierRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateSubscriptionTierRequest) GetPrice() int32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *CreateSubscriptionTierRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+type UpdateSubscriptionTierRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TrainerUserId    int64                  `protobuf:"varint,1,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	TierId           int64                  `protobuf:"varint,2,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	Name             *string                `protobuf:"bytes,3,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Price            *int32                 `protobuf:"varint,4,opt,name=price,proto3,oneof" json:"price,omitempty"`
+	Description      *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	ClearDescription bool                   `protobuf:"varint,6,opt,name=clear_description,json=clearDescription,proto3" json:"clear_description,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateSubscriptionTierRequest) Reset() {
+	*x = UpdateSubscriptionTierRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSubscriptionTierRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSubscriptionTierRequest) ProtoMessage() {}
+
+func (x *UpdateSubscriptionTierRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSubscriptionTierRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSubscriptionTierRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateSubscriptionTierRequest) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *UpdateSubscriptionTierRequest) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+func (x *UpdateSubscriptionTierRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdateSubscriptionTierRequest) GetPrice() int32 {
+	if x != nil && x.Price != nil {
+		return *x.Price
+	}
+	return 0
+}
+
+func (x *UpdateSubscriptionTierRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateSubscriptionTierRequest) GetClearDescription() bool {
+	if x != nil {
+		return x.ClearDescription
+	}
+	return false
+}
+
+type DeleteSubscriptionTierRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TrainerUserId int64                  `protobuf:"varint,1,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	TierId        int64                  `protobuf:"varint,2,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSubscriptionTierRequest) Reset() {
+	*x = DeleteSubscriptionTierRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSubscriptionTierRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSubscriptionTierRequest) ProtoMessage() {}
+
+func (x *DeleteSubscriptionTierRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSubscriptionTierRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSubscriptionTierRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *DeleteSubscriptionTierRequest) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *DeleteSubscriptionTierRequest) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+type Subscription struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId int64                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	ClientUserId   int64                  `protobuf:"varint,2,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	TrainerUserId  int64                  `protobuf:"varint,3,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	TierId         int64                  `protobuf:"varint,4,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	TierName       string                 `protobuf:"bytes,5,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
+	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
+	Active         bool                   `protobuf:"varint,7,opt,name=active,proto3" json:"active,omitempty"`
+	ExpiresAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Subscription) Reset() {
+	*x = Subscription{}
+	mi := &file_content_v1_content_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Subscription) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Subscription) ProtoMessage() {}
+
+func (x *Subscription) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Subscription.ProtoReflect.Descriptor instead.
+func (*Subscription) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *Subscription) GetSubscriptionId() int64 {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return 0
+}
+
+func (x *Subscription) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+func (x *Subscription) GetTierName() string {
+	if x != nil {
+		return x.TierName
+	}
+	return ""
+}
+
+func (x *Subscription) GetPrice() int32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *Subscription) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *Subscription) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *Subscription) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Subscription) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type SubscribeToTrainerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId  int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	TrainerUserId int64                  `protobuf:"varint,2,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	TierId        int64                  `protobuf:"varint,3,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubscribeToTrainerRequest) Reset() {
+	*x = SubscribeToTrainerRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscribeToTrainerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscribeToTrainerRequest) ProtoMessage() {}
+
+func (x *SubscribeToTrainerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscribeToTrainerRequest.ProtoReflect.Descriptor instead.
+func (*SubscribeToTrainerRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *SubscribeToTrainerRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+func (x *SubscribeToTrainerRequest) GetTrainerUserId() int64 {
+	if x != nil {
+		return x.TrainerUserId
+	}
+	return 0
+}
+
+func (x *SubscribeToTrainerRequest) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+type ListMySubscriptionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId  int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMySubscriptionsRequest) Reset() {
+	*x = ListMySubscriptionsRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMySubscriptionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMySubscriptionsRequest) ProtoMessage() {}
+
+func (x *ListMySubscriptionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMySubscriptionsRequest.ProtoReflect.Descriptor instead.
+func (*ListMySubscriptionsRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ListMySubscriptionsRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+type ListMySubscriptionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Subscriptions []*Subscription        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMySubscriptionsResponse) Reset() {
+	*x = ListMySubscriptionsResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMySubscriptionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMySubscriptionsResponse) ProtoMessage() {}
+
+func (x *ListMySubscriptionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMySubscriptionsResponse.ProtoReflect.Descriptor instead.
+func (*ListMySubscriptionsResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ListMySubscriptionsResponse) GetSubscriptions() []*Subscription {
+	if x != nil {
+		return x.Subscriptions
+	}
+	return nil
+}
+
+type UpdateSubscriptionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId   int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	SubscriptionId int64                  `protobuf:"varint,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	TierId         int64                  `protobuf:"varint,3,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *UpdateSubscriptionRequest) Reset() {
+	*x = UpdateSubscriptionRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSubscriptionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSubscriptionRequest) ProtoMessage() {}
+
+func (x *UpdateSubscriptionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSubscriptionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSubscriptionRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *UpdateSubscriptionRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+func (x *UpdateSubscriptionRequest) GetSubscriptionId() int64 {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return 0
+}
+
+func (x *UpdateSubscriptionRequest) GetTierId() int64 {
+	if x != nil {
+		return x.TierId
+	}
+	return 0
+}
+
+type CancelSubscriptionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId   int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	SubscriptionId int64                  `protobuf:"varint,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CancelSubscriptionRequest) Reset() {
+	*x = CancelSubscriptionRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelSubscriptionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelSubscriptionRequest) ProtoMessage() {}
+
+func (x *CancelSubscriptionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelSubscriptionRequest.ProtoReflect.Descriptor instead.
+func (*CancelSubscriptionRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *CancelSubscriptionRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+func (x *CancelSubscriptionRequest) GetSubscriptionId() int64 {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return 0
+}
+
 type DeletePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -925,7 +2073,7 @@ type DeletePostRequest struct {
 
 func (x *DeletePostRequest) Reset() {
 	*x = DeletePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[11]
+	mi := &file_content_v1_content_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -937,7 +2085,7 @@ func (x *DeletePostRequest) String() string {
 func (*DeletePostRequest) ProtoMessage() {}
 
 func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[11]
+	mi := &file_content_v1_content_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -950,7 +2098,7 @@ func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePostRequest.ProtoReflect.Descriptor instead.
 func (*DeletePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{11}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *DeletePostRequest) GetPostId() int64 {
@@ -978,7 +2126,7 @@ type LikePostRequest struct {
 
 func (x *LikePostRequest) Reset() {
 	*x = LikePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[12]
+	mi := &file_content_v1_content_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -990,7 +2138,7 @@ func (x *LikePostRequest) String() string {
 func (*LikePostRequest) ProtoMessage() {}
 
 func (x *LikePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[12]
+	mi := &file_content_v1_content_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1003,7 +2151,7 @@ func (x *LikePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LikePostRequest.ProtoReflect.Descriptor instead.
 func (*LikePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{12}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *LikePostRequest) GetPostId() int64 {
@@ -1038,7 +2186,7 @@ type UnlikePostRequest struct {
 
 func (x *UnlikePostRequest) Reset() {
 	*x = UnlikePostRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[13]
+	mi := &file_content_v1_content_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1050,7 +2198,7 @@ func (x *UnlikePostRequest) String() string {
 func (*UnlikePostRequest) ProtoMessage() {}
 
 func (x *UnlikePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[13]
+	mi := &file_content_v1_content_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1063,7 +2211,7 @@ func (x *UnlikePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlikePostRequest.ProtoReflect.Descriptor instead.
 func (*UnlikePostRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{13}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *UnlikePostRequest) GetPostId() int64 {
@@ -1098,7 +2246,7 @@ type PostLikeState struct {
 
 func (x *PostLikeState) Reset() {
 	*x = PostLikeState{}
-	mi := &file_content_v1_content_proto_msgTypes[14]
+	mi := &file_content_v1_content_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1110,7 +2258,7 @@ func (x *PostLikeState) String() string {
 func (*PostLikeState) ProtoMessage() {}
 
 func (x *PostLikeState) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[14]
+	mi := &file_content_v1_content_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1123,7 +2271,7 @@ func (x *PostLikeState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeState.ProtoReflect.Descriptor instead.
 func (*PostLikeState) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{14}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *PostLikeState) GetPostId() int64 {
@@ -1156,7 +2304,7 @@ type PostLikeStateResponse struct {
 
 func (x *PostLikeStateResponse) Reset() {
 	*x = PostLikeStateResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[15]
+	mi := &file_content_v1_content_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1168,7 +2316,7 @@ func (x *PostLikeStateResponse) String() string {
 func (*PostLikeStateResponse) ProtoMessage() {}
 
 func (x *PostLikeStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[15]
+	mi := &file_content_v1_content_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1181,7 +2329,7 @@ func (x *PostLikeStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostLikeStateResponse.ProtoReflect.Descriptor instead.
 func (*PostLikeStateResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{15}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *PostLikeStateResponse) GetState() *PostLikeState {
@@ -1203,7 +2351,7 @@ type CreateCommentRequest struct {
 
 func (x *CreateCommentRequest) Reset() {
 	*x = CreateCommentRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[16]
+	mi := &file_content_v1_content_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1215,7 +2363,7 @@ func (x *CreateCommentRequest) String() string {
 func (*CreateCommentRequest) ProtoMessage() {}
 
 func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[16]
+	mi := &file_content_v1_content_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1228,7 +2376,7 @@ func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommentRequest.ProtoReflect.Descriptor instead.
 func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{16}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CreateCommentRequest) GetPostId() int64 {
@@ -1268,7 +2416,7 @@ type CommentResponse struct {
 
 func (x *CommentResponse) Reset() {
 	*x = CommentResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[17]
+	mi := &file_content_v1_content_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1280,7 +2428,7 @@ func (x *CommentResponse) String() string {
 func (*CommentResponse) ProtoMessage() {}
 
 func (x *CommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[17]
+	mi := &file_content_v1_content_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1293,7 +2441,7 @@ func (x *CommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommentResponse.ProtoReflect.Descriptor instead.
 func (*CommentResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{17}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *CommentResponse) GetComment() *Comment {
@@ -1316,7 +2464,7 @@ type ListCommentsRequest struct {
 
 func (x *ListCommentsRequest) Reset() {
 	*x = ListCommentsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[18]
+	mi := &file_content_v1_content_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1328,7 +2476,7 @@ func (x *ListCommentsRequest) String() string {
 func (*ListCommentsRequest) ProtoMessage() {}
 
 func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[18]
+	mi := &file_content_v1_content_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,7 +2489,7 @@ func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{18}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *ListCommentsRequest) GetPostId() int64 {
@@ -1388,7 +2536,7 @@ type ListCommentsResponse struct {
 
 func (x *ListCommentsResponse) Reset() {
 	*x = ListCommentsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[19]
+	mi := &file_content_v1_content_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1400,7 +2548,7 @@ func (x *ListCommentsResponse) String() string {
 func (*ListCommentsResponse) ProtoMessage() {}
 
 func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[19]
+	mi := &file_content_v1_content_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1413,7 +2561,7 @@ func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{19}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListCommentsResponse) GetComments() []*Comment {
@@ -1441,7 +2589,13 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\ftext_content\x18\x04 \x01(\tH\x00R\vtextContent\x88\x01\x01\x12\x1e\n" +
 	"\bfile_url\x18\x05 \x01(\tH\x01R\afileUrl\x88\x01\x01B\x0f\n" +
 	"\r_text_contentB\v\n" +
-	"\t_file_url\"\xed\x03\n" +
+	"\t_file_url\"\xa4\x01\n" +
+	"\tPostMedia\x12\x19\n" +
+	"\bfile_url\x18\x01 \x01(\tR\afileUrl\x12:\n" +
+	"\x04kind\x18\x02 \x01(\x0e2&.sporttech.content.v1.ContentBlockKindR\x04kind\x12!\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xa8\x04\n" +
 	"\x04Post\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -1457,8 +2611,10 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\bis_liked\x18\t \x01(\bR\aisLiked\x12%\n" +
 	"\x0ecomments_count\x18\n" +
 	" \x01(\x03R\rcommentsCount\x127\n" +
-	"\x06blocks\x18\v \x03(\v2\x1f.sporttech.content.v1.PostBlockR\x06blocksB\x1e\n" +
-	"\x1c_required_subscription_level\"\x80\x03\n" +
+	"\x06blocks\x18\v \x03(\v2\x1f.sporttech.content.v1.PostBlockR\x06blocks\x12'\n" +
+	"\rsport_type_id\x18\f \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	"\x1c_required_subscription_levelB\x10\n" +
+	"\x0e_sport_type_id\"\xbb\x03\n" +
 	"\vPostSummary\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -1470,8 +2626,11 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\vlikes_count\x18\a \x01(\x03R\n" +
 	"likesCount\x12\x19\n" +
 	"\bis_liked\x18\b \x01(\bR\aisLiked\x12%\n" +
-	"\x0ecomments_count\x18\t \x01(\x03R\rcommentsCountB\x1e\n" +
-	"\x1c_required_subscription_level\"\xf1\x01\n" +
+	"\x0ecomments_count\x18\t \x01(\x03R\rcommentsCount\x12'\n" +
+	"\rsport_type_id\x18\n" +
+	" \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	"\x1c_required_subscription_levelB\x10\n" +
+	"\x0e_sport_type_id\"\xf1\x01\n" +
 	"\aComment\x12\x1d\n" +
 	"\n" +
 	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12\x17\n" +
@@ -1492,18 +2651,46 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x06offset\x18\x05 \x01(\x05R\x06offsetB\x1c\n" +
 	"\x1a_viewer_subscription_level\"R\n" +
 	"\x17ListAuthorPostsResponse\x127\n" +
-	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xf2\x01\n" +
+	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xfb\x04\n" +
+	"\x12SearchPostsRequest\x12\x14\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\x12&\n" +
+	"\x0fauthor_user_ids\x18\x02 \x03(\x03R\rauthorUserIds\x12G\n" +
+	"\vblock_kinds\x18\x03 \x03(\x0e2&.sporttech.content.v1.ContentBlockKindR\n" +
+	"blockKinds\x12J\n" +
+	"\x1fmin_required_subscription_level\x18\x04 \x01(\x05H\x00R\x1cminRequiredSubscriptionLevel\x88\x01\x01\x12J\n" +
+	"\x1fmax_required_subscription_level\x18\x05 \x01(\x05H\x01R\x1cmaxRequiredSubscriptionLevel\x88\x01\x01\x12%\n" +
+	"\x0eonly_available\x18\x06 \x01(\bR\ronlyAvailable\x12$\n" +
+	"\x0eviewer_user_id\x18\a \x01(\x03R\fviewerUserId\x12?\n" +
+	"\x19viewer_subscription_level\x18\b \x01(\x05H\x02R\x17viewerSubscriptionLevel\x88\x01\x01\x12\x14\n" +
+	"\x05limit\x18\t \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\n" +
+	" \x01(\x05R\x06offset\x12$\n" +
+	"\x0esport_type_ids\x18\v \x03(\x03R\fsportTypeIdsB\"\n" +
+	" _min_required_subscription_levelB\"\n" +
+	" _max_required_subscription_levelB\x1c\n" +
+	"\x1a_viewer_subscription_level\"N\n" +
+	"\x13SearchPostsResponse\x127\n" +
+	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xad\x02\n" +
 	"\x11CreatePostRequest\x12$\n" +
 	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x03 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x12<\n" +
-	"\x06blocks\x18\x04 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocksB\x1e\n" +
-	"\x1c_required_subscription_level\"\xae\x01\n" +
+	"\x06blocks\x18\x04 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocks\x12'\n" +
+	"\rsport_type_id\x18\x05 \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	"\x1c_required_subscription_levelB\x10\n" +
+	"\x0e_sport_type_id\"\x92\x01\n" +
+	"\x16UploadPostMediaRequest\x12$\n" +
+	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12\x12\n" +
+	"\x04file\x18\x02 \x01(\fR\x04file\x12\x1b\n" +
+	"\tfile_name\x18\x03 \x01(\tR\bfileName\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\"J\n" +
+	"\x11PostMediaResponse\x125\n" +
+	"\x05media\x18\x01 \x01(\v2\x1f.sporttech.content.v1.PostMediaR\x05media\"\xae\x01\n" +
 	"\x0eGetPostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
-	"\x1a_viewer_subscription_level\"\x8c\x03\n" +
+	"\x1a_viewer_subscription_level\"\xf6\x03\n" +
 	"\x11UpdatePostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x19\n" +
@@ -1511,9 +2698,76 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x1brequired_subscription_level\x18\x04 \x01(\x05H\x01R\x19requiredSubscriptionLevel\x88\x01\x01\x12I\n" +
 	"!clear_required_subscription_level\x18\x05 \x01(\bR\x1eclearRequiredSubscriptionLevel\x12<\n" +
 	"\x06blocks\x18\x06 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocks\x12%\n" +
-	"\x0ereplace_blocks\x18\a \x01(\bR\rreplaceBlocksB\b\n" +
+	"\x0ereplace_blocks\x18\a \x01(\bR\rreplaceBlocks\x12'\n" +
+	"\rsport_type_id\x18\b \x01(\x03H\x02R\vsportTypeId\x88\x01\x01\x12-\n" +
+	"\x13clear_sport_type_id\x18\t \x01(\bR\x10clearSportTypeIdB\b\n" +
 	"\x06_titleB\x1e\n" +
-	"\x1c_required_subscription_level\"R\n" +
+	"\x1c_required_subscription_levelB\x10\n" +
+	"\x0e_sport_type_id\"\xaa\x02\n" +
+	"\x10SubscriptionTier\x12\x17\n" +
+	"\atier_id\x18\x01 \x01(\x03R\x06tierId\x12&\n" +
+	"\x0ftrainer_user_id\x18\x02 \x01(\x03R\rtrainerUserId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x14\n" +
+	"\x05price\x18\x04 \x01(\x05R\x05price\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x00R\vdescription\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
+	"\f_description\"F\n" +
+	"\x1cListSubscriptionTiersRequest\x12&\n" +
+	"\x0ftrainer_user_id\x18\x01 \x01(\x03R\rtrainerUserId\"]\n" +
+	"\x1dListSubscriptionTiersResponse\x12<\n" +
+	"\x05tiers\x18\x01 \x03(\v2&.sporttech.content.v1.SubscriptionTierR\x05tiers\"\xa8\x01\n" +
+	"\x1dCreateSubscriptionTierRequest\x12&\n" +
+	"\x0ftrainer_user_id\x18\x01 \x01(\x03R\rtrainerUserId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05price\x18\x03 \x01(\x05R\x05price\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x00R\vdescription\x88\x01\x01B\x0e\n" +
+	"\f_description\"\x8b\x02\n" +
+	"\x1dUpdateSubscriptionTierRequest\x12&\n" +
+	"\x0ftrainer_user_id\x18\x01 \x01(\x03R\rtrainerUserId\x12\x17\n" +
+	"\atier_id\x18\x02 \x01(\x03R\x06tierId\x12\x17\n" +
+	"\x04name\x18\x03 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x19\n" +
+	"\x05price\x18\x04 \x01(\x05H\x01R\x05price\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x02R\vdescription\x88\x01\x01\x12+\n" +
+	"\x11clear_description\x18\x06 \x01(\bR\x10clearDescriptionB\a\n" +
+	"\x05_nameB\b\n" +
+	"\x06_priceB\x0e\n" +
+	"\f_description\"`\n" +
+	"\x1dDeleteSubscriptionTierRequest\x12&\n" +
+	"\x0ftrainer_user_id\x18\x01 \x01(\x03R\rtrainerUserId\x12\x17\n" +
+	"\atier_id\x18\x02 \x01(\x03R\x06tierId\"\x9a\x03\n" +
+	"\fSubscription\x12'\n" +
+	"\x0fsubscription_id\x18\x01 \x01(\x03R\x0esubscriptionId\x12$\n" +
+	"\x0eclient_user_id\x18\x02 \x01(\x03R\fclientUserId\x12&\n" +
+	"\x0ftrainer_user_id\x18\x03 \x01(\x03R\rtrainerUserId\x12\x17\n" +
+	"\atier_id\x18\x04 \x01(\x03R\x06tierId\x12\x1b\n" +
+	"\ttier_name\x18\x05 \x01(\tR\btierName\x12\x14\n" +
+	"\x05price\x18\x06 \x01(\x05R\x05price\x12\x16\n" +
+	"\x06active\x18\a \x01(\bR\x06active\x129\n" +
+	"\n" +
+	"expires_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x129\n" +
+	"\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x82\x01\n" +
+	"\x19SubscribeToTrainerRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\x12&\n" +
+	"\x0ftrainer_user_id\x18\x02 \x01(\x03R\rtrainerUserId\x12\x17\n" +
+	"\atier_id\x18\x03 \x01(\x03R\x06tierId\"B\n" +
+	"\x1aListMySubscriptionsRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\"g\n" +
+	"\x1bListMySubscriptionsResponse\x12H\n" +
+	"\rsubscriptions\x18\x01 \x03(\v2\".sporttech.content.v1.SubscriptionR\rsubscriptions\"\x83\x01\n" +
+	"\x19UpdateSubscriptionRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\x12'\n" +
+	"\x0fsubscription_id\x18\x02 \x01(\x03R\x0esubscriptionId\x12\x17\n" +
+	"\atier_id\x18\x03 \x01(\x03R\x06tierId\"j\n" +
+	"\x19CancelSubscriptionRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\x12'\n" +
+	"\x0fsubscription_id\x18\x02 \x01(\x03R\x0esubscriptionId\"R\n" +
 	"\x11DeletePostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\"\xa2\x01\n" +
@@ -1556,16 +2810,26 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x17CONTENT_BLOCK_KIND_TEXT\x10\x01\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_IMAGE\x10\x02\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_VIDEO\x10\x03\x12\x1f\n" +
-	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\xac\t\n" +
+	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\x88\x16\n" +
 	"\x0eContentService\x12\x9a\x01\n" +
-	"\x0fListAuthorPosts\x12,.sporttech.content.v1.ListAuthorPostsRequest\x1a-.sporttech.content.v1.ListAuthorPostsResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/authors/{author_user_id}/posts\x12o\n" +
+	"\x0fListAuthorPosts\x12,.sporttech.content.v1.ListAuthorPostsRequest\x1a-.sporttech.content.v1.ListAuthorPostsResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/authors/{author_user_id}/posts\x12\x7f\n" +
+	"\vSearchPosts\x12(.sporttech.content.v1.SearchPostsRequest\x1a).sporttech.content.v1.SearchPostsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/posts:search\x12o\n" +
 	"\n" +
-	"CreatePost\x12'.sporttech.content.v1.CreatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12p\n" +
+	"CreatePost\x12'.sporttech.content.v1.CreatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/posts\x12\x84\x01\n" +
+	"\x0fUploadPostMedia\x12,.sporttech.content.v1.UploadPostMediaRequest\x1a'.sporttech.content.v1.PostMediaResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/posts/media\x12p\n" +
 	"\aGetPost\x12$.sporttech.content.v1.GetPostRequest\x1a\".sporttech.content.v1.PostResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/posts/{post_id}\x12y\n" +
 	"\n" +
 	"UpdatePost\x12'.sporttech.content.v1.UpdatePostRequest\x1a\".sporttech.content.v1.PostResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*2\x13/v1/posts/{post_id}\x12j\n" +
 	"\n" +
-	"DeletePost\x12'.sporttech.content.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/posts/{post_id}\x12\x84\x01\n" +
+	"DeletePost\x12'.sporttech.content.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/posts/{post_id}\x12\xae\x01\n" +
+	"\x15ListSubscriptionTiers\x122.sporttech.content.v1.ListSubscriptionTiersRequest\x1a3.sporttech.content.v1.ListSubscriptionTiersResponse\",\x82\xd3\xe4\x93\x02&\x12$/v1/trainers/{trainer_user_id}/tiers\x12\xa6\x01\n" +
+	"\x16CreateSubscriptionTier\x123.sporttech.content.v1.CreateSubscriptionTierRequest\x1a&.sporttech.content.v1.SubscriptionTier\"/\x82\xd3\xe4\x93\x02):\x01*\"$/v1/trainers/{trainer_user_id}/tiers\x12\xb0\x01\n" +
+	"\x16UpdateSubscriptionTier\x123.sporttech.content.v1.UpdateSubscriptionTierRequest\x1a&.sporttech.content.v1.SubscriptionTier\"9\x82\xd3\xe4\x93\x023:\x01*2./v1/trainers/{trainer_user_id}/tiers/{tier_id}\x12\x9d\x01\n" +
+	"\x16DeleteSubscriptionTier\x123.sporttech.content.v1.DeleteSubscriptionTierRequest\x1a\x16.google.protobuf.Empty\"6\x82\xd3\xe4\x93\x020*./v1/trainers/{trainer_user_id}/tiers/{tier_id}\x12\x9e\x01\n" +
+	"\x12SubscribeToTrainer\x12/.sporttech.content.v1.SubscribeToTrainerRequest\x1a\".sporttech.content.v1.Subscription\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/v1/trainers/{trainer_user_id}/subscribe\x12\xac\x01\n" +
+	"\x13ListMySubscriptions\x120.sporttech.content.v1.ListMySubscriptionsRequest\x1a1.sporttech.content.v1.ListMySubscriptionsResponse\"0\x82\xd3\xe4\x93\x02*\x12(/v1/users/{client_user_id}/subscriptions\x12\xb0\x01\n" +
+	"\x12UpdateSubscription\x12/.sporttech.content.v1.UpdateSubscriptionRequest\x1a\".sporttech.content.v1.Subscription\"E\x82\xd3\xe4\x93\x02?:\x01*2:/v1/users/{client_user_id}/subscriptions/{subscription_id}\x12\xa1\x01\n" +
+	"\x12CancelSubscription\x12/.sporttech.content.v1.CancelSubscriptionRequest\x1a\x16.google.protobuf.Empty\"B\x82\xd3\xe4\x93\x02<*:/v1/users/{client_user_id}/subscriptions/{subscription_id}\x12\x84\x01\n" +
 	"\bLikePost\x12%.sporttech.content.v1.LikePostRequest\x1a+.sporttech.content.v1.PostLikeStateResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/posts/{post_id}/likes\x12\x8f\x01\n" +
 	"\n" +
 	"UnlikePost\x12'.sporttech.content.v1.UnlikePostRequest\x1a+.sporttech.content.v1.PostLikeStateResponse\"+\x82\xd3\xe4\x93\x02%*#/v1/posts/{post_id}/likes/{user_id}\x12\x8b\x01\n" +
@@ -1585,71 +2849,119 @@ func file_content_v1_content_proto_rawDescGZIP() []byte {
 }
 
 var file_content_v1_content_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_content_v1_content_proto_goTypes = []any{
-	(ContentBlockKind)(0),           // 0: sporttech.content.v1.ContentBlockKind
-	(*PostBlockInput)(nil),          // 1: sporttech.content.v1.PostBlockInput
-	(*PostBlock)(nil),               // 2: sporttech.content.v1.PostBlock
-	(*Post)(nil),                    // 3: sporttech.content.v1.Post
-	(*PostSummary)(nil),             // 4: sporttech.content.v1.PostSummary
-	(*Comment)(nil),                 // 5: sporttech.content.v1.Comment
-	(*PostResponse)(nil),            // 6: sporttech.content.v1.PostResponse
-	(*ListAuthorPostsRequest)(nil),  // 7: sporttech.content.v1.ListAuthorPostsRequest
-	(*ListAuthorPostsResponse)(nil), // 8: sporttech.content.v1.ListAuthorPostsResponse
-	(*CreatePostRequest)(nil),       // 9: sporttech.content.v1.CreatePostRequest
-	(*GetPostRequest)(nil),          // 10: sporttech.content.v1.GetPostRequest
-	(*UpdatePostRequest)(nil),       // 11: sporttech.content.v1.UpdatePostRequest
-	(*DeletePostRequest)(nil),       // 12: sporttech.content.v1.DeletePostRequest
-	(*LikePostRequest)(nil),         // 13: sporttech.content.v1.LikePostRequest
-	(*UnlikePostRequest)(nil),       // 14: sporttech.content.v1.UnlikePostRequest
-	(*PostLikeState)(nil),           // 15: sporttech.content.v1.PostLikeState
-	(*PostLikeStateResponse)(nil),   // 16: sporttech.content.v1.PostLikeStateResponse
-	(*CreateCommentRequest)(nil),    // 17: sporttech.content.v1.CreateCommentRequest
-	(*CommentResponse)(nil),         // 18: sporttech.content.v1.CommentResponse
-	(*ListCommentsRequest)(nil),     // 19: sporttech.content.v1.ListCommentsRequest
-	(*ListCommentsResponse)(nil),    // 20: sporttech.content.v1.ListCommentsResponse
-	(*timestamppb.Timestamp)(nil),   // 21: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),           // 22: google.protobuf.Empty
+	(ContentBlockKind)(0),                 // 0: sporttech.content.v1.ContentBlockKind
+	(*PostBlockInput)(nil),                // 1: sporttech.content.v1.PostBlockInput
+	(*PostBlock)(nil),                     // 2: sporttech.content.v1.PostBlock
+	(*PostMedia)(nil),                     // 3: sporttech.content.v1.PostMedia
+	(*Post)(nil),                          // 4: sporttech.content.v1.Post
+	(*PostSummary)(nil),                   // 5: sporttech.content.v1.PostSummary
+	(*Comment)(nil),                       // 6: sporttech.content.v1.Comment
+	(*PostResponse)(nil),                  // 7: sporttech.content.v1.PostResponse
+	(*ListAuthorPostsRequest)(nil),        // 8: sporttech.content.v1.ListAuthorPostsRequest
+	(*ListAuthorPostsResponse)(nil),       // 9: sporttech.content.v1.ListAuthorPostsResponse
+	(*SearchPostsRequest)(nil),            // 10: sporttech.content.v1.SearchPostsRequest
+	(*SearchPostsResponse)(nil),           // 11: sporttech.content.v1.SearchPostsResponse
+	(*CreatePostRequest)(nil),             // 12: sporttech.content.v1.CreatePostRequest
+	(*UploadPostMediaRequest)(nil),        // 13: sporttech.content.v1.UploadPostMediaRequest
+	(*PostMediaResponse)(nil),             // 14: sporttech.content.v1.PostMediaResponse
+	(*GetPostRequest)(nil),                // 15: sporttech.content.v1.GetPostRequest
+	(*UpdatePostRequest)(nil),             // 16: sporttech.content.v1.UpdatePostRequest
+	(*SubscriptionTier)(nil),              // 17: sporttech.content.v1.SubscriptionTier
+	(*ListSubscriptionTiersRequest)(nil),  // 18: sporttech.content.v1.ListSubscriptionTiersRequest
+	(*ListSubscriptionTiersResponse)(nil), // 19: sporttech.content.v1.ListSubscriptionTiersResponse
+	(*CreateSubscriptionTierRequest)(nil), // 20: sporttech.content.v1.CreateSubscriptionTierRequest
+	(*UpdateSubscriptionTierRequest)(nil), // 21: sporttech.content.v1.UpdateSubscriptionTierRequest
+	(*DeleteSubscriptionTierRequest)(nil), // 22: sporttech.content.v1.DeleteSubscriptionTierRequest
+	(*Subscription)(nil),                  // 23: sporttech.content.v1.Subscription
+	(*SubscribeToTrainerRequest)(nil),     // 24: sporttech.content.v1.SubscribeToTrainerRequest
+	(*ListMySubscriptionsRequest)(nil),    // 25: sporttech.content.v1.ListMySubscriptionsRequest
+	(*ListMySubscriptionsResponse)(nil),   // 26: sporttech.content.v1.ListMySubscriptionsResponse
+	(*UpdateSubscriptionRequest)(nil),     // 27: sporttech.content.v1.UpdateSubscriptionRequest
+	(*CancelSubscriptionRequest)(nil),     // 28: sporttech.content.v1.CancelSubscriptionRequest
+	(*DeletePostRequest)(nil),             // 29: sporttech.content.v1.DeletePostRequest
+	(*LikePostRequest)(nil),               // 30: sporttech.content.v1.LikePostRequest
+	(*UnlikePostRequest)(nil),             // 31: sporttech.content.v1.UnlikePostRequest
+	(*PostLikeState)(nil),                 // 32: sporttech.content.v1.PostLikeState
+	(*PostLikeStateResponse)(nil),         // 33: sporttech.content.v1.PostLikeStateResponse
+	(*CreateCommentRequest)(nil),          // 34: sporttech.content.v1.CreateCommentRequest
+	(*CommentResponse)(nil),               // 35: sporttech.content.v1.CommentResponse
+	(*ListCommentsRequest)(nil),           // 36: sporttech.content.v1.ListCommentsRequest
+	(*ListCommentsResponse)(nil),          // 37: sporttech.content.v1.ListCommentsResponse
+	(*timestamppb.Timestamp)(nil),         // 38: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 39: google.protobuf.Empty
 }
 var file_content_v1_content_proto_depIdxs = []int32{
 	0,  // 0: sporttech.content.v1.PostBlockInput.kind:type_name -> sporttech.content.v1.ContentBlockKind
 	0,  // 1: sporttech.content.v1.PostBlock.kind:type_name -> sporttech.content.v1.ContentBlockKind
-	21, // 2: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
-	21, // 3: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 4: sporttech.content.v1.Post.blocks:type_name -> sporttech.content.v1.PostBlock
-	21, // 5: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
-	21, // 6: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
-	21, // 7: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
-	3,  // 8: sporttech.content.v1.PostResponse.post:type_name -> sporttech.content.v1.Post
-	4,  // 9: sporttech.content.v1.ListAuthorPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
-	1,  // 10: sporttech.content.v1.CreatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
-	1,  // 11: sporttech.content.v1.UpdatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
-	15, // 12: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
-	5,  // 13: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
-	5,  // 14: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
-	7,  // 15: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
-	9,  // 16: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
-	10, // 17: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
-	11, // 18: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
-	12, // 19: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
-	13, // 20: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
-	14, // 21: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
-	17, // 22: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
-	19, // 23: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
-	8,  // 24: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
-	6,  // 25: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
-	6,  // 26: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
-	6,  // 27: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
-	22, // 28: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
-	16, // 29: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	16, // 30: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	18, // 31: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
-	20, // 32: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
-	24, // [24:33] is the sub-list for method output_type
-	15, // [15:24] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	0,  // 2: sporttech.content.v1.PostMedia.kind:type_name -> sporttech.content.v1.ContentBlockKind
+	38, // 3: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
+	38, // 4: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 5: sporttech.content.v1.Post.blocks:type_name -> sporttech.content.v1.PostBlock
+	38, // 6: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
+	38, // 7: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
+	38, // 8: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
+	4,  // 9: sporttech.content.v1.PostResponse.post:type_name -> sporttech.content.v1.Post
+	5,  // 10: sporttech.content.v1.ListAuthorPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
+	0,  // 11: sporttech.content.v1.SearchPostsRequest.block_kinds:type_name -> sporttech.content.v1.ContentBlockKind
+	5,  // 12: sporttech.content.v1.SearchPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
+	1,  // 13: sporttech.content.v1.CreatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
+	3,  // 14: sporttech.content.v1.PostMediaResponse.media:type_name -> sporttech.content.v1.PostMedia
+	1,  // 15: sporttech.content.v1.UpdatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
+	38, // 16: sporttech.content.v1.SubscriptionTier.created_at:type_name -> google.protobuf.Timestamp
+	38, // 17: sporttech.content.v1.SubscriptionTier.updated_at:type_name -> google.protobuf.Timestamp
+	17, // 18: sporttech.content.v1.ListSubscriptionTiersResponse.tiers:type_name -> sporttech.content.v1.SubscriptionTier
+	38, // 19: sporttech.content.v1.Subscription.expires_at:type_name -> google.protobuf.Timestamp
+	38, // 20: sporttech.content.v1.Subscription.created_at:type_name -> google.protobuf.Timestamp
+	38, // 21: sporttech.content.v1.Subscription.updated_at:type_name -> google.protobuf.Timestamp
+	23, // 22: sporttech.content.v1.ListMySubscriptionsResponse.subscriptions:type_name -> sporttech.content.v1.Subscription
+	32, // 23: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
+	6,  // 24: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
+	6,  // 25: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
+	8,  // 26: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
+	10, // 27: sporttech.content.v1.ContentService.SearchPosts:input_type -> sporttech.content.v1.SearchPostsRequest
+	12, // 28: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
+	13, // 29: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
+	15, // 30: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
+	16, // 31: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
+	29, // 32: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
+	18, // 33: sporttech.content.v1.ContentService.ListSubscriptionTiers:input_type -> sporttech.content.v1.ListSubscriptionTiersRequest
+	20, // 34: sporttech.content.v1.ContentService.CreateSubscriptionTier:input_type -> sporttech.content.v1.CreateSubscriptionTierRequest
+	21, // 35: sporttech.content.v1.ContentService.UpdateSubscriptionTier:input_type -> sporttech.content.v1.UpdateSubscriptionTierRequest
+	22, // 36: sporttech.content.v1.ContentService.DeleteSubscriptionTier:input_type -> sporttech.content.v1.DeleteSubscriptionTierRequest
+	24, // 37: sporttech.content.v1.ContentService.SubscribeToTrainer:input_type -> sporttech.content.v1.SubscribeToTrainerRequest
+	25, // 38: sporttech.content.v1.ContentService.ListMySubscriptions:input_type -> sporttech.content.v1.ListMySubscriptionsRequest
+	27, // 39: sporttech.content.v1.ContentService.UpdateSubscription:input_type -> sporttech.content.v1.UpdateSubscriptionRequest
+	28, // 40: sporttech.content.v1.ContentService.CancelSubscription:input_type -> sporttech.content.v1.CancelSubscriptionRequest
+	30, // 41: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
+	31, // 42: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
+	34, // 43: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
+	36, // 44: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
+	9,  // 45: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
+	11, // 46: sporttech.content.v1.ContentService.SearchPosts:output_type -> sporttech.content.v1.SearchPostsResponse
+	7,  // 47: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
+	14, // 48: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
+	7,  // 49: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
+	7,  // 50: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
+	39, // 51: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
+	19, // 52: sporttech.content.v1.ContentService.ListSubscriptionTiers:output_type -> sporttech.content.v1.ListSubscriptionTiersResponse
+	17, // 53: sporttech.content.v1.ContentService.CreateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	17, // 54: sporttech.content.v1.ContentService.UpdateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	39, // 55: sporttech.content.v1.ContentService.DeleteSubscriptionTier:output_type -> google.protobuf.Empty
+	23, // 56: sporttech.content.v1.ContentService.SubscribeToTrainer:output_type -> sporttech.content.v1.Subscription
+	26, // 57: sporttech.content.v1.ContentService.ListMySubscriptions:output_type -> sporttech.content.v1.ListMySubscriptionsResponse
+	23, // 58: sporttech.content.v1.ContentService.UpdateSubscription:output_type -> sporttech.content.v1.Subscription
+	39, // 59: sporttech.content.v1.ContentService.CancelSubscription:output_type -> google.protobuf.Empty
+	33, // 60: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	33, // 61: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	35, // 62: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
+	37, // 63: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
+	45, // [45:64] is the sub-list for method output_type
+	26, // [26:45] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_content_v1_content_proto_init() }
@@ -1659,23 +2971,27 @@ func file_content_v1_content_proto_init() {
 	}
 	file_content_v1_content_proto_msgTypes[0].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[1].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[2].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[3].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[6].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[8].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[4].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[7].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[9].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[10].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[12].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[13].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[11].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[14].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[15].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[16].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[18].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[19].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[20].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[29].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[30].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[33].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[35].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_content_v1_content_proto_rawDesc), len(file_content_v1_content_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   20,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

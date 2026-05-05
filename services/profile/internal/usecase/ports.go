@@ -47,10 +47,13 @@ type UpdateProfileCommand struct {
 }
 
 type SearchAuthorsQuery struct {
-	Query        string
-	SportTypeIDs []int64
-	Limit        int32
-	Offset       int32
+	Query              string
+	SportTypeIDs       []int64
+	MinExperienceYears *int32
+	MaxExperienceYears *int32
+	OnlyWithRank       bool
+	Limit              int32
+	Offset             int32
 }
 
 type UploadAvatarCommand struct {

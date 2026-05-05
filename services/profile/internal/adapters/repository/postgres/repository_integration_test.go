@@ -127,4 +127,19 @@ func TestRepositoriesIntegration(t *testing.T) {
 	if len(authors) != 1 || authors[0].UserID != 7 {
 		t.Fatalf("unexpected authors: %+v", authors)
 	}
+
+	minExperienceYears := int32(5)
+	maxExperienceYears := int32(5)
+	filteredAuthors, err := profileRepository.SearchAuthors(context.Background(), usecase.SearchAuthorsQuery{
+		SportTypeIDs:       []int64{1},
+		MinExperienceYears: &minExperienceYears,
+		MaxExperienceYears: &maxExperienceYears,
+		Limit:              10,
+	})
+	if err != nil {
+		t.Fatalf("search authors with filters: %v", err)
+	}
+	if len(filteredAuthors) != 1 || filteredAuthors[0].UserID != 7 {
+		t.Fatalf("unexpected filtered authors: %+v", filteredAuthors)
+	}
 }

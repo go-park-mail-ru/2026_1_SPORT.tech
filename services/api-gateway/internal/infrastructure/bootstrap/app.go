@@ -62,6 +62,8 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		gatewayService,
 		gatewayService,
 		gatewayService,
+		gatewayService,
+		gatewayService,
 		metricsSet,
 	)
 	if err != nil {
@@ -71,7 +73,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, err
 	}
 
-	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService)
+	gatewayHandler, err := httpgateway.NewMux(ctx, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService, gatewayService)
 	if err != nil {
 		_ = authConn.Close()
 		_ = profileConn.Close()
@@ -94,11 +96,15 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	apiHandler := http.StripPrefix("/api", gatewayHandler)
 	protectedAPIHandler := httpgateway.CSRFMiddleware(apiHandler)
 	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.CSRFMiddleware(httpgateway.MultipartAvatarHandler(gatewayService, apiHandler)))
+	httpMux.Handle("/api/v1/posts/media", httpgateway.CSRFMiddleware(httpgateway.MultipartPostMediaHandler(gatewayService, apiHandler)))
 	httpMux.Handle("/api/", protectedAPIHandler)
+
+	handler := metricsSet.HTTPMiddleware(httpMux)
+	handler = httpgateway.CORSMiddleware(handler)
 
 	httpServer := &http.Server{
 		Addr:              cfg.Server.HTTPAddress(),
-		Handler:           metricsSet.HTTPMiddleware(httpMux),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      20 * time.Second,

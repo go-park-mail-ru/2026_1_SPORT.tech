@@ -13,11 +13,6 @@ VALUES
   (2105, 2003, 0, 'text', 'Главная ошибка новичков в бассейне — задержка выдоха под водой. Ниже короткая памятка.', NULL),
   (2106, 2003, 1, 'video', NULL, 'https://example.com/videos/swim-breathing-drill.mp4');
 
-INSERT INTO content_comment (comment_id, post_id, author_user_id, body)
-VALUES
-  (2201, 2001, 1002, 'Спасибо, как раз искал понятный стартовый план на 8 недель.'),
-  (2202, 2003, 1001, 'Отличный разбор. Особенно полезен блок про ритм дыхания на развороте.');
-
 INSERT INTO content_post_like (post_id, user_id)
 VALUES
   (2001, 1002),
@@ -32,11 +27,5 @@ SELECT setval(
 SELECT setval(
   pg_get_serial_sequence('content_post_block', 'post_block_id'),
   (SELECT GREATEST(COALESCE(MAX(post_block_id), 1), 2106) FROM content_post_block),
-  true
-);
-
-SELECT setval(
-  pg_get_serial_sequence('content_comment', 'comment_id'),
-  (SELECT GREATEST(COALESCE(MAX(comment_id), 1), 2202) FROM content_comment),
   true
 );

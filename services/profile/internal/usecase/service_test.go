@@ -186,3 +186,52 @@ func TestServiceUploadAvatar(t *testing.T) {
 		t.Fatal("expected upload and update to be called")
 	}
 }
+
+func TestServiceSearchAuthorsAppliesFilters(t *testing.T) {
+	minExperienceYears := int32(5)
+	maxExperienceYears := int32(10)
+	repositoryCalled := false
+
+	service := NewService(
+		stubProfileRepository{
+			searchAuthorsFunc: func(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
+				repositoryCalled = true
+				if query.Query != "Анна" ||
+					len(query.SportTypeIDs) != 1 ||
+					query.SportTypeIDs[0] != 3001 ||
+					query.MinExperienceYears == nil ||
+					*query.MinExperienceYears != 5 ||
+					query.MaxExperienceYears == nil ||
+					*query.MaxExperienceYears != 10 ||
+					!query.OnlyWithRank ||
+					query.Limit != 20 ||
+					query.Offset != 5 {
+					t.Fatalf("unexpected search query: %+v", query)
+				}
+
+				return []domain.AuthorSummary{{UserID: 1001, Username: "coach_anna"}}, nil
+			},
+		},
+		stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }},
+		nil,
+	)
+
+	authors, err := service.SearchAuthors(context.Background(), SearchAuthorsQuery{
+		Query:              " Анна ",
+		SportTypeIDs:       []int64{3001},
+		MinExperienceYears: &minExperienceYears,
+		MaxExperienceYears: &maxExperienceYears,
+		OnlyWithRank:       true,
+		Limit:              20,
+		Offset:             5,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !repositoryCalled {
+		t.Fatal("expected repository search to be called")
+	}
+	if len(authors) != 1 || authors[0].UserID != 1001 {
+		t.Fatalf("unexpected authors: %+v", authors)
+	}
+}
