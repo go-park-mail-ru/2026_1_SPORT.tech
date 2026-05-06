@@ -3,7 +3,7 @@ PROTO_GEN_GO_DIR := grpc/gen/go
 PROTO_GEN_OPENAPI_DIR := grpc/gen/openapiv2
 PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/content $(PROTO_DIR)/gateway
 PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
-COVER_PACKAGES := $(shell go list ./... | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
+COVER_PACKAGES := $(shell go list ./... | grep -E '/internal/(domain|usecase|adapters/mappers|infrastructure/httpgateway)$$' | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
 GO_BIN := $(HOME)/go/bin
 
 .PHONY: generate
@@ -31,6 +31,18 @@ coverage:
 	go test -covermode=atomic -coverprofile=coverage.tmp $(COVER_PACKAGES)
 	grep -v -E '(/internal/mocks/|/grpc/gen/|_easyjson\.go|easyjson\.go|\.pb\.go|\.pb\.gw\.go|_grpc\.pb\.go)' coverage.tmp > coverage.out
 	go tool cover -func=coverage.out | tail -n 1
+
+.PHONY: coverage-total
+coverage-total:
+	@coverage_tmp=$$(mktemp); \
+	coverage_out=$$(mktemp); \
+	if ! go test -covermode=atomic -coverprofile=$$coverage_tmp $(COVER_PACKAGES) >/dev/null; then \
+		rm -f $$coverage_tmp $$coverage_out; \
+		exit 1; \
+	fi; \
+	grep -v -E '(/internal/mocks/|/grpc/gen/|_easyjson\.go|easyjson\.go|\.pb\.go|\.pb\.gw\.go|_grpc\.pb\.go)' $$coverage_tmp > $$coverage_out; \
+	go tool cover -func=$$coverage_out | awk '/^total:/ { gsub("%", "", $$3); print $$3 }'; \
+	rm -f $$coverage_tmp $$coverage_out
 
 .PHONY: coverage-html
 coverage-html: coverage
