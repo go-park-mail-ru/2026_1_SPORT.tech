@@ -477,6 +477,53 @@ func TestServiceUpdateSubscription(t *testing.T) {
 	}
 }
 
+func TestServiceDonateToProfile(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			createDonationFunc: func(ctx context.Context, donation domain.Donation) (domain.Donation, error) {
+				if donation.SenderUserID != 1002 ||
+					donation.RecipientUserID != 1001 ||
+					donation.AmountValue != 1500 ||
+					donation.Currency != "RUB" ||
+					donation.Message == nil ||
+					*donation.Message != "Спасибо за тренировку" {
+					t.Fatalf("unexpected donation: %+v", donation)
+				}
+
+				donation.DonationID = 77
+				return donation, nil
+			},
+		}),
+		nil,
+	)
+
+	donation, err := service.DonateToProfile(context.Background(), DonateToProfileCommand{
+		SenderUserID:    1002,
+		RecipientUserID: 1001,
+		AmountValue:     1500,
+		Message:         stringPtr(" Спасибо за тренировку "),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if donation.DonationID != 77 || donation.Currency != "RUB" {
+		t.Fatalf("unexpected donation result: %+v", donation)
+	}
+}
+
+func TestServiceDonateToProfileRejectsTooLargeAmount(t *testing.T) {
+	service := NewService(stubRepositories(stubContentRepository{}), nil)
+
+	_, err := service.DonateToProfile(context.Background(), DonateToProfileCommand{
+		SenderUserID:    1002,
+		RecipientUserID: 1001,
+		AmountValue:     maxDonationAmount + 1,
+	})
+	if !errors.Is(err, ErrInvalidDonationAmount) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestServiceGetPostRejectsRestrictedAccess(t *testing.T) {
 	requiredLevel := int32(2)
 

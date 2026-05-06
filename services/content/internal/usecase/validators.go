@@ -13,6 +13,7 @@ const (
 	maxMediaFileSize      = 10 * 1024 * 1024
 	maxTierNameLen        = 80
 	maxTierDescLen        = 500
+	maxDonationAmount     = 1_000_000
 	maxDonationMessageLen = 500
 	defaultCurrency       = "RUB"
 )
@@ -293,7 +294,7 @@ func validateDonateToProfileCommand(command DonateToProfileCommand) error {
 	if command.SenderUserID == command.RecipientUserID {
 		return ErrInvalidDonationTarget
 	}
-	if command.AmountValue <= 0 {
+	if command.AmountValue <= 0 || command.AmountValue > maxDonationAmount {
 		return ErrInvalidDonationAmount
 	}
 	if normalizeCurrency(command.Currency) != defaultCurrency {
