@@ -48,10 +48,20 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		_ = database.Close()
 		return nil, fmt.Errorf("new avatar storage: %w", err)
 	}
-	profileUseCase := usecase.NewService(profileRepository, sportTypeRepository, avatarStorage)
+	profileUseCase := usecase.NewService(usecase.Repositories{
+		Profiles: profileRepository,
+		Authors:  profileRepository,
+		Avatars:  profileRepository,
+		Sports:   sportTypeRepository,
+	}, avatarStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
-	grpcHandler := grpcadapter.NewServer(profileUseCase)
+	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{
+		Profiles: profileUseCase,
+		Authors:  profileUseCase,
+		Avatars:  profileUseCase,
+		Sports:   profileUseCase,
+	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 
 	grpcListener, err := net.Listen("tcp", cfg.Server.GRPCAddress())

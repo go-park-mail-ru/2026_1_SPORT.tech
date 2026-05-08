@@ -197,6 +197,28 @@
         ]
       }
     },
+    "/v1/balance": {
+      "get": {
+        "operationId": "DonationService_GetMyBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DonationService"
+        ]
+      }
+    },
     "/v1/posts": {
       "post": {
         "operationId": "PostService_CreatePost",
@@ -1173,6 +1195,22 @@
       "type": "object",
       "properties": {
         "avatar_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1BalanceResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
           "type": "string"
         }
       }

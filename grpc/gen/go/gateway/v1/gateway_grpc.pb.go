@@ -1571,6 +1571,7 @@ var SportService_ServiceDesc = grpc.ServiceDesc{
 
 const (
 	DonationService_DonateToProfile_FullMethodName = "/sporttech.gateway.v1.DonationService/DonateToProfile"
+	DonationService_GetMyBalance_FullMethodName    = "/sporttech.gateway.v1.DonationService/GetMyBalance"
 )
 
 // DonationServiceClient is the client API for DonationService service.
@@ -1578,6 +1579,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DonationServiceClient interface {
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
+	GetMyBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BalanceResponse, error)
 }
 
 type donationServiceClient struct {
@@ -1598,11 +1600,22 @@ func (c *donationServiceClient) DonateToProfile(ctx context.Context, in *DonateT
 	return out, nil
 }
 
+func (c *donationServiceClient) GetMyBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BalanceResponse)
+	err := c.cc.Invoke(ctx, DonationService_GetMyBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DonationServiceServer is the server API for DonationService service.
 // All implementations should embed UnimplementedDonationServiceServer
 // for forward compatibility.
 type DonationServiceServer interface {
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
+	GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error)
 }
 
 // UnimplementedDonationServiceServer should be embedded to have
@@ -1614,6 +1627,9 @@ type UnimplementedDonationServiceServer struct{}
 
 func (UnimplementedDonationServiceServer) DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DonateToProfile not implemented")
+}
+func (UnimplementedDonationServiceServer) GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyBalance not implemented")
 }
 func (UnimplementedDonationServiceServer) testEmbeddedByValue() {}
 
@@ -1653,6 +1669,24 @@ func _DonationService_DonateToProfile_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DonationService_GetMyBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DonationServiceServer).GetMyBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DonationService_GetMyBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DonationServiceServer).GetMyBalance(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DonationService_ServiceDesc is the grpc.ServiceDesc for DonationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1663,6 +1697,10 @@ var DonationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DonateToProfile",
 			Handler:    _DonationService_DonateToProfile_Handler,
+		},
+		{
+			MethodName: "GetMyBalance",
+			Handler:    _DonationService_GetMyBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

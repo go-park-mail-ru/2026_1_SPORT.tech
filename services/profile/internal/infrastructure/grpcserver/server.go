@@ -22,6 +22,7 @@ func New(profileService profilev1.ProfileServiceServer, metricSet *metrics.Metri
 	healthServer.SetServingStatus(profilev1.ProfileService_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	reflection.Register(server)
+	metricSet.InitializeGRPCMetrics(server)
 
 	return server
 }

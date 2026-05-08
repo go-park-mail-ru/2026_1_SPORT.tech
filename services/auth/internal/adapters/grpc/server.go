@@ -9,20 +9,32 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type AuthUseCase interface {
+type RegistrationUseCase interface {
 	Register(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error)
+}
+
+type LoginUseCase interface {
 	Login(ctx context.Context, command usecase.LoginCommand) (usecase.AuthResult, error)
+}
+
+type SessionUseCase interface {
 	Logout(ctx context.Context, command usecase.LogoutCommand) error
 	GetSession(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error)
 }
 
-type Server struct {
-	authv1.UnimplementedAuthServiceServer
-	authUseCase AuthUseCase
+type UseCases struct {
+	Registration RegistrationUseCase
+	Login        LoginUseCase
+	Session      SessionUseCase
 }
 
-func NewServer(authUseCase AuthUseCase) *Server {
-	return &Server{authUseCase: authUseCase}
+type Server struct {
+	authv1.UnimplementedAuthServiceServer
+	useCases UseCases
+}
+
+func NewServer(useCases UseCases) *Server {
+	return &Server{useCases: useCases}
 }
 
 func (server *Server) Register(ctx context.Context, request *authv1.RegisterRequest) (*authv1.AuthSessionResponse, error) {
@@ -31,7 +43,7 @@ func (server *Server) Register(ctx context.Context, request *authv1.RegisterRequ
 		return nil, mappers.ErrorToStatus(err)
 	}
 
-	result, err := server.authUseCase.Register(ctx, command)
+	result, err := server.useCases.Registration.Register(ctx, command)
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -40,7 +52,7 @@ func (server *Server) Register(ctx context.Context, request *authv1.RegisterRequ
 }
 
 func (server *Server) Login(ctx context.Context, request *authv1.LoginRequest) (*authv1.AuthSessionResponse, error) {
-	result, err := server.authUseCase.Login(ctx, mappers.LoginRequestToCommand(request))
+	result, err := server.useCases.Login.Login(ctx, mappers.LoginRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -49,7 +61,7 @@ func (server *Server) Login(ctx context.Context, request *authv1.LoginRequest) (
 }
 
 func (server *Server) Logout(ctx context.Context, request *authv1.LogoutRequest) (*emptypb.Empty, error) {
-	if err := server.authUseCase.Logout(ctx, mappers.LogoutRequestToCommand(request)); err != nil {
+	if err := server.useCases.Session.Logout(ctx, mappers.LogoutRequestToCommand(request)); err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 
@@ -57,7 +69,7 @@ func (server *Server) Logout(ctx context.Context, request *authv1.LogoutRequest)
 }
 
 func (server *Server) GetSession(ctx context.Context, request *authv1.GetSessionRequest) (*authv1.GetSessionResponse, error) {
-	result, err := server.authUseCase.GetSession(ctx, mappers.GetSessionRequestToQuery(request))
+	result, err := server.useCases.Session.GetSession(ctx, mappers.GetSessionRequestToQuery(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}

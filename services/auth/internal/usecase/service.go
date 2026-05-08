@@ -2,18 +2,11 @@ package usecase
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
-	"net/mail"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/domain"
 )
-
-var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
 
 type Service struct {
 	accountRepository AccountRepository
@@ -164,66 +157,4 @@ func (service *Service) issueSession(ctx context.Context, account domain.Account
 		SessionToken:     sessionToken,
 		SessionExpiresAt: session.ExpiresAt,
 	}, nil
-}
-
-func validateRegisterCommand(command RegisterCommand) error {
-	if !isValidEmail(command.Email) {
-		return ErrInvalidEmail
-	}
-
-	if !usernamePattern.MatchString(command.Username) {
-		return ErrInvalidUsername
-	}
-
-	if len(command.Password) < 8 {
-		return ErrWeakPassword
-	}
-
-	if !command.Role.IsValid() {
-		return domain.ErrInvalidRole
-	}
-
-	return nil
-}
-
-func validateLoginCommand(command LoginCommand) error {
-	if !isValidEmail(command.Email) {
-		return ErrInvalidEmail
-	}
-
-	if len(command.Password) < 8 {
-		return ErrWeakPassword
-	}
-
-	return nil
-}
-
-func validateSessionToken(sessionToken string) error {
-	if strings.TrimSpace(sessionToken) == "" {
-		return ErrMissingSessionToken
-	}
-
-	return nil
-}
-
-func isValidEmail(email string) bool {
-	if len(email) > 254 {
-		return false
-	}
-
-	address, err := mail.ParseAddress(email)
-	return err == nil && address.Address == email
-}
-
-func normalizeEmail(email string) string {
-	return strings.ToLower(strings.TrimSpace(email))
-}
-
-func normalizeUsername(username string) string {
-	return strings.TrimSpace(username)
-}
-
-func hashSessionToken(sessionToken string) string {
-	sum := sha256.Sum256([]byte(sessionToken))
-	return hex.EncodeToString(sum[:])
 }

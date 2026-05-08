@@ -3,92 +3,49 @@ package config
 import (
 	"fmt"
 	"net"
-	"os"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"github.com/go-playground/validator/v10"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	ServiceName string           `yaml:"service_name"`
+	ServiceName string           `yaml:"service_name" env:"SERVICE_NAME" env-default:"api-gateway" validate:"required"`
 	Server      ServerConfig     `yaml:"server"`
 	Downstream  DownstreamConfig `yaml:"downstream"`
 	OpenAPI     OpenAPIConfig    `yaml:"openapi"`
 }
 
 type ServerConfig struct {
-	Host            string `yaml:"host"`
-	GRPCPort        string `yaml:"grpc_port"`
-	HTTPPort        string `yaml:"http_port"`
-	ShutdownTimeout string `yaml:"shutdown_timeout"`
+	Host            string `yaml:"host" env:"API_GATEWAY_SERVER_HOST" env-default:"0.0.0.0" validate:"required"`
+	GRPCPort        string `yaml:"grpc_port" env:"API_GATEWAY_GRPC_PORT" env-default:"9090" validate:"required"`
+	HTTPPort        string `yaml:"http_port" env:"API_GATEWAY_HTTP_PORT" env-default:"8080" validate:"required"`
+	ShutdownTimeout string `yaml:"shutdown_timeout" env:"API_GATEWAY_SHUTDOWN_TIMEOUT" env-default:"10s" validate:"required"`
 }
 
 type DownstreamConfig struct {
-	AuthGRPCEndpoint    string `yaml:"auth_grpc_endpoint"`
-	ProfileGRPCEndpoint string `yaml:"profile_grpc_endpoint"`
-	ContentGRPCEndpoint string `yaml:"content_grpc_endpoint"`
+	AuthGRPCEndpoint    string `yaml:"auth_grpc_endpoint" env:"API_GATEWAY_AUTH_GRPC_ENDPOINT" env-default:"localhost:9091" validate:"required"`
+	ProfileGRPCEndpoint string `yaml:"profile_grpc_endpoint" env:"API_GATEWAY_PROFILE_GRPC_ENDPOINT" env-default:"localhost:9092" validate:"required"`
+	ContentGRPCEndpoint string `yaml:"content_grpc_endpoint" env:"API_GATEWAY_CONTENT_GRPC_ENDPOINT" env-default:"localhost:9093" validate:"required"`
 }
 
 type OpenAPIConfig struct {
-	GatewayFilePath string `yaml:"gateway_file_path"`
+	GatewayFilePath string `yaml:"gateway_file_path" env:"API_GATEWAY_OPENAPI_FILE_PATH" env-default:"grpc/gen/openapiv2/gateway/v1/gateway.swagger.json" validate:"required"`
 }
 
 func NewConfig(path string) (Config, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
+	var cfg Config
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		return Config{}, fmt.Errorf("read config: %w", err)
 	}
-
-	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return Config{}, fmt.Errorf("unmarshal config: %w", err)
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
+		return Config{}, fmt.Errorf("read env: %w", err)
 	}
-
-	setDefaults(&cfg)
-	cfg.Downstream.AuthGRPCEndpoint = getEnv("API_GATEWAY_AUTH_GRPC_ENDPOINT", getEnv("AUTH_GRPC_ENDPOINT", cfg.Downstream.AuthGRPCEndpoint))
-	cfg.Downstream.ProfileGRPCEndpoint = getEnv("API_GATEWAY_PROFILE_GRPC_ENDPOINT", getEnv("PROFILE_GRPC_ENDPOINT", cfg.Downstream.ProfileGRPCEndpoint))
-	cfg.Downstream.ContentGRPCEndpoint = getEnv("API_GATEWAY_CONTENT_GRPC_ENDPOINT", getEnv("CONTENT_GRPC_ENDPOINT", cfg.Downstream.ContentGRPCEndpoint))
+	if err := validator.New().Struct(&cfg); err != nil {
+		return Config{}, fmt.Errorf("validate config: %w", err)
+	}
 
 	return cfg, nil
-}
-
-func setDefaults(cfg *Config) {
-	if cfg.ServiceName == "" {
-		cfg.ServiceName = "api-gateway"
-	}
-	if cfg.Server.Host == "" {
-		cfg.Server.Host = "0.0.0.0"
-	}
-	if cfg.Server.HTTPPort == "" {
-		cfg.Server.HTTPPort = "8080"
-	}
-	if cfg.Server.GRPCPort == "" {
-		cfg.Server.GRPCPort = "9090"
-	}
-	if cfg.Server.ShutdownTimeout == "" {
-		cfg.Server.ShutdownTimeout = "10s"
-	}
-	if cfg.Downstream.AuthGRPCEndpoint == "" {
-		cfg.Downstream.AuthGRPCEndpoint = "localhost:9091"
-	}
-	if cfg.Downstream.ProfileGRPCEndpoint == "" {
-		cfg.Downstream.ProfileGRPCEndpoint = "localhost:9092"
-	}
-	if cfg.Downstream.ContentGRPCEndpoint == "" {
-		cfg.Downstream.ContentGRPCEndpoint = "localhost:9093"
-	}
-	if cfg.OpenAPI.GatewayFilePath == "" {
-		cfg.OpenAPI.GatewayFilePath = "grpc/gen/openapiv2/gateway/v1/gateway.swagger.json"
-	}
-}
-
-func getEnv(key string, fallback string) string {
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		return fallback
-	}
-
-	return value
 }
 
 func (cfg ServerConfig) HTTPAddress() string {

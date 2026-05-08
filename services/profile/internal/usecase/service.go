@@ -3,30 +3,29 @@ package usecase
 import (
 	"bytes"
 	"context"
-	"regexp"
 	"strings"
-	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 )
 
-var usernamePattern = regexp.MustCompile(`^[A-Za-z0-9_]{3,30}$`)
-
 type Service struct {
-	profileRepository   ProfileRepository
-	sportTypeRepository SportTypeRepository
-	avatarStorage       AvatarStorage
+	profiles ProfileRepository
+	authors  AuthorRepository
+	avatars  AvatarRepository
+	sports   SportTypeRepository
+	storage  AvatarStorage
 }
 
 func NewService(
-	profileRepository ProfileRepository,
-	sportTypeRepository SportTypeRepository,
+	repositories Repositories,
 	avatarStorage AvatarStorage,
 ) *Service {
 	return &Service{
-		profileRepository:   profileRepository,
-		sportTypeRepository: sportTypeRepository,
-		avatarStorage:       avatarStorage,
+		profiles: repositories.Profiles,
+		authors:  repositories.Authors,
+		avatars:  repositories.Avatars,
+		sports:   repositories.Sports,
+		storage:  avatarStorage,
 	}
 }
 
@@ -36,27 +35,27 @@ func (service *Service) CreateProfile(ctx context.Context, command CreateProfile
 		return domain.Profile{}, err
 	}
 
-	if err := service.profileRepository.Create(ctx, profile); err != nil {
+	if err := service.profiles.Create(ctx, profile); err != nil {
 		return domain.Profile{}, err
 	}
 
-	return service.profileRepository.GetByID(ctx, command.UserID)
+	return service.profiles.GetByID(ctx, command.UserID)
 }
 
 func (service *Service) GetProfile(ctx context.Context, userID int64) (domain.Profile, error) {
-	if userID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
+	if err := validateUserID(userID); err != nil {
+		return domain.Profile{}, err
 	}
 
-	return service.profileRepository.GetByID(ctx, userID)
+	return service.profiles.GetByID(ctx, userID)
 }
 
 func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfileCommand) (domain.Profile, error) {
-	if command.UserID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.Profile{}, err
 	}
 
-	profile, err := service.profileRepository.GetByID(ctx, command.UserID)
+	profile, err := service.profiles.GetByID(ctx, command.UserID)
 	if err != nil {
 		return domain.Profile{}, err
 	}
@@ -84,61 +83,39 @@ func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfile
 		return domain.Profile{}, err
 	}
 
-	if err := service.profileRepository.Update(ctx, profile); err != nil {
+	if err := service.profiles.Update(ctx, profile); err != nil {
 		return domain.Profile{}, err
 	}
 
-	return service.profileRepository.GetByID(ctx, profile.UserID)
+	return service.profiles.GetByID(ctx, profile.UserID)
 }
 
 func (service *Service) SearchAuthors(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
-	if query.Limit < 0 || query.Limit > 100 {
-		return nil, ErrInvalidSearchLimit
-	}
-	if query.Offset < 0 {
-		return nil, ErrInvalidSearchOffset
-	}
-	if query.MinExperienceYears != nil && *query.MinExperienceYears < 0 {
-		return nil, ErrInvalidExperienceYears
-	}
-	if query.MaxExperienceYears != nil && *query.MaxExperienceYears < 0 {
-		return nil, ErrInvalidExperienceYears
-	}
-	if query.MinExperienceYears != nil && query.MaxExperienceYears != nil &&
-		*query.MinExperienceYears > *query.MaxExperienceYears {
-		return nil, ErrInvalidExperienceYears
+	if err := validateSearchAuthorsQuery(query); err != nil {
+		return nil, err
 	}
 	if query.Limit == 0 {
 		query.Limit = 20
 	}
 	query.Query = normalizeRequiredText(query.Query)
 
-	return service.profileRepository.SearchAuthors(ctx, query)
+	return service.authors.SearchAuthors(ctx, query)
 }
 
 func (service *Service) UploadAvatar(ctx context.Context, command UploadAvatarCommand) (domain.Profile, error) {
-	if command.UserID <= 0 {
-		return domain.Profile{}, ErrInvalidUserID
+	if err := validateUploadAvatarCommand(command); err != nil {
+		return domain.Profile{}, err
 	}
-	if strings.TrimSpace(command.FileName) == "" {
-		return domain.Profile{}, ErrAvatarFileNameRequired
-	}
-	if strings.TrimSpace(command.ContentType) == "" {
-		return domain.Profile{}, ErrAvatarContentTypeRequired
-	}
-	if len(command.Content) == 0 {
-		return domain.Profile{}, ErrAvatarContentRequired
-	}
-	if service.avatarStorage == nil {
+	if service.storage == nil {
 		return domain.Profile{}, ErrAvatarStorageUnavailable
 	}
 
-	profile, err := service.profileRepository.GetByID(ctx, command.UserID)
+	profile, err := service.avatars.GetByID(ctx, command.UserID)
 	if err != nil {
 		return domain.Profile{}, err
 	}
 
-	avatarURL, err := service.avatarStorage.UploadAvatar(
+	avatarURL, err := service.storage.UploadAvatar(
 		ctx,
 		command.UserID,
 		command.FileName,
@@ -150,39 +127,39 @@ func (service *Service) UploadAvatar(ctx context.Context, command UploadAvatarCo
 		return domain.Profile{}, err
 	}
 
-	if err := service.profileRepository.UpdateAvatarURL(ctx, command.UserID, avatarURL); err != nil {
+	if err := service.avatars.UpdateAvatarURL(ctx, command.UserID, avatarURL); err != nil {
 		return domain.Profile{}, err
 	}
 	if profile.AvatarURL != nil {
-		_ = service.avatarStorage.DeleteAvatar(ctx, *profile.AvatarURL)
+		_ = service.storage.DeleteAvatar(ctx, *profile.AvatarURL)
 	}
 
-	return service.profileRepository.GetByID(ctx, command.UserID)
+	return service.avatars.GetByID(ctx, command.UserID)
 }
 
 func (service *Service) DeleteAvatar(ctx context.Context, userID int64) error {
-	if userID <= 0 {
-		return ErrInvalidUserID
+	if err := validateUserID(userID); err != nil {
+		return err
 	}
-	profile, err := service.profileRepository.GetByID(ctx, userID)
+	profile, err := service.avatars.GetByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 	if profile.AvatarURL == nil {
 		return nil
 	}
-	if service.avatarStorage == nil {
+	if service.storage == nil {
 		return ErrAvatarStorageUnavailable
 	}
-	if err := service.avatarStorage.DeleteAvatar(ctx, *profile.AvatarURL); err != nil {
+	if err := service.storage.DeleteAvatar(ctx, *profile.AvatarURL); err != nil {
 		return err
 	}
 
-	return service.profileRepository.ClearAvatarURL(ctx, userID)
+	return service.avatars.ClearAvatarURL(ctx, userID)
 }
 
 func (service *Service) ListSportTypes(ctx context.Context) ([]domain.SportType, error) {
-	return service.sportTypeRepository.ListSportTypes(ctx)
+	return service.sports.ListSportTypes(ctx)
 }
 
 func buildProfile(command CreateProfileCommand) (domain.Profile, error) {
@@ -201,42 +178,6 @@ func buildProfile(command CreateProfileCommand) (domain.Profile, error) {
 	}
 
 	return profile, nil
-}
-
-func validateProfile(profile domain.Profile) error {
-	if profile.UserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if !usernamePattern.MatchString(profile.Username) {
-		return ErrInvalidUsername
-	}
-	if len(profile.FirstName) == 0 || len(profile.FirstName) > 100 {
-		return ErrInvalidFirstName
-	}
-	if len(profile.LastName) == 0 || len(profile.LastName) > 100 {
-		return ErrInvalidLastName
-	}
-	if profile.Bio != nil && len(*profile.Bio) > 1000 {
-		return ErrInvalidBio
-	}
-	if !profile.IsTrainer && profile.TrainerDetails != nil {
-		return domain.ErrTrainerProfileForbidden
-	}
-	if profile.TrainerDetails != nil {
-		if profile.TrainerDetails.EducationDegree != nil && len(*profile.TrainerDetails.EducationDegree) > 255 {
-			return ErrInvalidEducationDegree
-		}
-		if profile.TrainerDetails.CareerSinceDate != nil && profile.TrainerDetails.CareerSinceDate.After(time.Now().UTC()) {
-			return ErrInvalidCareerSinceDate
-		}
-		for _, sport := range profile.TrainerDetails.Sports {
-			if sport.SportTypeID <= 0 || sport.ExperienceYears < 0 {
-				return ErrInvalidExperienceYears
-			}
-		}
-	}
-
-	return nil
 }
 
 func normalizeRequiredText(value string) string {

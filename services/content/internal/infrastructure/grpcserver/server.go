@@ -22,6 +22,7 @@ func New(contentService contentv1.ContentServiceServer, metricSet *metrics.Metri
 	healthServer.SetServingStatus(contentv1.ContentService_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	reflection.Register(server)
+	metricSet.InitializeGRPCMetrics(server)
 
 	return server
 }

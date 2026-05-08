@@ -44,6 +44,15 @@ func (repository stubProfileRepository) ClearAvatarURL(ctx context.Context, user
 	return repository.clearAvatarURLFunc(ctx, userID)
 }
 
+func stubRepositories(repository stubProfileRepository, sportTypes stubSportTypeRepository) Repositories {
+	return Repositories{
+		Profiles: repository,
+		Authors:  repository,
+		Avatars:  repository,
+		Sports:   sportTypes,
+	}
+}
+
 type stubSportTypeRepository struct {
 	listFunc func(ctx context.Context) ([]domain.SportType, error)
 }
@@ -70,7 +79,7 @@ func TestServiceCreateProfile(t *testing.T) {
 	createCalled := false
 
 	service := NewService(
-		stubProfileRepository{
+		stubRepositories(stubProfileRepository{
 			createFunc: func(ctx context.Context, profile domain.Profile) error {
 				createCalled = true
 				if profile.UserID != 7 || profile.Username != "coach_john" {
@@ -89,8 +98,7 @@ func TestServiceCreateProfile(t *testing.T) {
 					UpdatedAt: now,
 				}, nil
 			},
-		},
-		stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }},
+		}, stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }}),
 		nil,
 	)
 
@@ -114,13 +122,12 @@ func TestServiceCreateProfile(t *testing.T) {
 
 func TestServiceUpdateProfileRejectsTrainerDetailsForClient(t *testing.T) {
 	service := NewService(
-		stubProfileRepository{
+		stubRepositories(stubProfileRepository{
 			getByIDFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
 				return domain.Profile{UserID: userID, Username: "client", FirstName: "A", LastName: "B", IsTrainer: false}, nil
 			},
 			updateFunc: func(ctx context.Context, profile domain.Profile) error { return nil },
-		},
-		stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }},
+		}, stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }}),
 		nil,
 	)
 
@@ -139,7 +146,7 @@ func TestServiceUploadAvatar(t *testing.T) {
 	updated := false
 
 	service := NewService(
-		stubProfileRepository{
+		stubRepositories(stubProfileRepository{
 			getByIDFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
 				oldURL := "http://storage/old.png"
 				return domain.Profile{UserID: userID, Username: "john", FirstName: "John", LastName: "Doe", AvatarURL: &oldURL}, nil
@@ -151,8 +158,7 @@ func TestServiceUploadAvatar(t *testing.T) {
 				}
 				return nil
 			},
-		},
-		stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }},
+		}, stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }}),
 		stubAvatarStorage{
 			uploadFunc: func(ctx context.Context, userID int64, fileName string, contentType string, file io.Reader, size int64) (string, error) {
 				uploaded = true
@@ -193,7 +199,7 @@ func TestServiceSearchAuthorsAppliesFilters(t *testing.T) {
 	repositoryCalled := false
 
 	service := NewService(
-		stubProfileRepository{
+		stubRepositories(stubProfileRepository{
 			searchAuthorsFunc: func(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
 				repositoryCalled = true
 				if query.Query != "Анна" ||
@@ -211,8 +217,7 @@ func TestServiceSearchAuthorsAppliesFilters(t *testing.T) {
 
 				return []domain.AuthorSummary{{UserID: 1001, Username: "coach_anna"}}, nil
 			},
-		},
-		stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }},
+		}, stubSportTypeRepository{listFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil }}),
 		nil,
 	)
 

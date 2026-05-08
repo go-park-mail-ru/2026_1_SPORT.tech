@@ -8,6 +8,48 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+service ProfileService {
+  rpc CreateProfile(CreateProfileRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles"
+      body: "*"
+    };
+  }
+
+  rpc GetProfile(GetProfileRequest) returns (ProfileResponse) {
+    option (google.api.http).get = "/v1/profiles/{user_id}";
+  }
+
+  rpc UpdateProfile(UpdateProfileRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      patch: "/v1/profiles/{user_id}"
+      body: "*"
+    };
+  }
+
+  rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse) {
+    option (google.api.http) = {
+      post: "/v1/authors:search"
+      body: "*"
+    };
+  }
+
+  rpc UploadAvatar(UploadAvatarRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles/{user_id}/avatar"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAvatar(DeleteAvatarRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/profiles/{user_id}/avatar";
+  }
+
+  rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
+    option (google.api.http).get = "/v1/sport-types";
+  }
+}
+
 message TrainerSport {
   int64 sport_type_id = 1;
   int32 experience_years = 2;
@@ -102,46 +144,4 @@ message DeleteAvatarRequest {
 
 message ListSportTypesResponse {
   repeated SportType sport_types = 1;
-}
-
-service ProfileService {
-  rpc CreateProfile(CreateProfileRequest) returns (ProfileResponse) {
-    option (google.api.http) = {
-      post: "/v1/profiles"
-      body: "*"
-    };
-  }
-
-  rpc GetProfile(GetProfileRequest) returns (ProfileResponse) {
-    option (google.api.http).get = "/v1/profiles/{user_id}";
-  }
-
-  rpc UpdateProfile(UpdateProfileRequest) returns (ProfileResponse) {
-    option (google.api.http) = {
-      patch: "/v1/profiles/{user_id}"
-      body: "*"
-    };
-  }
-
-  rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse) {
-    option (google.api.http) = {
-      post: "/v1/authors:search"
-      body: "*"
-    };
-  }
-
-  rpc UploadAvatar(UploadAvatarRequest) returns (ProfileResponse) {
-    option (google.api.http) = {
-      post: "/v1/profiles/{user_id}/avatar"
-      body: "*"
-    };
-  }
-
-  rpc DeleteAvatar(DeleteAvatarRequest) returns (google.protobuf.Empty) {
-    option (google.api.http).delete = "/v1/profiles/{user_id}/avatar";
-  }
-
-  rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
-    option (google.api.http).get = "/v1/sport-types";
-  }
 }

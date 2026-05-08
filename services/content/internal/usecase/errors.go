@@ -30,4 +30,8 @@ var (
 	ErrConflictingTierDescriptionUpdate   = errors.New("subscription tier description and clear flag cannot be used together")
 	ErrInvalidSubscriptionID              = errors.New("invalid subscription id")
 	ErrInvalidSubscriptionTarget          = errors.New("invalid subscription target")
+	ErrInvalidDonationAmount              = errors.New("invalid donation amount")
+	ErrInvalidDonationCurrency            = errors.New("invalid donation currency")
+	ErrInvalidDonationMessage             = errors.New("invalid donation message")
+	ErrInvalidDonationTarget              = errors.New("invalid donation target")
 )

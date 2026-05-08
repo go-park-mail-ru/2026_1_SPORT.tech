@@ -141,6 +141,23 @@ func CancelSubscriptionRequestToCommand(request *contentv1.CancelSubscriptionReq
 	}
 }
 
+func DonateToProfileRequestToCommand(request *contentv1.DonateToProfileRequest) usecase.DonateToProfileCommand {
+	return usecase.DonateToProfileCommand{
+		SenderUserID:    request.GetSenderUserId(),
+		RecipientUserID: request.GetRecipientUserId(),
+		AmountValue:     request.GetAmountValue(),
+		Currency:        request.GetCurrency(),
+		Message:         request.Message,
+	}
+}
+
+func GetBalanceRequestToQuery(request *contentv1.GetBalanceRequest) usecase.GetBalanceQuery {
+	return usecase.GetBalanceQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+		Currency:      request.GetCurrency(),
+	}
+}
+
 func DeletePostRequestToCommand(request *contentv1.DeletePostRequest) usecase.DeletePostCommand {
 	return usecase.DeletePostCommand{
 		PostID:       request.GetPostId(),
@@ -262,6 +279,20 @@ func NewListMySubscriptionsResponse(subscriptions []domain.Subscription) *conten
 	return response
 }
 
+func NewDonationResponse(donation domain.Donation) *contentv1.DonationResponse {
+	return &contentv1.DonationResponse{
+		Donation: donationToProto(donation),
+	}
+}
+
+func NewBalanceResponse(balance domain.Balance) *contentv1.BalanceResponse {
+	return &contentv1.BalanceResponse{
+		TrainerUserId: balance.TrainerUserID,
+		AmountValue:   balance.AmountValue,
+		Currency:      balance.Currency,
+	}
+}
+
 func NewCommentResponse(comment domain.Comment) *contentv1.CommentResponse {
 	return &contentv1.CommentResponse{
 		Comment: commentToProto(comment),
@@ -313,13 +344,18 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrConflictingTierDescriptionUpdate),
 		errors.Is(err, usecase.ErrInvalidSubscriptionID),
 		errors.Is(err, usecase.ErrInvalidSubscriptionTarget),
+		errors.Is(err, usecase.ErrInvalidDonationAmount),
+		errors.Is(err, usecase.ErrInvalidDonationCurrency),
+		errors.Is(err, usecase.ErrInvalidDonationMessage),
+		errors.Is(err, usecase.ErrInvalidDonationTarget),
 		errors.Is(err, domain.ErrInvalidBlockKind),
 		errors.Is(err, domain.ErrInvalidBlockData):
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, domain.ErrPostNotFound),
 		errors.Is(err, domain.ErrCommentNotFound),
 		errors.Is(err, domain.ErrSubscriptionTierNotFound),
-		errors.Is(err, domain.ErrSubscriptionNotFound):
+		errors.Is(err, domain.ErrSubscriptionNotFound),
+		errors.Is(err, domain.ErrDonationNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
@@ -421,6 +457,22 @@ func subscriptionToProto(subscription domain.Subscription) *contentv1.Subscripti
 		CreatedAt:      timestamppb.New(subscription.CreatedAt),
 		UpdatedAt:      timestamppb.New(subscription.UpdatedAt),
 	}
+}
+
+func donationToProto(donation domain.Donation) *contentv1.Donation {
+	response := &contentv1.Donation{
+		DonationId:      donation.DonationID,
+		SenderUserId:    donation.SenderUserID,
+		RecipientUserId: donation.RecipientUserID,
+		AmountValue:     donation.AmountValue,
+		Currency:        donation.Currency,
+		CreatedAt:       timestamppb.New(donation.CreatedAt),
+	}
+	if donation.Message != nil {
+		response.Message = donation.Message
+	}
+
+	return response
 }
 
 func postBlockToProto(block domain.PostBlock) *contentv1.PostBlock {

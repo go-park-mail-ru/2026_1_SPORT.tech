@@ -8,6 +8,36 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+service AuthService {
+  rpc Register(RegisterRequest) returns (AuthSessionResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/register"
+      body: "*"
+    };
+  }
+
+  rpc Login(LoginRequest) returns (AuthSessionResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/login"
+      body: "*"
+    };
+  }
+
+  rpc Logout(LogoutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/logout"
+      body: "*"
+    };
+  }
+
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/sessions:resolve"
+      body: "*"
+    };
+  }
+}
+
 enum UserRole {
   USER_ROLE_UNSPECIFIED = 0;
   USER_ROLE_CLIENT = 1;
@@ -62,34 +92,4 @@ message AuthSessionResponse {
 message GetSessionResponse {
   AuthUser user = 1;
   SessionInfo session = 2;
-}
-
-service AuthService {
-  rpc Register(RegisterRequest) returns (AuthSessionResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/register"
-      body: "*"
-    };
-  }
-
-  rpc Login(LoginRequest) returns (AuthSessionResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/login"
-      body: "*"
-    };
-  }
-
-  rpc Logout(LogoutRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/v1/auth/logout"
-      body: "*"
-    };
-  }
-
-  rpc GetSession(GetSessionRequest) returns (GetSessionResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/sessions:resolve"
-      body: "*"
-    };
-  }
 }

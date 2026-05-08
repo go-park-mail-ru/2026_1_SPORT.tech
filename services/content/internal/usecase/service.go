@@ -11,32 +11,28 @@ import (
 )
 
 const (
-	defaultPageLimit = 20
-	maxPageLimit     = 100
-	maxBlockCount    = 100
-	maxMediaFileSize = 10 * 1024 * 1024
-	maxTierNameLen   = 80
-	maxTierDescLen   = 500
+	svgContentType = "image/svg+xml"
 )
 
 type Service struct {
-	contentRepository ContentRepository
-	postMediaStorage  PostMediaStorage
+	posts      PostRepository
+	money      MonetizationRepository
+	engagement EngagementRepository
+	postMedia  PostMediaStorage
 }
 
-func NewService(contentRepository ContentRepository, postMediaStorage PostMediaStorage) *Service {
+func NewService(repositories Repositories, postMediaStorage PostMediaStorage) *Service {
 	return &Service{
-		contentRepository: contentRepository,
-		postMediaStorage:  postMediaStorage,
+		posts:      repositories.Posts,
+		money:      repositories.Money,
+		engagement: repositories.Engagement,
+		postMedia:  postMediaStorage,
 	}
 }
 
 func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPostsQuery) ([]domain.PostSummary, error) {
-	if query.AuthorUserID <= 0 {
-		return nil, ErrInvalidUserID
-	}
-	if query.ViewerUserID < 0 {
-		return nil, ErrInvalidUserID
+	if err := validateListAuthorPostsQuery(query); err != nil {
+		return nil, err
 	}
 
 	limit, offset, err := normalizePage(query.Limit, query.Offset)
@@ -44,7 +40,7 @@ func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPos
 		return nil, err
 	}
 
-	posts, err := service.contentRepository.ListAuthorPosts(ctx, query.AuthorUserID, query.ViewerUserID, limit, offset)
+	posts, err := service.posts.ListAuthorPosts(ctx, query.AuthorUserID, query.ViewerUserID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -67,33 +63,8 @@ func (service *Service) ListAuthorPosts(ctx context.Context, query ListAuthorPos
 }
 
 func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery) ([]domain.PostSummary, error) {
-	if query.ViewerUserID < 0 {
-		return nil, ErrInvalidUserID
-	}
-	for _, authorUserID := range query.AuthorUserIDs {
-		if authorUserID <= 0 {
-			return nil, ErrInvalidUserID
-		}
-	}
-	for _, sportTypeID := range query.SportTypeIDs {
-		if sportTypeID <= 0 {
-			return nil, ErrInvalidSportTypeID
-		}
-	}
-	for _, kind := range query.BlockKinds {
-		if !kind.IsValid() {
-			return nil, domain.ErrInvalidBlockKind
-		}
-	}
-	if query.MinRequiredSubscriptionLevel != nil && *query.MinRequiredSubscriptionLevel < 0 {
-		return nil, ErrInvalidSearchFilter
-	}
-	if query.MaxRequiredSubscriptionLevel != nil && *query.MaxRequiredSubscriptionLevel < 0 {
-		return nil, ErrInvalidSearchFilter
-	}
-	if query.MinRequiredSubscriptionLevel != nil && query.MaxRequiredSubscriptionLevel != nil &&
-		*query.MinRequiredSubscriptionLevel > *query.MaxRequiredSubscriptionLevel {
-		return nil, ErrInvalidSearchFilter
+	if err := validateSearchPostsQuery(query); err != nil {
+		return nil, err
 	}
 
 	limit, offset, err := normalizePage(query.Limit, query.Offset)
@@ -104,7 +75,7 @@ func (service *Service) SearchPosts(ctx context.Context, query SearchPostsQuery)
 	query.Limit = limit
 	query.Offset = offset
 
-	posts, err := service.contentRepository.SearchPosts(ctx, query)
+	posts, err := service.posts.SearchPosts(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -135,46 +106,31 @@ func (service *Service) CreatePost(ctx context.Context, command CreatePostComman
 		return domain.Post{}, err
 	}
 
-	postID, err := service.contentRepository.CreatePost(ctx, post)
+	postID, err := service.posts.CreatePost(ctx, post)
 	if err != nil {
 		return domain.Post{}, err
 	}
 
-	return service.contentRepository.GetPost(ctx, postID, command.AuthorUserID)
+	return service.posts.GetPost(ctx, postID, command.AuthorUserID)
 }
 
 func (service *Service) UploadPostMedia(ctx context.Context, command UploadPostMediaCommand) (domain.PostMedia, error) {
-	if command.AuthorUserID <= 0 {
-		return domain.PostMedia{}, ErrInvalidUserID
+	if err := validateUploadPostMediaCommand(command); err != nil {
+		return domain.PostMedia{}, err
 	}
 
 	fileName := normalizeRequiredText(command.FileName)
-	if fileName == "" {
-		return domain.PostMedia{}, ErrPostMediaFileNameRequired
-	}
-
 	contentType := strings.ToLower(normalizeRequiredText(command.ContentType))
-	if contentType == "" {
-		return domain.PostMedia{}, ErrPostMediaContentTypeRequired
-	}
-
-	if len(command.Content) == 0 {
-		return domain.PostMedia{}, ErrPostMediaContentRequired
-	}
-	if len(command.Content) > maxMediaFileSize {
-		return domain.PostMedia{}, ErrPostMediaTooLarge
-	}
-
 	kind, ok := postMediaKind(contentType)
 	if !ok {
 		return domain.PostMedia{}, ErrPostMediaContentTypeUnsupported
 	}
 
-	if service.postMediaStorage == nil {
+	if service.postMedia == nil {
 		return domain.PostMedia{}, ErrPostMediaStorageUnavailable
 	}
 
-	fileURL, err := service.postMediaStorage.UploadPostMedia(
+	fileURL, err := service.postMedia.UploadPostMedia(
 		ctx,
 		command.AuthorUserID,
 		fileName,
@@ -195,14 +151,11 @@ func (service *Service) UploadPostMedia(ctx context.Context, command UploadPostM
 }
 
 func (service *Service) GetPost(ctx context.Context, query GetPostQuery) (domain.Post, error) {
-	if query.PostID <= 0 {
-		return domain.Post{}, ErrInvalidPostID
-	}
-	if query.ViewerUserID < 0 {
-		return domain.Post{}, ErrInvalidUserID
+	if err := validatePostQuery(query.PostID, query.ViewerUserID); err != nil {
+		return domain.Post{}, err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, query.PostID, query.ViewerUserID)
+	post, err := service.posts.GetPost(ctx, query.PostID, query.ViewerUserID)
 	if err != nil {
 		return domain.Post{}, err
 	}
@@ -220,23 +173,11 @@ func (service *Service) GetPost(ctx context.Context, query GetPostQuery) (domain
 }
 
 func (service *Service) UpdatePost(ctx context.Context, command UpdatePostCommand) (domain.Post, error) {
-	if command.PostID <= 0 {
-		return domain.Post{}, ErrInvalidPostID
-	}
-	if command.AuthorUserID <= 0 {
-		return domain.Post{}, ErrInvalidUserID
-	}
-	if command.RequiredSubscriptionLevel != nil && command.ClearRequiredSubscriptionLevel {
-		return domain.Post{}, ErrConflictingSubscriptionLevelUpdate
-	}
-	if command.SportTypeID != nil && command.ClearSportTypeID {
-		return domain.Post{}, ErrConflictingSportTypeUpdate
-	}
-	if len(command.Blocks) > 0 && !command.ReplaceBlocks {
-		return domain.Post{}, ErrReplaceBlocksRequired
+	if err := validateUpdatePostCommand(command); err != nil {
+		return domain.Post{}, err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, command.PostID, command.AuthorUserID)
+	post, err := service.posts.GetPost(ctx, command.PostID, command.AuthorUserID)
 	if err != nil {
 		return domain.Post{}, err
 	}
@@ -270,22 +211,19 @@ func (service *Service) UpdatePost(ctx context.Context, command UpdatePostComman
 		return domain.Post{}, err
 	}
 
-	if err := service.contentRepository.UpdatePost(ctx, post, command.ReplaceBlocks); err != nil {
+	if err := service.posts.UpdatePost(ctx, post, command.ReplaceBlocks); err != nil {
 		return domain.Post{}, err
 	}
 
-	return service.contentRepository.GetPost(ctx, post.PostID, command.AuthorUserID)
+	return service.posts.GetPost(ctx, post.PostID, command.AuthorUserID)
 }
 
 func (service *Service) DeletePost(ctx context.Context, command DeletePostCommand) error {
-	if command.PostID <= 0 {
-		return ErrInvalidPostID
-	}
-	if command.AuthorUserID <= 0 {
-		return ErrInvalidUserID
+	if err := validatePostOwnerCommand(command.PostID, command.AuthorUserID); err != nil {
+		return err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, command.PostID, command.AuthorUserID)
+	post, err := service.posts.GetPost(ctx, command.PostID, command.AuthorUserID)
 	if err != nil {
 		return err
 	}
@@ -293,7 +231,7 @@ func (service *Service) DeletePost(ctx context.Context, command DeletePostComman
 		return domain.ErrPostForbidden
 	}
 
-	return service.contentRepository.DeletePost(ctx, command.PostID, command.AuthorUserID)
+	return service.posts.DeletePost(ctx, command.PostID, command.AuthorUserID)
 }
 
 func (service *Service) ListSubscriptionTiers(ctx context.Context, query ListSubscriptionTiersQuery) ([]domain.SubscriptionTier, error) {
@@ -301,7 +239,7 @@ func (service *Service) ListSubscriptionTiers(ctx context.Context, query ListSub
 		return nil, ErrInvalidUserID
 	}
 
-	return service.contentRepository.ListSubscriptionTiers(ctx, query.TrainerUserID)
+	return service.money.ListSubscriptionTiers(ctx, query.TrainerUserID)
 }
 
 func (service *Service) CreateSubscriptionTier(ctx context.Context, command CreateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
@@ -315,21 +253,15 @@ func (service *Service) CreateSubscriptionTier(ctx context.Context, command Crea
 		return domain.SubscriptionTier{}, err
 	}
 
-	return service.contentRepository.CreateSubscriptionTier(ctx, tier)
+	return service.money.CreateSubscriptionTier(ctx, tier)
 }
 
 func (service *Service) UpdateSubscriptionTier(ctx context.Context, command UpdateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
-	if command.TrainerUserID <= 0 {
-		return domain.SubscriptionTier{}, ErrInvalidUserID
-	}
-	if command.TierID <= 0 {
-		return domain.SubscriptionTier{}, ErrInvalidSubscriptionTierID
-	}
-	if command.Description != nil && command.ClearDescription {
-		return domain.SubscriptionTier{}, ErrConflictingTierDescriptionUpdate
+	if err := validateUpdateSubscriptionTierCommand(command); err != nil {
+		return domain.SubscriptionTier{}, err
 	}
 
-	tier, err := service.contentRepository.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	tier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 	if err != nil {
 		return domain.SubscriptionTier{}, err
 	}
@@ -351,40 +283,28 @@ func (service *Service) UpdateSubscriptionTier(ctx context.Context, command Upda
 		return domain.SubscriptionTier{}, err
 	}
 
-	return service.contentRepository.UpdateSubscriptionTier(ctx, tier)
+	return service.money.UpdateSubscriptionTier(ctx, tier)
 }
 
 func (service *Service) DeleteSubscriptionTier(ctx context.Context, command DeleteSubscriptionTierCommand) error {
-	if command.TrainerUserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if command.TierID <= 0 {
-		return ErrInvalidSubscriptionTierID
+	if err := validateSubscriptionTierIDCommand(command.TrainerUserID, command.TierID); err != nil {
+		return err
 	}
 
-	return service.contentRepository.DeleteSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	return service.money.DeleteSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 }
 
 func (service *Service) SubscribeToTrainer(ctx context.Context, command SubscribeToTrainerCommand) (domain.Subscription, error) {
-	if command.ClientUserID <= 0 {
-		return domain.Subscription{}, ErrInvalidUserID
-	}
-	if command.TrainerUserID <= 0 {
-		return domain.Subscription{}, ErrInvalidUserID
-	}
-	if command.ClientUserID == command.TrainerUserID {
-		return domain.Subscription{}, ErrInvalidSubscriptionTarget
-	}
-	if command.TierID <= 0 {
-		return domain.Subscription{}, ErrInvalidSubscriptionTierID
+	if err := validateSubscribeToTrainerCommand(command); err != nil {
+		return domain.Subscription{}, err
 	}
 
-	tier, err := service.contentRepository.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	tier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 	if err != nil {
 		return domain.Subscription{}, err
 	}
 
-	return service.contentRepository.SubscribeToTrainer(ctx, domain.Subscription{
+	return service.money.SubscribeToTrainer(ctx, domain.Subscription{
 		ClientUserID:  command.ClientUserID,
 		TrainerUserID: command.TrainerUserID,
 		TierID:        tier.TierID,
@@ -397,21 +317,15 @@ func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySub
 		return nil, ErrInvalidUserID
 	}
 
-	return service.contentRepository.ListSubscriptions(ctx, query.ClientUserID)
+	return service.money.ListSubscriptions(ctx, query.ClientUserID)
 }
 
 func (service *Service) UpdateSubscription(ctx context.Context, command UpdateSubscriptionCommand) (domain.Subscription, error) {
-	if command.ClientUserID <= 0 {
-		return domain.Subscription{}, ErrInvalidUserID
-	}
-	if command.SubscriptionID <= 0 {
-		return domain.Subscription{}, ErrInvalidSubscriptionID
-	}
-	if command.TierID <= 0 {
-		return domain.Subscription{}, ErrInvalidSubscriptionTierID
+	if err := validateUpdateSubscriptionCommand(command); err != nil {
+		return domain.Subscription{}, err
 	}
 
-	return service.contentRepository.UpdateSubscription(ctx, domain.Subscription{
+	return service.money.UpdateSubscription(ctx, domain.Subscription{
 		SubscriptionID: command.SubscriptionID,
 		ClientUserID:   command.ClientUserID,
 		TierID:         command.TierID,
@@ -419,25 +333,19 @@ func (service *Service) UpdateSubscription(ctx context.Context, command UpdateSu
 }
 
 func (service *Service) CancelSubscription(ctx context.Context, command CancelSubscriptionCommand) error {
-	if command.ClientUserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if command.SubscriptionID <= 0 {
-		return ErrInvalidSubscriptionID
+	if err := validateSubscriptionIDCommand(command.ClientUserID, command.SubscriptionID); err != nil {
+		return err
 	}
 
-	return service.contentRepository.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID)
+	return service.money.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID)
 }
 
 func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (domain.PostLikeState, error) {
-	if command.PostID <= 0 {
-		return domain.PostLikeState{}, ErrInvalidPostID
-	}
-	if command.UserID <= 0 {
-		return domain.PostLikeState{}, ErrInvalidUserID
+	if err := validateLikeCommand(command); err != nil {
+		return domain.PostLikeState{}, err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, command.PostID, command.UserID)
+	post, err := service.posts.GetPost(ctx, command.PostID, command.UserID)
 	if err != nil {
 		return domain.PostLikeState{}, err
 	}
@@ -449,22 +357,19 @@ func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (
 		return domain.PostLikeState{}, domain.ErrPostForbidden
 	}
 
-	if err := service.contentRepository.UpsertLike(ctx, command.PostID, command.UserID); err != nil {
+	if err := service.engagement.UpsertLike(ctx, command.PostID, command.UserID); err != nil {
 		return domain.PostLikeState{}, err
 	}
 
-	return service.contentRepository.GetPostLikeState(ctx, command.PostID, command.UserID)
+	return service.engagement.GetPostLikeState(ctx, command.PostID, command.UserID)
 }
 
 func (service *Service) UnlikePost(ctx context.Context, command LikePostCommand) (domain.PostLikeState, error) {
-	if command.PostID <= 0 {
-		return domain.PostLikeState{}, ErrInvalidPostID
-	}
-	if command.UserID <= 0 {
-		return domain.PostLikeState{}, ErrInvalidUserID
+	if err := validateLikeCommand(command); err != nil {
+		return domain.PostLikeState{}, err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, command.PostID, command.UserID)
+	post, err := service.posts.GetPost(ctx, command.PostID, command.UserID)
 	if err != nil {
 		return domain.PostLikeState{}, err
 	}
@@ -476,27 +381,20 @@ func (service *Service) UnlikePost(ctx context.Context, command LikePostCommand)
 		return domain.PostLikeState{}, domain.ErrPostForbidden
 	}
 
-	if err := service.contentRepository.DeleteLike(ctx, command.PostID, command.UserID); err != nil {
+	if err := service.engagement.DeleteLike(ctx, command.PostID, command.UserID); err != nil {
 		return domain.PostLikeState{}, err
 	}
 
-	return service.contentRepository.GetPostLikeState(ctx, command.PostID, command.UserID)
+	return service.engagement.GetPostLikeState(ctx, command.PostID, command.UserID)
 }
 
 func (service *Service) CreateComment(ctx context.Context, command CreateCommentCommand) (domain.Comment, error) {
-	if command.PostID <= 0 {
-		return domain.Comment{}, ErrInvalidPostID
+	if err := validateCreateCommentCommand(command); err != nil {
+		return domain.Comment{}, err
 	}
-	if command.AuthorUserID <= 0 {
-		return domain.Comment{}, ErrInvalidUserID
-	}
-
 	body := normalizeRequiredText(command.Body)
-	if len(body) == 0 || len(body) > 2000 {
-		return domain.Comment{}, ErrInvalidCommentBody
-	}
 
-	post, err := service.contentRepository.GetPost(ctx, command.PostID, command.AuthorUserID)
+	post, err := service.posts.GetPost(ctx, command.PostID, command.AuthorUserID)
 	if err != nil {
 		return domain.Comment{}, err
 	}
@@ -508,7 +406,7 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 		return domain.Comment{}, domain.ErrPostForbidden
 	}
 
-	return service.contentRepository.CreateComment(ctx, domain.Comment{
+	return service.engagement.CreateComment(ctx, domain.Comment{
 		PostID:       command.PostID,
 		AuthorUserID: command.AuthorUserID,
 		Body:         body,
@@ -516,11 +414,8 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 }
 
 func (service *Service) ListComments(ctx context.Context, query ListCommentsQuery) ([]domain.Comment, error) {
-	if query.PostID <= 0 {
-		return nil, ErrInvalidPostID
-	}
-	if query.ViewerUserID < 0 {
-		return nil, ErrInvalidUserID
+	if err := validateListCommentsQuery(query); err != nil {
+		return nil, err
 	}
 
 	limit, offset, err := normalizePage(query.Limit, query.Offset)
@@ -528,7 +423,7 @@ func (service *Service) ListComments(ctx context.Context, query ListCommentsQuer
 		return nil, err
 	}
 
-	post, err := service.contentRepository.GetPost(ctx, query.PostID, query.ViewerUserID)
+	post, err := service.posts.GetPost(ctx, query.PostID, query.ViewerUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -540,7 +435,32 @@ func (service *Service) ListComments(ctx context.Context, query ListCommentsQuer
 		return nil, domain.ErrPostForbidden
 	}
 
-	return service.contentRepository.ListComments(ctx, query.PostID, limit, offset)
+	return service.engagement.ListComments(ctx, query.PostID, limit, offset)
+}
+
+func (service *Service) DonateToProfile(ctx context.Context, command DonateToProfileCommand) (domain.Donation, error) {
+	command.Currency = normalizeCurrency(command.Currency)
+	command.Message = normalizeOptionalText(command.Message)
+	if err := validateDonateToProfileCommand(command); err != nil {
+		return domain.Donation{}, err
+	}
+
+	return service.money.CreateDonation(ctx, domain.Donation{
+		SenderUserID:    command.SenderUserID,
+		RecipientUserID: command.RecipientUserID,
+		AmountValue:     command.AmountValue,
+		Currency:        command.Currency,
+		Message:         command.Message,
+	})
+}
+
+func (service *Service) GetBalance(ctx context.Context, query GetBalanceQuery) (domain.Balance, error) {
+	query.Currency = normalizeCurrency(query.Currency)
+	if err := validateGetBalanceQuery(query); err != nil {
+		return domain.Balance{}, err
+	}
+
+	return service.money.GetBalance(ctx, query.TrainerUserID, query.Currency)
 }
 
 func buildPost(command CreatePostCommand) (domain.Post, error) {
@@ -557,65 +477,6 @@ func buildPost(command CreatePostCommand) (domain.Post, error) {
 	}
 
 	return post, nil
-}
-
-func validatePost(post domain.Post) error {
-	if post.AuthorUserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if len(post.Title) == 0 || len(post.Title) > 200 {
-		return ErrInvalidTitle
-	}
-	if post.RequiredSubscriptionLevel != nil && *post.RequiredSubscriptionLevel < 1 {
-		return ErrInvalidRequiredSubscriptionLevel
-	}
-	if post.SportTypeID != nil && *post.SportTypeID < 1 {
-		return ErrInvalidSportTypeID
-	}
-	if len(post.Blocks) == 0 {
-		return ErrBlocksRequired
-	}
-	if len(post.Blocks) > maxBlockCount {
-		return ErrTooManyBlocks
-	}
-
-	for _, block := range post.Blocks {
-		if !block.Kind.IsValid() {
-			return domain.ErrInvalidBlockKind
-		}
-		switch block.Kind {
-		case domain.BlockKindText:
-			if block.TextContent == nil || len(*block.TextContent) == 0 || block.FileURL != nil {
-				return domain.ErrInvalidBlockData
-			}
-		default:
-			if block.FileURL == nil || len(*block.FileURL) == 0 || block.TextContent != nil {
-				return domain.ErrInvalidBlockData
-			}
-		}
-	}
-
-	return nil
-}
-
-func validateSubscriptionTier(tier domain.SubscriptionTier) error {
-	if tier.TrainerUserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if tier.TierID < 0 {
-		return ErrInvalidSubscriptionTierID
-	}
-	if len(tier.Name) == 0 || len(tier.Name) > maxTierNameLen {
-		return ErrInvalidSubscriptionTierName
-	}
-	if tier.Price < 0 {
-		return ErrInvalidSubscriptionTierPrice
-	}
-	if tier.Description != nil && len(*tier.Description) > maxTierDescLen {
-		return ErrInvalidSubscriptionTierDescription
-	}
-
-	return nil
 }
 
 func normalizeRequiredText(value string) string {
@@ -655,12 +516,21 @@ func normalizeSportTypeID(value *int64) *int64 {
 	return &sportTypeID
 }
 
+func normalizeCurrency(value string) string {
+	value = strings.ToUpper(normalizeRequiredText(value))
+	if value == "" {
+		return defaultCurrency
+	}
+
+	return value
+}
+
 func (service *Service) ensureRequiredSubscriptionTier(ctx context.Context, trainerUserID int64, level *int32) error {
 	if level == nil {
 		return nil
 	}
 
-	_, err := service.contentRepository.GetSubscriptionTier(ctx, trainerUserID, int64(*level))
+	_, err := service.money.GetSubscriptionTier(ctx, trainerUserID, int64(*level))
 	return err
 }
 
@@ -680,7 +550,7 @@ func (service *Service) canViewPost(
 		return false, nil
 	}
 
-	viewerSubscriptionLevel, err := service.contentRepository.GetActiveSubscriptionLevel(ctx, viewerUserID, authorUserID)
+	viewerSubscriptionLevel, err := service.money.GetActiveSubscriptionLevel(ctx, viewerUserID, authorUserID)
 	if err != nil {
 		return false, err
 	}
@@ -702,24 +572,12 @@ func normalizeBlocks(inputs []PostBlockInput) []domain.PostBlock {
 	return blocks
 }
 
-func normalizePage(limit int32, offset int32) (int32, int32, error) {
-	if limit < 0 || limit > maxPageLimit {
-		return 0, 0, ErrInvalidLimit
-	}
-	if offset < 0 {
-		return 0, 0, ErrInvalidOffset
-	}
-	if limit == 0 {
-		limit = defaultPageLimit
-	}
-
-	return limit, offset, nil
-}
-
 func postMediaKind(contentType string) (domain.BlockKind, bool) {
-	switch contentType {
-	case "image/jpeg", "image/png", "image/webp":
+	if strings.HasPrefix(contentType, "image/") && contentType != svgContentType {
 		return domain.BlockKindImage, true
+	}
+
+	switch contentType {
 	case "video/mp4":
 		return domain.BlockKindVideo, true
 	case "application/pdf":

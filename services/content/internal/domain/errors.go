@@ -9,6 +9,7 @@ var (
 	ErrSubscriptionTierNotFound = errors.New("subscription tier not found")
 	ErrSubscriptionTierInUse    = errors.New("subscription tier is used by posts")
 	ErrSubscriptionNotFound     = errors.New("subscription not found")
+	ErrDonationNotFound         = errors.New("donation not found")
 	ErrInvalidBlockKind         = errors.New("invalid block kind")
 	ErrInvalidBlockData         = errors.New("invalid block data")
 )
