@@ -10,9 +10,14 @@ postgres:
   host: localhost
   port: "5432"
   db_name: sporttech_content
-  max_open_conns: 20
-  max_idle_conns: 10
+  application_name: content-service
+  max_open_conns: 12
+  max_idle_conns: 6
   conn_max_lifetime: 30m
+  connect_timeout_seconds: 5
+  statement_timeout: 5s
+  lock_timeout: 1s
+  idle_in_transaction_session_timeout: 10s
 
 storage:
   host: localhost

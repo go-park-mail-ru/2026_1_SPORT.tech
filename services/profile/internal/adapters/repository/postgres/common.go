@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 	"github.com/lib/pq"
-	"time"
 )
 
 func nullString(value *string) any {
@@ -21,6 +23,16 @@ func nullTime(value *time.Time) any {
 	}
 
 	return *value
+}
+
+func escapeLikePattern(value string) string {
+	replacer := strings.NewReplacer(
+		`\`, `\\`,
+		`%`, `\%`,
+		`_`, `\_`,
+	)
+
+	return replacer.Replace(value)
 }
 
 func mapProfileError(err error) error {

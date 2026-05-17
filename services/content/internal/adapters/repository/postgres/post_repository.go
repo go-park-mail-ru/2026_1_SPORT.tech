@@ -235,11 +235,12 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 	conditions := make([]string, 0, 6)
 
 	if trimmedQuery := strings.TrimSpace(searchQuery.Query); trimmedQuery != "" {
-		args = append(args, "%"+trimmedQuery+"%")
+		args = append(args, "%"+escapeLikePattern(trimmedQuery)+"%")
 		placeholder := fmt.Sprintf("$%d", len(args))
+		likePlaceholder := placeholder + " ESCAPE '\\'"
 		conditions = append(
 			conditions,
-			"(p.title ILIKE "+placeholder+" OR EXISTS (SELECT 1 FROM content_post_block search_block WHERE search_block.post_id = p.post_id AND search_block.kind = 'text' AND search_block.text_content ILIKE "+placeholder+"))",
+			"(p.title ILIKE "+likePlaceholder+" OR EXISTS (SELECT 1 FROM content_post_block search_block WHERE search_block.post_id = p.post_id AND search_block.kind = 'text' AND search_block.text_content ILIKE "+likePlaceholder+"))",
 		)
 	}
 	if len(searchQuery.AuthorUserIDs) > 0 {
