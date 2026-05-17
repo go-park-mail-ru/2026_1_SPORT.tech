@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
+
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 	"github.com/lib/pq"
 )
@@ -85,6 +87,16 @@ func nullString(value *string) sql.NullString {
 		String: *value,
 		Valid:  true,
 	}
+}
+
+func escapeLikePattern(value string) string {
+	replacer := strings.NewReplacer(
+		`\`, `\\`,
+		`%`, `\%`,
+		`_`, `\_`,
+	)
+
+	return replacer.Replace(value)
 }
 
 func nullInt32(value *int32) sql.NullInt32 {

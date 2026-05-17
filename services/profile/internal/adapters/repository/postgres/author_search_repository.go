@@ -41,9 +41,10 @@ func (repository *ProfileRepository) SearchAuthors(ctx context.Context, query us
 	conditions := make([]string, 0, 2)
 
 	if trimmedQuery := strings.TrimSpace(query.Query); trimmedQuery != "" {
-		args = append(args, "%"+trimmedQuery+"%")
+		args = append(args, "%"+escapeLikePattern(trimmedQuery)+"%")
 		placeholder := fmt.Sprintf("$%d", len(args))
-		conditions = append(conditions, "(p.username ILIKE "+placeholder+" OR p.first_name ILIKE "+placeholder+" OR p.last_name ILIKE "+placeholder+" OR p.bio ILIKE "+placeholder+")")
+		likePlaceholder := placeholder + " ESCAPE '\\'"
+		conditions = append(conditions, "(p.username ILIKE "+likePlaceholder+" OR p.first_name ILIKE "+likePlaceholder+" OR p.last_name ILIKE "+likePlaceholder+" OR p.bio ILIKE "+likePlaceholder+")")
 	}
 	if len(query.SportTypeIDs) > 0 || query.MinExperienceYears != nil || query.MaxExperienceYears != nil || query.OnlyWithRank {
 		sportConditions := []string{"filter_ts.user_id = p.user_id"}
