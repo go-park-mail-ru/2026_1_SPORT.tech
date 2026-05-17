@@ -94,14 +94,10 @@ services:
     networks:
       - backend
 
-  db-security:
+  auth-db-security:
     image: postgres:17
     depends_on:
       auth-migrator:
-        condition: service_completed_successfully
-      profile-migrator:
-        condition: service_completed_successfully
-      content-migrator:
         condition: service_completed_successfully
     environment:
       PGHOST: db
@@ -111,23 +107,78 @@ services:
       PGPASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
       AUTH_DB_APP_USER: ${AUTH_DB_APP_USER:?AUTH_DB_APP_USER is required}
       AUTH_DB_APP_PASSWORD: ${AUTH_DB_APP_PASSWORD:?AUTH_DB_APP_PASSWORD is required}
-      PROFILE_DB_APP_USER: ${PROFILE_DB_APP_USER:?PROFILE_DB_APP_USER is required}
-      PROFILE_DB_APP_PASSWORD: ${PROFILE_DB_APP_PASSWORD:?PROFILE_DB_APP_PASSWORD is required}
-      CONTENT_DB_APP_USER: ${CONTENT_DB_APP_USER:?CONTENT_DB_APP_USER is required}
-      CONTENT_DB_APP_PASSWORD: ${CONTENT_DB_APP_PASSWORD:?CONTENT_DB_APP_PASSWORD is required}
     volumes:
-      - ./docker/postgres/security:/opt/postgres/security:ro
+      - ./services/auth/migrations/security:/opt/microservice/migrations/security:ro
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         psql -v ON_ERROR_STOP=1 \
           -v auth_app_user="$${AUTH_DB_APP_USER}" \
           -v auth_app_password="$${AUTH_DB_APP_PASSWORD}" \
+          -f /opt/microservice/migrations/security/001-service-account-and-grants.sql
+    networks:
+      - backend
+
+  profile-db-security:
+    image: postgres:17
+    depends_on:
+      profile-migrator:
+        condition: service_completed_successfully
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: postgres
+      PGUSER: ${DB_USER:?DB_USER is required}
+      PGPASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      PROFILE_DB_APP_USER: ${PROFILE_DB_APP_USER:?PROFILE_DB_APP_USER is required}
+      PROFILE_DB_APP_PASSWORD: ${PROFILE_DB_APP_PASSWORD:?PROFILE_DB_APP_PASSWORD is required}
+    volumes:
+      - ./services/profile/migrations/security:/opt/microservice/migrations/security:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        psql -v ON_ERROR_STOP=1 \
           -v profile_app_user="$${PROFILE_DB_APP_USER}" \
           -v profile_app_password="$${PROFILE_DB_APP_PASSWORD}" \
+          -f /opt/microservice/migrations/security/001-service-account-and-grants.sql
+    networks:
+      - backend
+
+  content-db-security:
+    image: postgres:17
+    depends_on:
+      content-migrator:
+        condition: service_completed_successfully
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: postgres
+      PGUSER: ${DB_USER:?DB_USER is required}
+      PGPASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      CONTENT_DB_APP_USER: ${CONTENT_DB_APP_USER:?CONTENT_DB_APP_USER is required}
+      CONTENT_DB_APP_PASSWORD: ${CONTENT_DB_APP_PASSWORD:?CONTENT_DB_APP_PASSWORD is required}
+    volumes:
+      - ./services/content/migrations/security:/opt/microservice/migrations/security:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        psql -v ON_ERROR_STOP=1 \
           -v content_app_user="$${CONTENT_DB_APP_USER}" \
           -v content_app_password="$${CONTENT_DB_APP_PASSWORD}" \
-          -f /opt/postgres/security/001-service-accounts-and-grants.sql
+          -f /opt/microservice/migrations/security/001-service-account-and-grants.sql
+    networks:
+      - backend
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    environment:
+      DATA_SOURCE_URI: db:5432/postgres?sslmode=disable
+      DATA_SOURCE_USER: ${DB_USER:?DB_USER is required}
+      DATA_SOURCE_PASS: ${DB_PASSWORD:?DB_PASSWORD is required}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - backend
 
@@ -142,7 +193,7 @@ services:
       AUTH_DB_HOST: db
       AUTH_DB_NAME: sporttech_auth
     depends_on:
-      db-security:
+      auth-db-security:
         condition: service_completed_successfully
     ports:
       - "8081:8081"
@@ -166,7 +217,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?MINIO_SECRET_KEY is required}
       PROFILE_STORAGE_PUBLIC_BASE_URL: ${PROFILE_STORAGE_PUBLIC_BASE_URL:-http://localhost:8000/avatars}
     depends_on:
-      db-security:
+      profile-db-security:
         condition: service_completed_successfully
       minio:
         condition: service_started
@@ -192,7 +243,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?MINIO_SECRET_KEY is required}
       CONTENT_STORAGE_PUBLIC_BASE_URL: ${CONTENT_STORAGE_PUBLIC_BASE_URL:-http://localhost:8000/post-media}
     depends_on:
-      db-security:
+      content-db-security:
         condition: service_completed_successfully
       minio:
         condition: service_started
@@ -244,6 +295,8 @@ services:
       node-exporter:
         condition: service_started
       cadvisor:
+        condition: service_started
+      postgres-exporter:
         condition: service_started
     ports:
       - "8090:9090"

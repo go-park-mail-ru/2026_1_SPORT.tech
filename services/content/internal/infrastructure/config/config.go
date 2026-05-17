@@ -27,19 +27,19 @@ type ServerConfig struct {
 }
 
 type PostgresConfig struct {
-	Host                            string `yaml:"host" env:"CONTENT_DB_HOST" env-default:"localhost" validate:"required"`
-	Port                            string `yaml:"port" env:"CONTENT_DB_PORT" env-default:"5432" validate:"required"`
-	User                            string `yaml:"user" env:"CONTENT_DB_USER" validate:"required"`
-	Password                        string `yaml:"password" env:"CONTENT_DB_PASSWORD" validate:"required"`
-	Name                            string `yaml:"db_name" env:"CONTENT_DB_NAME" env-default:"sporttech_content" validate:"required"`
-	ApplicationName                 string `yaml:"application_name" env:"CONTENT_DB_APPLICATION_NAME" env-default:"content-service" validate:"required"`
-	MaxOpenConns                    int    `yaml:"max_open_conns" env:"CONTENT_DB_MAX_OPEN_CONNS" env-default:"12" validate:"required"`
-	MaxIdleConns                    int    `yaml:"max_idle_conns" env:"CONTENT_DB_MAX_IDLE_CONNS" env-default:"6" validate:"gte=0"`
-	ConnMaxLifetime                 string `yaml:"conn_max_lifetime" env:"CONTENT_DB_CONN_MAX_LIFETIME" env-default:"30m" validate:"required"`
-	ConnectTimeoutSeconds           int    `yaml:"connect_timeout_seconds" env:"CONTENT_DB_CONNECT_TIMEOUT_SECONDS" env-default:"5" validate:"required"`
-	StatementTimeout                string `yaml:"statement_timeout" env:"CONTENT_DB_STATEMENT_TIMEOUT" env-default:"5s" validate:"required"`
-	LockTimeout                     string `yaml:"lock_timeout" env:"CONTENT_DB_LOCK_TIMEOUT" env-default:"1s" validate:"required"`
-	IdleInTransactionSessionTimeout string `yaml:"idle_in_transaction_session_timeout" env:"CONTENT_DB_IDLE_IN_TRANSACTION_SESSION_TIMEOUT" env-default:"10s" validate:"required"`
+	Host                              string `yaml:"host" env:"CONTENT_DB_HOST" env-default:"localhost" validate:"required"`
+	Port                              string `yaml:"port" env:"CONTENT_DB_PORT" env-default:"5432" validate:"required"`
+	User                              string `yaml:"user" env:"CONTENT_DB_USER" validate:"required"`
+	Password                          string `yaml:"password" env:"CONTENT_DB_PASSWORD" validate:"required"`
+	Name                              string `yaml:"db_name" env:"CONTENT_DB_NAME" env-default:"sporttech_content" validate:"required"`
+	ApplicationName                   string `yaml:"application_name" env:"CONTENT_DB_APPLICATION_NAME" env-default:"content-service" validate:"required"`
+	DBMaxOpenConns                    int    `yaml:"db_max_open_conns" env:"CONTENT_DB_MAX_OPEN_CONNS" env-default:"12" validate:"required"`
+	DBMaxIdleConns                    int    `yaml:"db_max_idle_conns" env:"CONTENT_DB_MAX_IDLE_CONNS" env-default:"6" validate:"gte=0"`
+	DBConnMaxLifetime                 string `yaml:"db_conn_max_lifetime" env:"CONTENT_DB_CONN_MAX_LIFETIME" env-default:"30m" validate:"required"`
+	DBConnectTimeoutSeconds           int    `yaml:"db_connect_timeout_seconds" env:"CONTENT_DB_CONNECT_TIMEOUT_SECONDS" env-default:"5" validate:"required"`
+	DBStatementTimeout                string `yaml:"db_statement_timeout" env:"CONTENT_DB_STATEMENT_TIMEOUT" env-default:"5s" validate:"required"`
+	DBLockTimeout                     string `yaml:"db_lock_timeout" env:"CONTENT_DB_LOCK_TIMEOUT" env-default:"1s" validate:"required"`
+	DBIdleInTransactionSessionTimeout string `yaml:"db_idle_in_transaction_session_timeout" env:"CONTENT_DB_IDLE_IN_TRANSACTION_SESSION_TIMEOUT" env-default:"10s" validate:"required"`
 }
 
 type StorageConfig struct {
@@ -90,10 +90,10 @@ func (cfg PostgresConfig) DSN() string {
 	query := url.Values{}
 	query.Set("sslmode", "disable")
 	query.Set("application_name", cfg.ApplicationName)
-	query.Set("connect_timeout", strconv.Itoa(cfg.ConnectTimeoutSeconds))
-	query.Set("statement_timeout", cfg.StatementTimeout)
-	query.Set("lock_timeout", cfg.LockTimeout)
-	query.Set("idle_in_transaction_session_timeout", cfg.IdleInTransactionSessionTimeout)
+	query.Set("connect_timeout", strconv.Itoa(cfg.DBConnectTimeoutSeconds))
+	query.Set("statement_timeout", cfg.DBStatementTimeout)
+	query.Set("lock_timeout", cfg.DBLockTimeout)
+	query.Set("idle_in_transaction_session_timeout", cfg.DBIdleInTransactionSessionTimeout)
 
 	databaseURL := url.URL{
 		Scheme:   "postgres",
@@ -106,36 +106,36 @@ func (cfg PostgresConfig) DSN() string {
 	return databaseURL.String()
 }
 
-func (cfg PostgresConfig) ConnMaxLifetimeDuration() (time.Duration, error) {
-	return time.ParseDuration(cfg.ConnMaxLifetime)
+func (cfg PostgresConfig) DBConnMaxLifetimeDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.DBConnMaxLifetime)
 }
 
 func (cfg PostgresConfig) Validate() error {
-	if cfg.MaxOpenConns <= 0 {
+	if cfg.DBMaxOpenConns <= 0 {
 		return fmt.Errorf("max_open_conns must be positive")
 	}
-	if cfg.MaxIdleConns > cfg.MaxOpenConns {
+	if cfg.DBMaxIdleConns > cfg.DBMaxOpenConns {
 		return fmt.Errorf("max_idle_conns must not exceed max_open_conns")
 	}
-	if cfg.ConnectTimeoutSeconds <= 0 {
+	if cfg.DBConnectTimeoutSeconds <= 0 {
 		return fmt.Errorf("connect_timeout_seconds must be positive")
 	}
 
-	statementTimeout, err := parsePositiveDuration("statement_timeout", cfg.StatementTimeout)
+	statementTimeout, err := parsePositiveDuration("statement_timeout", cfg.DBStatementTimeout)
 	if err != nil {
 		return err
 	}
-	lockTimeout, err := parsePositiveDuration("lock_timeout", cfg.LockTimeout)
+	lockTimeout, err := parsePositiveDuration("lock_timeout", cfg.DBLockTimeout)
 	if err != nil {
 		return err
 	}
 	if lockTimeout >= statementTimeout {
 		return fmt.Errorf("lock_timeout must be less than statement_timeout")
 	}
-	if _, err := parsePositiveDuration("idle_in_transaction_session_timeout", cfg.IdleInTransactionSessionTimeout); err != nil {
+	if _, err := parsePositiveDuration("idle_in_transaction_session_timeout", cfg.DBIdleInTransactionSessionTimeout); err != nil {
 		return err
 	}
-	if _, err := parsePositiveDuration("conn_max_lifetime", cfg.ConnMaxLifetime); err != nil {
+	if _, err := parsePositiveDuration("conn_max_lifetime", cfg.DBConnMaxLifetime); err != nil {
 		return err
 	}
 
