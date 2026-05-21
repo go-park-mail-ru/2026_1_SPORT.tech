@@ -217,3 +217,61 @@ func (server *Server) UnlikePost(ctx context.Context, request *gatewayv1.PostLik
 
 	return mappers.PostLikeResponseFromContent(response)
 }
+
+func (server *Server) CreateComment(ctx context.Context, request *gatewayv1.CreateCommentRequest) (*gatewayv1.CommentResponse, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.CreateComment(
+		forwardContext(ctx),
+		mappers.CreateCommentRequestToContent(userID, viewerSubscriptionLevel, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := setHTTPStatus(ctx, 201); err != nil {
+		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
+	}
+
+	return mappers.CommentResponseFromContent(response)
+}
+
+func (server *Server) ListComments(ctx context.Context, request *gatewayv1.ListCommentsRequest) (*gatewayv1.ListCommentsResponse, error) {
+	principal, err := server.optionalSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var viewerUserID int64
+	if principal != nil && principal.User != nil {
+		viewerUserID = principal.User.GetUserId()
+	}
+
+	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.ListComments(
+		forwardContext(ctx),
+		mappers.ListCommentsRequestToContent(viewerUserID, viewerSubscriptionLevel, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.ListCommentsResponseFromContent(response)
+}

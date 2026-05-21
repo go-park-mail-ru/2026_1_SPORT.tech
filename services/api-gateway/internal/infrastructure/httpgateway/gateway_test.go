@@ -43,6 +43,19 @@ func (server authServer) Login(ctx context.Context, request *authv1.LoginRequest
 	}, nil
 }
 
+func (server authServer) GetSession(ctx context.Context, request *authv1.GetSessionRequest) (*authv1.GetSessionResponse, error) {
+	return &authv1.GetSessionResponse{
+		User: &authv1.AuthUser{
+			UserId:   7,
+			Email:    "runner@example.com",
+			Username: "runner",
+			Role:     authv1.UserRole_USER_ROLE_CLIENT,
+			Status:   authv1.AccountStatus_ACCOUNT_STATUS_ACTIVE,
+		},
+		Session: &authv1.SessionInfo{SessionToken: request.GetSessionToken()},
+	}, nil
+}
+
 type profileServer struct {
 	profilev1.UnimplementedProfileServiceServer
 }
@@ -103,6 +116,38 @@ func (server contentServer) GetPost(ctx context.Context, request *contentv1.GetP
 					Kind:        contentv1.ContentBlockKind_CONTENT_BLOCK_KIND_TEXT,
 					TextContent: stringPtr("Main set"),
 				},
+			},
+		},
+	}, nil
+}
+
+func (server contentServer) CreateComment(ctx context.Context, request *contentv1.CreateCommentRequest) (*contentv1.CommentResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 12, 30, 0, 0, time.UTC))
+
+	return &contentv1.CommentResponse{
+		Comment: &contentv1.Comment{
+			CommentId:    51,
+			PostId:       request.GetPostId(),
+			AuthorUserId: request.GetAuthorUserId(),
+			Body:         request.GetBody(),
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+	}, nil
+}
+
+func (server contentServer) ListComments(ctx context.Context, request *contentv1.ListCommentsRequest) (*contentv1.ListCommentsResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 12, 30, 0, 0, time.UTC))
+
+	return &contentv1.ListCommentsResponse{
+		Comments: []*contentv1.Comment{
+			{
+				CommentId:    50,
+				PostId:       request.GetPostId(),
+				AuthorUserId: 8,
+				Body:         "Good pace",
+				CreatedAt:    now,
+				UpdatedAt:    now,
 			},
 		},
 	}, nil
@@ -271,6 +316,76 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		postPayload.Blocks[2].Kind != "text" ||
 		postPayload.Blocks[2].TextContent != "Main set" {
 		t.Fatalf("unexpected post blocks: %+v", postPayload.Blocks)
+	}
+
+	commentsResponse, err := http.Get(server.URL + "/api/v1/posts/11/comments?limit=20")
+	if err != nil {
+		t.Fatalf("list comments: %v", err)
+	}
+	defer commentsResponse.Body.Close()
+
+	if commentsResponse.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected comments status: %d", commentsResponse.StatusCode)
+	}
+
+	var commentsPayload struct {
+		Comments []struct {
+			CommentID    int32  `json:"comment_id"`
+			PostID       int32  `json:"post_id"`
+			AuthorUserID int32  `json:"author_user_id"`
+			Body         string `json:"body"`
+		} `json:"comments"`
+	}
+	if err := json.NewDecoder(commentsResponse.Body).Decode(&commentsPayload); err != nil {
+		t.Fatalf("decode comments response: %v", err)
+	}
+	if len(commentsPayload.Comments) != 1 ||
+		commentsPayload.Comments[0].CommentID != 50 ||
+		commentsPayload.Comments[0].PostID != 11 ||
+		commentsPayload.Comments[0].AuthorUserID != 8 ||
+		commentsPayload.Comments[0].Body != "Good pace" {
+		t.Fatalf("unexpected comments payload: %+v", commentsPayload)
+	}
+
+	createCommentRequest, err := http.NewRequest(
+		http.MethodPost,
+		server.URL+"/api/v1/posts/11/comments",
+		bytes.NewBufferString(`{"body":"Great workout"}`),
+	)
+	if err != nil {
+		t.Fatalf("create comment request: %v", err)
+	}
+	createCommentRequest.Header.Set("Content-Type", "application/json")
+	createCommentRequest.Header.Set("X-CSRF-Token", csrfPayload.CSRFToken)
+	createCommentRequest.Header.Set("Cookie", "sid=token-123; csrf_token="+csrfPayload.CSRFToken)
+
+	createCommentResponse, err := http.DefaultClient.Do(createCommentRequest)
+	if err != nil {
+		t.Fatalf("create comment: %v", err)
+	}
+	defer createCommentResponse.Body.Close()
+
+	if createCommentResponse.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(createCommentResponse.Body)
+		t.Fatalf("unexpected create comment status: %d body=%s", createCommentResponse.StatusCode, string(body))
+	}
+
+	var commentPayload struct {
+		Comment struct {
+			CommentID    int32  `json:"comment_id"`
+			PostID       int32  `json:"post_id"`
+			AuthorUserID int32  `json:"author_user_id"`
+			Body         string `json:"body"`
+		} `json:"comment"`
+	}
+	if err := json.NewDecoder(createCommentResponse.Body).Decode(&commentPayload); err != nil {
+		t.Fatalf("decode create comment response: %v", err)
+	}
+	if commentPayload.Comment.CommentID != 51 ||
+		commentPayload.Comment.PostID != 11 ||
+		commentPayload.Comment.AuthorUserID != 7 ||
+		commentPayload.Comment.Body != "Great workout" {
+		t.Fatalf("unexpected create comment payload: %+v", commentPayload)
 	}
 
 	sportTypesResponse, err := http.Get(server.URL + "/api/v1/sport-types")
