@@ -133,6 +133,9 @@ func TestContentOtherRequestMappers(t *testing.T) {
 	if got := GetBalanceRequestToQuery(&contentv1.GetBalanceRequest{TrainerUserId: 1, Currency: "RUB"}); got.TrainerUserID != 1 || got.Currency != "RUB" {
 		t.Fatalf("unexpected balance query: %+v", got)
 	}
+	if got := GetTrainerStatisticsRequestToQuery(&contentv1.GetTrainerStatisticsRequest{TrainerUserId: 1, Currency: "RUB"}); got.TrainerUserID != 1 || got.Currency != "RUB" {
+		t.Fatalf("unexpected statistics query: %+v", got)
+	}
 	if got := DeletePostRequestToCommand(&contentv1.DeletePostRequest{PostId: 1, AuthorUserId: 2}); got.PostID != 1 || got.AuthorUserID != 2 {
 		t.Fatalf("unexpected delete post command: %+v", got)
 	}
@@ -228,6 +231,9 @@ func TestContentMoreResponseMappers(t *testing.T) {
 	}
 	if got := NewBalanceResponse(domain.Balance{TrainerUserID: 1, AmountValue: 100, Currency: "RUB"}); got.GetAmountValue() != 100 {
 		t.Fatalf("unexpected balance response: %+v", got)
+	}
+	if got := NewTrainerStatisticsResponse(domain.TrainerStatistics{TrainerUserID: 1, PostsCount: 2, DonationsCount: 3, TotalRevenue: 400, MonthlyRevenue: 100, Currency: "RUB"}); got.GetPostsCount() != 2 || got.GetMonthlyRevenue() != 100 {
+		t.Fatalf("unexpected statistics response: %+v", got)
 	}
 	if got := NewCommentResponse(domain.Comment{CommentID: 1, PostID: 2, AuthorUserID: 3, Body: "body", CreatedAt: now, UpdatedAt: now}); got.GetComment().GetBody() != "body" {
 		t.Fatalf("unexpected comment response: %+v", got)

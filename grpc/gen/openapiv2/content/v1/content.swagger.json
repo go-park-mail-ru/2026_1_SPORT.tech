@@ -849,6 +849,43 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/users/{trainer_user_id}/statistics": {
+      "get": {
+        "operationId": "ContentService_GetTrainerStatistics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1TrainerStatisticsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -1523,6 +1560,34 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1TrainerStatisticsResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "posts_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "donations_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "monthly_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
         }
       }
     },

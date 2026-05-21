@@ -25,6 +25,9 @@
     },
     {
       "name": "DonationService"
+    },
+    {
+      "name": "StatisticsService"
     }
   ],
   "consumes": [
@@ -760,6 +763,28 @@
         },
         "tags": [
           "SportService"
+        ]
+      }
+    },
+    "/v1/statistics/me": {
+      "get": {
+        "operationId": "StatisticsService_GetMyStatistics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StatisticsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "StatisticsService"
         ]
       }
     },
@@ -1804,6 +1829,34 @@
             "type": "object",
             "$ref": "#/definitions/v1SportType"
           }
+        }
+      }
+    },
+    "v1StatisticsResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "posts_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "donations_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "monthly_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
         }
       }
     },

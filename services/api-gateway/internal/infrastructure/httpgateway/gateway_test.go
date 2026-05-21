@@ -33,7 +33,7 @@ func (server authServer) Login(ctx context.Context, request *authv1.LoginRequest
 			UserId:   7,
 			Email:    request.GetEmail(),
 			Username: "runner",
-			Role:     authv1.UserRole_USER_ROLE_CLIENT,
+			Role:     authv1.UserRole_USER_ROLE_TRAINER,
 			Status:   authv1.AccountStatus_ACCOUNT_STATUS_ACTIVE,
 		},
 		Session: &authv1.SessionInfo{
@@ -49,7 +49,7 @@ func (server authServer) GetSession(ctx context.Context, request *authv1.GetSess
 			UserId:   7,
 			Email:    "runner@example.com",
 			Username: "runner",
-			Role:     authv1.UserRole_USER_ROLE_CLIENT,
+			Role:     authv1.UserRole_USER_ROLE_TRAINER,
 			Status:   authv1.AccountStatus_ACCOUNT_STATUS_ACTIVE,
 		},
 		Session: &authv1.SessionInfo{SessionToken: request.GetSessionToken()},
@@ -153,6 +153,17 @@ func (server contentServer) ListComments(ctx context.Context, request *contentv1
 	}, nil
 }
 
+func (server contentServer) GetTrainerStatistics(ctx context.Context, request *contentv1.GetTrainerStatisticsRequest) (*contentv1.TrainerStatisticsResponse, error) {
+	return &contentv1.TrainerStatisticsResponse{
+		TrainerUserId:  request.GetTrainerUserId(),
+		PostsCount:     12,
+		DonationsCount: 4,
+		TotalRevenue:   7000,
+		MonthlyRevenue: 2500,
+		Currency:       request.GetCurrency(),
+	}, nil
+}
+
 func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	authEndpoint := startGRPCServer(t, func(server *grpc.Server) {
 		authv1.RegisterAuthServiceServer(server, authServer{})
@@ -188,7 +199,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		contentv1.NewContentServiceClient(contentConn),
 	)
 
-	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
+	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}
@@ -386,6 +397,43 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		commentPayload.Comment.AuthorUserID != 7 ||
 		commentPayload.Comment.Body != "Great workout" {
 		t.Fatalf("unexpected create comment payload: %+v", commentPayload)
+	}
+
+	statisticsRequest, err := http.NewRequest(http.MethodGet, server.URL+"/api/v1/statistics/me", nil)
+	if err != nil {
+		t.Fatalf("statistics request: %v", err)
+	}
+	statisticsRequest.Header.Set("Cookie", "sid=token-123")
+
+	statisticsResponse, err := http.DefaultClient.Do(statisticsRequest)
+	if err != nil {
+		t.Fatalf("get statistics: %v", err)
+	}
+	defer statisticsResponse.Body.Close()
+
+	if statisticsResponse.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(statisticsResponse.Body)
+		t.Fatalf("unexpected statistics status: %d body=%s", statisticsResponse.StatusCode, string(body))
+	}
+
+	var statisticsPayload struct {
+		TrainerID      int32  `json:"trainer_id"`
+		PostsCount     int32  `json:"posts_count"`
+		DonationsCount int32  `json:"donations_count"`
+		TotalRevenue   int32  `json:"total_revenue"`
+		MonthlyRevenue int32  `json:"monthly_revenue"`
+		Currency       string `json:"currency"`
+	}
+	if err := json.NewDecoder(statisticsResponse.Body).Decode(&statisticsPayload); err != nil {
+		t.Fatalf("decode statistics response: %v", err)
+	}
+	if statisticsPayload.TrainerID != 7 ||
+		statisticsPayload.PostsCount != 12 ||
+		statisticsPayload.DonationsCount != 4 ||
+		statisticsPayload.TotalRevenue != 7000 ||
+		statisticsPayload.MonthlyRevenue != 2500 ||
+		statisticsPayload.Currency != "RUB" {
+		t.Fatalf("unexpected statistics payload: %+v", statisticsPayload)
 	}
 
 	sportTypesResponse, err := http.Get(server.URL + "/api/v1/sport-types")

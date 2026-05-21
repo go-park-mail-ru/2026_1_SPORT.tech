@@ -131,6 +131,21 @@ func TestDonationMappers(t *testing.T) {
 	if balance.GetTrainerId() != 1001 || balance.GetAmountValue() != 2500 {
 		t.Fatalf("unexpected balance response: %+v", balance)
 	}
+
+	statistics, err := StatisticsResponseFromContent(&contentv1.TrainerStatisticsResponse{
+		TrainerUserId:  1001,
+		PostsCount:     12,
+		DonationsCount: 4,
+		TotalRevenue:   7000,
+		MonthlyRevenue: 2500,
+		Currency:       "RUB",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if statistics.GetTrainerId() != 1001 || statistics.GetPostsCount() != 12 || statistics.GetMonthlyRevenue() != 2500 {
+		t.Fatalf("unexpected statistics response: %+v", statistics)
+	}
 }
 
 func TestSubscriptionMappers(t *testing.T) {

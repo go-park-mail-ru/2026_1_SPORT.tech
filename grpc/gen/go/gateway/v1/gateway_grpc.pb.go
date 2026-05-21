@@ -1782,3 +1782,103 @@ var DonationService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "gateway/v1/gateway.proto",
 }
+
+const (
+	StatisticsService_GetMyStatistics_FullMethodName = "/sporttech.gateway.v1.StatisticsService/GetMyStatistics"
+)
+
+// StatisticsServiceClient is the client API for StatisticsService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type StatisticsServiceClient interface {
+	GetMyStatistics(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatisticsResponse, error)
+}
+
+type statisticsServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewStatisticsServiceClient(cc grpc.ClientConnInterface) StatisticsServiceClient {
+	return &statisticsServiceClient{cc}
+}
+
+func (c *statisticsServiceClient) GetMyStatistics(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatisticsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StatisticsResponse)
+	err := c.cc.Invoke(ctx, StatisticsService_GetMyStatistics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// StatisticsServiceServer is the server API for StatisticsService service.
+// All implementations should embed UnimplementedStatisticsServiceServer
+// for forward compatibility.
+type StatisticsServiceServer interface {
+	GetMyStatistics(context.Context, *emptypb.Empty) (*StatisticsResponse, error)
+}
+
+// UnimplementedStatisticsServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedStatisticsServiceServer struct{}
+
+func (UnimplementedStatisticsServiceServer) GetMyStatistics(context.Context, *emptypb.Empty) (*StatisticsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyStatistics not implemented")
+}
+func (UnimplementedStatisticsServiceServer) testEmbeddedByValue() {}
+
+// UnsafeStatisticsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to StatisticsServiceServer will
+// result in compilation errors.
+type UnsafeStatisticsServiceServer interface {
+	mustEmbedUnimplementedStatisticsServiceServer()
+}
+
+func RegisterStatisticsServiceServer(s grpc.ServiceRegistrar, srv StatisticsServiceServer) {
+	// If the following call panics, it indicates UnimplementedStatisticsServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&StatisticsService_ServiceDesc, srv)
+}
+
+func _StatisticsService_GetMyStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatisticsServiceServer).GetMyStatistics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StatisticsService_GetMyStatistics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatisticsServiceServer).GetMyStatistics(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// StatisticsService_ServiceDesc is the grpc.ServiceDesc for StatisticsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var StatisticsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.StatisticsService",
+	HandlerType: (*StatisticsServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetMyStatistics",
+			Handler:    _StatisticsService_GetMyStatistics_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}

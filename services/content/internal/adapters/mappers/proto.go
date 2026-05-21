@@ -158,6 +158,13 @@ func GetBalanceRequestToQuery(request *contentv1.GetBalanceRequest) usecase.GetB
 	}
 }
 
+func GetTrainerStatisticsRequestToQuery(request *contentv1.GetTrainerStatisticsRequest) usecase.GetTrainerStatisticsQuery {
+	return usecase.GetTrainerStatisticsQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+		Currency:      request.GetCurrency(),
+	}
+}
+
 func DeletePostRequestToCommand(request *contentv1.DeletePostRequest) usecase.DeletePostCommand {
 	return usecase.DeletePostCommand{
 		PostID:       request.GetPostId(),
@@ -290,6 +297,17 @@ func NewBalanceResponse(balance domain.Balance) *contentv1.BalanceResponse {
 		TrainerUserId: balance.TrainerUserID,
 		AmountValue:   balance.AmountValue,
 		Currency:      balance.Currency,
+	}
+}
+
+func NewTrainerStatisticsResponse(statistics domain.TrainerStatistics) *contentv1.TrainerStatisticsResponse {
+	return &contentv1.TrainerStatisticsResponse{
+		TrainerUserId:  statistics.TrainerUserID,
+		PostsCount:     statistics.PostsCount,
+		DonationsCount: statistics.DonationsCount,
+		TotalRevenue:   statistics.TotalRevenue,
+		MonthlyRevenue: statistics.MonthlyRevenue,
+		Currency:       statistics.Currency,
 	}
 }
 
