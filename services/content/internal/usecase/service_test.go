@@ -243,6 +243,10 @@ func (provider stubPaymentProvider) CreatePayment(ctx context.Context, request P
 	return provider.createFunc(ctx, request)
 }
 
+func (provider stubPaymentProvider) ProviderName() string {
+	return "stripe"
+}
+
 func (provider stubPaymentProvider) GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error) {
 	if provider.getFunc == nil {
 		return PaymentProviderPayment{ProviderPaymentID: providerPaymentID, Status: "succeeded"}, nil
@@ -724,7 +728,7 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 					payment.AmountValue != 1500 ||
 					payment.Currency != "RUB" ||
 					payment.Status != domain.PaymentStatusPending ||
-					payment.Provider != "yookassa" ||
+					payment.Provider != "stripe" ||
 					payment.Message == nil ||
 					*payment.Message != "Спасибо" ||
 					payment.ConfirmationToken == "" {

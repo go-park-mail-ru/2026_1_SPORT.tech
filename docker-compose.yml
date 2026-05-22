@@ -242,10 +242,10 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?MINIO_ACCESS_KEY is required}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?MINIO_SECRET_KEY is required}
       CONTENT_STORAGE_PUBLIC_BASE_URL: ${CONTENT_STORAGE_PUBLIC_BASE_URL:-http://localhost:8000/post-media}
-      CONTENT_PAYMENT_PROVIDER: ${CONTENT_PAYMENT_PROVIDER:-yookassa}
-      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID:?YOOKASSA_SHOP_ID is required}
-      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY:?YOOKASSA_SECRET_KEY is required}
-      YOOKASSA_RETURN_URL: ${YOOKASSA_RETURN_URL:-https://sporteon.ru/payment/success}
+      CONTENT_PAYMENT_PROVIDER: ${CONTENT_PAYMENT_PROVIDER:-stripe}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY is required}
+      STRIPE_RETURN_URL: ${STRIPE_RETURN_URL:-https://sporteon.ru/payment/success}
+      STRIPE_CANCEL_URL: ${STRIPE_CANCEL_URL:-https://sporteon.ru/payment/cancel}
     depends_on:
       content-db-security:
         condition: service_completed_successfully

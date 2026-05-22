@@ -537,7 +537,7 @@ func (service *Service) CreateDonationPayment(ctx context.Context, command Creat
 	}
 
 	payment := domain.DonationPayment{
-		Provider:          "yookassa",
+		Provider:          service.paymentProvider.ProviderName(),
 		Status:            domain.PaymentStatusPending,
 		SenderUserID:      donationCommand.SenderUserID,
 		RecipientUserID:   donationCommand.RecipientUserID,

@@ -27,9 +27,10 @@ storage:
   use_ssl: false
 
 payment:
-  provider: yookassa
-  yookassa_return_url: https://sporteon.ru/payment/success
-  yookassa_api_base_url: https://api.yookassa.ru/v3
+  provider: stripe
+  stripe_return_url: https://sporteon.ru/payment/success
+  stripe_cancel_url: https://sporteon.ru/payment/cancel
+  stripe_api_base_url: https://api.stripe.com/v1
   http_timeout: 5s
 
 openapi:

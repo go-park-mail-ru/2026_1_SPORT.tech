@@ -63,6 +63,7 @@ type PostMediaStorage interface {
 }
 
 type PaymentProvider interface {
+	ProviderName() string
 	CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
 	GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
 }
