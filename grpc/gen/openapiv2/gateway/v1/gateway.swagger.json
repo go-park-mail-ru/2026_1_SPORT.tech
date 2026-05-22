@@ -1578,6 +1578,12 @@
         },
         "message": {
           "type": "string"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
         }
       }
     },

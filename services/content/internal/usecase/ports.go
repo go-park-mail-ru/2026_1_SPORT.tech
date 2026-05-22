@@ -73,6 +73,8 @@ type PaymentProviderCreateRequest struct {
 	Currency       string
 	Description    string
 	IdempotenceKey string
+	ReturnURL      string
+	CancelURL      string
 }
 
 type PaymentProviderPayment struct {
@@ -202,6 +204,8 @@ type CreateDonationPaymentCommand struct {
 	AmountValue     int32
 	Currency        string
 	Message         *string
+	ReturnURL       *string
+	CancelURL       *string
 }
 
 type ConfirmDonationPaymentCommand struct {

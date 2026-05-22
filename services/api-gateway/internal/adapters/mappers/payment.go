@@ -14,6 +14,8 @@ func CreateDonationPaymentRequestToContent(senderUserID int64, request *gatewayv
 		AmountValue:     request.GetAmountValue(),
 		Currency:        request.GetCurrency(),
 		Message:         request.Message,
+		ReturnUrl:       request.ReturnUrl,
+		CancelUrl:       request.CancelUrl,
 	}
 }
 

@@ -158,6 +158,8 @@ func CreateDonationPaymentRequestToCommand(request *contentv1.CreateDonationPaym
 		AmountValue:     request.GetAmountValue(),
 		Currency:        request.GetCurrency(),
 		Message:         request.Message,
+		ReturnURL:       request.ReturnUrl,
+		CancelURL:       request.CancelUrl,
 	}
 }
 

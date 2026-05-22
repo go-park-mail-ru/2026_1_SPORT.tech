@@ -556,6 +556,8 @@ func (service *Service) CreateDonationPayment(ctx context.Context, command Creat
 		Currency:       donationCommand.Currency,
 		Description:    fmt.Sprintf("Donation payment #%d", created.PaymentID),
 		IdempotenceKey: fmt.Sprintf("content-payment-%d", created.PaymentID),
+		ReturnURL:      normalizeOptionalURL(command.ReturnURL),
+		CancelURL:      normalizeOptionalURL(command.CancelURL),
 	})
 	if err != nil {
 		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
@@ -716,6 +718,14 @@ func normalizeOptionalText(value *string) *string {
 	}
 
 	return &trimmed
+}
+
+func normalizeOptionalURL(value *string) string {
+	if value == nil {
+		return ""
+	}
+
+	return strings.TrimSpace(*value)
 }
 
 func normalizeSubscriptionLevel(value *int32) *int32 {

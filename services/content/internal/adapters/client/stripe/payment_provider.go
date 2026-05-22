@@ -56,8 +56,8 @@ func (provider *PaymentProvider) ProviderName() string {
 func (provider *PaymentProvider) CreatePayment(ctx context.Context, request usecase.PaymentProviderCreateRequest) (usecase.PaymentProviderPayment, error) {
 	form := url.Values{}
 	form.Set("mode", "payment")
-	form.Set("success_url", provider.returnURL)
-	form.Set("cancel_url", provider.cancelURL)
+	form.Set("success_url", firstNonEmpty(request.ReturnURL, provider.returnURL))
+	form.Set("cancel_url", firstNonEmpty(request.CancelURL, provider.cancelURL))
 	form.Set("line_items[0][quantity]", "1")
 	form.Set("line_items[0][price_data][currency]", strings.ToLower(request.Currency))
 	form.Set("line_items[0][price_data][unit_amount]", strconv.FormatInt(stripeMinorUnits(request.AmountValue, request.Currency), 10))
@@ -141,6 +141,15 @@ func stripeMinorUnits(amountValue int32, currency string) int64 {
 	default:
 		return int64(amountValue) * 100
 	}
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if value != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 var _ usecase.PaymentProvider = (*PaymentProvider)(nil)

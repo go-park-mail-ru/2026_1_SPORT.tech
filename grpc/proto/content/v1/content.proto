@@ -431,6 +431,8 @@ message CreateDonationPaymentRequest {
   int32 amount_value = 3;
   string currency = 4;
   optional string message = 5;
+  optional string return_url = 6;
+  optional string cancel_url = 7;
 }
 
 message ConfirmDonationPaymentRequest {

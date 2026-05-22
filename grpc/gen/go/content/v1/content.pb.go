@@ -2570,6 +2570,8 @@ type CreateDonationPaymentRequest struct {
 	AmountValue     int32                  `protobuf:"varint,3,opt,name=amount_value,json=amountValue,proto3" json:"amount_value,omitempty"`
 	Currency        string                 `protobuf:"bytes,4,opt,name=currency,proto3" json:"currency,omitempty"`
 	Message         *string                `protobuf:"bytes,5,opt,name=message,proto3,oneof" json:"message,omitempty"`
+	ReturnUrl       *string                `protobuf:"bytes,6,opt,name=return_url,json=returnUrl,proto3,oneof" json:"return_url,omitempty"`
+	CancelUrl       *string                `protobuf:"bytes,7,opt,name=cancel_url,json=cancelUrl,proto3,oneof" json:"cancel_url,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -2635,6 +2637,20 @@ func (x *CreateDonationPaymentRequest) GetCurrency() string {
 func (x *CreateDonationPaymentRequest) GetMessage() string {
 	if x != nil && x.Message != nil {
 		return *x.Message
+	}
+	return ""
+}
+
+func (x *CreateDonationPaymentRequest) GetReturnUrl() string {
+	if x != nil && x.ReturnUrl != nil {
+		return *x.ReturnUrl
+	}
+	return ""
+}
+
+func (x *CreateDonationPaymentRequest) GetCancelUrl() string {
+	if x != nil && x.CancelUrl != nil {
+		return *x.CancelUrl
 	}
 	return ""
 }
@@ -3965,15 +3981,21 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\n" +
 	"\b_messageB\v\n" +
 	"\t_donationB\x0f\n" +
-	"\r_confirmed_at\"\xda\x01\n" +
+	"\r_confirmed_at\"\xc0\x02\n" +
 	"\x1cCreateDonationPaymentRequest\x12$\n" +
 	"\x0esender_user_id\x18\x01 \x01(\x03R\fsenderUserId\x12*\n" +
 	"\x11recipient_user_id\x18\x02 \x01(\x03R\x0frecipientUserId\x12!\n" +
 	"\famount_value\x18\x03 \x01(\x05R\vamountValue\x12\x1a\n" +
 	"\bcurrency\x18\x04 \x01(\tR\bcurrency\x12\x1d\n" +
-	"\amessage\x18\x05 \x01(\tH\x00R\amessage\x88\x01\x01B\n" +
+	"\amessage\x18\x05 \x01(\tH\x00R\amessage\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"\b_message\"\x93\x01\n" +
+	"return_url\x18\x06 \x01(\tH\x01R\treturnUrl\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"cancel_url\x18\a \x01(\tH\x02R\tcancelUrl\x88\x01\x01B\n" +
+	"\n" +
+	"\b_messageB\r\n" +
+	"\v_return_urlB\r\n" +
+	"\v_cancel_url\"\x93\x01\n" +
 	"\x1dConfirmDonationPaymentRequest\x12$\n" +
 	"\x0esender_user_id\x18\x01 \x01(\x03R\fsenderUserId\x12\x1d\n" +
 	"\n" +
