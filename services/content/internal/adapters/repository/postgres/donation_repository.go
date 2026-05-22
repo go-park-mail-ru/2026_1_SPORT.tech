@@ -234,7 +234,6 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 	var donation *domain.Donation
 	var subscription *domain.Subscription
 	var donationID *int64
-	var subscriptionID *int64
 	if payment.TierID == nil {
 		createdDonation, err := createDonationTx(ctx, tx, domain.Donation{
 			SenderUserID:    payment.SenderUserID,
@@ -259,7 +258,6 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			return domain.DonationPayment{}, err
 		}
 		subscription = &createdSubscription
-		subscriptionID = &createdSubscription.SubscriptionID
 	}
 
 	if _, err := tx.ExecContext(
@@ -268,9 +266,8 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			UPDATE content_payment
 			SET status = $3,
 				donation_id = $4,
-				subscription_id = $5,
-				confirmed_at = $6,
-				updated_at = $6
+				confirmed_at = $5,
+				updated_at = $5
 			WHERE payment_id = $1
 				AND sender_user_id = $2
 		`,
@@ -278,7 +275,6 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 		senderUserID,
 		string(domain.PaymentStatusConfirmed),
 		nullableInt64(donationID),
-		nullableInt64(subscriptionID),
 		now,
 	); err != nil {
 		return domain.DonationPayment{}, err
