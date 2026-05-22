@@ -195,6 +195,52 @@ func (repository *Repository) ListSubscriptions(ctx context.Context, clientUserI
 	return subscriptions, rows.Err()
 }
 
+func (repository *Repository) ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error) {
+	rows, err := repository.db.QueryContext(
+		ctx,
+		`
+			SELECT
+				subscription.subscription_id,
+				subscription.client_user_id,
+				subscription.trainer_user_id,
+				subscription.tier_id,
+				tier.name,
+				tier.price,
+				(subscription.active AND subscription.expires_at > now()) AS active,
+				subscription.expires_at,
+				subscription.created_at,
+				subscription.updated_at
+			FROM content_subscription subscription
+			JOIN content_subscription_tier tier
+				ON tier.trainer_user_id = subscription.trainer_user_id
+				AND tier.tier_id = subscription.tier_id
+			WHERE subscription.trainer_user_id = $1::bigint
+				AND subscription.active = TRUE
+				AND subscription.expires_at > now()
+			ORDER BY subscription.created_at DESC, subscription.subscription_id DESC
+			LIMIT $2::integer OFFSET $3::integer
+		`,
+		trainerUserID,
+		limit,
+		offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	subscribers := make([]domain.Subscription, 0)
+	for rows.Next() {
+		subscription, err := scanSubscription(rows)
+		if err != nil {
+			return nil, err
+		}
+		subscribers = append(subscribers, subscription)
+	}
+
+	return subscribers, rows.Err()
+}
+
 func (repository *Repository) UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
 	now := time.Now().UTC()
 	tx, err := repository.db.BeginTx(ctx, nil)

@@ -70,3 +70,51 @@ func SubscriptionsResponseFromContent(response *contentv1.ListMySubscriptionsRes
 
 	return &gatewayv1.SubscriptionsResponse{Subscriptions: subscriptions}, nil
 }
+
+func SubscriberFromContent(subscription *contentv1.Subscription) (*gatewayv1.Subscriber, error) {
+	if subscription == nil {
+		return nil, fmt.Errorf("subscriber subscription is required")
+	}
+
+	subscriptionID, err := int64ToInt32("content.subscriber.subscription_id", subscription.GetSubscriptionId())
+	if err != nil {
+		return nil, err
+	}
+	clientID, err := int64ToInt32("content.subscriber.client_user_id", subscription.GetClientUserId())
+	if err != nil {
+		return nil, err
+	}
+	tierID, err := int64ToInt32("content.subscriber.tier_id", subscription.GetTierId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &gatewayv1.Subscriber{
+		SubscriptionId: subscriptionID,
+		ClientId:       clientID,
+		TierId:         tierID,
+		TierName:       subscription.GetTierName(),
+		Price:          subscription.GetPrice(),
+		Active:         subscription.GetActive(),
+		ExpiresAt:      subscription.GetExpiresAt(),
+		CreatedAt:      subscription.GetCreatedAt(),
+		UpdatedAt:      subscription.GetUpdatedAt(),
+	}, nil
+}
+
+func SubscribersResponseFromContent(response *contentv1.ListTrainerSubscribersResponse) (*gatewayv1.SubscribersResponse, error) {
+	subscribers := make([]*gatewayv1.Subscriber, 0)
+	if response != nil {
+		subscribers = make([]*gatewayv1.Subscriber, 0, len(response.GetSubscribers()))
+		for _, subscriber := range response.GetSubscribers() {
+			mappedSubscriber, err := SubscriberFromContent(subscriber)
+			if err != nil {
+				return nil, err
+			}
+
+			subscribers = append(subscribers, mappedSubscriber)
+		}
+	}
+
+	return &gatewayv1.SubscribersResponse{Subscribers: subscribers}, nil
+}

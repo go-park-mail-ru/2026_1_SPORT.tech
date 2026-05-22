@@ -179,6 +179,10 @@ service SubscriptionService {
     option (google.api.http).get = "/v1/subscriptions/me";
   }
 
+  rpc ListMySubscribers(ListSubscribersRequest) returns (SubscribersResponse) {
+    option (google.api.http).get = "/v1/subscribers/me";
+  }
+
   rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
       patch: "/v1/subscriptions/{subscription_id}"
@@ -587,6 +591,27 @@ message Subscription {
 
 message SubscriptionsResponse {
   repeated Subscription subscriptions = 1;
+}
+
+message Subscriber {
+  int32 subscription_id = 1;
+  int32 client_id = 2;
+  int32 tier_id = 3;
+  string tier_name = 4;
+  int32 price = 5;
+  bool active = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message ListSubscribersRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message SubscribersResponse {
+  repeated Subscriber subscribers = 1;
 }
 
 message UpdateSubscriptionRequest {

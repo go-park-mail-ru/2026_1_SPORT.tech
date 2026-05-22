@@ -82,6 +82,10 @@ service ContentService {
     option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
   }
 
+  rpc ListTrainerSubscribers(ListTrainerSubscribersRequest) returns (ListTrainerSubscribersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_user_id}/subscribers";
+  }
+
   rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
       patch: "/v1/users/{client_user_id}/subscriptions/{subscription_id}"
@@ -380,6 +384,16 @@ message ListMySubscriptionsRequest {
 
 message ListMySubscriptionsResponse {
   repeated Subscription subscriptions = 1;
+}
+
+message ListTrainerSubscribersRequest {
+  int64 trainer_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListTrainerSubscribersResponse {
+  repeated Subscription subscribers = 1;
 }
 
 message UpdateSubscriptionRequest {

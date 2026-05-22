@@ -122,7 +122,15 @@ func (service *Service) CreatePost(ctx context.Context, command CreatePostComman
 		return domain.Post{}, err
 	}
 
-	return service.posts.GetPost(ctx, postID, command.AuthorUserID)
+	created, err := service.posts.GetPost(ctx, postID, command.AuthorUserID)
+	if err != nil {
+		return domain.Post{}, err
+	}
+	if err := service.notifySubscribersAboutPost(ctx, created); err != nil {
+		return domain.Post{}, err
+	}
+
+	return created, nil
 }
 
 func (service *Service) UploadPostMedia(ctx context.Context, command UploadPostMediaCommand) (domain.PostMedia, error) {
@@ -329,14 +337,7 @@ func (service *Service) createPaidSubscription(ctx context.Context, command Subs
 		return domain.Subscription{}, err
 	}
 
-	if err := service.createNotification(ctx, domain.Notification{
-		UserID:         subscription.TrainerUserID,
-		Type:           domain.NotificationTypeSubscription,
-		ActorUserID:    subscription.ClientUserID,
-		Title:          "New subscription",
-		Body:           "A client subscribed to your profile",
-		SubscriptionID: &subscription.SubscriptionID,
-	}); err != nil {
+	if err := service.createSubscriptionNotifications(ctx, subscription); err != nil {
 		return domain.Subscription{}, err
 	}
 
@@ -349,6 +350,19 @@ func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySub
 	}
 
 	return service.money.ListSubscriptions(ctx, query.ClientUserID)
+}
+
+func (service *Service) ListTrainerSubscribers(ctx context.Context, query ListTrainerSubscribersQuery) ([]domain.Subscription, error) {
+	if query.TrainerUserID <= 0 {
+		return nil, ErrInvalidUserID
+	}
+
+	limit, offset, err := normalizePage(query.Limit, query.Offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return service.money.ListTrainerSubscribers(ctx, query.TrainerUserID, limit, offset)
 }
 
 func (service *Service) UpdateSubscription(ctx context.Context, command UpdateSubscriptionCommand) (domain.Subscription, error) {
@@ -392,8 +406,21 @@ func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (
 		return domain.PostLikeState{}, domain.ErrPostForbidden
 	}
 
-	if err := service.engagement.UpsertLike(ctx, command.PostID, command.UserID); err != nil {
+	wasCreated, err := service.engagement.UpsertLike(ctx, command.PostID, command.UserID)
+	if err != nil {
 		return domain.PostLikeState{}, err
+	}
+	if wasCreated && post.AuthorUserID != command.UserID {
+		if err := service.createNotification(ctx, domain.Notification{
+			UserID:      post.AuthorUserID,
+			Type:        domain.NotificationTypeLike,
+			ActorUserID: command.UserID,
+			Title:       "Новый лайк",
+			Body:        "Пользователь оценил ваш пост",
+			PostID:      &post.PostID,
+		}); err != nil {
+			return domain.PostLikeState{}, err
+		}
 	}
 
 	return service.engagement.GetPostLikeState(ctx, command.PostID, command.UserID)
@@ -455,8 +482,8 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 			UserID:      post.AuthorUserID,
 			Type:        domain.NotificationTypeComment,
 			ActorUserID: command.AuthorUserID,
-			Title:       "New comment",
-			Body:        "Someone commented on your post",
+			Title:       "Новый комментарий",
+			Body:        "Пользователь написал комментарий к вашему посту",
 			PostID:      &comment.PostID,
 			CommentID:   &comment.CommentID,
 		}); err != nil {
@@ -514,8 +541,8 @@ func (service *Service) DonateToProfile(ctx context.Context, command DonateToPro
 		UserID:      donation.RecipientUserID,
 		Type:        domain.NotificationTypeDonation,
 		ActorUserID: donation.SenderUserID,
-		Title:       "New donation",
-		Body:        "You received a new donation",
+		Title:       "Новый донат",
+		Body:        "Пользователь отправил вам донат",
 		DonationID:  &donation.DonationID,
 	}); err != nil {
 		return domain.Donation{}, err
@@ -672,22 +699,15 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 			UserID:      payment.Donation.RecipientUserID,
 			Type:        domain.NotificationTypeDonation,
 			ActorUserID: payment.Donation.SenderUserID,
-			Title:       "New donation",
-			Body:        "You received a new donation",
+			Title:       "Новый донат",
+			Body:        "Пользователь отправил вам донат",
 			DonationID:  &payment.Donation.DonationID,
 		}); err != nil {
 			return domain.DonationPayment{}, err
 		}
 	}
 	if wasPending && payment.Subscription != nil {
-		if err := service.createNotification(ctx, domain.Notification{
-			UserID:         payment.Subscription.TrainerUserID,
-			Type:           domain.NotificationTypeSubscription,
-			ActorUserID:    payment.Subscription.ClientUserID,
-			Title:          "New subscription",
-			Body:           "A client subscribed to your profile",
-			SubscriptionID: &payment.Subscription.SubscriptionID,
-		}); err != nil {
+		if err := service.createSubscriptionNotifications(ctx, *payment.Subscription); err != nil {
 			return domain.DonationPayment{}, err
 		}
 	}
@@ -738,6 +758,76 @@ func (service *Service) MarkNotificationRead(ctx context.Context, command MarkNo
 	}
 
 	return service.notifications.MarkNotificationRead(ctx, command.UserID, command.NotificationID)
+}
+
+func (service *Service) notifySubscribersAboutPost(ctx context.Context, post domain.Post) error {
+	if service.notifications == nil {
+		return nil
+	}
+
+	for offset := int32(0); ; offset += maxPageLimit {
+		subscribers, err := service.money.ListTrainerSubscribers(ctx, post.AuthorUserID, maxPageLimit, offset)
+		if err != nil {
+			return err
+		}
+		if len(subscribers) == 0 {
+			return nil
+		}
+
+		for _, subscriber := range subscribers {
+			if post.RequiredSubscriptionLevel != nil && subscriber.TierID < int64(*post.RequiredSubscriptionLevel) {
+				continue
+			}
+			if err := service.createNotification(ctx, domain.Notification{
+				UserID:      subscriber.ClientUserID,
+				Type:        domain.NotificationTypePost,
+				ActorUserID: post.AuthorUserID,
+				Title:       "Новый пост",
+				Body:        "Автор, на которого вы подписаны, опубликовал новый материал",
+				PostID:      &post.PostID,
+			}); err != nil {
+				return err
+			}
+		}
+
+		if len(subscribers) < maxPageLimit {
+			return nil
+		}
+	}
+}
+
+func (service *Service) createSubscriptionNotifications(ctx context.Context, subscription domain.Subscription) error {
+	isNewSubscription := subscription.CreatedAt.Equal(subscription.UpdatedAt)
+	trainerTitle := "Новая подписка"
+	trainerBody := "Пользователь купил подписку на ваш профиль"
+	clientTitle := "Подписка оформлена"
+	clientBody := "Доступ к материалам тренера открыт на месяц"
+	if !isNewSubscription {
+		trainerTitle = "Подписка обновлена"
+		trainerBody = "Пользователь изменил тариф подписки"
+		clientTitle = "Тариф обновлен"
+		clientBody = "Новый тариф подписки уже активен"
+	}
+
+	if err := service.createNotification(ctx, domain.Notification{
+		UserID:         subscription.TrainerUserID,
+		Type:           domain.NotificationTypeSubscription,
+		ActorUserID:    subscription.ClientUserID,
+		Title:          trainerTitle,
+		Body:           trainerBody,
+		SubscriptionID: &subscription.SubscriptionID,
+	}); err != nil {
+		return err
+	}
+
+	return service.createNotification(ctx, domain.Notification{
+		UserID:         subscription.ClientUserID,
+		Type:           domain.NotificationTypeSubscription,
+		ActorUserID:    subscription.TrainerUserID,
+		Title:          clientTitle,
+		Body:           clientBody,
+		SubscriptionID: &subscription.SubscriptionID,
+	})
 }
 
 func (service *Service) createNotification(ctx context.Context, notification domain.Notification) error {

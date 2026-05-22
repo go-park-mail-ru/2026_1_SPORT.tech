@@ -33,6 +33,7 @@ const (
 	ContentService_DeleteSubscriptionTier_FullMethodName    = "/sporttech.content.v1.ContentService/DeleteSubscriptionTier"
 	ContentService_SubscribeToTrainer_FullMethodName        = "/sporttech.content.v1.ContentService/SubscribeToTrainer"
 	ContentService_ListMySubscriptions_FullMethodName       = "/sporttech.content.v1.ContentService/ListMySubscriptions"
+	ContentService_ListTrainerSubscribers_FullMethodName    = "/sporttech.content.v1.ContentService/ListTrainerSubscribers"
 	ContentService_UpdateSubscription_FullMethodName        = "/sporttech.content.v1.ContentService/UpdateSubscription"
 	ContentService_CancelSubscription_FullMethodName        = "/sporttech.content.v1.ContentService/CancelSubscription"
 	ContentService_DonateToProfile_FullMethodName           = "/sporttech.content.v1.ContentService/DonateToProfile"
@@ -66,6 +67,7 @@ type ContentServiceClient interface {
 	DeleteSubscriptionTier(ctx context.Context, in *DeleteSubscriptionTierRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SubscribeToTrainer(ctx context.Context, in *SubscribeToTrainerRequest, opts ...grpc.CallOption) (*Subscription, error)
 	ListMySubscriptions(ctx context.Context, in *ListMySubscriptionsRequest, opts ...grpc.CallOption) (*ListMySubscriptionsResponse, error)
+	ListTrainerSubscribers(ctx context.Context, in *ListTrainerSubscribersRequest, opts ...grpc.CallOption) (*ListTrainerSubscribersResponse, error)
 	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
@@ -214,6 +216,16 @@ func (c *contentServiceClient) ListMySubscriptions(ctx context.Context, in *List
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListMySubscriptionsResponse)
 	err := c.cc.Invoke(ctx, ContentService_ListMySubscriptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListTrainerSubscribers(ctx context.Context, in *ListTrainerSubscribersRequest, opts ...grpc.CallOption) (*ListTrainerSubscribersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTrainerSubscribersResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListTrainerSubscribers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -377,6 +389,7 @@ type ContentServiceServer interface {
 	DeleteSubscriptionTier(context.Context, *DeleteSubscriptionTierRequest) (*emptypb.Empty, error)
 	SubscribeToTrainer(context.Context, *SubscribeToTrainerRequest) (*Subscription, error)
 	ListMySubscriptions(context.Context, *ListMySubscriptionsRequest) (*ListMySubscriptionsResponse, error)
+	ListTrainerSubscribers(context.Context, *ListTrainerSubscribersRequest) (*ListTrainerSubscribersResponse, error)
 	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error)
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
@@ -438,6 +451,9 @@ func (UnimplementedContentServiceServer) SubscribeToTrainer(context.Context, *Su
 }
 func (UnimplementedContentServiceServer) ListMySubscriptions(context.Context, *ListMySubscriptionsRequest) (*ListMySubscriptionsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMySubscriptions not implemented")
+}
+func (UnimplementedContentServiceServer) ListTrainerSubscribers(context.Context, *ListTrainerSubscribersRequest) (*ListTrainerSubscribersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTrainerSubscribers not implemented")
 }
 func (UnimplementedContentServiceServer) UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateSubscription not implemented")
@@ -731,6 +747,24 @@ func _ContentService_ListMySubscriptions_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContentServiceServer).ListMySubscriptions(ctx, req.(*ListMySubscriptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListTrainerSubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTrainerSubscribersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListTrainerSubscribers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListTrainerSubscribers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListTrainerSubscribers(ctx, req.(*ListTrainerSubscribersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1045,6 +1079,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMySubscriptions",
 			Handler:    _ContentService_ListMySubscriptions_Handler,
+		},
+		{
+			MethodName: "ListTrainerSubscribers",
+			Handler:    _ContentService_ListTrainerSubscribers_Handler,
 		},
 		{
 			MethodName: "UpdateSubscription",

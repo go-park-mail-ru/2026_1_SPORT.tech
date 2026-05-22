@@ -33,6 +33,7 @@ type MonetizationRepository interface {
 	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
@@ -45,7 +46,7 @@ type MonetizationRepository interface {
 }
 
 type EngagementRepository interface {
-	UpsertLike(ctx context.Context, postID int64, userID int64) error
+	UpsertLike(ctx context.Context, postID int64, userID int64) (bool, error)
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
@@ -177,6 +178,12 @@ type SubscribeToTrainerCommand struct {
 
 type ListMySubscriptionsQuery struct {
 	ClientUserID int64
+}
+
+type ListTrainerSubscribersQuery struct {
+	TrainerUserID int64
+	Limit         int32
+	Offset        int32
 }
 
 type UpdateSubscriptionCommand struct {

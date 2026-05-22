@@ -126,6 +126,14 @@ func ListMySubscriptionsRequestToQuery(request *contentv1.ListMySubscriptionsReq
 	}
 }
 
+func ListTrainerSubscribersRequestToQuery(request *contentv1.ListTrainerSubscribersRequest) usecase.ListTrainerSubscribersQuery {
+	return usecase.ListTrainerSubscribersQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+		Limit:         request.GetLimit(),
+		Offset:        request.GetOffset(),
+	}
+}
+
 func UpdateSubscriptionRequestToCommand(request *contentv1.UpdateSubscriptionRequest) usecase.UpdateSubscriptionCommand {
 	return usecase.UpdateSubscriptionCommand{
 		ClientUserID:   request.GetClientUserId(),
@@ -326,6 +334,17 @@ func NewListMySubscriptionsResponse(subscriptions []domain.Subscription) *conten
 	}
 	for _, subscription := range subscriptions {
 		response.Subscriptions = append(response.Subscriptions, subscriptionToProto(subscription))
+	}
+
+	return response
+}
+
+func NewListTrainerSubscribersResponse(subscribers []domain.Subscription) *contentv1.ListTrainerSubscribersResponse {
+	response := &contentv1.ListTrainerSubscribersResponse{
+		Subscribers: make([]*contentv1.Subscription, 0, len(subscribers)),
+	}
+	for _, subscriber := range subscribers {
+		response.Subscribers = append(response.Subscribers, subscriptionToProto(subscriber))
 	}
 
 	return response

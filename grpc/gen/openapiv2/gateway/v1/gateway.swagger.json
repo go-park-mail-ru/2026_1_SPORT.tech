@@ -974,6 +974,44 @@
         ]
       }
     },
+    "/v1/subscribers/me": {
+      "get": {
+        "operationId": "SubscriptionService_ListMySubscribers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubscribersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "SubscriptionService"
+        ]
+      }
+    },
     "/v1/subscriptions/me": {
       "get": {
         "operationId": "SubscriptionService_ListMySubscriptions",
@@ -2259,6 +2297,57 @@
         },
         "currency": {
           "type": "string"
+        }
+      }
+    },
+    "v1Subscriber": {
+      "type": "object",
+      "properties": {
+        "subscription_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "client_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1SubscribersResponse": {
+      "type": "object",
+      "properties": {
+        "subscribers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Subscriber"
+          }
         }
       }
     },

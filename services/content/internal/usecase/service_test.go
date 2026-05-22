@@ -26,9 +26,10 @@ type stubContentRepository struct {
 	activeLevelFunc        func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	subscribeFunc          func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	listSubscriptionsFunc  func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	listSubscribersFunc    func(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error)
 	updateSubscriptionFunc func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	cancelSubscriptionFunc func(ctx context.Context, clientUserID int64, subscriptionID int64) error
-	upsertLikeFunc         func(ctx context.Context, postID int64, userID int64) error
+	upsertLikeFunc         func(ctx context.Context, postID int64, userID int64) (bool, error)
 	deleteLikeFunc         func(ctx context.Context, postID int64, userID int64) error
 	getLikeStateFunc       func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
@@ -123,6 +124,13 @@ func (repository stubContentRepository) ListSubscriptions(ctx context.Context, c
 	return repository.listSubscriptionsFunc(ctx, clientUserID)
 }
 
+func (repository stubContentRepository) ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error) {
+	if repository.listSubscribersFunc == nil {
+		return nil, nil
+	}
+	return repository.listSubscribersFunc(ctx, trainerUserID, limit, offset)
+}
+
 func (repository stubContentRepository) UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
 	if repository.updateSubscriptionFunc == nil {
 		return subscription, nil
@@ -137,7 +145,10 @@ func (repository stubContentRepository) CancelSubscription(ctx context.Context, 
 	return repository.cancelSubscriptionFunc(ctx, clientUserID, subscriptionID)
 }
 
-func (repository stubContentRepository) UpsertLike(ctx context.Context, postID int64, userID int64) error {
+func (repository stubContentRepository) UpsertLike(ctx context.Context, postID int64, userID int64) (bool, error) {
+	if repository.upsertLikeFunc == nil {
+		return true, nil
+	}
 	return repository.upsertLikeFunc(ctx, postID, userID)
 }
 
@@ -318,7 +329,7 @@ func TestServiceCreatePost(t *testing.T) {
 			},
 			updatePostFunc: func(ctx context.Context, post domain.Post, replaceBlocks bool) error { return nil },
 			deletePostFunc: func(ctx context.Context, postID int64, authorUserID int64) error { return nil },
-			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
+			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) (bool, error) { return true, nil },
 			deleteLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
 			getLikeStateFunc: func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {
 				return domain.PostLikeState{}, nil
@@ -348,6 +359,61 @@ func TestServiceCreatePost(t *testing.T) {
 	}
 	if post.PostID != 101 {
 		t.Fatalf("unexpected post id: %d", post.PostID)
+	}
+}
+
+func TestServiceCreatePostNotifiesEligibleSubscribers(t *testing.T) {
+	requiredLevel := int32(2)
+	var notifications []domain.Notification
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			createPostFunc: func(ctx context.Context, post domain.Post) (int64, error) {
+				return 55, nil
+			},
+			getPostFunc: func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error) {
+				return domain.Post{
+					PostID:                    postID,
+					AuthorUserID:              viewerUserID,
+					Title:                     "Paid workout",
+					RequiredSubscriptionLevel: &requiredLevel,
+				}, nil
+			},
+			listSubscribersFunc: func(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error) {
+				if trainerUserID != 7 || limit != maxPageLimit || offset != 0 {
+					t.Fatalf("unexpected subscribers query: trainer=%d limit=%d offset=%d", trainerUserID, limit, offset)
+				}
+				return []domain.Subscription{
+					{ClientUserID: 1001, TrainerUserID: trainerUserID, TierID: 1},
+					{ClientUserID: 1002, TrainerUserID: trainerUserID, TierID: 2},
+				}, nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
+			},
+		}),
+		nil,
+	)
+
+	if _, err := service.CreatePost(context.Background(), CreatePostCommand{
+		AuthorUserID:              7,
+		Title:                     "Paid workout",
+		RequiredSubscriptionLevel: &requiredLevel,
+		Blocks: []PostBlockInput{
+			{Kind: domain.BlockKindText, TextContent: stringPtr("Workout plan")},
+		},
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(notifications) != 1 {
+		t.Fatalf("unexpected notifications: %+v", notifications)
+	}
+	if notifications[0].UserID != 1002 ||
+		notifications[0].ActorUserID != 7 ||
+		notifications[0].Type != domain.NotificationTypePost ||
+		notifications[0].PostID == nil ||
+		*notifications[0].PostID != 55 {
+		t.Fatalf("unexpected notification: %+v", notifications[0])
 	}
 }
 
@@ -645,6 +711,12 @@ func TestServiceListAndCancelSubscriptions(t *testing.T) {
 				}
 				return []domain.Subscription{{SubscriptionID: 1, ClientUserID: 1002}}, nil
 			},
+			listSubscribersFunc: func(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error) {
+				if trainerUserID != 1001 || limit != 20 || offset != 5 {
+					t.Fatalf("unexpected subscribers args: trainer=%d limit=%d offset=%d", trainerUserID, limit, offset)
+				}
+				return []domain.Subscription{{SubscriptionID: 2, ClientUserID: 1002, TrainerUserID: trainerUserID}}, nil
+			},
 			cancelSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) error {
 				if clientUserID != 1002 || subscriptionID != 1 {
 					t.Fatalf("unexpected cancel args: client=%d subscription=%d", clientUserID, subscriptionID)
@@ -661,6 +733,16 @@ func TestServiceListAndCancelSubscriptions(t *testing.T) {
 	}
 	if len(subscriptions) != 1 {
 		t.Fatalf("unexpected subscriptions: %+v", subscriptions)
+	}
+	subscribers, err := service.ListTrainerSubscribers(context.Background(), ListTrainerSubscribersQuery{
+		TrainerUserID: 1001,
+		Offset:        5,
+	})
+	if err != nil {
+		t.Fatalf("unexpected subscribers error: %v", err)
+	}
+	if len(subscribers) != 1 || subscribers[0].ClientUserID != 1002 {
+		t.Fatalf("unexpected subscribers: %+v", subscribers)
 	}
 	if err := service.CancelSubscription(context.Background(), CancelSubscriptionCommand{ClientUserID: 1002, SubscriptionID: 1}); err != nil {
 		t.Fatalf("unexpected cancel error: %v", err)
@@ -781,6 +863,7 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 }
 
 func TestServiceSubscriptionPaymentFlow(t *testing.T) {
+	var notifications []domain.Notification
 	service := NewService(
 		stubRepositories(stubContentRepository{
 			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
@@ -821,6 +904,10 @@ func TestServiceSubscriptionPaymentFlow(t *testing.T) {
 					},
 				}, nil
 			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
+			},
 		}),
 		nil,
 		stubPaymentProvider{
@@ -857,6 +944,19 @@ func TestServiceSubscriptionPaymentFlow(t *testing.T) {
 		confirmed.Subscription == nil ||
 		confirmed.Subscription.SubscriptionID != 2401 {
 		t.Fatalf("unexpected confirmed payment: %+v", confirmed)
+	}
+	if len(notifications) != 2 {
+		t.Fatalf("unexpected subscription notifications: %+v", notifications)
+	}
+	if notifications[0].UserID != 1001 ||
+		notifications[0].ActorUserID != 1002 ||
+		notifications[0].Type != domain.NotificationTypeSubscription {
+		t.Fatalf("unexpected trainer notification: %+v", notifications[0])
+	}
+	if notifications[1].UserID != 1002 ||
+		notifications[1].ActorUserID != 1001 ||
+		notifications[1].Type != domain.NotificationTypeSubscription {
+		t.Fatalf("unexpected client notification: %+v", notifications[1])
 	}
 }
 
@@ -937,6 +1037,7 @@ func TestServiceDeletePost(t *testing.T) {
 
 func TestServiceLikeAndUnlikePost(t *testing.T) {
 	requiredLevel := int32(1)
+	var notifications []domain.Notification
 	service := NewService(
 		stubRepositories(stubContentRepository{
 			getPostFunc: func(ctx context.Context, postID int64, viewerUserID int64) (domain.Post, error) {
@@ -945,11 +1046,11 @@ func TestServiceLikeAndUnlikePost(t *testing.T) {
 			activeLevelFunc: func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error) {
 				return &requiredLevel, nil
 			},
-			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) error {
+			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) (bool, error) {
 				if postID != 33 || userID != 13 {
 					t.Fatalf("unexpected like args: post=%d user=%d", postID, userID)
 				}
-				return nil
+				return true, nil
 			},
 			deleteLikeFunc: func(ctx context.Context, postID int64, userID int64) error {
 				if postID != 33 || userID != 13 {
@@ -959,6 +1060,10 @@ func TestServiceLikeAndUnlikePost(t *testing.T) {
 			},
 			getLikeStateFunc: func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {
 				return domain.PostLikeState{PostID: postID, LikesCount: 1, IsLiked: true}, nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
 			},
 		}),
 		nil,
@@ -970,6 +1075,14 @@ func TestServiceLikeAndUnlikePost(t *testing.T) {
 	}
 	if state.PostID != 33 || state.LikesCount != 1 {
 		t.Fatalf("unexpected like state: %+v", state)
+	}
+	if len(notifications) != 1 ||
+		notifications[0].Type != domain.NotificationTypeLike ||
+		notifications[0].UserID != 7 ||
+		notifications[0].ActorUserID != 13 ||
+		notifications[0].PostID == nil ||
+		*notifications[0].PostID != 33 {
+		t.Fatalf("unexpected like notifications: %+v", notifications)
 	}
 	state, err = service.UnlikePost(context.Background(), LikePostCommand{PostID: 33, UserID: 13})
 	if err != nil {
@@ -999,7 +1112,7 @@ func TestServiceGetPostRejectsRestrictedAccess(t *testing.T) {
 			},
 			updatePostFunc: func(ctx context.Context, post domain.Post, replaceBlocks bool) error { return nil },
 			deletePostFunc: func(ctx context.Context, postID int64, authorUserID int64) error { return nil },
-			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
+			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) (bool, error) { return true, nil },
 			deleteLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
 			getLikeStateFunc: func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {
 				return domain.PostLikeState{}, nil
@@ -1041,7 +1154,7 @@ func TestServiceCreateComment(t *testing.T) {
 			},
 			updatePostFunc: func(ctx context.Context, post domain.Post, replaceBlocks bool) error { return nil },
 			deletePostFunc: func(ctx context.Context, postID int64, authorUserID int64) error { return nil },
-			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
+			upsertLikeFunc: func(ctx context.Context, postID int64, userID int64) (bool, error) { return true, nil },
 			deleteLikeFunc: func(ctx context.Context, postID int64, userID int64) error { return nil },
 			getLikeStateFunc: func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {
 				return domain.PostLikeState{}, nil

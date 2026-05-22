@@ -36,6 +36,7 @@ type TierUseCase interface {
 type SubscriptionUseCase interface {
 	SubscribeToTrainer(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	ListMySubscriptions(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	ListTrainerSubscribers(ctx context.Context, query usecase.ListTrainerSubscribersQuery) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 }
@@ -202,6 +203,15 @@ func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv
 	}
 
 	return mappers.NewListMySubscriptionsResponse(subscriptions), nil
+}
+
+func (server *Server) ListTrainerSubscribers(ctx context.Context, request *contentv1.ListTrainerSubscribersRequest) (*contentv1.ListTrainerSubscribersResponse, error) {
+	subscribers, err := server.useCases.Subscriptions.ListTrainerSubscribers(ctx, mappers.ListTrainerSubscribersRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListTrainerSubscribersResponse(subscribers), nil
 }
 
 func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1.UpdateSubscriptionRequest) (*contentv1.Subscription, error) {

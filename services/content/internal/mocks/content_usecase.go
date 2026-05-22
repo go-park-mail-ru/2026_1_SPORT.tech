@@ -21,6 +21,7 @@ type ContentUseCase struct {
 	DeleteTierFunc         func(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	SubscribeFunc          func(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	ListSubscriptionsFunc  func(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	ListSubscribersFunc    func(ctx context.Context, query usecase.ListTrainerSubscribersQuery) ([]domain.Subscription, error)
 	UpdateSubscriptionFunc func(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	DonateFunc             func(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
@@ -105,6 +106,13 @@ func (mock ContentUseCase) ListMySubscriptions(ctx context.Context, query usecas
 		return nil, nil
 	}
 	return mock.ListSubscriptionsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) ListTrainerSubscribers(ctx context.Context, query usecase.ListTrainerSubscribersQuery) ([]domain.Subscription, error) {
+	if mock.ListSubscribersFunc == nil {
+		return nil, nil
+	}
+	return mock.ListSubscribersFunc(ctx, query)
 }
 
 func (mock ContentUseCase) UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error) {
