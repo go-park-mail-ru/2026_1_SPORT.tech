@@ -20,7 +20,14 @@ func (repository *Repository) CreateDonation(ctx context.Context, donation domai
 			currency,
 			message,
 			created_at
-		) VALUES ($1, $2, $3, $4, $5, $6)
+		) VALUES (
+			$1::bigint,
+			$2::bigint,
+			$3::integer,
+			$4::text,
+			$5::text,
+			$6::timestamptz
+		)
 		RETURNING donation_id, created_at
 	`
 
@@ -105,10 +112,10 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 func (repository *Repository) UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error) {
 	const query = `
 		UPDATE content_payment
-		SET provider_payment_id = $2,
-			confirmation_url = $3,
-			updated_at = $4
-		WHERE payment_id = $1
+		SET provider_payment_id = $2::text,
+			confirmation_url = $3::text,
+			updated_at = $4::timestamptz
+		WHERE payment_id = $1::bigint
 		RETURNING
 			payment_id,
 			provider,
@@ -294,14 +301,16 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			`
 				UPDATE content_payment
 				SET status = $3::text,
-					confirmed_at = $4::timestamptz,
-					updated_at = $4::timestamptz
+					subscription_id = $4::bigint,
+					confirmed_at = $5::timestamptz,
+					updated_at = $5::timestamptz
 				WHERE payment_id = $1::bigint
 					AND sender_user_id = $2::bigint
 			`,
 			payment.PaymentID,
 			senderUserID,
 			string(domain.PaymentStatusConfirmed),
+			createdSubscription.SubscriptionID,
 			now,
 		); err != nil {
 			return domain.DonationPayment{}, err
@@ -325,8 +334,8 @@ func (repository *Repository) GetBalance(ctx context.Context, trainerUserID int6
 	const query = `
 		SELECT COALESCE(SUM(amount_value), 0)
 		FROM content_donation
-		WHERE recipient_user_id = $1
-			AND currency = $2
+		WHERE recipient_user_id = $1::bigint
+			AND currency = $2::text
 	`
 
 	balance := domain.Balance{
@@ -461,11 +470,11 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 		`
 			WITH updated AS (
 				UPDATE content_subscription
-				SET tier_id = $3::integer,
+				SET tier_id = $1::integer,
 					active = TRUE,
-					expires_at = $4::timestamptz,
-					updated_at = $5::timestamptz
-				WHERE subscription_id = $6::bigint
+					expires_at = $2::timestamptz,
+					updated_at = $3::timestamptz
+				WHERE subscription_id = $4::bigint
 				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
 			)
 			SELECT
@@ -483,9 +492,7 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 			JOIN content_subscription_tier tier
 				ON tier.trainer_user_id = updated.trainer_user_id
 				AND tier.tier_id = updated.tier_id
-		`,
-		subscription.ClientUserID,
-		subscription.TrainerUserID,
+			`,
 		subscription.TierID,
 		subscription.ExpiresAt,
 		now,

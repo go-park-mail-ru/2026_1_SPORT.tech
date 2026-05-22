@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"strings"
 	"testing"
 	"time"
 
@@ -743,7 +744,14 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 			},
 		}),
 		nil,
-		stubPaymentProvider{},
+		stubPaymentProvider{
+			createFunc: func(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error) {
+				if !strings.HasPrefix(request.IdempotenceKey, "content-donation-payment-81-confirm_") {
+					t.Fatalf("unexpected idempotence key: %s", request.IdempotenceKey)
+				}
+				return PaymentProviderPayment{ProviderPaymentID: "provider-payment-1", Status: "pending", ConfirmationURL: "https://pay.example/1"}, nil
+			},
+		},
 	)
 
 	payment, err := service.CreateDonationPayment(context.Background(), CreateDonationPaymentCommand{
@@ -815,7 +823,14 @@ func TestServiceSubscriptionPaymentFlow(t *testing.T) {
 			},
 		}),
 		nil,
-		stubPaymentProvider{},
+		stubPaymentProvider{
+			createFunc: func(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error) {
+				if !strings.HasPrefix(request.IdempotenceKey, "content-subscription-payment-82-confirm_") {
+					t.Fatalf("unexpected idempotence key: %s", request.IdempotenceKey)
+				}
+				return PaymentProviderPayment{ProviderPaymentID: "provider-payment-1", Status: "pending", ConfirmationURL: "https://pay.example/1"}, nil
+			},
+		},
 	)
 
 	payment, err := service.CreateSubscriptionPayment(context.Background(), CreateSubscriptionPaymentCommand{
