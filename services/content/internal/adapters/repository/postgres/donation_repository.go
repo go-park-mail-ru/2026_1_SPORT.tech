@@ -161,8 +161,8 @@ func (repository *Repository) GetDonationPayment(ctx context.Context, senderUser
 			updated_at,
 			confirmed_at
 		FROM content_payment
-		WHERE payment_id = $1
-			AND sender_user_id = $2
+		WHERE payment_id = $1::bigint
+			AND sender_user_id = $2::bigint
 	`
 
 	payment, err := scanPayment(repository.db.QueryRowContext(ctx, query, paymentID, senderUserID))
@@ -205,7 +205,7 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 				updated_at,
 				confirmed_at
 			FROM content_payment
-			WHERE payment_id = $1
+			WHERE payment_id = $1::bigint
 			FOR UPDATE
 		`,
 		paymentID,
@@ -349,7 +349,14 @@ func createDonationTx(ctx context.Context, tx *sql.Tx, donation domain.Donation,
 			currency,
 			message,
 			created_at
-		) VALUES ($1, $2, $3, $4, $5, $6)
+		) VALUES (
+			$1::bigint,
+			$2::bigint,
+			$3::integer,
+			$4::text,
+			$5::text,
+			$6::timestamptz
+		)
 		RETURNING donation_id, created_at
 	`
 
@@ -375,7 +382,7 @@ func (repository *Repository) getDonationTx(ctx context.Context, tx *sql.Tx, don
 	const query = `
 		SELECT donation_id, sender_user_id, recipient_user_id, amount_value, currency, message, created_at
 		FROM content_donation
-		WHERE donation_id = $1
+		WHERE donation_id = $1::bigint
 	`
 
 	return scanDonation(tx.QueryRowContext(ctx, query, donationID))
@@ -388,8 +395,8 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 		`
 			SELECT subscription_id
 			FROM content_subscription
-			WHERE client_user_id = $1
-				AND trainer_user_id = $2
+			WHERE client_user_id = $1::bigint
+				AND trainer_user_id = $2::bigint
 				AND active = TRUE
 			FOR UPDATE
 		`,
@@ -414,7 +421,15 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 						created_at,
 						updated_at
 					)
-					VALUES ($1, $2, $3, TRUE, $4, $5, $5)
+					VALUES (
+						$1::bigint,
+						$2::bigint,
+						$3::integer,
+						TRUE,
+						$4::timestamptz,
+						$5::timestamptz,
+						$5::timestamptz
+					)
 					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
 				)
 				SELECT
@@ -446,11 +461,11 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 		`
 			WITH updated AS (
 				UPDATE content_subscription
-				SET tier_id = $3,
+				SET tier_id = $3::integer,
 					active = TRUE,
-					expires_at = $4,
-					updated_at = $5
-				WHERE subscription_id = $6
+					expires_at = $4::timestamptz,
+					updated_at = $5::timestamptz
+				WHERE subscription_id = $6::bigint
 				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
 			)
 			SELECT
@@ -495,7 +510,7 @@ func (repository *Repository) getSubscriptionTx(ctx context.Context, tx *sql.Tx,
 		JOIN content_subscription_tier tier
 			ON tier.trainer_user_id = subscription.trainer_user_id
 			AND tier.tier_id = subscription.tier_id
-		WHERE subscription.subscription_id = $1
+		WHERE subscription.subscription_id = $1::bigint
 	`
 
 	return scanSubscription(tx.QueryRowContext(ctx, query, subscriptionID))
