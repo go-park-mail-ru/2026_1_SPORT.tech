@@ -3,12 +3,13 @@ PROTO_GEN_GO_DIR := grpc/gen/go
 PROTO_GEN_OPENAPI_DIR := grpc/gen/openapiv2
 PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/content $(PROTO_DIR)/gateway
 PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
+EASYJSON_FILES := services/content/internal/adapters/client/yookassa/payment_provider.go
 COVER_PACKAGES := $(shell go list ./... | grep -E '/internal/(domain|usecase|adapters/mappers|infrastructure/httpgateway)$$' | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
 GO_BIN := $(HOME)/go/bin
 COVERAGE_MIN ?= 60
 
 .PHONY: generate
-generate: proto
+generate: proto easyjson
 
 .PHONY: proto
 proto:
@@ -22,6 +23,10 @@ proto:
 		--openapiv2_out=allow_merge=false,json_names_for_fields=false:$(PROTO_GEN_OPENAPI_DIR) \
 		$(PROTO_FILES)
 	rm -rf $(PROTO_GEN_OPENAPI_DIR)/google $(PROTO_GEN_OPENAPI_DIR)/protoc-gen-openapiv2
+
+.PHONY: easyjson
+easyjson:
+	go run github.com/mailru/easyjson/easyjson $(EASYJSON_FILES)
 
 .PHONY: test
 test:

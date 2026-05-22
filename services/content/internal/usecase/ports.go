@@ -36,6 +36,10 @@ type MonetizationRepository interface {
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	CreateDonationPayment(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
+	UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error)
+	GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error)
+	ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 }
@@ -56,6 +60,24 @@ type NotificationRepository interface {
 
 type PostMediaStorage interface {
 	UploadPostMedia(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
+}
+
+type PaymentProvider interface {
+	CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
+	GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
+}
+
+type PaymentProviderCreateRequest struct {
+	AmountValue    int32
+	Currency       string
+	Description    string
+	IdempotenceKey string
+}
+
+type PaymentProviderPayment struct {
+	ProviderPaymentID string
+	Status            string
+	ConfirmationURL   string
 }
 
 type PostBlockInput struct {
@@ -171,6 +193,20 @@ type DonateToProfileCommand struct {
 	AmountValue     int32
 	Currency        string
 	Message         *string
+}
+
+type CreateDonationPaymentCommand struct {
+	SenderUserID    int64
+	RecipientUserID int64
+	AmountValue     int32
+	Currency        string
+	Message         *string
+}
+
+type ConfirmDonationPaymentCommand struct {
+	SenderUserID      int64
+	PaymentID         int64
+	ConfirmationToken string
 }
 
 type GetBalanceQuery struct {

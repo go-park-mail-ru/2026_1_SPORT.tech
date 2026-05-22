@@ -21,6 +21,7 @@ var gatewayOpenAPITagAliases = map[string]string{
 	"SubscriptionService": "Subscription",
 	"SportService":        "Sport",
 	"DonationService":     "Donation",
+	"PaymentService":      "Payment",
 	"StatisticsService":   "Statistics",
 	"NotificationService": "Notification",
 }
@@ -36,6 +37,7 @@ func NewMux(
 	subscriptionServer gatewayv1.SubscriptionServiceServer,
 	sportServer gatewayv1.SportServiceServer,
 	donationServer gatewayv1.DonationServiceServer,
+	paymentServer gatewayv1.PaymentServiceServer,
 	statisticsServer gatewayv1.StatisticsServiceServer,
 	notificationServer gatewayv1.NotificationServiceServer,
 ) (http.Handler, error) {
@@ -60,6 +62,9 @@ func NewMux(
 		return nil, err
 	}
 	if err := gatewayv1.RegisterDonationServiceHandlerServer(ctx, mux, donationServer); err != nil {
+		return nil, err
+	}
+	if err := gatewayv1.RegisterPaymentServiceHandlerServer(ctx, mux, paymentServer); err != nil {
 		return nil, err
 	}
 	if err := gatewayv1.RegisterStatisticsServiceHandlerServer(ctx, mux, statisticsServer); err != nil {

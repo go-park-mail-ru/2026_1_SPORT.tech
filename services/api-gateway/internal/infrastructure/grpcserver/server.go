@@ -27,6 +27,7 @@ func New(
 	subscriptionService gatewayv1.SubscriptionServiceServer,
 	sportService gatewayv1.SportServiceServer,
 	donationService gatewayv1.DonationServiceServer,
+	paymentService gatewayv1.PaymentServiceServer,
 	statisticsService gatewayv1.StatisticsServiceServer,
 	notificationService gatewayv1.NotificationServiceServer,
 	metricSet *metrics.Metrics,
@@ -46,6 +47,7 @@ func New(
 	gatewayv1.RegisterSubscriptionServiceServer(grpcServer, subscriptionService)
 	gatewayv1.RegisterSportServiceServer(grpcServer, sportService)
 	gatewayv1.RegisterDonationServiceServer(grpcServer, donationService)
+	gatewayv1.RegisterPaymentServiceServer(grpcServer, paymentService)
 	gatewayv1.RegisterStatisticsServiceServer(grpcServer, statisticsService)
 	gatewayv1.RegisterNotificationServiceServer(grpcServer, notificationService)
 
@@ -58,6 +60,7 @@ func New(
 	healthServer.SetServingStatus(gatewayv1.SubscriptionService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.SportService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.DonationService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(gatewayv1.PaymentService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.StatisticsService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.NotificationService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	grpcHealthV1.RegisterHealthServer(grpcServer, healthServer)

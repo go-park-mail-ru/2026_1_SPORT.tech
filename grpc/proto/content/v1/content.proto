@@ -100,6 +100,20 @@ service ContentService {
     };
   }
 
+  rpc CreateDonationPayment(CreateDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/donations"
+      body: "*"
+    };
+  }
+
+  rpc ConfirmDonationPayment(ConfirmDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/{payment_id}/confirm"
+      body: "*"
+    };
+  }
+
   rpc GetBalance(GetBalanceRequest) returns (BalanceResponse) {
     option (google.api.http).get = "/v1/users/{trainer_user_id}/balance";
   }
@@ -392,6 +406,41 @@ message DonateToProfileRequest {
 
 message DonationResponse {
   Donation donation = 1;
+}
+
+message Payment {
+  int64 payment_id = 1;
+  string provider_payment_id = 2;
+  string status = 3;
+  int64 sender_user_id = 4;
+  int64 recipient_user_id = 5;
+  int32 amount_value = 6;
+  string currency = 7;
+  optional string message = 8;
+  string confirmation_token = 9;
+  string confirmation_url = 10;
+  optional Donation donation = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  optional google.protobuf.Timestamp confirmed_at = 14;
+}
+
+message CreateDonationPaymentRequest {
+  int64 sender_user_id = 1;
+  int64 recipient_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+}
+
+message ConfirmDonationPaymentRequest {
+  int64 sender_user_id = 1;
+  int64 payment_id = 2;
+  string confirmation_token = 3;
+}
+
+message PaymentResponse {
+  Payment payment = 1;
 }
 
 message GetBalanceRequest {

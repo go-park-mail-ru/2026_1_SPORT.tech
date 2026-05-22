@@ -16,6 +16,7 @@ type Config struct {
 	Server      ServerConfig   `yaml:"server"`
 	Postgres    PostgresConfig `yaml:"postgres"`
 	Storage     StorageConfig  `yaml:"storage"`
+	Payment     PaymentConfig  `yaml:"payment"`
 	OpenAPI     OpenAPIConfig  `yaml:"openapi"`
 }
 
@@ -52,6 +53,15 @@ type StorageConfig struct {
 	SecretKey     string `yaml:"secret_key" env:"MINIO_SECRET_KEY" validate:"required"`
 }
 
+type PaymentConfig struct {
+	Provider           string `yaml:"provider" env:"CONTENT_PAYMENT_PROVIDER" env-default:"yookassa" validate:"required,oneof=yookassa"`
+	YooKassaShopID     string `yaml:"yookassa_shop_id" env:"YOOKASSA_SHOP_ID"`
+	YooKassaSecret     string `yaml:"yookassa_secret_key" env:"YOOKASSA_SECRET_KEY"`
+	YooKassaReturnURL  string `yaml:"yookassa_return_url" env:"YOOKASSA_RETURN_URL" env-default:"https://sporteon.ru/payment/success"`
+	YooKassaAPIBaseURL string `yaml:"yookassa_api_base_url" env:"YOOKASSA_API_BASE_URL" env-default:"https://api.yookassa.ru/v3"`
+	HTTPTimeout        string `yaml:"http_timeout" env:"CONTENT_PAYMENT_HTTP_TIMEOUT" env-default:"5s" validate:"required"`
+}
+
 type OpenAPIConfig struct {
 	FilePath string `yaml:"file_path" env:"CONTENT_OPENAPI_FILE_PATH" env-default:"grpc/gen/openapiv2/content/v1/content.swagger.json" validate:"required"`
 }
@@ -70,8 +80,37 @@ func NewConfig(path string) (Config, error) {
 	if err := cfg.Postgres.Validate(); err != nil {
 		return Config{}, fmt.Errorf("validate postgres config: %w", err)
 	}
+	if err := cfg.Payment.Validate(); err != nil {
+		return Config{}, fmt.Errorf("validate payment config: %w", err)
+	}
 
 	return cfg, nil
+}
+
+func (cfg PaymentConfig) HTTPTimeoutDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.HTTPTimeout)
+}
+
+func (cfg PaymentConfig) Validate() error {
+	if cfg.Provider == "yookassa" {
+		if cfg.YooKassaShopID == "" {
+			return fmt.Errorf("yookassa_shop_id is required")
+		}
+		if cfg.YooKassaSecret == "" {
+			return fmt.Errorf("yookassa_secret_key is required")
+		}
+		if cfg.YooKassaReturnURL == "" {
+			return fmt.Errorf("yookassa_return_url is required")
+		}
+		if cfg.YooKassaAPIBaseURL == "" {
+			return fmt.Errorf("yookassa_api_base_url is required")
+		}
+	}
+	if _, err := parsePositiveDuration("payment_http_timeout", cfg.HTTPTimeout); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cfg ServerConfig) GRPCAddress() string {

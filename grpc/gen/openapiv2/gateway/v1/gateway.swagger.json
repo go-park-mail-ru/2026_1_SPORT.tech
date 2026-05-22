@@ -27,6 +27,9 @@
       "name": "DonationService"
     },
     {
+      "name": "PaymentService"
+    },
+    {
       "name": "StatisticsService"
     },
     {
@@ -299,6 +302,77 @@
         ],
         "tags": [
           "NotificationService"
+        ]
+      }
+    },
+    "/v1/payments/donations": {
+      "post": {
+        "operationId": "PaymentService_CreateDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateDonationPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
+        ]
+      }
+    },
+    "/v1/payments/{payment_id}/confirm": {
+      "post": {
+        "operationId": "PaymentService_ConfirmDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceConfirmDonationPaymentBody"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
         ]
       }
     },
@@ -1277,6 +1351,14 @@
     "NotificationServiceMarkNotificationReadBody": {
       "type": "object"
     },
+    "PaymentServiceConfirmDonationPaymentBody": {
+      "type": "object",
+      "properties": {
+        "confirmation_token": {
+          "type": "string"
+        }
+      }
+    },
     "PostServiceCreateCommentBody": {
       "type": "object",
       "properties": {
@@ -1477,6 +1559,25 @@
       "properties": {
         "comment": {
           "$ref": "#/definitions/v1Comment"
+        }
+      }
+    },
+    "v1CreateDonationPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },
@@ -1688,6 +1789,91 @@
       "properties": {
         "notification": {
           "$ref": "#/definitions/v1Notification"
+        }
+      }
+    },
+    "v1PaymentDonation": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sender_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recipient_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1PaymentResponse": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "provider_payment_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "sender_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recipient_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "confirmation_token": {
+          "type": "string"
+        },
+        "confirmation_url": {
+          "type": "string"
+        },
+        "donation": {
+          "$ref": "#/definitions/v1PaymentDonation"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

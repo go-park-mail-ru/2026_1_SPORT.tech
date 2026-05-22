@@ -7,6 +7,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/lib/pq v1.11.2
+	github.com/mailru/easyjson v0.9.2
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/prometheus/client_golang v1.23.2
 	golang.org/x/crypto v0.49.0
@@ -27,6 +28,7 @@ require (
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.11 // indirect
 	github.com/kr/text v0.2.0 // indirect

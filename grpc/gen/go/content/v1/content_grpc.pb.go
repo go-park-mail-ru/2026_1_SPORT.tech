@@ -36,6 +36,8 @@ const (
 	ContentService_UpdateSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/UpdateSubscription"
 	ContentService_CancelSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/CancelSubscription"
 	ContentService_DonateToProfile_FullMethodName        = "/sporttech.content.v1.ContentService/DonateToProfile"
+	ContentService_CreateDonationPayment_FullMethodName  = "/sporttech.content.v1.ContentService/CreateDonationPayment"
+	ContentService_ConfirmDonationPayment_FullMethodName = "/sporttech.content.v1.ContentService/ConfirmDonationPayment"
 	ContentService_GetBalance_FullMethodName             = "/sporttech.content.v1.ContentService/GetBalance"
 	ContentService_GetTrainerStatistics_FullMethodName   = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
 	ContentService_LikePost_FullMethodName               = "/sporttech.content.v1.ContentService/LikePost"
@@ -66,6 +68,8 @@ type ContentServiceClient interface {
 	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
+	CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	GetTrainerStatistics(ctx context.Context, in *GetTrainerStatisticsRequest, opts ...grpc.CallOption) (*TrainerStatisticsResponse, error)
 	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
@@ -244,6 +248,26 @@ func (c *contentServiceClient) DonateToProfile(ctx context.Context, in *DonateTo
 	return out, nil
 }
 
+func (c *contentServiceClient) CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_CreateDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_ConfirmDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BalanceResponse)
@@ -344,6 +368,8 @@ type ContentServiceServer interface {
 	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error)
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
+	CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error)
+	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
 	GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error)
 	GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error)
 	LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error)
@@ -408,6 +434,12 @@ func (UnimplementedContentServiceServer) CancelSubscription(context.Context, *Ca
 }
 func (UnimplementedContentServiceServer) DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DonateToProfile not implemented")
+}
+func (UnimplementedContentServiceServer) CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateDonationPayment not implemented")
+}
+func (UnimplementedContentServiceServer) ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmDonationPayment not implemented")
 }
 func (UnimplementedContentServiceServer) GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetBalance not implemented")
@@ -741,6 +773,42 @@ func _ContentService_DonateToProfile_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_CreateDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateDonationPayment(ctx, req.(*CreateDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ConfirmDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ConfirmDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ConfirmDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ConfirmDonationPayment(ctx, req.(*ConfirmDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_GetBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetBalanceRequest)
 	if err := dec(in); err != nil {
@@ -955,6 +1023,14 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DonateToProfile",
 			Handler:    _ContentService_DonateToProfile_Handler,
+		},
+		{
+			MethodName: "CreateDonationPayment",
+			Handler:    _ContentService_CreateDonationPayment_Handler,
+		},
+		{
+			MethodName: "ConfirmDonationPayment",
+			Handler:    _ContentService_ConfirmDonationPayment_Handler,
 		},
 		{
 			MethodName: "GetBalance",

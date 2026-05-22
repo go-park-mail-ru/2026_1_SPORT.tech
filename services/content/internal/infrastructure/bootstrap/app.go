@@ -11,6 +11,7 @@ import (
 	"time"
 
 	minioadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/client/minio"
+	yookassaadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/client/yookassa"
 	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/grpc"
 	postgresadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/repository/postgres"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/infrastructure/config"
@@ -47,12 +48,17 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		_ = database.Close()
 		return nil, fmt.Errorf("new post media storage: %w", err)
 	}
+	paymentProvider, err := yookassaadapter.NewPaymentProvider(cfg.Payment)
+	if err != nil {
+		_ = database.Close()
+		return nil, fmt.Errorf("new payment provider: %w", err)
+	}
 	contentUseCase := usecase.NewService(usecase.Repositories{
 		Posts:         contentRepository,
 		Money:         contentRepository,
 		Engagement:    contentRepository,
 		Notifications: contentRepository,
-	}, postMediaStorage)
+	}, postMediaStorage, paymentProvider)
 
 	metricsSet := metrics.New(cfg.ServiceName)
 	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{

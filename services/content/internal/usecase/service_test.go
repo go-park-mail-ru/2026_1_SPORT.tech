@@ -33,6 +33,8 @@ type stubContentRepository struct {
 	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	createPaymentFunc      func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
+	confirmPaymentFunc     func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
 	getBalanceFunc         func(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	getStatisticsFunc      func(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 	createNotificationFunc func(ctx context.Context, notification domain.Notification) (domain.Notification, error)
@@ -161,6 +163,39 @@ func (repository stubContentRepository) CreateDonation(ctx context.Context, dona
 	return repository.createDonationFunc(ctx, donation)
 }
 
+func (repository stubContentRepository) CreateDonationPayment(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error) {
+	if repository.createPaymentFunc == nil {
+		return payment, nil
+	}
+	return repository.createPaymentFunc(ctx, payment)
+}
+
+func (repository stubContentRepository) UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error) {
+	return domain.DonationPayment{
+		PaymentID:         paymentID,
+		ProviderPaymentID: providerPaymentID,
+		ConfirmationURL:   confirmationURL,
+		Status:            domain.PaymentStatusPending,
+	}, nil
+}
+
+func (repository stubContentRepository) GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error) {
+	return domain.DonationPayment{
+		PaymentID:         paymentID,
+		SenderUserID:      senderUserID,
+		ProviderPaymentID: "provider-payment-1",
+		ConfirmationToken: "confirm_abc",
+		Status:            domain.PaymentStatusPending,
+	}, nil
+}
+
+func (repository stubContentRepository) ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+	if repository.confirmPaymentFunc == nil {
+		return domain.DonationPayment{PaymentID: paymentID, SenderUserID: senderUserID, ConfirmationToken: confirmationToken}, nil
+	}
+	return repository.confirmPaymentFunc(ctx, senderUserID, paymentID, confirmationToken)
+}
+
 func (repository stubContentRepository) GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error) {
 	if repository.getBalanceFunc == nil {
 		return domain.Balance{TrainerUserID: trainerUserID, Currency: currency}, nil
@@ -194,6 +229,25 @@ func (repository stubContentRepository) MarkNotificationRead(ctx context.Context
 		return domain.Notification{NotificationID: notificationID, UserID: userID}, nil
 	}
 	return repository.markNotificationFunc(ctx, userID, notificationID)
+}
+
+type stubPaymentProvider struct {
+	createFunc func(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
+	getFunc    func(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
+}
+
+func (provider stubPaymentProvider) CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error) {
+	if provider.createFunc == nil {
+		return PaymentProviderPayment{ProviderPaymentID: "provider-payment-1", Status: "pending", ConfirmationURL: "https://pay.example/1"}, nil
+	}
+	return provider.createFunc(ctx, request)
+}
+
+func (provider stubPaymentProvider) GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error) {
+	if provider.getFunc == nil {
+		return PaymentProviderPayment{ProviderPaymentID: providerPaymentID, Status: "succeeded"}, nil
+	}
+	return provider.getFunc(ctx, providerPaymentID)
 }
 
 func stubRepositories(repository stubContentRepository) Repositories {
@@ -658,6 +712,65 @@ func TestServiceDonateToProfileRejectsTooLargeAmount(t *testing.T) {
 	})
 	if !errors.Is(err, ErrInvalidDonationAmount) {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestServiceDonationPaymentFlow(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			createPaymentFunc: func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error) {
+				if payment.SenderUserID != 1002 ||
+					payment.RecipientUserID != 1001 ||
+					payment.AmountValue != 1500 ||
+					payment.Currency != "RUB" ||
+					payment.Status != domain.PaymentStatusPending ||
+					payment.Provider != "yookassa" ||
+					payment.Message == nil ||
+					*payment.Message != "Спасибо" ||
+					payment.ConfirmationToken == "" {
+					t.Fatalf("unexpected payment: %+v", payment)
+				}
+				payment.PaymentID = 81
+				return payment, nil
+			},
+			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+				if senderUserID != 1002 || paymentID != 81 || confirmationToken != "confirm_abc" {
+					t.Fatalf("unexpected confirm args: sender=%d payment=%d token=%s", senderUserID, paymentID, confirmationToken)
+				}
+				return domain.DonationPayment{
+					PaymentID: paymentID,
+					Status:    domain.PaymentStatusConfirmed,
+					Donation:  &domain.Donation{DonationID: 77, SenderUserID: 1002, RecipientUserID: 1001},
+				}, nil
+			},
+		}),
+		nil,
+		stubPaymentProvider{},
+	)
+
+	payment, err := service.CreateDonationPayment(context.Background(), CreateDonationPaymentCommand{
+		SenderUserID:    1002,
+		RecipientUserID: 1001,
+		AmountValue:     1500,
+		Message:         stringPtr(" Спасибо "),
+	})
+	if err != nil {
+		t.Fatalf("unexpected create payment error: %v", err)
+	}
+	if payment.PaymentID != 81 || payment.Status != domain.PaymentStatusPending {
+		t.Fatalf("unexpected payment: %+v", payment)
+	}
+
+	confirmed, err := service.ConfirmDonationPayment(context.Background(), ConfirmDonationPaymentCommand{
+		SenderUserID:      1002,
+		PaymentID:         81,
+		ConfirmationToken: " confirm_abc ",
+	})
+	if err != nil {
+		t.Fatalf("unexpected confirm payment error: %v", err)
+	}
+	if confirmed.Status != domain.PaymentStatusConfirmed || confirmed.Donation == nil || confirmed.Donation.DonationID != 77 {
+		t.Fatalf("unexpected confirmed payment: %+v", confirmed)
 	}
 }
 

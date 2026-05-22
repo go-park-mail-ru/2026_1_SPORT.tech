@@ -210,6 +210,22 @@ service DonationService {
   }
 }
 
+service PaymentService {
+  rpc CreateDonationPayment(CreateDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/donations"
+      body: "*"
+    };
+  }
+
+  rpc ConfirmDonationPayment(ConfirmDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/{payment_id}/confirm"
+      body: "*"
+    };
+  }
+}
+
 service StatisticsService {
   rpc GetMyStatistics(google.protobuf.Empty) returns (StatisticsResponse) {
     option (google.api.http).get = "/v1/statistics/me";
@@ -596,6 +612,45 @@ message BalanceResponse {
   int32 trainer_id = 1;
   int32 amount_value = 2;
   string currency = 3;
+}
+
+message CreateDonationPaymentRequest {
+  int32 user_id = 1;
+  int32 amount_value = 2;
+  string currency = 3;
+  optional string message = 4;
+}
+
+message ConfirmDonationPaymentRequest {
+  int32 payment_id = 1;
+  string confirmation_token = 2;
+}
+
+message PaymentDonation {
+  int32 donation_id = 1;
+  int32 sender_user_id = 2;
+  int32 recipient_user_id = 3;
+  int32 amount_value = 4;
+  string currency = 5;
+  optional string message = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message PaymentResponse {
+  int32 payment_id = 1;
+  string provider_payment_id = 2;
+  string status = 3;
+  int32 sender_user_id = 4;
+  int32 recipient_user_id = 5;
+  int32 amount_value = 6;
+  string currency = 7;
+  optional string message = 8;
+  string confirmation_token = 9;
+  string confirmation_url = 10;
+  optional PaymentDonation donation = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  optional google.protobuf.Timestamp confirmed_at = 14;
 }
 
 message StatisticsResponse {

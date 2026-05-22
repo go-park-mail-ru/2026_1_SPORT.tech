@@ -3,6 +3,8 @@ package usecase
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"time"
@@ -15,20 +17,27 @@ const (
 )
 
 type Service struct {
-	posts         PostRepository
-	money         MonetizationRepository
-	engagement    EngagementRepository
-	notifications NotificationRepository
-	postMedia     PostMediaStorage
+	posts           PostRepository
+	money           MonetizationRepository
+	engagement      EngagementRepository
+	notifications   NotificationRepository
+	postMedia       PostMediaStorage
+	paymentProvider PaymentProvider
 }
 
-func NewService(repositories Repositories, postMediaStorage PostMediaStorage) *Service {
+func NewService(repositories Repositories, postMediaStorage PostMediaStorage, paymentProviders ...PaymentProvider) *Service {
+	var paymentProvider PaymentProvider
+	if len(paymentProviders) > 0 {
+		paymentProvider = paymentProviders[0]
+	}
+
 	return &Service{
-		posts:         repositories.Posts,
-		money:         repositories.Money,
-		engagement:    repositories.Engagement,
-		notifications: repositories.Notifications,
-		postMedia:     postMediaStorage,
+		posts:           repositories.Posts,
+		money:           repositories.Money,
+		engagement:      repositories.Engagement,
+		notifications:   repositories.Notifications,
+		postMedia:       postMediaStorage,
+		paymentProvider: paymentProvider,
 	}
 }
 
@@ -507,6 +516,106 @@ func (service *Service) DonateToProfile(ctx context.Context, command DonateToPro
 	return donation, nil
 }
 
+func (service *Service) CreateDonationPayment(ctx context.Context, command CreateDonationPaymentCommand) (domain.DonationPayment, error) {
+	donationCommand := DonateToProfileCommand{
+		SenderUserID:    command.SenderUserID,
+		RecipientUserID: command.RecipientUserID,
+		AmountValue:     command.AmountValue,
+		Currency:        normalizeCurrency(command.Currency),
+		Message:         normalizeOptionalText(command.Message),
+	}
+	if err := validateDonateToProfileCommand(donationCommand); err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	confirmationToken, err := randomToken("confirm")
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	if service.paymentProvider == nil {
+		return domain.DonationPayment{}, ErrPaymentProviderUnavailable
+	}
+
+	payment := domain.DonationPayment{
+		Provider:          "yookassa",
+		Status:            domain.PaymentStatusPending,
+		SenderUserID:      donationCommand.SenderUserID,
+		RecipientUserID:   donationCommand.RecipientUserID,
+		AmountValue:       donationCommand.AmountValue,
+		Currency:          donationCommand.Currency,
+		Message:           donationCommand.Message,
+		ConfirmationToken: confirmationToken,
+	}
+	created, err := service.money.CreateDonationPayment(ctx, payment)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	providerPayment, err := service.paymentProvider.CreatePayment(ctx, PaymentProviderCreateRequest{
+		AmountValue:    donationCommand.AmountValue,
+		Currency:       donationCommand.Currency,
+		Description:    fmt.Sprintf("Donation payment #%d", created.PaymentID),
+		IdempotenceKey: fmt.Sprintf("content-payment-%d", created.PaymentID),
+	})
+	if err != nil {
+		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+	}
+
+	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
+}
+
+func (service *Service) ConfirmDonationPayment(ctx context.Context, command ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {
+	if command.SenderUserID <= 0 {
+		return domain.DonationPayment{}, ErrInvalidUserID
+	}
+	if command.PaymentID <= 0 {
+		return domain.DonationPayment{}, ErrInvalidPaymentID
+	}
+	if normalizeRequiredText(command.ConfirmationToken) == "" {
+		return domain.DonationPayment{}, ErrInvalidPaymentConfirmationToken
+	}
+
+	payment, err := service.money.GetDonationPayment(ctx, command.SenderUserID, command.PaymentID)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	if payment.ConfirmationToken != normalizeRequiredText(command.ConfirmationToken) {
+		return domain.DonationPayment{}, domain.ErrPaymentTokenMismatch
+	}
+	wasPending := payment.Status != domain.PaymentStatusConfirmed
+	if payment.Status != domain.PaymentStatusConfirmed {
+		if service.paymentProvider == nil {
+			return domain.DonationPayment{}, ErrPaymentProviderUnavailable
+		}
+		providerPayment, err := service.paymentProvider.GetPayment(ctx, payment.ProviderPaymentID)
+		if err != nil {
+			return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+		}
+		if providerPayment.Status != "succeeded" {
+			return domain.DonationPayment{}, ErrPaymentNotSucceeded
+		}
+	}
+
+	payment, err = service.money.ConfirmDonationPayment(ctx, command.SenderUserID, command.PaymentID, normalizeRequiredText(command.ConfirmationToken))
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	if wasPending && payment.Donation != nil {
+		if err := service.createNotification(ctx, domain.Notification{
+			UserID:      payment.Donation.RecipientUserID,
+			Type:        domain.NotificationTypeDonation,
+			ActorUserID: payment.Donation.SenderUserID,
+			Title:       "New donation",
+			Body:        "You received a new donation",
+			DonationID:  &payment.Donation.DonationID,
+		}); err != nil {
+			return domain.DonationPayment{}, err
+		}
+	}
+
+	return payment, nil
+}
+
 func (service *Service) GetBalance(ctx context.Context, query GetBalanceQuery) (domain.Balance, error) {
 	query.Currency = normalizeCurrency(query.Currency)
 	if err := validateGetBalanceQuery(query); err != nil {
@@ -565,6 +674,15 @@ func (service *Service) createNotification(ctx context.Context, notification dom
 
 	_, err := service.notifications.CreateNotification(ctx, notification)
 	return err
+}
+
+func randomToken(prefix string) (string, error) {
+	var data [18]byte
+	if _, err := rand.Read(data[:]); err != nil {
+		return "", fmt.Errorf("generate token: %w", err)
+	}
+
+	return prefix + "_" + base64.RawURLEncoding.EncodeToString(data[:]), nil
 }
 
 func buildPost(command CreatePostCommand) (domain.Post, error) {

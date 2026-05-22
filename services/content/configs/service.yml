@@ -26,5 +26,11 @@ storage:
   public_base_url: http://localhost:8000/post-media
   use_ssl: false
 
+payment:
+  provider: yookassa
+  yookassa_return_url: https://sporteon.ru/payment/success
+  yookassa_api_base_url: https://api.yookassa.ru/v3
+  http_timeout: 5s
+
 openapi:
   file_path: grpc/gen/openapiv2/content/v1/content.swagger.json

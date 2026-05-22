@@ -12,6 +12,31 @@ type Donation struct {
 	CreatedAt       time.Time
 }
 
+type PaymentStatus string
+
+const (
+	PaymentStatusPending   PaymentStatus = "pending"
+	PaymentStatusConfirmed PaymentStatus = "confirmed"
+)
+
+type DonationPayment struct {
+	PaymentID         int64
+	Provider          string
+	ProviderPaymentID string
+	Status            PaymentStatus
+	SenderUserID      int64
+	RecipientUserID   int64
+	AmountValue       int32
+	Currency          string
+	Message           *string
+	ConfirmationToken string
+	ConfirmationURL   string
+	Donation          *Donation
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	ConfirmedAt       *time.Time
+}
+
 type Balance struct {
 	TrainerUserID int64
 	AmountValue   int32

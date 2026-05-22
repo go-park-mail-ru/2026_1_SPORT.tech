@@ -151,6 +151,24 @@ func DonateToProfileRequestToCommand(request *contentv1.DonateToProfileRequest) 
 	}
 }
 
+func CreateDonationPaymentRequestToCommand(request *contentv1.CreateDonationPaymentRequest) usecase.CreateDonationPaymentCommand {
+	return usecase.CreateDonationPaymentCommand{
+		SenderUserID:    request.GetSenderUserId(),
+		RecipientUserID: request.GetRecipientUserId(),
+		AmountValue:     request.GetAmountValue(),
+		Currency:        request.GetCurrency(),
+		Message:         request.Message,
+	}
+}
+
+func ConfirmDonationPaymentRequestToCommand(request *contentv1.ConfirmDonationPaymentRequest) usecase.ConfirmDonationPaymentCommand {
+	return usecase.ConfirmDonationPaymentCommand{
+		SenderUserID:      request.GetSenderUserId(),
+		PaymentID:         request.GetPaymentId(),
+		ConfirmationToken: request.GetConfirmationToken(),
+	}
+}
+
 func GetBalanceRequestToQuery(request *contentv1.GetBalanceRequest) usecase.GetBalanceQuery {
 	return usecase.GetBalanceQuery{
 		TrainerUserID: request.GetTrainerUserId(),
@@ -307,6 +325,12 @@ func NewDonationResponse(donation domain.Donation) *contentv1.DonationResponse {
 	}
 }
 
+func NewPaymentResponse(payment domain.DonationPayment) *contentv1.PaymentResponse {
+	return &contentv1.PaymentResponse{
+		Payment: paymentToProto(payment),
+	}
+}
+
 func NewBalanceResponse(balance domain.Balance) *contentv1.BalanceResponse {
 	return &contentv1.BalanceResponse{
 		TrainerUserId: balance.TrainerUserID,
@@ -398,6 +422,8 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidDonationCurrency),
 		errors.Is(err, usecase.ErrInvalidDonationMessage),
 		errors.Is(err, usecase.ErrInvalidDonationTarget),
+		errors.Is(err, usecase.ErrInvalidPaymentID),
+		errors.Is(err, usecase.ErrInvalidPaymentConfirmationToken),
 		errors.Is(err, usecase.ErrInvalidNotificationID),
 		errors.Is(err, usecase.ErrInvalidNotificationType),
 		errors.Is(err, usecase.ErrInvalidNotificationTitle),
@@ -410,13 +436,19 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, domain.ErrSubscriptionTierNotFound),
 		errors.Is(err, domain.ErrSubscriptionNotFound),
 		errors.Is(err, domain.ErrDonationNotFound),
+		errors.Is(err, domain.ErrPaymentNotFound),
 		errors.Is(err, domain.ErrNotificationNotFound):
 		return status.Error(codes.NotFound, err.Error())
-	case errors.Is(err, domain.ErrPostForbidden):
+	case errors.Is(err, domain.ErrPostForbidden),
+		errors.Is(err, domain.ErrPaymentForbidden),
+		errors.Is(err, domain.ErrPaymentTokenMismatch):
 		return status.Error(codes.PermissionDenied, err.Error())
-	case errors.Is(err, domain.ErrSubscriptionTierInUse):
+	case errors.Is(err, domain.ErrSubscriptionTierInUse),
+		errors.Is(err, domain.ErrPaymentAlreadyConfirmed),
+		errors.Is(err, usecase.ErrPaymentNotSucceeded):
 		return status.Error(codes.FailedPrecondition, err.Error())
-	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable):
+	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable),
+		errors.Is(err, usecase.ErrPaymentProviderUnavailable):
 		return status.Error(codes.Unavailable, err.Error())
 	default:
 		return status.Error(codes.Internal, "internal error")
@@ -525,6 +557,33 @@ func donationToProto(donation domain.Donation) *contentv1.Donation {
 	}
 	if donation.Message != nil {
 		response.Message = donation.Message
+	}
+
+	return response
+}
+
+func paymentToProto(payment domain.DonationPayment) *contentv1.Payment {
+	response := &contentv1.Payment{
+		PaymentId:         payment.PaymentID,
+		ProviderPaymentId: payment.ProviderPaymentID,
+		Status:            string(payment.Status),
+		SenderUserId:      payment.SenderUserID,
+		RecipientUserId:   payment.RecipientUserID,
+		AmountValue:       payment.AmountValue,
+		Currency:          payment.Currency,
+		ConfirmationToken: payment.ConfirmationToken,
+		ConfirmationUrl:   payment.ConfirmationURL,
+		CreatedAt:         timestamppb.New(payment.CreatedAt),
+		UpdatedAt:         timestamppb.New(payment.UpdatedAt),
+	}
+	if payment.Message != nil {
+		response.Message = payment.Message
+	}
+	if payment.Donation != nil {
+		response.Donation = donationToProto(*payment.Donation)
+	}
+	if payment.ConfirmedAt != nil {
+		response.ConfirmedAt = timestamppb.New(*payment.ConfirmedAt)
 	}
 
 	return response

@@ -12,29 +12,11 @@ import (
 )
 
 func (server *Server) DonateToProfile(ctx context.Context, request *gatewayv1.DonateToProfileRequest) (*gatewayv1.DonationResponse, error) {
-	principal, err := server.requireSession(ctx)
-	if err != nil {
+	if _, err := server.requireSession(ctx); err != nil {
 		return nil, err
 	}
 
-	userID, err := userIDFromPrincipal(principal)
-	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
-	}
-
-	response, err := server.contentClient.DonateToProfile(
-		forwardContext(ctx),
-		mappers.DonateToProfileRequestToContent(userID, request),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := setHTTPStatus(ctx, 201); err != nil {
-		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
-	}
-
-	return mappers.DonationResponseFromContent(response)
+	return nil, status.Error(codes.FailedPrecondition, "create and confirm a donation payment instead")
 }
 
 func (server *Server) GetMyBalance(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.BalanceResponse, error) {

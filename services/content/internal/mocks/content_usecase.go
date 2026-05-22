@@ -24,6 +24,8 @@ type ContentUseCase struct {
 	UpdateSubscriptionFunc func(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	DonateFunc             func(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
+	CreatePaymentFunc      func(ctx context.Context, command usecase.CreateDonationPaymentCommand) (domain.DonationPayment, error)
+	ConfirmPaymentFunc     func(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error)
 	GetBalanceFunc         func(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
 	GetStatisticsFunc      func(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
 	LikePostFunc           func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
@@ -123,6 +125,20 @@ func (mock ContentUseCase) DonateToProfile(ctx context.Context, command usecase.
 		return domain.Donation{}, nil
 	}
 	return mock.DonateFunc(ctx, command)
+}
+
+func (mock ContentUseCase) CreateDonationPayment(ctx context.Context, command usecase.CreateDonationPaymentCommand) (domain.DonationPayment, error) {
+	if mock.CreatePaymentFunc == nil {
+		return domain.DonationPayment{}, nil
+	}
+	return mock.CreatePaymentFunc(ctx, command)
+}
+
+func (mock ContentUseCase) ConfirmDonationPayment(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {
+	if mock.ConfirmPaymentFunc == nil {
+		return domain.DonationPayment{}, nil
+	}
+	return mock.ConfirmPaymentFunc(ctx, command)
 }
 
 func (mock ContentUseCase) GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error) {
