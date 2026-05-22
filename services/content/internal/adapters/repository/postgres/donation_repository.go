@@ -264,12 +264,12 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 		ctx,
 		`
 			UPDATE content_payment
-			SET status = $3,
-				donation_id = $4,
-				confirmed_at = $5,
-				updated_at = $5
-			WHERE payment_id = $1
-				AND sender_user_id = $2
+			SET status = $3::text,
+				donation_id = $4::bigint,
+				confirmed_at = $5::timestamptz,
+				updated_at = $5::timestamptz
+			WHERE payment_id = $1::bigint
+				AND sender_user_id = $2::bigint
 		`,
 		payment.PaymentID,
 		senderUserID,
