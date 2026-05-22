@@ -13,7 +13,7 @@ CREATE TABLE content_payment (
   confirmation_url TEXT,
   tier_id BIGINT,
   donation_id BIGINT UNIQUE REFERENCES content_donation(donation_id),
-  subscription_id BIGINT UNIQUE REFERENCES content_subscription(subscription_id),
+  subscription_id BIGINT REFERENCES content_subscription(subscription_id),
   confirmed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
