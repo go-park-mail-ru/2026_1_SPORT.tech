@@ -247,7 +247,6 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 	now := time.Now().UTC()
 	var donation *domain.Donation
 	var subscription *domain.Subscription
-	var donationID *int64
 	if payment.TierID == nil {
 		createdDonation, err := createDonationTx(ctx, tx, domain.Donation{
 			SenderUserID:    payment.SenderUserID,
@@ -260,7 +259,25 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			return domain.DonationPayment{}, err
 		}
 		donation = &createdDonation
-		donationID = &createdDonation.DonationID
+		if _, err := tx.ExecContext(
+			ctx,
+			`
+				UPDATE content_payment
+				SET status = $3::text,
+					donation_id = $4::bigint,
+					confirmed_at = $5::timestamptz,
+					updated_at = $5::timestamptz
+				WHERE payment_id = $1::bigint
+					AND sender_user_id = $2::bigint
+			`,
+			payment.PaymentID,
+			senderUserID,
+			string(domain.PaymentStatusConfirmed),
+			createdDonation.DonationID,
+			now,
+		); err != nil {
+			return domain.DonationPayment{}, err
+		}
 	} else {
 		createdSubscription, err := subscribeToTrainerTx(ctx, tx, domain.Subscription{
 			ClientUserID:  payment.SenderUserID,
@@ -272,26 +289,23 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			return domain.DonationPayment{}, err
 		}
 		subscription = &createdSubscription
-	}
-
-	if _, err := tx.ExecContext(
-		ctx,
-		`
-			UPDATE content_payment
-			SET status = $3::text,
-				donation_id = $4::bigint,
-				confirmed_at = $5::timestamptz,
-				updated_at = $5::timestamptz
-			WHERE payment_id = $1::bigint
-				AND sender_user_id = $2::bigint
-		`,
-		payment.PaymentID,
-		senderUserID,
-		string(domain.PaymentStatusConfirmed),
-		nullableInt64(donationID),
-		now,
-	); err != nil {
-		return domain.DonationPayment{}, err
+		if _, err := tx.ExecContext(
+			ctx,
+			`
+				UPDATE content_payment
+				SET status = $3::text,
+					confirmed_at = $4::timestamptz,
+					updated_at = $4::timestamptz
+				WHERE payment_id = $1::bigint
+					AND sender_user_id = $2::bigint
+			`,
+			payment.PaymentID,
+			senderUserID,
+			string(domain.PaymentStatusConfirmed),
+			now,
+		); err != nil {
+			return domain.DonationPayment{}, err
+		}
 	}
 
 	payment.Status = domain.PaymentStatusConfirmed
