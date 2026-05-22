@@ -47,6 +47,7 @@ type CommentUseCase interface {
 type DonationUseCase interface {
 	DonateToProfile(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
 	GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
+	GetTrainerStatistics(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
 }
 
 type UseCases struct {
@@ -215,6 +216,15 @@ func (server *Server) GetBalance(ctx context.Context, request *contentv1.GetBala
 	}
 
 	return mappers.NewBalanceResponse(balance), nil
+}
+
+func (server *Server) GetTrainerStatistics(ctx context.Context, request *contentv1.GetTrainerStatisticsRequest) (*contentv1.TrainerStatisticsResponse, error) {
+	statistics, err := server.useCases.Donations.GetTrainerStatistics(ctx, mappers.GetTrainerStatisticsRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewTrainerStatisticsResponse(statistics), nil
 }
 
 func (server *Server) LikePost(ctx context.Context, request *contentv1.LikePostRequest) (*contentv1.PostLikeStateResponse, error) {

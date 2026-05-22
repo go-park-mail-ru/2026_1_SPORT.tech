@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 	"time"
+
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
 
 func (repository *Repository) CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error) {
@@ -56,4 +57,35 @@ func (repository *Repository) GetBalance(ctx context.Context, trainerUserID int6
 	}
 
 	return balance, nil
+}
+
+func (repository *Repository) GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error) {
+	const query = `
+		SELECT
+			(SELECT COUNT(*)::int FROM content_post WHERE author_user_id = $1),
+			(SELECT COUNT(*)::int FROM content_donation WHERE recipient_user_id = $1 AND currency = $2),
+			(SELECT COALESCE(SUM(amount_value), 0)::int FROM content_donation WHERE recipient_user_id = $1 AND currency = $2),
+			(
+				SELECT COALESCE(SUM(amount_value), 0)::int
+				FROM content_donation
+				WHERE recipient_user_id = $1
+					AND currency = $2
+					AND created_at >= $3
+			)
+	`
+
+	statistics := domain.TrainerStatistics{
+		TrainerUserID: trainerUserID,
+		Currency:      currency,
+	}
+	if err := repository.db.QueryRowContext(ctx, query, trainerUserID, currency, monthStart).Scan(
+		&statistics.PostsCount,
+		&statistics.DonationsCount,
+		&statistics.TotalRevenue,
+		&statistics.MonthlyRevenue,
+	); err != nil {
+		return domain.TrainerStatistics{}, err
+	}
+
+	return statistics, nil
 }

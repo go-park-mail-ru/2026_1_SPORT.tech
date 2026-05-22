@@ -5,6 +5,7 @@ PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/conten
 PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
 COVER_PACKAGES := $(shell go list ./... | grep -E '/internal/(domain|usecase|adapters/mappers|infrastructure/httpgateway)$$' | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
 GO_BIN := $(HOME)/go/bin
+COVERAGE_MIN ?= 60
 
 .PHONY: generate
 generate: proto
@@ -26,6 +27,21 @@ proto:
 test:
 	go test ./...
 
+.PHONY: fmt-check
+fmt-check:
+	@unformatted=$$(gofmt -l $$(find . -name '*.go' -not -path './.git/*')); \
+	if [ -n "$$unformatted" ]; then \
+		printf 'gofmt required for:\n%s\n' "$$unformatted"; \
+		exit 1; \
+	fi
+
+.PHONY: vet
+vet:
+	go vet ./...
+
+.PHONY: lint
+lint: fmt-check vet
+
 .PHONY: coverage
 coverage:
 	go test -covermode=atomic -coverprofile=coverage.tmp $(COVER_PACKAGES)
@@ -44,9 +60,25 @@ coverage-total:
 	go tool cover -func=$$coverage_out | awk '/^total:/ { gsub("%", "", $$3); print $$3 }'; \
 	rm -f $$coverage_tmp $$coverage_out
 
+.PHONY: coverage-check
+coverage-check:
+	@coverage=$$(make --no-print-directory coverage-total); \
+	printf 'coverage: %s%%\n' "$$coverage"; \
+	awk -v coverage="$$coverage" -v min="$(COVERAGE_MIN)" 'BEGIN { if (coverage + 0 < min + 0) { printf "coverage %.1f%% is below required %.1f%%\n", coverage, min; exit 1 } }'
+
 .PHONY: coverage-html
 coverage-html: coverage
 	go tool cover -html=coverage.out -o coverage.html
+
+.PHONY: docker-build
+docker-build:
+	docker build -f services/auth/Dockerfile -t 2026_1_sporttech-auth-service .
+	docker build -f services/profile/Dockerfile -t 2026_1_sporttech-profile-service .
+	docker build -f services/content/Dockerfile -t 2026_1_sporttech-content-service .
+	docker build -f services/api-gateway/Dockerfile -t 2026_1_sporttech-api-gateway .
+
+.PHONY: ci
+ci: lint test coverage-check
 
 .PHONY: compose-up
 compose-up:

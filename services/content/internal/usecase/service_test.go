@@ -34,6 +34,7 @@ type stubContentRepository struct {
 	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	getBalanceFunc         func(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
+	getStatisticsFunc      func(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 }
 
 func (repository stubContentRepository) CreatePost(ctx context.Context, post domain.Post) (int64, error) {
@@ -162,6 +163,13 @@ func (repository stubContentRepository) GetBalance(ctx context.Context, trainerU
 		return domain.Balance{TrainerUserID: trainerUserID, Currency: currency}, nil
 	}
 	return repository.getBalanceFunc(ctx, trainerUserID, currency)
+}
+
+func (repository stubContentRepository) GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error) {
+	if repository.getStatisticsFunc == nil {
+		return domain.TrainerStatistics{TrainerUserID: trainerUserID, Currency: currency}, nil
+	}
+	return repository.getStatisticsFunc(ctx, trainerUserID, currency, monthStart)
 }
 
 func stubRepositories(repository stubContentRepository) Repositories {
@@ -647,6 +655,38 @@ func TestServiceGetBalance(t *testing.T) {
 	}
 	if balance.AmountValue != 3000 || balance.Currency != "RUB" {
 		t.Fatalf("unexpected balance: %+v", balance)
+	}
+}
+
+func TestServiceGetTrainerStatistics(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getStatisticsFunc: func(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error) {
+				if trainerUserID != 1001 || currency != "RUB" {
+					t.Fatalf("unexpected statistics args: trainer=%d currency=%s", trainerUserID, currency)
+				}
+				if monthStart.Day() != 1 || monthStart.Hour() != 0 || monthStart.Minute() != 0 {
+					t.Fatalf("unexpected month start: %s", monthStart)
+				}
+				return domain.TrainerStatistics{
+					TrainerUserID:  trainerUserID,
+					PostsCount:     12,
+					DonationsCount: 4,
+					TotalRevenue:   7000,
+					MonthlyRevenue: 2500,
+					Currency:       currency,
+				}, nil
+			},
+		}),
+		nil,
+	)
+
+	statistics, err := service.GetTrainerStatistics(context.Background(), GetTrainerStatisticsQuery{TrainerUserID: 1001})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if statistics.PostsCount != 12 || statistics.MonthlyRevenue != 2500 || statistics.Currency != "RUB" {
+		t.Fatalf("unexpected statistics: %+v", statistics)
 	}
 }
 

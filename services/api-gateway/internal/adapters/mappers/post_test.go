@@ -282,6 +282,79 @@ func TestPostLikeResponseFromContent(t *testing.T) {
 	}
 }
 
+func TestCommentRequestsToContent(t *testing.T) {
+	viewerLevel := int32(2)
+
+	create := CreateCommentRequestToContent(13, &viewerLevel, &gatewayv1.CreateCommentRequest{
+		PostId: 11,
+		Body:   "Отличная тренировка",
+	})
+	if create.GetPostId() != 11 ||
+		create.GetAuthorUserId() != 13 ||
+		create.ViewerSubscriptionLevel == nil ||
+		create.GetViewerSubscriptionLevel() != 2 ||
+		create.GetBody() != "Отличная тренировка" {
+		t.Fatalf("unexpected create comment request: %+v", create)
+	}
+
+	list := ListCommentsRequestToContent(13, &viewerLevel, &gatewayv1.ListCommentsRequest{
+		PostId: 11,
+		Limit:  20,
+		Offset: 10,
+	})
+	if list.GetPostId() != 11 ||
+		list.GetViewerUserId() != 13 ||
+		list.ViewerSubscriptionLevel == nil ||
+		list.GetViewerSubscriptionLevel() != 2 ||
+		list.GetLimit() != 20 ||
+		list.GetOffset() != 10 {
+		t.Fatalf("unexpected list comments request: %+v", list)
+	}
+}
+
+func TestCommentResponsesFromContent(t *testing.T) {
+	now := timestamppb.New(time.Date(2026, time.May, 21, 12, 0, 0, 0, time.UTC))
+	comment := &contentv1.Comment{
+		CommentId:    88,
+		PostId:       11,
+		AuthorUserId: 13,
+		Body:         "Отличная тренировка",
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
+
+	response, err := CommentResponseFromContent(&contentv1.CommentResponse{Comment: comment})
+	if err != nil {
+		t.Fatalf("unexpected comment response error: %v", err)
+	}
+	if response.GetComment().GetCommentId() != 88 ||
+		response.GetComment().GetPostId() != 11 ||
+		response.GetComment().GetAuthorUserId() != 13 ||
+		response.GetComment().GetBody() != "Отличная тренировка" ||
+		response.GetComment().GetCreatedAt() != now {
+		t.Fatalf("unexpected comment response: %+v", response)
+	}
+
+	list, err := ListCommentsResponseFromContent(&contentv1.ListCommentsResponse{
+		Comments: []*contentv1.Comment{comment, nil},
+	})
+	if err != nil {
+		t.Fatalf("unexpected list comments response error: %v", err)
+	}
+	if len(list.GetComments()) != 1 || list.GetComments()[0].GetCommentId() != 88 {
+		t.Fatalf("unexpected list comments response: %+v", list)
+	}
+
+	empty, err := ListCommentsResponseFromContent(nil)
+	if err != nil || len(empty.GetComments()) != 0 {
+		t.Fatalf("unexpected empty list comments response: %+v err=%v", empty, err)
+	}
+
+	if _, err := CommentResponseFromContent(nil); err == nil {
+		t.Fatal("expected nil comment error")
+	}
+}
+
 func stringPtr(value string) *string {
 	return &value
 }

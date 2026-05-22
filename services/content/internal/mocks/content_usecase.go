@@ -25,6 +25,7 @@ type ContentUseCase struct {
 	CancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	DonateFunc             func(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
 	GetBalanceFunc         func(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
+	GetStatisticsFunc      func(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
 	LikePostFunc           func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateCommentFunc      func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
@@ -127,6 +128,13 @@ func (mock ContentUseCase) GetBalance(ctx context.Context, query usecase.GetBala
 		return domain.Balance{}, nil
 	}
 	return mock.GetBalanceFunc(ctx, query)
+}
+
+func (mock ContentUseCase) GetTrainerStatistics(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error) {
+	if mock.GetStatisticsFunc == nil {
+		return domain.TrainerStatistics{}, nil
+	}
+	return mock.GetStatisticsFunc(ctx, query)
 }
 
 func (mock ContentUseCase) LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {

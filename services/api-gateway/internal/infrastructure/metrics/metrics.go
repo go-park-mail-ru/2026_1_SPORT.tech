@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
@@ -14,6 +15,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
+
+const invalidHTTPMetricPath = "/invalid-path"
 
 type Metrics struct {
 	registry     *prometheus.Registry
@@ -104,10 +107,19 @@ func (metrics *Metrics) HTTPMiddleware(next http.Handler) http.Handler {
 		if path == "" {
 			path = request.URL.Path
 		}
+		path = sanitizeHTTPMetricPath(path)
 
 		metrics.httpRequests.WithLabelValues(request.Method, path, statusCode).Inc()
 		metrics.httpLatency.WithLabelValues(request.Method, path, statusCode).Observe(time.Since(startedAt).Seconds())
 	})
+}
+
+func sanitizeHTTPMetricPath(path string) string {
+	if path == "" || utf8.ValidString(path) {
+		return path
+	}
+
+	return invalidHTTPMetricPath
 }
 
 func normalizedHTTPPath(path string) string {

