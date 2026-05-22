@@ -318,6 +318,17 @@ func validateGetBalanceQuery(query GetBalanceQuery) error {
 	return nil
 }
 
+func validateGetTrainerStatisticsQuery(query GetTrainerStatisticsQuery) error {
+	if query.TrainerUserID <= 0 {
+		return ErrInvalidUserID
+	}
+	if normalizeCurrency(query.Currency) != defaultCurrency {
+		return ErrInvalidDonationCurrency
+	}
+
+	return nil
+}
+
 func normalizePage(limit int32, offset int32) (int32, int32, error) {
 	if limit < 0 || limit > maxPageLimit {
 		return 0, 0, ErrInvalidLimit

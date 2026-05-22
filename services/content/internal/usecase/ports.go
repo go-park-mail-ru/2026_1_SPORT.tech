@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"io"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
@@ -35,6 +36,7 @@ type MonetizationRepository interface {
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
+	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 }
 
 type EngagementRepository interface {
@@ -165,6 +167,11 @@ type DonateToProfileCommand struct {
 }
 
 type GetBalanceQuery struct {
+	TrainerUserID int64
+	Currency      string
+}
+
+type GetTrainerStatisticsQuery struct {
 	TrainerUserID int64
 	Currency      string
 }

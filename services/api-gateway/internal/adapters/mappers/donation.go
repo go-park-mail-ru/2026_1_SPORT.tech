@@ -63,3 +63,23 @@ func BalanceResponseFromContent(response *contentv1.BalanceResponse) (*gatewayv1
 		Currency:    response.GetCurrency(),
 	}, nil
 }
+
+func StatisticsResponseFromContent(response *contentv1.TrainerStatisticsResponse) (*gatewayv1.StatisticsResponse, error) {
+	if response == nil {
+		return nil, fmt.Errorf("statistics is required")
+	}
+
+	trainerID, err := int64ToInt32("content.statistics.trainer_user_id", response.GetTrainerUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &gatewayv1.StatisticsResponse{
+		TrainerId:      trainerID,
+		PostsCount:     response.GetPostsCount(),
+		DonationsCount: response.GetDonationsCount(),
+		TotalRevenue:   response.GetTotalRevenue(),
+		MonthlyRevenue: response.GetMonthlyRevenue(),
+		Currency:       response.GetCurrency(),
+	}, nil
+}
