@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -56,8 +57,8 @@ func (provider *PaymentProvider) ProviderName() string {
 func (provider *PaymentProvider) CreatePayment(ctx context.Context, request usecase.PaymentProviderCreateRequest) (usecase.PaymentProviderPayment, error) {
 	form := url.Values{}
 	form.Set("mode", "payment")
-	form.Set("success_url", firstNonEmpty(request.ReturnURL, provider.returnURL))
-	form.Set("cancel_url", firstNonEmpty(request.CancelURL, provider.cancelURL))
+	form.Set("success_url", absoluteURLOrFallback(request.ReturnURL, provider.returnURL))
+	form.Set("cancel_url", absoluteURLOrFallback(request.CancelURL, provider.cancelURL))
 	form.Set("line_items[0][quantity]", "1")
 	form.Set("line_items[0][price_data][currency]", strings.ToLower(request.Currency))
 	form.Set("line_items[0][price_data][unit_amount]", strconv.FormatInt(stripeMinorUnits(request.AmountValue, request.Currency), 10))
@@ -115,7 +116,8 @@ func (provider *PaymentProvider) do(ctx context.Context, method string, path str
 	defer response.Body.Close()
 
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return fmt.Errorf("unexpected status: %s", response.Status)
+		responseBody, _ := io.ReadAll(io.LimitReader(response.Body, 4096))
+		return fmt.Errorf("unexpected status: %s: %s", response.Status, strings.TrimSpace(string(responseBody)))
 	}
 	if err := easyjson.UnmarshalFromReader(response.Body, target); err != nil {
 		return fmt.Errorf("decode response: %w", err)
@@ -150,6 +152,19 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
+}
+
+func absoluteURLOrFallback(value string, fallback string) string {
+	candidate := firstNonEmpty(strings.TrimSpace(value), strings.TrimSpace(fallback))
+	parsedURL, err := url.Parse(candidate)
+	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
+		return strings.TrimSpace(fallback)
+	}
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return strings.TrimSpace(fallback)
+	}
+
+	return candidate
 }
 
 var _ usecase.PaymentProvider = (*PaymentProvider)(nil)
