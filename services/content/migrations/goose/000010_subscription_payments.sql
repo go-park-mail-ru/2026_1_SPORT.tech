@@ -1,7 +1,7 @@
 -- +goose Up
 ALTER TABLE content_payment
-  ADD COLUMN tier_id BIGINT,
-  ADD COLUMN subscription_id BIGINT REFERENCES content_subscription(subscription_id);
+  ADD COLUMN IF NOT EXISTS tier_id BIGINT,
+  ADD COLUMN IF NOT EXISTS subscription_id BIGINT REFERENCES content_subscription(subscription_id);
 
 -- +goose Down
 ALTER TABLE content_payment
