@@ -69,7 +69,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Comments:      contentUseCase,
 		Donations:     contentUseCase,
 		Notifications: contentUseCase,
-	})
+	}, logger)
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 
 	grpcListener, err := net.Listen("tcp", cfg.Server.GRPCAddress())

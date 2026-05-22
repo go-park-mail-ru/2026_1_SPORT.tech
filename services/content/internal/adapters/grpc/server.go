@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 
 	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/mappers"
@@ -71,10 +72,21 @@ type UseCases struct {
 type Server struct {
 	contentv1.UnimplementedContentServiceServer
 	useCases UseCases
+	logger   *slog.Logger
 }
 
-func NewServer(useCases UseCases) *Server {
-	return &Server{useCases: useCases}
+func NewServer(useCases UseCases, loggers ...*slog.Logger) *Server {
+	logger := slog.Default()
+	if len(loggers) > 0 && loggers[0] != nil {
+		logger = loggers[0]
+	}
+
+	return &Server{useCases: useCases, logger: logger}
+}
+
+func (server *Server) statusError(method string, err error) error {
+	server.logger.Error("content grpc method failed", "method", method, "error", err)
+	return mappers.ErrorToStatus(err)
 }
 
 func (server *Server) ListAuthorPosts(ctx context.Context, request *contentv1.ListAuthorPostsRequest) (*contentv1.ListAuthorPostsResponse, error) {
@@ -221,7 +233,7 @@ func (server *Server) DonateToProfile(ctx context.Context, request *contentv1.Do
 func (server *Server) CreateDonationPayment(ctx context.Context, request *contentv1.CreateDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
 	payment, err := server.useCases.Donations.CreateDonationPayment(ctx, mappers.CreateDonationPaymentRequestToCommand(request))
 	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
+		return nil, server.statusError("CreateDonationPayment", err)
 	}
 
 	return mappers.NewPaymentResponse(payment), nil
@@ -230,7 +242,7 @@ func (server *Server) CreateDonationPayment(ctx context.Context, request *conten
 func (server *Server) CreateSubscriptionPayment(ctx context.Context, request *contentv1.CreateSubscriptionPaymentRequest) (*contentv1.PaymentResponse, error) {
 	payment, err := server.useCases.Donations.CreateSubscriptionPayment(ctx, mappers.CreateSubscriptionPaymentRequestToCommand(request))
 	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
+		return nil, server.statusError("CreateSubscriptionPayment", err)
 	}
 
 	return mappers.NewPaymentResponse(payment), nil
@@ -239,7 +251,7 @@ func (server *Server) CreateSubscriptionPayment(ctx context.Context, request *co
 func (server *Server) ConfirmDonationPayment(ctx context.Context, request *contentv1.ConfirmDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
 	payment, err := server.useCases.Donations.ConfirmDonationPayment(ctx, mappers.ConfirmDonationPaymentRequestToCommand(request))
 	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
+		return nil, server.statusError("ConfirmDonationPayment", err)
 	}
 
 	return mappers.NewPaymentResponse(payment), nil
