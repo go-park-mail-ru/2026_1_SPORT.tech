@@ -126,6 +126,17 @@ service PostService {
   rpc UnlikePost(PostLikeRequest) returns (PostLikeResponse) {
     option (google.api.http).delete = "/v1/posts/{post_id}/likes";
   }
+
+  rpc CreateComment(CreateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      post: "/v1/posts/{post_id}/comments"
+      body: "*"
+    };
+  }
+
+  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/comments";
+  }
 }
 
 service TierService {
@@ -196,6 +207,12 @@ service DonationService {
 
   rpc GetMyBalance(google.protobuf.Empty) returns (BalanceResponse) {
     option (google.api.http).get = "/v1/balance";
+  }
+}
+
+service StatisticsService {
+  rpc GetMyStatistics(google.protobuf.Empty) returns (StatisticsResponse) {
+    option (google.api.http).get = "/v1/statistics/me";
   }
 }
 
@@ -452,6 +469,34 @@ message PostLikeResponse {
   bool is_liked = 3;
 }
 
+message CreateCommentRequest {
+  int32 post_id = 1;
+  string body = 2;
+}
+
+message ListCommentsRequest {
+  int32 post_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message Comment {
+  int32 comment_id = 1;
+  int32 post_id = 2;
+  int32 author_user_id = 3;
+  string body = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CommentResponse {
+  Comment comment = 1;
+}
+
+message ListCommentsResponse {
+  repeated Comment comments = 1;
+}
+
 message Tier {
   int32 tier_id = 1;
   string name = 2;
@@ -538,4 +583,13 @@ message BalanceResponse {
   int32 trainer_id = 1;
   int32 amount_value = 2;
   string currency = 3;
+}
+
+message StatisticsResponse {
+  int32 trainer_id = 1;
+  int32 posts_count = 2;
+  int32 donations_count = 3;
+  int32 total_revenue = 4;
+  int32 monthly_revenue = 5;
+  string currency = 6;
 }

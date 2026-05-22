@@ -25,6 +25,9 @@
     },
     {
       "name": "DonationService"
+    },
+    {
+      "name": "StatisticsService"
     }
   ],
   "consumes": [
@@ -381,6 +384,88 @@
         ]
       }
     },
+    "/v1/posts/{post_id}/comments": {
+      "get": {
+        "operationId": "PostService_ListComments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListCommentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      },
+      "post": {
+        "operationId": "PostService_CreateComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CommentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostServiceCreateCommentBody"
+            }
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/v1/posts/{post_id}/likes": {
       "delete": {
         "operationId": "PostService_UnlikePost",
@@ -678,6 +763,28 @@
         },
         "tags": [
           "SportService"
+        ]
+      }
+    },
+    "/v1/statistics/me": {
+      "get": {
+        "operationId": "StatisticsService_GetMyStatistics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StatisticsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "StatisticsService"
         ]
       }
     },
@@ -1087,6 +1194,14 @@
         }
       }
     },
+    "PostServiceCreateCommentBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "string"
+        }
+      }
+    },
     "PostServiceUpdatePostBody": {
       "type": "object",
       "properties": {
@@ -1246,6 +1361,42 @@
         }
       }
     },
+    "v1Comment": {
+      "type": "object",
+      "properties": {
+        "comment_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "post_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "author_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "body": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1CommentResponse": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/v1Comment"
+        }
+      }
+    },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
@@ -1323,6 +1474,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1TrainerListItem"
+          }
+        }
+      }
+    },
+    "v1ListCommentsResponse": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Comment"
           }
         }
       }
@@ -1666,6 +1829,34 @@
             "type": "object",
             "$ref": "#/definitions/v1SportType"
           }
+        }
+      }
+    },
+    "v1StatisticsResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "posts_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "donations_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "monthly_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
         }
       }
     },

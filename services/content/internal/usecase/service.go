@@ -463,6 +463,18 @@ func (service *Service) GetBalance(ctx context.Context, query GetBalanceQuery) (
 	return service.money.GetBalance(ctx, query.TrainerUserID, query.Currency)
 }
 
+func (service *Service) GetTrainerStatistics(ctx context.Context, query GetTrainerStatisticsQuery) (domain.TrainerStatistics, error) {
+	query.Currency = normalizeCurrency(query.Currency)
+	if err := validateGetTrainerStatisticsQuery(query); err != nil {
+		return domain.TrainerStatistics{}, err
+	}
+
+	now := time.Now().UTC()
+	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
+
+	return service.money.GetTrainerStatistics(ctx, query.TrainerUserID, query.Currency, monthStart)
+}
+
 func buildPost(command CreatePostCommand) (domain.Post, error) {
 	post := domain.Post{
 		AuthorUserID:              command.AuthorUserID,
