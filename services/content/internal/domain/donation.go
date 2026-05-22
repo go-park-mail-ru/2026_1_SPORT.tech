@@ -31,7 +31,9 @@ type DonationPayment struct {
 	Message           *string
 	ConfirmationToken string
 	ConfirmationURL   string
+	TierID            *int64
 	Donation          *Donation
+	Subscription      *Subscription
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	ConfirmedAt       *time.Time

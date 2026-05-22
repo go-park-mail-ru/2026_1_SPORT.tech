@@ -19,6 +19,16 @@ func CreateDonationPaymentRequestToContent(senderUserID int64, request *gatewayv
 	}
 }
 
+func CreateSubscriptionPaymentRequestToContent(clientUserID int64, request *gatewayv1.CreateSubscriptionPaymentRequest) *contentv1.CreateSubscriptionPaymentRequest {
+	return &contentv1.CreateSubscriptionPaymentRequest{
+		ClientUserId:  clientUserID,
+		TrainerUserId: int32ToInt64(request.GetTrainerId()),
+		TierId:        int32ToInt64(request.GetTierId()),
+		ReturnUrl:     request.ReturnUrl,
+		CancelUrl:     request.CancelUrl,
+	}
+}
+
 func ConfirmDonationPaymentRequestToContent(senderUserID int64, request *gatewayv1.ConfirmDonationPaymentRequest) *contentv1.ConfirmDonationPaymentRequest {
 	return &contentv1.ConfirmDonationPaymentRequest{
 		SenderUserId:      senderUserID,
@@ -67,6 +77,13 @@ func PaymentResponseFromContent(response *contentv1.PaymentResponse) (*gatewayv1
 			return nil, err
 		}
 		result.Donation = donation
+	}
+	if payment.GetSubscription() != nil {
+		subscription, err := SubscriptionFromContent(payment.GetSubscription())
+		if err != nil {
+			return nil, err
+		}
+		result.Subscription = subscription
 	}
 
 	return result, nil

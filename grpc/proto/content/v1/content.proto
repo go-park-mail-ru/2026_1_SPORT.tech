@@ -107,6 +107,13 @@ service ContentService {
     };
   }
 
+  rpc CreateSubscriptionPayment(CreateSubscriptionPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/subscriptions"
+      body: "*"
+    };
+  }
+
   rpc ConfirmDonationPayment(ConfirmDonationPaymentRequest) returns (PaymentResponse) {
     option (google.api.http) = {
       post: "/v1/payments/{payment_id}/confirm"
@@ -423,6 +430,7 @@ message Payment {
   google.protobuf.Timestamp created_at = 12;
   google.protobuf.Timestamp updated_at = 13;
   optional google.protobuf.Timestamp confirmed_at = 14;
+  optional Subscription subscription = 15;
 }
 
 message CreateDonationPaymentRequest {
@@ -433,6 +441,14 @@ message CreateDonationPaymentRequest {
   optional string message = 5;
   optional string return_url = 6;
   optional string cancel_url = 7;
+}
+
+message CreateSubscriptionPaymentRequest {
+  int64 client_user_id = 1;
+  int64 trainer_user_id = 2;
+  int64 tier_id = 3;
+  optional string return_url = 4;
+  optional string cancel_url = 5;
 }
 
 message ConfirmDonationPaymentRequest {

@@ -1784,8 +1784,9 @@ var DonationService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	PaymentService_CreateDonationPayment_FullMethodName  = "/sporttech.gateway.v1.PaymentService/CreateDonationPayment"
-	PaymentService_ConfirmDonationPayment_FullMethodName = "/sporttech.gateway.v1.PaymentService/ConfirmDonationPayment"
+	PaymentService_CreateDonationPayment_FullMethodName     = "/sporttech.gateway.v1.PaymentService/CreateDonationPayment"
+	PaymentService_CreateSubscriptionPayment_FullMethodName = "/sporttech.gateway.v1.PaymentService/CreateSubscriptionPayment"
+	PaymentService_ConfirmDonationPayment_FullMethodName    = "/sporttech.gateway.v1.PaymentService/ConfirmDonationPayment"
 )
 
 // PaymentServiceClient is the client API for PaymentService service.
@@ -1793,6 +1794,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
 	CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 }
 
@@ -1814,6 +1816,16 @@ func (c *paymentServiceClient) CreateDonationPayment(ctx context.Context, in *Cr
 	return out, nil
 }
 
+func (c *paymentServiceClient) CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, PaymentService_CreateSubscriptionPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PaymentResponse)
@@ -1829,6 +1841,7 @@ func (c *paymentServiceClient) ConfirmDonationPayment(ctx context.Context, in *C
 // for forward compatibility.
 type PaymentServiceServer interface {
 	CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error)
+	CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error)
 	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
 }
 
@@ -1841,6 +1854,9 @@ type UnimplementedPaymentServiceServer struct{}
 
 func (UnimplementedPaymentServiceServer) CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateDonationPayment not implemented")
+}
+func (UnimplementedPaymentServiceServer) CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSubscriptionPayment not implemented")
 }
 func (UnimplementedPaymentServiceServer) ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ConfirmDonationPayment not implemented")
@@ -1883,6 +1899,24 @@ func _PaymentService_CreateDonationPayment_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_CreateSubscriptionPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSubscriptionPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).CreateSubscriptionPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_CreateSubscriptionPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).CreateSubscriptionPayment(ctx, req.(*CreateSubscriptionPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_ConfirmDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConfirmDonationPaymentRequest)
 	if err := dec(in); err != nil {
@@ -1911,6 +1945,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateDonationPayment",
 			Handler:    _PaymentService_CreateDonationPayment_Handler,
+		},
+		{
+			MethodName: "CreateSubscriptionPayment",
+			Handler:    _PaymentService_CreateSubscriptionPayment_Handler,
 		},
 		{
 			MethodName: "ConfirmDonationPayment",

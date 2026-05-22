@@ -12,24 +12,7 @@ import (
 )
 
 func (server *Server) SubscribeToTrainer(ctx context.Context, request *gatewayv1.SubscribeRequest) (*gatewayv1.Subscription, error) {
-	userID, err := server.requireSubscriptionUserID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := server.contentClient.SubscribeToTrainer(
-		forwardContext(ctx),
-		mappers.SubscribeRequestToContent(userID, request),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := setHTTPStatus(ctx, 201); err != nil {
-		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
-	}
-
-	return mappers.SubscriptionFromContent(response)
+	return nil, status.Error(codes.FailedPrecondition, "subscription payment is required")
 }
 
 func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.SubscriptionsResponse, error) {
@@ -50,20 +33,7 @@ func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty)
 }
 
 func (server *Server) UpdateSubscription(ctx context.Context, request *gatewayv1.UpdateSubscriptionRequest) (*gatewayv1.Subscription, error) {
-	userID, err := server.requireSubscriptionUserID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := server.contentClient.UpdateSubscription(
-		forwardContext(ctx),
-		mappers.UpdateSubscriptionRequestToContent(userID, request),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return mappers.SubscriptionFromContent(response)
+	return nil, status.Error(codes.FailedPrecondition, "subscription payment is required")
 }
 
 func (server *Server) CancelSubscription(ctx context.Context, request *gatewayv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {

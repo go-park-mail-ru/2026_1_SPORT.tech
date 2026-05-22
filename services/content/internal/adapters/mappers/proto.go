@@ -163,6 +163,16 @@ func CreateDonationPaymentRequestToCommand(request *contentv1.CreateDonationPaym
 	}
 }
 
+func CreateSubscriptionPaymentRequestToCommand(request *contentv1.CreateSubscriptionPaymentRequest) usecase.CreateSubscriptionPaymentCommand {
+	return usecase.CreateSubscriptionPaymentCommand{
+		ClientUserID:  request.GetClientUserId(),
+		TrainerUserID: request.GetTrainerUserId(),
+		TierID:        request.GetTierId(),
+		ReturnURL:     request.ReturnUrl,
+		CancelURL:     request.CancelUrl,
+	}
+}
+
 func ConfirmDonationPaymentRequestToCommand(request *contentv1.ConfirmDonationPaymentRequest) usecase.ConfirmDonationPaymentCommand {
 	return usecase.ConfirmDonationPaymentCommand{
 		SenderUserID:      request.GetSenderUserId(),
@@ -447,7 +457,8 @@ func ErrorToStatus(err error) error {
 		return status.Error(codes.PermissionDenied, err.Error())
 	case errors.Is(err, domain.ErrSubscriptionTierInUse),
 		errors.Is(err, domain.ErrPaymentAlreadyConfirmed),
-		errors.Is(err, usecase.ErrPaymentNotSucceeded):
+		errors.Is(err, usecase.ErrPaymentNotSucceeded),
+		errors.Is(err, usecase.ErrSubscriptionPaymentRequired):
 		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable),
 		errors.Is(err, usecase.ErrPaymentProviderUnavailable):
@@ -583,6 +594,9 @@ func paymentToProto(payment domain.DonationPayment) *contentv1.Payment {
 	}
 	if payment.Donation != nil {
 		response.Donation = donationToProto(*payment.Donation)
+	}
+	if payment.Subscription != nil {
+		response.Subscription = subscriptionToProto(*payment.Subscription)
 	}
 	if payment.ConfirmedAt != nil {
 		response.ConfirmedAt = timestamppb.New(*payment.ConfirmedAt)

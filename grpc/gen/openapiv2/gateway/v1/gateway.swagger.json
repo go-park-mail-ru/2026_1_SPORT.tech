@@ -337,6 +337,38 @@
         ]
       }
     },
+    "/v1/payments/subscriptions": {
+      "post": {
+        "operationId": "PaymentService_CreateSubscriptionPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateSubscriptionPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
+        ]
+      }
+    },
     "/v1/payments/{payment_id}/confirm": {
       "post": {
         "operationId": "PaymentService_ConfirmDonationPayment",
@@ -1610,6 +1642,25 @@
         }
       }
     },
+    "v1CreateSubscriptionPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreateTierRequest": {
       "type": "object",
       "properties": {
@@ -1880,6 +1931,9 @@
         "confirmed_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "subscription": {
+          "$ref": "#/definitions/v1Subscription"
         }
       }
     },

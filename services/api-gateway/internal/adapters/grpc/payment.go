@@ -35,6 +35,32 @@ func (server *Server) CreateDonationPayment(ctx context.Context, request *gatewa
 	return mappers.PaymentResponseFromContent(response)
 }
 
+func (server *Server) CreateSubscriptionPayment(ctx context.Context, request *gatewayv1.CreateSubscriptionPaymentRequest) (*gatewayv1.PaymentResponse, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	response, err := server.contentClient.CreateSubscriptionPayment(
+		forwardContext(ctx),
+		mappers.CreateSubscriptionPaymentRequestToContent(userID, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := setHTTPStatus(ctx, 201); err != nil {
+		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
+	}
+
+	return mappers.PaymentResponseFromContent(response)
+}
+
 func (server *Server) ConfirmDonationPayment(ctx context.Context, request *gatewayv1.ConfirmDonationPaymentRequest) (*gatewayv1.PaymentResponse, error) {
 	principal, err := server.requireSession(ctx)
 	if err != nil {

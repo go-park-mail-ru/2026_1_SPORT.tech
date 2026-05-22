@@ -101,6 +101,17 @@ func nullableString(value string) sql.NullString {
 	}
 }
 
+func nullableInt64(value *int64) sql.NullInt64 {
+	if value == nil {
+		return sql.NullInt64{}
+	}
+
+	return sql.NullInt64{
+		Int64: *value,
+		Valid: true,
+	}
+}
+
 func escapeLikePattern(value string) string {
 	replacer := strings.NewReplacer(
 		`\`, `\\`,

@@ -208,6 +208,14 @@ type CreateDonationPaymentCommand struct {
 	CancelURL       *string
 }
 
+type CreateSubscriptionPaymentCommand struct {
+	ClientUserID  int64
+	TrainerUserID int64
+	TierID        int64
+	ReturnURL     *string
+	CancelURL     *string
+}
+
 type ConfirmDonationPaymentCommand struct {
 	SenderUserID      int64
 	PaymentID         int64

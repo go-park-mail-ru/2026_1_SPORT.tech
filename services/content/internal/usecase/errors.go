@@ -38,6 +38,7 @@ var (
 	ErrInvalidPaymentConfirmationToken    = errors.New("invalid payment confirmation token")
 	ErrPaymentProviderUnavailable         = errors.New("payment provider is unavailable")
 	ErrPaymentNotSucceeded                = errors.New("payment is not succeeded")
+	ErrSubscriptionPaymentRequired        = errors.New("subscription payment is required")
 	ErrInvalidNotificationID              = errors.New("invalid notification id")
 	ErrInvalidNotificationType            = errors.New("invalid notification type")
 	ErrInvalidNotificationTitle           = errors.New("invalid notification title")

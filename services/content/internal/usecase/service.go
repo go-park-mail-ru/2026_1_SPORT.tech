@@ -306,6 +306,10 @@ func (service *Service) DeleteSubscriptionTier(ctx context.Context, command Dele
 }
 
 func (service *Service) SubscribeToTrainer(ctx context.Context, command SubscribeToTrainerCommand) (domain.Subscription, error) {
+	return domain.Subscription{}, ErrSubscriptionPaymentRequired
+}
+
+func (service *Service) createPaidSubscription(ctx context.Context, command SubscribeToTrainerCommand) (domain.Subscription, error) {
 	if err := validateSubscribeToTrainerCommand(command); err != nil {
 		return domain.Subscription{}, err
 	}
@@ -348,6 +352,10 @@ func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySub
 }
 
 func (service *Service) UpdateSubscription(ctx context.Context, command UpdateSubscriptionCommand) (domain.Subscription, error) {
+	return domain.Subscription{}, ErrSubscriptionPaymentRequired
+}
+
+func (service *Service) updatePaidSubscription(ctx context.Context, command UpdateSubscriptionCommand) (domain.Subscription, error) {
 	if err := validateUpdateSubscriptionCommand(command); err != nil {
 		return domain.Subscription{}, err
 	}
@@ -566,6 +574,60 @@ func (service *Service) CreateDonationPayment(ctx context.Context, command Creat
 	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
 }
 
+func (service *Service) CreateSubscriptionPayment(ctx context.Context, command CreateSubscriptionPaymentCommand) (domain.DonationPayment, error) {
+	if command.ClientUserID <= 0 || command.TrainerUserID <= 0 {
+		return domain.DonationPayment{}, ErrInvalidUserID
+	}
+	if command.ClientUserID == command.TrainerUserID {
+		return domain.DonationPayment{}, ErrInvalidSubscriptionTarget
+	}
+	if command.TierID <= 0 {
+		return domain.DonationPayment{}, ErrInvalidSubscriptionTierID
+	}
+	if service.paymentProvider == nil {
+		return domain.DonationPayment{}, ErrPaymentProviderUnavailable
+	}
+
+	tier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	confirmationToken, err := randomToken("confirm")
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	tierID := tier.TierID
+	payment := domain.DonationPayment{
+		Provider:          service.paymentProvider.ProviderName(),
+		Status:            domain.PaymentStatusPending,
+		SenderUserID:      command.ClientUserID,
+		RecipientUserID:   command.TrainerUserID,
+		AmountValue:       tier.Price,
+		Currency:          "RUB",
+		ConfirmationToken: confirmationToken,
+		TierID:            &tierID,
+	}
+	created, err := service.money.CreateDonationPayment(ctx, payment)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	providerPayment, err := service.paymentProvider.CreatePayment(ctx, PaymentProviderCreateRequest{
+		AmountValue:    tier.Price,
+		Currency:       payment.Currency,
+		Description:    fmt.Sprintf("Subscription payment #%d", created.PaymentID),
+		IdempotenceKey: fmt.Sprintf("content-payment-%d", created.PaymentID),
+		ReturnURL:      normalizeOptionalURL(command.ReturnURL),
+		CancelURL:      normalizeOptionalURL(command.CancelURL),
+	})
+	if err != nil {
+		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+	}
+
+	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
+}
+
 func (service *Service) ConfirmDonationPayment(ctx context.Context, command ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {
 	if command.SenderUserID <= 0 {
 		return domain.DonationPayment{}, ErrInvalidUserID
@@ -610,6 +672,18 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 			Title:       "New donation",
 			Body:        "You received a new donation",
 			DonationID:  &payment.Donation.DonationID,
+		}); err != nil {
+			return domain.DonationPayment{}, err
+		}
+	}
+	if wasPending && payment.Subscription != nil {
+		if err := service.createNotification(ctx, domain.Notification{
+			UserID:         payment.Subscription.TrainerUserID,
+			Type:           domain.NotificationTypeSubscription,
+			ActorUserID:    payment.Subscription.ClientUserID,
+			Title:          "New subscription",
+			Body:           "A client subscribed to your profile",
+			SubscriptionID: &payment.Subscription.SubscriptionID,
 		}); err != nil {
 			return domain.DonationPayment{}, err
 		}

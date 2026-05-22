@@ -522,16 +522,13 @@ func TestServiceSubscribeToTrainer(t *testing.T) {
 		nil,
 	)
 
-	subscription, err := service.SubscribeToTrainer(context.Background(), SubscribeToTrainerCommand{
+	_, err := service.SubscribeToTrainer(context.Background(), SubscribeToTrainerCommand{
 		ClientUserID:  1002,
 		TrainerUserID: 1001,
 		TierID:        2,
 	})
-	if err != nil {
+	if !errors.Is(err, ErrSubscriptionPaymentRequired) {
 		t.Fatalf("unexpected error: %v", err)
-	}
-	if subscription.SubscriptionID != 2401 || !subscription.Active {
-		t.Fatalf("unexpected subscription result: %+v", subscription)
 	}
 }
 
@@ -555,16 +552,13 @@ func TestServiceUpdateSubscription(t *testing.T) {
 		nil,
 	)
 
-	subscription, err := service.UpdateSubscription(context.Background(), UpdateSubscriptionCommand{
+	_, err := service.UpdateSubscription(context.Background(), UpdateSubscriptionCommand{
 		ClientUserID:   1002,
 		SubscriptionID: 2401,
 		TierID:         3,
 	})
-	if err != nil {
+	if !errors.Is(err, ErrSubscriptionPaymentRequired) {
 		t.Fatalf("unexpected error: %v", err)
-	}
-	if subscription.TierID != 3 || subscription.TierName != "Премиум" || !subscription.Active {
-		t.Fatalf("unexpected subscription result: %+v", subscription)
 	}
 }
 
@@ -774,6 +768,79 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 		t.Fatalf("unexpected confirm payment error: %v", err)
 	}
 	if confirmed.Status != domain.PaymentStatusConfirmed || confirmed.Donation == nil || confirmed.Donation.DonationID != 77 {
+		t.Fatalf("unexpected confirmed payment: %+v", confirmed)
+	}
+}
+
+func TestServiceSubscriptionPaymentFlow(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+				if trainerUserID != 1001 || tierID != 2 {
+					t.Fatalf("unexpected tier lookup: trainer=%d tier=%d", trainerUserID, tierID)
+				}
+				return domain.SubscriptionTier{TrainerUserID: trainerUserID, TierID: tierID, Name: "Продвинутый", Price: 1500}, nil
+			},
+			createPaymentFunc: func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error) {
+				if payment.SenderUserID != 1002 ||
+					payment.RecipientUserID != 1001 ||
+					payment.AmountValue != 1500 ||
+					payment.Currency != "RUB" ||
+					payment.TierID == nil ||
+					*payment.TierID != 2 ||
+					payment.Message != nil ||
+					payment.Status != domain.PaymentStatusPending ||
+					payment.Provider != "stripe" ||
+					payment.ConfirmationToken == "" {
+					t.Fatalf("unexpected payment: %+v", payment)
+				}
+				payment.PaymentID = 82
+				return payment, nil
+			},
+			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+				if senderUserID != 1002 || paymentID != 82 || confirmationToken != "confirm_abc" {
+					t.Fatalf("unexpected confirm args: sender=%d payment=%d token=%s", senderUserID, paymentID, confirmationToken)
+				}
+				return domain.DonationPayment{
+					PaymentID: paymentID,
+					Status:    domain.PaymentStatusConfirmed,
+					Subscription: &domain.Subscription{
+						SubscriptionID: 2401,
+						ClientUserID:   1002,
+						TrainerUserID:  1001,
+						TierID:         2,
+						Active:         true,
+					},
+				}, nil
+			},
+		}),
+		nil,
+		stubPaymentProvider{},
+	)
+
+	payment, err := service.CreateSubscriptionPayment(context.Background(), CreateSubscriptionPaymentCommand{
+		ClientUserID:  1002,
+		TrainerUserID: 1001,
+		TierID:        2,
+	})
+	if err != nil {
+		t.Fatalf("unexpected create payment error: %v", err)
+	}
+	if payment.PaymentID != 82 || payment.Status != domain.PaymentStatusPending {
+		t.Fatalf("unexpected payment: %+v", payment)
+	}
+
+	confirmed, err := service.ConfirmDonationPayment(context.Background(), ConfirmDonationPaymentCommand{
+		SenderUserID:      1002,
+		PaymentID:         82,
+		ConfirmationToken: " confirm_abc ",
+	})
+	if err != nil {
+		t.Fatalf("unexpected confirm payment error: %v", err)
+	}
+	if confirmed.Status != domain.PaymentStatusConfirmed ||
+		confirmed.Subscription == nil ||
+		confirmed.Subscription.SubscriptionID != 2401 {
 		t.Fatalf("unexpected confirmed payment: %+v", confirmed)
 	}
 }

@@ -47,6 +47,7 @@ type CommentUseCase interface {
 type DonationUseCase interface {
 	DonateToProfile(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
 	CreateDonationPayment(ctx context.Context, command usecase.CreateDonationPaymentCommand) (domain.DonationPayment, error)
+	CreateSubscriptionPayment(ctx context.Context, command usecase.CreateSubscriptionPaymentCommand) (domain.DonationPayment, error)
 	ConfirmDonationPayment(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error)
 	GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
@@ -219,6 +220,15 @@ func (server *Server) DonateToProfile(ctx context.Context, request *contentv1.Do
 
 func (server *Server) CreateDonationPayment(ctx context.Context, request *contentv1.CreateDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
 	payment, err := server.useCases.Donations.CreateDonationPayment(ctx, mappers.CreateDonationPaymentRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewPaymentResponse(payment), nil
+}
+
+func (server *Server) CreateSubscriptionPayment(ctx context.Context, request *contentv1.CreateSubscriptionPaymentRequest) (*contentv1.PaymentResponse, error) {
+	payment, err := server.useCases.Donations.CreateSubscriptionPayment(ctx, mappers.CreateSubscriptionPaymentRequestToCommand(request))
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}

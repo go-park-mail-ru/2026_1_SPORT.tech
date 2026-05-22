@@ -20,32 +20,33 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ContentService_ListAuthorPosts_FullMethodName        = "/sporttech.content.v1.ContentService/ListAuthorPosts"
-	ContentService_SearchPosts_FullMethodName            = "/sporttech.content.v1.ContentService/SearchPosts"
-	ContentService_CreatePost_FullMethodName             = "/sporttech.content.v1.ContentService/CreatePost"
-	ContentService_UploadPostMedia_FullMethodName        = "/sporttech.content.v1.ContentService/UploadPostMedia"
-	ContentService_GetPost_FullMethodName                = "/sporttech.content.v1.ContentService/GetPost"
-	ContentService_UpdatePost_FullMethodName             = "/sporttech.content.v1.ContentService/UpdatePost"
-	ContentService_DeletePost_FullMethodName             = "/sporttech.content.v1.ContentService/DeletePost"
-	ContentService_ListSubscriptionTiers_FullMethodName  = "/sporttech.content.v1.ContentService/ListSubscriptionTiers"
-	ContentService_CreateSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/CreateSubscriptionTier"
-	ContentService_UpdateSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/UpdateSubscriptionTier"
-	ContentService_DeleteSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/DeleteSubscriptionTier"
-	ContentService_SubscribeToTrainer_FullMethodName     = "/sporttech.content.v1.ContentService/SubscribeToTrainer"
-	ContentService_ListMySubscriptions_FullMethodName    = "/sporttech.content.v1.ContentService/ListMySubscriptions"
-	ContentService_UpdateSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/UpdateSubscription"
-	ContentService_CancelSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/CancelSubscription"
-	ContentService_DonateToProfile_FullMethodName        = "/sporttech.content.v1.ContentService/DonateToProfile"
-	ContentService_CreateDonationPayment_FullMethodName  = "/sporttech.content.v1.ContentService/CreateDonationPayment"
-	ContentService_ConfirmDonationPayment_FullMethodName = "/sporttech.content.v1.ContentService/ConfirmDonationPayment"
-	ContentService_GetBalance_FullMethodName             = "/sporttech.content.v1.ContentService/GetBalance"
-	ContentService_GetTrainerStatistics_FullMethodName   = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
-	ContentService_LikePost_FullMethodName               = "/sporttech.content.v1.ContentService/LikePost"
-	ContentService_UnlikePost_FullMethodName             = "/sporttech.content.v1.ContentService/UnlikePost"
-	ContentService_CreateComment_FullMethodName          = "/sporttech.content.v1.ContentService/CreateComment"
-	ContentService_ListComments_FullMethodName           = "/sporttech.content.v1.ContentService/ListComments"
-	ContentService_ListNotifications_FullMethodName      = "/sporttech.content.v1.ContentService/ListNotifications"
-	ContentService_MarkNotificationRead_FullMethodName   = "/sporttech.content.v1.ContentService/MarkNotificationRead"
+	ContentService_ListAuthorPosts_FullMethodName           = "/sporttech.content.v1.ContentService/ListAuthorPosts"
+	ContentService_SearchPosts_FullMethodName               = "/sporttech.content.v1.ContentService/SearchPosts"
+	ContentService_CreatePost_FullMethodName                = "/sporttech.content.v1.ContentService/CreatePost"
+	ContentService_UploadPostMedia_FullMethodName           = "/sporttech.content.v1.ContentService/UploadPostMedia"
+	ContentService_GetPost_FullMethodName                   = "/sporttech.content.v1.ContentService/GetPost"
+	ContentService_UpdatePost_FullMethodName                = "/sporttech.content.v1.ContentService/UpdatePost"
+	ContentService_DeletePost_FullMethodName                = "/sporttech.content.v1.ContentService/DeletePost"
+	ContentService_ListSubscriptionTiers_FullMethodName     = "/sporttech.content.v1.ContentService/ListSubscriptionTiers"
+	ContentService_CreateSubscriptionTier_FullMethodName    = "/sporttech.content.v1.ContentService/CreateSubscriptionTier"
+	ContentService_UpdateSubscriptionTier_FullMethodName    = "/sporttech.content.v1.ContentService/UpdateSubscriptionTier"
+	ContentService_DeleteSubscriptionTier_FullMethodName    = "/sporttech.content.v1.ContentService/DeleteSubscriptionTier"
+	ContentService_SubscribeToTrainer_FullMethodName        = "/sporttech.content.v1.ContentService/SubscribeToTrainer"
+	ContentService_ListMySubscriptions_FullMethodName       = "/sporttech.content.v1.ContentService/ListMySubscriptions"
+	ContentService_UpdateSubscription_FullMethodName        = "/sporttech.content.v1.ContentService/UpdateSubscription"
+	ContentService_CancelSubscription_FullMethodName        = "/sporttech.content.v1.ContentService/CancelSubscription"
+	ContentService_DonateToProfile_FullMethodName           = "/sporttech.content.v1.ContentService/DonateToProfile"
+	ContentService_CreateDonationPayment_FullMethodName     = "/sporttech.content.v1.ContentService/CreateDonationPayment"
+	ContentService_CreateSubscriptionPayment_FullMethodName = "/sporttech.content.v1.ContentService/CreateSubscriptionPayment"
+	ContentService_ConfirmDonationPayment_FullMethodName    = "/sporttech.content.v1.ContentService/ConfirmDonationPayment"
+	ContentService_GetBalance_FullMethodName                = "/sporttech.content.v1.ContentService/GetBalance"
+	ContentService_GetTrainerStatistics_FullMethodName      = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
+	ContentService_LikePost_FullMethodName                  = "/sporttech.content.v1.ContentService/LikePost"
+	ContentService_UnlikePost_FullMethodName                = "/sporttech.content.v1.ContentService/UnlikePost"
+	ContentService_CreateComment_FullMethodName             = "/sporttech.content.v1.ContentService/CreateComment"
+	ContentService_ListComments_FullMethodName              = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_ListNotifications_FullMethodName         = "/sporttech.content.v1.ContentService/ListNotifications"
+	ContentService_MarkNotificationRead_FullMethodName      = "/sporttech.content.v1.ContentService/MarkNotificationRead"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -69,6 +70,7 @@ type ContentServiceClient interface {
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
 	CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	GetTrainerStatistics(ctx context.Context, in *GetTrainerStatisticsRequest, opts ...grpc.CallOption) (*TrainerStatisticsResponse, error)
@@ -258,6 +260,16 @@ func (c *contentServiceClient) CreateDonationPayment(ctx context.Context, in *Cr
 	return out, nil
 }
 
+func (c *contentServiceClient) CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_CreateSubscriptionPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PaymentResponse)
@@ -369,6 +381,7 @@ type ContentServiceServer interface {
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
 	CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error)
+	CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error)
 	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
 	GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error)
 	GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error)
@@ -437,6 +450,9 @@ func (UnimplementedContentServiceServer) DonateToProfile(context.Context, *Donat
 }
 func (UnimplementedContentServiceServer) CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateDonationPayment not implemented")
+}
+func (UnimplementedContentServiceServer) CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSubscriptionPayment not implemented")
 }
 func (UnimplementedContentServiceServer) ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ConfirmDonationPayment not implemented")
@@ -791,6 +807,24 @@ func _ContentService_CreateDonationPayment_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_CreateSubscriptionPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSubscriptionPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateSubscriptionPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateSubscriptionPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateSubscriptionPayment(ctx, req.(*CreateSubscriptionPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_ConfirmDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConfirmDonationPaymentRequest)
 	if err := dec(in); err != nil {
@@ -1027,6 +1061,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateDonationPayment",
 			Handler:    _ContentService_CreateDonationPayment_Handler,
+		},
+		{
+			MethodName: "CreateSubscriptionPayment",
+			Handler:    _ContentService_CreateSubscriptionPayment_Handler,
 		},
 		{
 			MethodName: "ConfirmDonationPayment",

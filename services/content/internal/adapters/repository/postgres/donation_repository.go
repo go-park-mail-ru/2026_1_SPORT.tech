@@ -57,9 +57,10 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 			message,
 			confirmation_token,
 			confirmation_url,
+			tier_id,
 			created_at,
 			updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
 		RETURNING payment_id, created_at, updated_at
 	`
 
@@ -77,6 +78,7 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 		nullString(payment.Message),
 		payment.ConfirmationToken,
 		nullableString(payment.ConfirmationURL),
+		nullableInt64(payment.TierID),
 		now,
 	).Scan(&created.PaymentID, &created.CreatedAt, &created.UpdatedAt)
 	if err != nil {
@@ -105,7 +107,9 @@ func (repository *Repository) UpdateDonationPaymentProvider(ctx context.Context,
 			message,
 			confirmation_token,
 			confirmation_url,
+			tier_id,
 			donation_id,
+			subscription_id,
 			created_at,
 			updated_at,
 			confirmed_at
@@ -136,7 +140,9 @@ func (repository *Repository) GetDonationPayment(ctx context.Context, senderUser
 			message,
 			confirmation_token,
 			confirmation_url,
+			tier_id,
 			donation_id,
+			subscription_id,
 			created_at,
 			updated_at,
 			confirmed_at
@@ -178,7 +184,9 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 				message,
 				confirmation_token,
 				confirmation_url,
+				tier_id,
 				donation_id,
+				subscription_id,
 				created_at,
 				updated_at,
 				confirmed_at
@@ -209,6 +217,13 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 				return domain.DonationPayment{}, err
 			}
 		}
+		if payment.Subscription != nil {
+			if subscription, err := repository.getSubscriptionTx(ctx, tx, payment.Subscription.SubscriptionID); err == nil {
+				payment.Subscription = &subscription
+			} else {
+				return domain.DonationPayment{}, err
+			}
+		}
 		if err := tx.Commit(); err != nil {
 			return domain.DonationPayment{}, err
 		}
@@ -216,15 +231,35 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 	}
 
 	now := time.Now().UTC()
-	donation, err := createDonationTx(ctx, tx, domain.Donation{
-		SenderUserID:    payment.SenderUserID,
-		RecipientUserID: payment.RecipientUserID,
-		AmountValue:     payment.AmountValue,
-		Currency:        payment.Currency,
-		Message:         payment.Message,
-	}, now)
-	if err != nil {
-		return domain.DonationPayment{}, err
+	var donation *domain.Donation
+	var subscription *domain.Subscription
+	var donationID *int64
+	var subscriptionID *int64
+	if payment.TierID == nil {
+		createdDonation, err := createDonationTx(ctx, tx, domain.Donation{
+			SenderUserID:    payment.SenderUserID,
+			RecipientUserID: payment.RecipientUserID,
+			AmountValue:     payment.AmountValue,
+			Currency:        payment.Currency,
+			Message:         payment.Message,
+		}, now)
+		if err != nil {
+			return domain.DonationPayment{}, err
+		}
+		donation = &createdDonation
+		donationID = &createdDonation.DonationID
+	} else {
+		createdSubscription, err := subscribeToTrainerTx(ctx, tx, domain.Subscription{
+			ClientUserID:  payment.SenderUserID,
+			TrainerUserID: payment.RecipientUserID,
+			TierID:        *payment.TierID,
+			ExpiresAt:     now.AddDate(0, 1, 0),
+		}, now)
+		if err != nil {
+			return domain.DonationPayment{}, err
+		}
+		subscription = &createdSubscription
+		subscriptionID = &createdSubscription.SubscriptionID
 	}
 
 	if _, err := tx.ExecContext(
@@ -233,22 +268,25 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			UPDATE content_payment
 			SET status = $3,
 				donation_id = $4,
-				confirmed_at = $5,
-				updated_at = $5
+				subscription_id = $5,
+				confirmed_at = $6,
+				updated_at = $6
 			WHERE payment_id = $1
 				AND sender_user_id = $2
 		`,
 		payment.PaymentID,
 		senderUserID,
 		string(domain.PaymentStatusConfirmed),
-		donation.DonationID,
+		nullableInt64(donationID),
+		nullableInt64(subscriptionID),
 		now,
 	); err != nil {
 		return domain.DonationPayment{}, err
 	}
 
 	payment.Status = domain.PaymentStatusConfirmed
-	payment.Donation = &donation
+	payment.Donation = donation
+	payment.Subscription = subscription
 	payment.ConfirmedAt = &now
 	payment.UpdatedAt = now
 
@@ -319,6 +357,126 @@ func (repository *Repository) getDonationTx(ctx context.Context, tx *sql.Tx, don
 	return scanDonation(tx.QueryRowContext(ctx, query, donationID))
 }
 
+func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.Subscription, now time.Time) (domain.Subscription, error) {
+	var subscriptionID int64
+	err := tx.QueryRowContext(
+		ctx,
+		`
+			SELECT subscription_id
+			FROM content_subscription
+			WHERE client_user_id = $1
+				AND trainer_user_id = $2
+				AND active = TRUE
+			FOR UPDATE
+		`,
+		subscription.ClientUserID,
+		subscription.TrainerUserID,
+	).Scan(&subscriptionID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return domain.Subscription{}, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return scanSubscription(tx.QueryRowContext(
+			ctx,
+			`
+				WITH inserted AS (
+					INSERT INTO content_subscription (
+						client_user_id,
+						trainer_user_id,
+						tier_id,
+						active,
+						expires_at,
+						created_at,
+						updated_at
+					)
+					VALUES ($1, $2, $3, TRUE, $4, $5, $5)
+					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+				)
+				SELECT
+					inserted.subscription_id,
+					inserted.client_user_id,
+					inserted.trainer_user_id,
+					inserted.tier_id,
+					tier.name,
+					tier.price,
+					inserted.active,
+					inserted.expires_at,
+					inserted.created_at,
+					inserted.updated_at
+				FROM inserted
+				JOIN content_subscription_tier tier
+					ON tier.trainer_user_id = inserted.trainer_user_id
+					AND tier.tier_id = inserted.tier_id
+			`,
+			subscription.ClientUserID,
+			subscription.TrainerUserID,
+			subscription.TierID,
+			subscription.ExpiresAt,
+			now,
+		))
+	}
+
+	return scanSubscription(tx.QueryRowContext(
+		ctx,
+		`
+			WITH updated AS (
+				UPDATE content_subscription
+				SET tier_id = $3,
+					active = TRUE,
+					expires_at = $4,
+					updated_at = $5
+				WHERE subscription_id = $6
+				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+			)
+			SELECT
+				updated.subscription_id,
+				updated.client_user_id,
+				updated.trainer_user_id,
+				updated.tier_id,
+				tier.name,
+				tier.price,
+				updated.active,
+				updated.expires_at,
+				updated.created_at,
+				updated.updated_at
+			FROM updated
+			JOIN content_subscription_tier tier
+				ON tier.trainer_user_id = updated.trainer_user_id
+				AND tier.tier_id = updated.tier_id
+		`,
+		subscription.ClientUserID,
+		subscription.TrainerUserID,
+		subscription.TierID,
+		subscription.ExpiresAt,
+		now,
+		subscriptionID,
+	))
+}
+
+func (repository *Repository) getSubscriptionTx(ctx context.Context, tx *sql.Tx, subscriptionID int64) (domain.Subscription, error) {
+	const query = `
+		SELECT
+			subscription.subscription_id,
+			subscription.client_user_id,
+			subscription.trainer_user_id,
+			subscription.tier_id,
+			tier.name,
+			tier.price,
+			(subscription.active AND subscription.expires_at > now()) AS active,
+			subscription.expires_at,
+			subscription.created_at,
+			subscription.updated_at
+		FROM content_subscription subscription
+		JOIN content_subscription_tier tier
+			ON tier.trainer_user_id = subscription.trainer_user_id
+			AND tier.tier_id = subscription.tier_id
+		WHERE subscription.subscription_id = $1
+	`
+
+	return scanSubscription(tx.QueryRowContext(ctx, query, subscriptionID))
+}
+
 func scanDonation(scanner sqlScanner) (domain.Donation, error) {
 	var donation domain.Donation
 	var message sql.NullString
@@ -346,7 +504,9 @@ func scanPayment(scanner sqlScanner) (domain.DonationPayment, error) {
 	var message sql.NullString
 	var providerPaymentID sql.NullString
 	var confirmationURL sql.NullString
+	var tierID sql.NullInt64
 	var donationID sql.NullInt64
+	var subscriptionID sql.NullInt64
 	var confirmedAt sql.NullTime
 	if err := scanner.Scan(
 		&payment.PaymentID,
@@ -360,7 +520,9 @@ func scanPayment(scanner sqlScanner) (domain.DonationPayment, error) {
 		&message,
 		&payment.ConfirmationToken,
 		&confirmationURL,
+		&tierID,
 		&donationID,
+		&subscriptionID,
 		&payment.CreatedAt,
 		&payment.UpdatedAt,
 		&confirmedAt,
@@ -377,8 +539,14 @@ func scanPayment(scanner sqlScanner) (domain.DonationPayment, error) {
 	if confirmationURL.Valid {
 		payment.ConfirmationURL = confirmationURL.String
 	}
+	if tierID.Valid {
+		payment.TierID = &tierID.Int64
+	}
 	if donationID.Valid {
 		payment.Donation = &domain.Donation{DonationID: donationID.Int64}
+	}
+	if subscriptionID.Valid {
+		payment.Subscription = &domain.Subscription{SubscriptionID: subscriptionID.Int64}
 	}
 	payment.ConfirmedAt = timePtrFromNull(confirmedAt)
 
