@@ -470,6 +470,7 @@ message SearchPostsRequest {
   int32 limit = 7;
   int32 offset = 8;
   repeated int32 sport_type_ids = 9;
+  string sort = 10;
 }
 
 message SearchPostsResponse {

@@ -58,6 +58,7 @@ func SearchPostsRequestToContent(
 		ViewerSubscriptionLevel:      viewerSubscriptionLevel,
 		Limit:                        request.GetLimit(),
 		Offset:                       request.GetOffset(),
+		Sort:                         request.GetSort(),
 	}
 }
 

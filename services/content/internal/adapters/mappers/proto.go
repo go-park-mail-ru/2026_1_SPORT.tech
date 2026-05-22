@@ -35,6 +35,7 @@ func SearchPostsRequestToQuery(request *contentv1.SearchPostsRequest) usecase.Se
 		ViewerSubscriptionLevel:      request.ViewerSubscriptionLevel,
 		Limit:                        request.GetLimit(),
 		Offset:                       request.GetOffset(),
+		Sort:                         request.GetSort(),
 	}
 }
 

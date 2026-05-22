@@ -98,6 +98,11 @@ type ListAuthorPostsQuery struct {
 	Offset                  int32
 }
 
+const (
+	PostSortRecent  = "recent"
+	PostSortPopular = "popular"
+)
+
 type SearchPostsQuery struct {
 	Query                        string
 	AuthorUserIDs                []int64
@@ -110,6 +115,7 @@ type SearchPostsQuery struct {
 	ViewerSubscriptionLevel      *int32
 	Limit                        int32
 	Offset                       int32
+	Sort                         string
 }
 
 type CreatePostCommand struct {

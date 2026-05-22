@@ -2015,6 +2015,7 @@ type SearchPostsRequest struct {
 	Limit         int32                  `protobuf:"varint,7,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,8,opt,name=offset,proto3" json:"offset,omitempty"`
 	SportTypeIds  []int32                `protobuf:"varint,9,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	Sort          string                 `protobuf:"bytes,10,opt,name=sort,proto3" json:"sort,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2110,6 +2111,13 @@ func (x *SearchPostsRequest) GetSportTypeIds() []int32 {
 		return x.SportTypeIds
 	}
 	return nil
+}
+
+func (x *SearchPostsRequest) GetSort() string {
+	if x != nil {
+		return x.Sort
+	}
+	return ""
 }
 
 type SearchPostsResponse struct {
@@ -4904,7 +4912,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x0e_sport_type_id\"i\n" +
 	"\x14ProfilePostsResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x128\n" +
-	"\x05posts\x18\x02 \x03(\v2\".sporttech.gateway.v1.PostListItemR\x05posts\"\xd1\x02\n" +
+	"\x05posts\x18\x02 \x03(\v2\".sporttech.gateway.v1.PostListItemR\x05posts\"\xe5\x02\n" +
 	"\x12SearchPostsRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12\x1f\n" +
 	"\vtrainer_ids\x18\x02 \x03(\x05R\n" +
@@ -4916,7 +4924,9 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x0eonly_available\x18\x06 \x01(\bR\ronlyAvailable\x12\x14\n" +
 	"\x05limit\x18\a \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\b \x01(\x05R\x06offset\x12$\n" +
-	"\x0esport_type_ids\x18\t \x03(\x05R\fsportTypeIdsB\x0e\n" +
+	"\x0esport_type_ids\x18\t \x03(\x05R\fsportTypeIds\x12\x12\n" +
+	"\x04sort\x18\n" +
+	" \x01(\tR\x04sortB\x0e\n" +
 	"\f_min_tier_idB\x0e\n" +
 	"\f_max_tier_id\"O\n" +
 	"\x13SearchPostsResponse\x128\n" +

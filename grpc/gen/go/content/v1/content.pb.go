@@ -932,6 +932,7 @@ type SearchPostsRequest struct {
 	Limit                        int32                  `protobuf:"varint,9,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset                       int32                  `protobuf:"varint,10,opt,name=offset,proto3" json:"offset,omitempty"`
 	SportTypeIds                 []int64                `protobuf:"varint,11,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	Sort                         string                 `protobuf:"bytes,12,opt,name=sort,proto3" json:"sort,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -1041,6 +1042,13 @@ func (x *SearchPostsRequest) GetSportTypeIds() []int64 {
 		return x.SportTypeIds
 	}
 	return nil
+}
+
+func (x *SearchPostsRequest) GetSort() string {
+	if x != nil {
+		return x.Sort
+	}
+	return ""
 }
 
 type SearchPostsResponse struct {
@@ -4008,7 +4016,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x06offset\x18\x05 \x01(\x05R\x06offsetB\x1c\n" +
 	"\x1a_viewer_subscription_level\"R\n" +
 	"\x17ListAuthorPostsResponse\x127\n" +
-	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xfb\x04\n" +
+	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\x8f\x05\n" +
 	"\x12SearchPostsRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12&\n" +
 	"\x0fauthor_user_ids\x18\x02 \x03(\x03R\rauthorUserIds\x12G\n" +
@@ -4022,7 +4030,8 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x05limit\x18\t \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\n" +
 	" \x01(\x05R\x06offset\x12$\n" +
-	"\x0esport_type_ids\x18\v \x03(\x03R\fsportTypeIdsB\"\n" +
+	"\x0esport_type_ids\x18\v \x03(\x03R\fsportTypeIds\x12\x12\n" +
+	"\x04sort\x18\f \x01(\tR\x04sortB\"\n" +
 	" _min_required_subscription_levelB\"\n" +
 	" _max_required_subscription_levelB\x1c\n" +
 	"\x1a_viewer_subscription_level\"N\n" +

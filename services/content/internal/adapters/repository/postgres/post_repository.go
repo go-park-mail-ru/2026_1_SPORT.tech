@@ -293,8 +293,13 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 		queryBuilder.WriteString(strings.Join(conditions, " AND "))
 	}
 
+	orderClause := " ORDER BY p.created_at DESC, p.post_id DESC"
+	if searchQuery.Sort == usecase.PostSortPopular {
+		orderClause = " ORDER BY COALESCE(l.likes_count, 0) DESC, p.created_at DESC, p.post_id DESC"
+	}
+
 	args = append(args, searchQuery.Limit, searchQuery.Offset)
-	queryBuilder.WriteString(fmt.Sprintf(" ORDER BY p.created_at DESC, p.post_id DESC LIMIT $%d OFFSET $%d", len(args)-1, len(args)))
+	queryBuilder.WriteString(fmt.Sprintf("%s LIMIT $%d OFFSET $%d", orderClause, len(args)-1, len(args)))
 
 	rows, err := repository.db.QueryContext(ctx, queryBuilder.String(), args...)
 	if err != nil {

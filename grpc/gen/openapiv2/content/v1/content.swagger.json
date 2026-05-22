@@ -1930,6 +1930,9 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "sort": {
+          "type": "string"
         }
       }
     },
