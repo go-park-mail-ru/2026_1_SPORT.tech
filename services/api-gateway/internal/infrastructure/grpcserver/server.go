@@ -28,6 +28,7 @@ func New(
 	sportService gatewayv1.SportServiceServer,
 	donationService gatewayv1.DonationServiceServer,
 	statisticsService gatewayv1.StatisticsServiceServer,
+	notificationService gatewayv1.NotificationServiceServer,
 	metricSet *metrics.Metrics,
 ) (*Server, error) {
 	listener, err := net.Listen("tcp", listenAddress)
@@ -46,6 +47,7 @@ func New(
 	gatewayv1.RegisterSportServiceServer(grpcServer, sportService)
 	gatewayv1.RegisterDonationServiceServer(grpcServer, donationService)
 	gatewayv1.RegisterStatisticsServiceServer(grpcServer, statisticsService)
+	gatewayv1.RegisterNotificationServiceServer(grpcServer, notificationService)
 
 	healthServer := grpcHealth.NewServer()
 	healthServer.SetServingStatus("", grpcHealthV1.HealthCheckResponse_SERVING)
@@ -57,6 +59,7 @@ func New(
 	healthServer.SetServingStatus(gatewayv1.SportService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.DonationService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(gatewayv1.StatisticsService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(gatewayv1.NotificationService_ServiceDesc.ServiceName, grpcHealthV1.HealthCheckResponse_SERVING)
 	grpcHealthV1.RegisterHealthServer(grpcServer, healthServer)
 
 	reflection.Register(grpcServer)

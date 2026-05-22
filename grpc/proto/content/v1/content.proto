@@ -129,6 +129,17 @@ service ContentService {
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
+
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/notifications";
+  }
+
+  rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
+    option (google.api.http) = {
+      patch: "/v1/users/{user_id}/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
 }
 
 enum ContentBlockKind {
@@ -195,6 +206,22 @@ message Comment {
   string body = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
+}
+
+message Notification {
+  int64 notification_id = 1;
+  int64 user_id = 2;
+  string type = 3;
+  int64 actor_user_id = 4;
+  string title = 5;
+  string body = 6;
+  bool is_read = 7;
+  google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp read_at = 9;
+  optional int64 post_id = 10;
+  optional int64 comment_id = 11;
+  optional int64 donation_id = 12;
+  optional int64 subscription_id = 13;
 }
 
 message PostResponse {
@@ -440,4 +467,23 @@ message ListCommentsRequest {
 
 message ListCommentsResponse {
   repeated Comment comments = 1;
+}
+
+message ListNotificationsRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message MarkNotificationReadRequest {
+  int64 user_id = 1;
+  int64 notification_id = 2;
+}
+
+message NotificationResponse {
+  Notification notification = 1;
+}
+
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
 }

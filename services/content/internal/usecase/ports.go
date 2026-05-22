@@ -9,9 +9,10 @@ import (
 )
 
 type Repositories struct {
-	Posts      PostRepository
-	Money      MonetizationRepository
-	Engagement EngagementRepository
+	Posts         PostRepository
+	Money         MonetizationRepository
+	Engagement    EngagementRepository
+	Notifications NotificationRepository
 }
 
 type PostRepository interface {
@@ -45,6 +46,12 @@ type EngagementRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+}
+
+type NotificationRepository interface {
+	CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error)
+	ListNotifications(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error)
+	MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
 }
 
 type PostMediaStorage interface {
@@ -200,4 +207,15 @@ type ListCommentsQuery struct {
 	ViewerSubscriptionLevel *int32
 	Limit                   int32
 	Offset                  int32
+}
+
+type ListNotificationsQuery struct {
+	UserID int64
+	Limit  int32
+	Offset int32
+}
+
+type MarkNotificationReadCommand struct {
+	UserID         int64
+	NotificationID int64
 }

@@ -15,18 +15,20 @@ const (
 )
 
 type Service struct {
-	posts      PostRepository
-	money      MonetizationRepository
-	engagement EngagementRepository
-	postMedia  PostMediaStorage
+	posts         PostRepository
+	money         MonetizationRepository
+	engagement    EngagementRepository
+	notifications NotificationRepository
+	postMedia     PostMediaStorage
 }
 
 func NewService(repositories Repositories, postMediaStorage PostMediaStorage) *Service {
 	return &Service{
-		posts:      repositories.Posts,
-		money:      repositories.Money,
-		engagement: repositories.Engagement,
-		postMedia:  postMediaStorage,
+		posts:         repositories.Posts,
+		money:         repositories.Money,
+		engagement:    repositories.Engagement,
+		notifications: repositories.Notifications,
+		postMedia:     postMediaStorage,
 	}
 }
 
@@ -304,12 +306,28 @@ func (service *Service) SubscribeToTrainer(ctx context.Context, command Subscrib
 		return domain.Subscription{}, err
 	}
 
-	return service.money.SubscribeToTrainer(ctx, domain.Subscription{
+	subscription, err := service.money.SubscribeToTrainer(ctx, domain.Subscription{
 		ClientUserID:  command.ClientUserID,
 		TrainerUserID: command.TrainerUserID,
 		TierID:        tier.TierID,
 		ExpiresAt:     time.Now().UTC().AddDate(0, 1, 0),
 	})
+	if err != nil {
+		return domain.Subscription{}, err
+	}
+
+	if err := service.createNotification(ctx, domain.Notification{
+		UserID:         subscription.TrainerUserID,
+		Type:           domain.NotificationTypeSubscription,
+		ActorUserID:    subscription.ClientUserID,
+		Title:          "New subscription",
+		Body:           "A client subscribed to your profile",
+		SubscriptionID: &subscription.SubscriptionID,
+	}); err != nil {
+		return domain.Subscription{}, err
+	}
+
+	return subscription, nil
 }
 
 func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySubscriptionsQuery) ([]domain.Subscription, error) {
@@ -406,11 +424,30 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 		return domain.Comment{}, domain.ErrPostForbidden
 	}
 
-	return service.engagement.CreateComment(ctx, domain.Comment{
+	comment, err := service.engagement.CreateComment(ctx, domain.Comment{
 		PostID:       command.PostID,
 		AuthorUserID: command.AuthorUserID,
 		Body:         body,
 	})
+	if err != nil {
+		return domain.Comment{}, err
+	}
+
+	if post.AuthorUserID != command.AuthorUserID {
+		if err := service.createNotification(ctx, domain.Notification{
+			UserID:      post.AuthorUserID,
+			Type:        domain.NotificationTypeComment,
+			ActorUserID: command.AuthorUserID,
+			Title:       "New comment",
+			Body:        "Someone commented on your post",
+			PostID:      &comment.PostID,
+			CommentID:   &comment.CommentID,
+		}); err != nil {
+			return domain.Comment{}, err
+		}
+	}
+
+	return comment, nil
 }
 
 func (service *Service) ListComments(ctx context.Context, query ListCommentsQuery) ([]domain.Comment, error) {
@@ -445,13 +482,29 @@ func (service *Service) DonateToProfile(ctx context.Context, command DonateToPro
 		return domain.Donation{}, err
 	}
 
-	return service.money.CreateDonation(ctx, domain.Donation{
+	donation, err := service.money.CreateDonation(ctx, domain.Donation{
 		SenderUserID:    command.SenderUserID,
 		RecipientUserID: command.RecipientUserID,
 		AmountValue:     command.AmountValue,
 		Currency:        command.Currency,
 		Message:         command.Message,
 	})
+	if err != nil {
+		return domain.Donation{}, err
+	}
+
+	if err := service.createNotification(ctx, domain.Notification{
+		UserID:      donation.RecipientUserID,
+		Type:        domain.NotificationTypeDonation,
+		ActorUserID: donation.SenderUserID,
+		Title:       "New donation",
+		Body:        "You received a new donation",
+		DonationID:  &donation.DonationID,
+	}); err != nil {
+		return domain.Donation{}, err
+	}
+
+	return donation, nil
 }
 
 func (service *Service) GetBalance(ctx context.Context, query GetBalanceQuery) (domain.Balance, error) {
@@ -473,6 +526,45 @@ func (service *Service) GetTrainerStatistics(ctx context.Context, query GetTrain
 	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
 
 	return service.money.GetTrainerStatistics(ctx, query.TrainerUserID, query.Currency, monthStart)
+}
+
+func (service *Service) ListNotifications(ctx context.Context, query ListNotificationsQuery) ([]domain.Notification, error) {
+	if query.UserID <= 0 {
+		return nil, ErrInvalidUserID
+	}
+
+	limit, offset, err := normalizePage(query.Limit, query.Offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return service.notifications.ListNotifications(ctx, query.UserID, limit, offset)
+}
+
+func (service *Service) MarkNotificationRead(ctx context.Context, command MarkNotificationReadCommand) (domain.Notification, error) {
+	if command.UserID <= 0 {
+		return domain.Notification{}, ErrInvalidUserID
+	}
+	if command.NotificationID <= 0 {
+		return domain.Notification{}, ErrInvalidNotificationID
+	}
+
+	return service.notifications.MarkNotificationRead(ctx, command.UserID, command.NotificationID)
+}
+
+func (service *Service) createNotification(ctx context.Context, notification domain.Notification) error {
+	if service.notifications == nil {
+		return nil
+	}
+
+	notification.Title = normalizeRequiredText(notification.Title)
+	notification.Body = normalizeRequiredText(notification.Body)
+	if err := validateNotification(notification); err != nil {
+		return err
+	}
+
+	_, err := service.notifications.CreateNotification(ctx, notification)
+	return err
 }
 
 func buildPost(command CreatePostCommand) (domain.Post, error) {

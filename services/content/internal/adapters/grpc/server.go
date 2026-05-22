@@ -50,6 +50,11 @@ type DonationUseCase interface {
 	GetTrainerStatistics(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
 }
 
+type NotificationUseCase interface {
+	ListNotifications(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error)
+	MarkNotificationRead(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
+}
+
 type UseCases struct {
 	Posts         PostUseCase
 	PostMedia     PostMediaUseCase
@@ -57,6 +62,7 @@ type UseCases struct {
 	Subscriptions SubscriptionUseCase
 	Comments      CommentUseCase
 	Donations     DonationUseCase
+	Notifications NotificationUseCase
 }
 
 type Server struct {
@@ -261,4 +267,22 @@ func (server *Server) ListComments(ctx context.Context, request *contentv1.ListC
 	}
 
 	return mappers.NewListCommentsResponse(comments), nil
+}
+
+func (server *Server) ListNotifications(ctx context.Context, request *contentv1.ListNotificationsRequest) (*contentv1.ListNotificationsResponse, error) {
+	notifications, err := server.useCases.Notifications.ListNotifications(ctx, mappers.ListNotificationsRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListNotificationsResponse(notifications), nil
+}
+
+func (server *Server) MarkNotificationRead(ctx context.Context, request *contentv1.MarkNotificationReadRequest) (*contentv1.NotificationResponse, error) {
+	notification, err := server.useCases.Notifications.MarkNotificationRead(ctx, mappers.MarkNotificationReadRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewNotificationResponse(notification), nil
 }

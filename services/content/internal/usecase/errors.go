@@ -34,4 +34,8 @@ var (
 	ErrInvalidDonationCurrency            = errors.New("invalid donation currency")
 	ErrInvalidDonationMessage             = errors.New("invalid donation message")
 	ErrInvalidDonationTarget              = errors.New("invalid donation target")
+	ErrInvalidNotificationID              = errors.New("invalid notification id")
+	ErrInvalidNotificationType            = errors.New("invalid notification type")
+	ErrInvalidNotificationTitle           = errors.New("invalid notification title")
+	ErrInvalidNotificationBody            = errors.New("invalid notification body")
 )

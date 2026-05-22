@@ -30,6 +30,8 @@ type ContentUseCase struct {
 	UnlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateCommentFunc      func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
 	ListCommentsFunc       func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
+	ListNotificationsFunc  func(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error)
+	MarkNotificationFunc   func(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
 }
 
 func (mock ContentUseCase) ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
@@ -151,4 +153,18 @@ func (mock ContentUseCase) CreateComment(ctx context.Context, command usecase.Cr
 
 func (mock ContentUseCase) ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
 	return mock.ListCommentsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) ListNotifications(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error) {
+	if mock.ListNotificationsFunc == nil {
+		return nil, nil
+	}
+	return mock.ListNotificationsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) MarkNotificationRead(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error) {
+	if mock.MarkNotificationFunc == nil {
+		return domain.Notification{}, nil
+	}
+	return mock.MarkNotificationFunc(ctx, command)
 }

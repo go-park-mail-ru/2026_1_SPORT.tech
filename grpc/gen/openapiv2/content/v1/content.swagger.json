@@ -886,6 +886,97 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/users/{user_id}/notifications": {
+      "get": {
+        "operationId": "ContentService_ListNotifications",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListNotificationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{user_id}/notifications/{notification_id}/read": {
+      "patch": {
+        "operationId": "ContentService_MarkNotificationRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceMarkNotificationReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -951,6 +1042,9 @@
           "format": "int32"
         }
       }
+    },
+    "ContentServiceMarkNotificationReadBody": {
+      "type": "object"
     },
     "ContentServiceSubscribeToTrainerBody": {
       "type": "object",
@@ -1221,6 +1315,18 @@
         }
       }
     },
+    "v1ListNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        }
+      }
+    },
     "v1ListSubscriptionTiersResponse": {
       "type": "object",
       "properties": {
@@ -1230,6 +1336,67 @@
             "type": "object",
             "$ref": "#/definitions/v1SubscriptionTier"
           }
+        }
+      }
+    },
+    "v1Notification": {
+      "type": "object",
+      "properties": {
+        "notification_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actor_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "read_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "comment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1NotificationResponse": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/v1Notification"
         }
       }
     },

@@ -207,6 +207,21 @@ func ListCommentsRequestToQuery(request *contentv1.ListCommentsRequest) usecase.
 	}
 }
 
+func ListNotificationsRequestToQuery(request *contentv1.ListNotificationsRequest) usecase.ListNotificationsQuery {
+	return usecase.ListNotificationsQuery{
+		UserID: request.GetUserId(),
+		Limit:  request.GetLimit(),
+		Offset: request.GetOffset(),
+	}
+}
+
+func MarkNotificationReadRequestToCommand(request *contentv1.MarkNotificationReadRequest) usecase.MarkNotificationReadCommand {
+	return usecase.MarkNotificationReadCommand{
+		UserID:         request.GetUserId(),
+		NotificationID: request.GetNotificationId(),
+	}
+}
+
 func NewListAuthorPostsResponse(posts []domain.PostSummary) *contentv1.ListAuthorPostsResponse {
 	response := &contentv1.ListAuthorPostsResponse{
 		Posts: make([]*contentv1.PostSummary, 0, len(posts)),
@@ -328,6 +343,23 @@ func NewListCommentsResponse(comments []domain.Comment) *contentv1.ListCommentsR
 	return response
 }
 
+func NewNotificationResponse(notification domain.Notification) *contentv1.NotificationResponse {
+	return &contentv1.NotificationResponse{
+		Notification: notificationToProto(notification),
+	}
+}
+
+func NewListNotificationsResponse(notifications []domain.Notification) *contentv1.ListNotificationsResponse {
+	response := &contentv1.ListNotificationsResponse{
+		Notifications: make([]*contentv1.Notification, 0, len(notifications)),
+	}
+	for _, notification := range notifications {
+		response.Notifications = append(response.Notifications, notificationToProto(notification))
+	}
+
+	return response
+}
+
 func Empty() *emptypb.Empty {
 	return &emptypb.Empty{}
 }
@@ -366,6 +398,10 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidDonationCurrency),
 		errors.Is(err, usecase.ErrInvalidDonationMessage),
 		errors.Is(err, usecase.ErrInvalidDonationTarget),
+		errors.Is(err, usecase.ErrInvalidNotificationID),
+		errors.Is(err, usecase.ErrInvalidNotificationType),
+		errors.Is(err, usecase.ErrInvalidNotificationTitle),
+		errors.Is(err, usecase.ErrInvalidNotificationBody),
 		errors.Is(err, domain.ErrInvalidBlockKind),
 		errors.Is(err, domain.ErrInvalidBlockData):
 		return status.Error(codes.InvalidArgument, err.Error())
@@ -373,7 +409,8 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, domain.ErrCommentNotFound),
 		errors.Is(err, domain.ErrSubscriptionTierNotFound),
 		errors.Is(err, domain.ErrSubscriptionNotFound),
-		errors.Is(err, domain.ErrDonationNotFound):
+		errors.Is(err, domain.ErrDonationNotFound),
+		errors.Is(err, domain.ErrNotificationNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
@@ -518,6 +555,28 @@ func commentToProto(comment domain.Comment) *contentv1.Comment {
 		CreatedAt:    timestamppb.New(comment.CreatedAt),
 		UpdatedAt:    timestamppb.New(comment.UpdatedAt),
 	}
+}
+
+func notificationToProto(notification domain.Notification) *contentv1.Notification {
+	response := &contentv1.Notification{
+		NotificationId: notification.NotificationID,
+		UserId:         notification.UserID,
+		Type:           string(notification.Type),
+		ActorUserId:    notification.ActorUserID,
+		Title:          notification.Title,
+		Body:           notification.Body,
+		IsRead:         notification.IsRead(),
+		CreatedAt:      timestamppb.New(notification.CreatedAt),
+		PostId:         notification.PostID,
+		CommentId:      notification.CommentID,
+		DonationId:     notification.DonationID,
+		SubscriptionId: notification.SubscriptionID,
+	}
+	if notification.ReadAt != nil {
+		response.ReadAt = timestamppb.New(*notification.ReadAt)
+	}
+
+	return response
 }
 
 func blockKindFromProto(kind contentv1.ContentBlockKind) domain.BlockKind {

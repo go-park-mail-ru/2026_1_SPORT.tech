@@ -216,6 +216,19 @@ service StatisticsService {
   }
 }
 
+service NotificationService {
+  rpc ListMyNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {
+    option (google.api.http).get = "/v1/notifications";
+  }
+
+  rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
+    option (google.api.http) = {
+      patch: "/v1/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+}
+
 message ValidationErrorField {
   string field = 1;
   string message = 2;
@@ -592,4 +605,37 @@ message StatisticsResponse {
   int32 total_revenue = 4;
   int32 monthly_revenue = 5;
   string currency = 6;
+}
+
+message Notification {
+  int32 notification_id = 1;
+  int32 user_id = 2;
+  string type = 3;
+  int32 actor_user_id = 4;
+  string title = 5;
+  string body = 6;
+  bool is_read = 7;
+  google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp read_at = 9;
+  optional int32 post_id = 10;
+  optional int32 comment_id = 11;
+  optional int32 donation_id = 12;
+  optional int32 subscription_id = 13;
+}
+
+message ListNotificationsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message MarkNotificationReadRequest {
+  int32 notification_id = 1;
+}
+
+message NotificationResponse {
+  Notification notification = 1;
+}
+
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
 }

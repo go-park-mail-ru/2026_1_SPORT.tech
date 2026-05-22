@@ -329,6 +329,23 @@ func validateGetTrainerStatisticsQuery(query GetTrainerStatisticsQuery) error {
 	return nil
 }
 
+func validateNotification(notification domain.Notification) error {
+	if notification.UserID <= 0 || notification.ActorUserID <= 0 {
+		return ErrInvalidUserID
+	}
+	if !notification.Type.IsValid() {
+		return ErrInvalidNotificationType
+	}
+	if normalizeRequiredText(notification.Title) == "" || len(normalizeRequiredText(notification.Title)) > 200 {
+		return ErrInvalidNotificationTitle
+	}
+	if normalizeRequiredText(notification.Body) == "" || len(normalizeRequiredText(notification.Body)) > 1000 {
+		return ErrInvalidNotificationBody
+	}
+
+	return nil
+}
+
 func normalizePage(limit int32, offset int32) (int32, int32, error) {
 	if limit < 0 || limit > maxPageLimit {
 		return 0, 0, ErrInvalidLimit

@@ -35,6 +35,9 @@ type stubContentRepository struct {
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	getBalanceFunc         func(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	getStatisticsFunc      func(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
+	createNotificationFunc func(ctx context.Context, notification domain.Notification) (domain.Notification, error)
+	listNotificationsFunc  func(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error)
+	markNotificationFunc   func(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
 }
 
 func (repository stubContentRepository) CreatePost(ctx context.Context, post domain.Post) (int64, error) {
@@ -172,11 +175,33 @@ func (repository stubContentRepository) GetTrainerStatistics(ctx context.Context
 	return repository.getStatisticsFunc(ctx, trainerUserID, currency, monthStart)
 }
 
+func (repository stubContentRepository) CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+	if repository.createNotificationFunc == nil {
+		return notification, nil
+	}
+	return repository.createNotificationFunc(ctx, notification)
+}
+
+func (repository stubContentRepository) ListNotifications(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error) {
+	if repository.listNotificationsFunc == nil {
+		return nil, nil
+	}
+	return repository.listNotificationsFunc(ctx, userID, limit, offset)
+}
+
+func (repository stubContentRepository) MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error) {
+	if repository.markNotificationFunc == nil {
+		return domain.Notification{NotificationID: notificationID, UserID: userID}, nil
+	}
+	return repository.markNotificationFunc(ctx, userID, notificationID)
+}
+
 func stubRepositories(repository stubContentRepository) Repositories {
 	return Repositories{
-		Posts:      repository,
-		Money:      repository,
-		Engagement: repository,
+		Posts:         repository,
+		Money:         repository,
+		Engagement:    repository,
+		Notifications: repository,
 	}
 }
 

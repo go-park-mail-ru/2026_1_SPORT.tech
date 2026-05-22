@@ -42,6 +42,8 @@ const (
 	ContentService_UnlikePost_FullMethodName             = "/sporttech.content.v1.ContentService/UnlikePost"
 	ContentService_CreateComment_FullMethodName          = "/sporttech.content.v1.ContentService/CreateComment"
 	ContentService_ListComments_FullMethodName           = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_ListNotifications_FullMethodName      = "/sporttech.content.v1.ContentService/ListNotifications"
+	ContentService_MarkNotificationRead_FullMethodName   = "/sporttech.content.v1.ContentService/MarkNotificationRead"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -70,6 +72,8 @@ type ContentServiceClient interface {
 	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
+	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
 }
 
 type contentServiceClient struct {
@@ -300,6 +304,26 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 	return out, nil
 }
 
+func (c *contentServiceClient) ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListNotificationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListNotifications_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationResponse)
+	err := c.cc.Invoke(ctx, ContentService_MarkNotificationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContentServiceServer is the server API for ContentService service.
 // All implementations should embed UnimplementedContentServiceServer
 // for forward compatibility.
@@ -326,6 +350,8 @@ type ContentServiceServer interface {
 	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
+	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
 }
 
 // UnimplementedContentServiceServer should be embedded to have
@@ -400,6 +426,12 @@ func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateC
 }
 func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedContentServiceServer) ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListNotifications not implemented")
+}
+func (UnimplementedContentServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
 }
 func (UnimplementedContentServiceServer) testEmbeddedByValue() {}
 
@@ -817,6 +849,42 @@ func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListNotifications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListNotifications(ctx, req.(*ListNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_MarkNotificationRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkNotificationReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).MarkNotificationRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_MarkNotificationRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).MarkNotificationRead(ctx, req.(*MarkNotificationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -911,6 +979,14 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _ContentService_ListComments_Handler,
+		},
+		{
+			MethodName: "ListNotifications",
+			Handler:    _ContentService_ListNotifications_Handler,
+		},
+		{
+			MethodName: "MarkNotificationRead",
+			Handler:    _ContentService_MarkNotificationRead_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

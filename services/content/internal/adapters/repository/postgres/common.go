@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 	"github.com/lib/pq"
@@ -119,6 +120,22 @@ func nullInt64(value *int64) sql.NullInt64 {
 		Int64: *value,
 		Valid: true,
 	}
+}
+
+func int64PtrFromNull(value sql.NullInt64) *int64 {
+	if !value.Valid {
+		return nil
+	}
+
+	return &value.Int64
+}
+
+func timePtrFromNull(value sql.NullTime) *time.Time {
+	if !value.Valid {
+		return nil
+	}
+
+	return &value.Time
 }
 
 func isForeignKeyViolation(err error) bool {
