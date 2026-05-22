@@ -60,7 +60,21 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 			tier_id,
 			created_at,
 			updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
+		) VALUES (
+			$1::text,
+			$2::text,
+			$3::text,
+			$4::bigint,
+			$5::bigint,
+			$6::integer,
+			$7::text,
+			$8::text,
+			$9::text,
+			$10::text,
+			$11::bigint,
+			$12::timestamptz,
+			$12::timestamptz
+		)
 		RETURNING payment_id, created_at, updated_at
 	`
 
