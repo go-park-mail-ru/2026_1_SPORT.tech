@@ -651,7 +651,10 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 		if service.paymentProvider == nil {
 			return domain.DonationPayment{}, ErrPaymentProviderUnavailable
 		}
-		providerPayment, err := service.paymentProvider.GetPayment(ctx, payment.ProviderPaymentID)
+		providerCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
+		defer cancel()
+
+		providerPayment, err := service.paymentProvider.GetPayment(providerCtx, payment.ProviderPaymentID)
 		if err != nil {
 			return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
 		}
