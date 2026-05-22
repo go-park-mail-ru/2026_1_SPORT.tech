@@ -83,7 +83,7 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 		ctx,
 		query,
 		payment.Provider,
-		payment.ProviderPaymentID,
+		nullableString(payment.ProviderPaymentID),
 		string(payment.Status),
 		payment.SenderUserID,
 		payment.RecipientUserID,
