@@ -17,3 +17,12 @@ type Balance struct {
 	AmountValue   int32
 	Currency      string
 }
+
+type TrainerStatistics struct {
+	TrainerUserID  int64
+	PostsCount     int32
+	DonationsCount int32
+	TotalRevenue   int32
+	MonthlyRevenue int32
+	Currency       string
+}

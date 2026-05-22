@@ -18,10 +18,10 @@ func NewPostgres(cfg config.PostgresConfig) (*sql.DB, error) {
 		return nil, fmt.Errorf("open postgres: %w", err)
 	}
 
-	database.SetMaxOpenConns(cfg.MaxOpenConns)
-	database.SetMaxIdleConns(cfg.MaxIdleConns)
+	database.SetMaxOpenConns(cfg.DBMaxOpenConns)
+	database.SetMaxIdleConns(cfg.DBMaxIdleConns)
 
-	connMaxLifetime, err := cfg.ConnMaxLifetimeDuration()
+	connMaxLifetime, err := cfg.DBConnMaxLifetimeDuration()
 	if err != nil {
 		_ = database.Close()
 		return nil, fmt.Errorf("parse postgres conn max lifetime: %w", err)
