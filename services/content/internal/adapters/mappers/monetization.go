@@ -205,7 +205,6 @@ func NewTrainerStatisticsResponse(statistics domain.TrainerStatistics) *contentv
 	}
 }
 
-
 func subscriptionTierToProto(tier domain.SubscriptionTier) *contentv1.SubscriptionTier {
 	response := &contentv1.SubscriptionTier{
 		TierId:        tier.TierID,

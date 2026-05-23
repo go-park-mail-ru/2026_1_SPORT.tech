@@ -230,4 +230,3 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 		SportTypeId:   sportTypeID,
 	}, nil
 }
-
