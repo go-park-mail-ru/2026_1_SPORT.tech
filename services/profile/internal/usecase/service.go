@@ -9,13 +9,13 @@ import (
 )
 
 type Service struct {
-	profiles            ProfileRepository
-	authors             AuthorRepository
-	avatars             AvatarRepository
-	sports              SportTypeRepository
-	measurements        MeasurementRepository
-	measurementSharing  MeasurementSharingRepository
-	storage             AvatarStorage
+	profiles           ProfileRepository
+	authors            AuthorRepository
+	avatars            AvatarRepository
+	sports             SportTypeRepository
+	measurements       MeasurementRepository
+	measurementSharing MeasurementSharingRepository
+	storage            AvatarStorage
 }
 
 func NewService(

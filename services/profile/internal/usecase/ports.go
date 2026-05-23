@@ -8,12 +8,12 @@ import (
 )
 
 type Repositories struct {
-	Profiles            ProfileRepository
-	Authors             AuthorRepository
-	Avatars             AvatarRepository
-	Sports              SportTypeRepository
-	Measurements        MeasurementRepository
-	MeasurementSharing  MeasurementSharingRepository
+	Profiles           ProfileRepository
+	Authors            AuthorRepository
+	Avatars            AvatarRepository
+	Sports             SportTypeRepository
+	Measurements       MeasurementRepository
+	MeasurementSharing MeasurementSharingRepository
 }
 
 type ProfileRepository interface {
@@ -120,9 +120,9 @@ type GetMeasurementSharingQuery struct {
 }
 
 type ListMeasurementsQuery struct {
-	UserID       int64
-	Limit        int32
-	Offset       int32
+	UserID int64
+	Limit  int32
+	Offset int32
 	// ViewerUserID — кто запрашивает данные.
 	// 0 или == UserID означает «сам пользователь», ограничения не применяются.
 	ViewerUserID int64
