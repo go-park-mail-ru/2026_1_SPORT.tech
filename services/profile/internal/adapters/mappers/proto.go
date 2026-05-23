@@ -100,6 +100,52 @@ func Empty() *emptypb.Empty {
 	return &emptypb.Empty{}
 }
 
+// ─── Measurement mappers ──────────────────────────────────────────────────────
+
+func CreateMeasurementRequestToCommand(request *profilev1.CreateMeasurementRequest) usecase.CreateMeasurementCommand {
+	return usecase.CreateMeasurementCommand{
+		UserID:     request.GetUserId(),
+		MeasuredAt: request.GetMeasuredAt(),
+		WeightKg:   request.WeightKg,
+		BodyFatPct: request.BodyFatPct,
+		ChestCm:    request.ChestCm,
+		WaistCm:    request.WaistCm,
+		HipsCm:     request.HipsCm,
+		Notes:      request.Notes,
+	}
+}
+
+func measurementToProto(m domain.Measurement) *profilev1.Measurement {
+	proto := &profilev1.Measurement{
+		MeasurementId: m.MeasurementID,
+		UserId:        m.UserID,
+		MeasuredAt:    timestamppb.New(m.MeasuredAt),
+		CreatedAt:     timestamppb.New(m.CreatedAt),
+		UpdatedAt:     timestamppb.New(m.UpdatedAt),
+		WeightKg:      m.WeightKg,
+		BodyFatPct:    m.BodyFatPct,
+		ChestCm:       m.ChestCm,
+		WaistCm:       m.WaistCm,
+		HipsCm:        m.HipsCm,
+		Notes:         m.Notes,
+	}
+	return proto
+}
+
+func NewMeasurementResponse(m domain.Measurement) *profilev1.MeasurementResponse {
+	return &profilev1.MeasurementResponse{Measurement: measurementToProto(m)}
+}
+
+func NewListMeasurementsResponse(measurements []domain.Measurement) *profilev1.ListMeasurementsResponse {
+	resp := &profilev1.ListMeasurementsResponse{
+		Measurements: make([]*profilev1.Measurement, 0, len(measurements)),
+	}
+	for _, m := range measurements {
+		resp.Measurements = append(resp.Measurements, measurementToProto(m))
+	}
+	return resp
+}
+
 func ErrorToStatus(err error) error {
 	switch {
 	case err == nil:
@@ -117,9 +163,12 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrAvatarFileNameRequired),
 		errors.Is(err, usecase.ErrAvatarContentTypeRequired),
 		errors.Is(err, usecase.ErrAvatarContentRequired),
-		errors.Is(err, domain.ErrSportTypeNotFound):
+		errors.Is(err, domain.ErrSportTypeNotFound),
+		errors.Is(err, usecase.ErrInvalidMeasuredAt),
+		errors.Is(err, usecase.ErrInvalidMeasurementData):
 		return status.Error(codes.InvalidArgument, err.Error())
-	case errors.Is(err, domain.ErrProfileNotFound):
+	case errors.Is(err, domain.ErrProfileNotFound),
+		errors.Is(err, usecase.ErrMeasurementNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrProfileExists), errors.Is(err, domain.ErrUsernameTaken):
 		return status.Error(codes.AlreadyExists, err.Error())

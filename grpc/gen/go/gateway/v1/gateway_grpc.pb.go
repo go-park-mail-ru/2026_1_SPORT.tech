@@ -310,13 +310,16 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ProfileService_GetProfile_FullMethodName       = "/sporttech.gateway.v1.ProfileService/GetProfile"
-	ProfileService_ListTrainers_FullMethodName     = "/sporttech.gateway.v1.ProfileService/ListTrainers"
-	ProfileService_SearchTrainers_FullMethodName   = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
-	ProfileService_UpdateMyProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
-	ProfileService_UploadMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
-	ProfileService_DeleteMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
-	ProfileService_ListProfilePosts_FullMethodName = "/sporttech.gateway.v1.ProfileService/ListProfilePosts"
+	ProfileService_GetProfile_FullMethodName          = "/sporttech.gateway.v1.ProfileService/GetProfile"
+	ProfileService_ListTrainers_FullMethodName        = "/sporttech.gateway.v1.ProfileService/ListTrainers"
+	ProfileService_SearchTrainers_FullMethodName      = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
+	ProfileService_UpdateMyProfile_FullMethodName     = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
+	ProfileService_UploadMyAvatar_FullMethodName      = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
+	ProfileService_DeleteMyAvatar_FullMethodName      = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
+	ProfileService_ListProfilePosts_FullMethodName    = "/sporttech.gateway.v1.ProfileService/ListProfilePosts"
+	ProfileService_CreateMyMeasurement_FullMethodName = "/sporttech.gateway.v1.ProfileService/CreateMyMeasurement"
+	ProfileService_ListMeasurements_FullMethodName    = "/sporttech.gateway.v1.ProfileService/ListMeasurements"
+	ProfileService_DeleteMyMeasurement_FullMethodName = "/sporttech.gateway.v1.ProfileService/DeleteMyMeasurement"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
@@ -330,6 +333,9 @@ type ProfileServiceClient interface {
 	UploadMyAvatar(ctx context.Context, in *UploadMyAvatarRequest, opts ...grpc.CallOption) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListProfilePosts(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfilePostsResponse, error)
+	CreateMyMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
+	ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error)
+	DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type profileServiceClient struct {
@@ -410,6 +416,36 @@ func (c *profileServiceClient) ListProfilePosts(ctx context.Context, in *GetProf
 	return out, nil
 }
 
+func (c *profileServiceClient) CreateMyMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeasurementResponse)
+	err := c.cc.Invoke(ctx, ProfileService_CreateMyMeasurement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeasurementsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_ListMeasurements_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteMyMeasurement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations should embed UnimplementedProfileServiceServer
 // for forward compatibility.
@@ -421,6 +457,9 @@ type ProfileServiceServer interface {
 	UploadMyAvatar(context.Context, *UploadMyAvatarRequest) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error)
+	CreateMyMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
+	ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error)
+	DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedProfileServiceServer should be embedded to have
@@ -450,6 +489,15 @@ func (UnimplementedProfileServiceServer) DeleteMyAvatar(context.Context, *emptyp
 }
 func (UnimplementedProfileServiceServer) ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListProfilePosts not implemented")
+}
+func (UnimplementedProfileServiceServer) CreateMyMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateMyMeasurement not implemented")
+}
+func (UnimplementedProfileServiceServer) ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeasurements not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMyMeasurement not implemented")
 }
 func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
 
@@ -597,6 +645,60 @@ func _ProfileService_ListProfilePosts_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_CreateMyMeasurement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMeasurementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).CreateMyMeasurement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_CreateMyMeasurement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).CreateMyMeasurement(ctx, req.(*CreateMeasurementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_ListMeasurements_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeasurementsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).ListMeasurements(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_ListMeasurements_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).ListMeasurements(ctx, req.(*ListMeasurementsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteMyMeasurement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMeasurementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteMyMeasurement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteMyMeasurement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteMyMeasurement(ctx, req.(*DeleteMeasurementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -631,6 +733,18 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListProfilePosts",
 			Handler:    _ProfileService_ListProfilePosts_Handler,
+		},
+		{
+			MethodName: "CreateMyMeasurement",
+			Handler:    _ProfileService_CreateMyMeasurement_Handler,
+		},
+		{
+			MethodName: "ListMeasurements",
+			Handler:    _ProfileService_ListMeasurements_Handler,
+		},
+		{
+			MethodName: "DeleteMyMeasurement",
+			Handler:    _ProfileService_DeleteMyMeasurement_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

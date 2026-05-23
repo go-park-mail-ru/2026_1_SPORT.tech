@@ -9,11 +9,12 @@ import (
 )
 
 type Service struct {
-	profiles ProfileRepository
-	authors  AuthorRepository
-	avatars  AvatarRepository
-	sports   SportTypeRepository
-	storage  AvatarStorage
+	profiles     ProfileRepository
+	authors      AuthorRepository
+	avatars      AvatarRepository
+	sports       SportTypeRepository
+	measurements MeasurementRepository
+	storage      AvatarStorage
 }
 
 func NewService(
@@ -21,11 +22,12 @@ func NewService(
 	avatarStorage AvatarStorage,
 ) *Service {
 	return &Service{
-		profiles: repositories.Profiles,
-		authors:  repositories.Authors,
-		avatars:  repositories.Avatars,
-		sports:   repositories.Sports,
-		storage:  avatarStorage,
+		profiles:     repositories.Profiles,
+		authors:      repositories.Authors,
+		avatars:      repositories.Avatars,
+		sports:       repositories.Sports,
+		measurements: repositories.Measurements,
+		storage:      avatarStorage,
 	}
 }
 
@@ -160,6 +162,54 @@ func (service *Service) DeleteAvatar(ctx context.Context, userID int64) error {
 
 func (service *Service) ListSportTypes(ctx context.Context) ([]domain.SportType, error) {
 	return service.sports.ListSportTypes(ctx)
+}
+
+// ─── Measurements ────────────────────────────────────────────────────────────
+
+func (service *Service) CreateMeasurement(ctx context.Context, command CreateMeasurementCommand) (domain.Measurement, error) {
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.Measurement{}, err
+	}
+	measuredAt, err := parseMeasuredAt(command.MeasuredAt)
+	if err != nil {
+		return domain.Measurement{}, ErrInvalidMeasuredAt
+	}
+	if command.WeightKg == nil && command.BodyFatPct == nil &&
+		command.ChestCm == nil && command.WaistCm == nil && command.HipsCm == nil {
+		return domain.Measurement{}, ErrInvalidMeasurementData
+	}
+	m := domain.Measurement{
+		UserID:     command.UserID,
+		MeasuredAt: measuredAt,
+		WeightKg:   command.WeightKg,
+		BodyFatPct: command.BodyFatPct,
+		ChestCm:    command.ChestCm,
+		WaistCm:    command.WaistCm,
+		HipsCm:     command.HipsCm,
+		Notes:      command.Notes,
+	}
+	return service.measurements.CreateMeasurement(ctx, m)
+}
+
+func (service *Service) ListMeasurements(ctx context.Context, query ListMeasurementsQuery) ([]domain.Measurement, error) {
+	if err := validateUserID(query.UserID); err != nil {
+		return nil, err
+	}
+	limit := query.Limit
+	if limit <= 0 || limit > 200 {
+		limit = 100
+	}
+	if query.Offset < 0 {
+		query.Offset = 0
+	}
+	return service.measurements.ListMeasurements(ctx, query.UserID, limit, query.Offset)
+}
+
+func (service *Service) DeleteMeasurement(ctx context.Context, command DeleteMeasurementCommand) error {
+	if err := validateUserID(command.UserID); err != nil {
+		return err
+	}
+	return service.measurements.DeleteMeasurement(ctx, command.UserID, command.MeasurementID)
 }
 
 func buildProfile(command CreateProfileCommand) (domain.Profile, error) {

@@ -56,6 +56,10 @@ func validateUploadAvatarCommand(command UploadAvatarCommand) error {
 	return nil
 }
 
+func parseMeasuredAt(s string) (time.Time, error) {
+	return time.Parse("2006-01-02", s)
+}
+
 func validateProfile(profile domain.Profile) error {
 	if err := validateUserID(profile.UserID); err != nil {
 		return err

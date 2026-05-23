@@ -8,10 +8,11 @@ import (
 )
 
 type Repositories struct {
-	Profiles ProfileRepository
-	Authors  AuthorRepository
-	Avatars  AvatarRepository
-	Sports   SportTypeRepository
+	Profiles     ProfileRepository
+	Authors      AuthorRepository
+	Avatars      AvatarRepository
+	Sports       SportTypeRepository
+	Measurements MeasurementRepository
 }
 
 type ProfileRepository interface {
@@ -75,4 +76,32 @@ type UploadAvatarCommand struct {
 	FileName    string
 	ContentType string
 	Content     []byte
+}
+
+type MeasurementRepository interface {
+	CreateMeasurement(ctx context.Context, m domain.Measurement) (domain.Measurement, error)
+	ListMeasurements(ctx context.Context, userID int64, limit, offset int32) ([]domain.Measurement, error)
+	DeleteMeasurement(ctx context.Context, userID, measurementID int64) error
+}
+
+type CreateMeasurementCommand struct {
+	UserID     int64
+	MeasuredAt string // "YYYY-MM-DD"
+	WeightKg   *float64
+	BodyFatPct *float64
+	ChestCm    *int32
+	WaistCm    *int32
+	HipsCm     *int32
+	Notes      *string
+}
+
+type ListMeasurementsQuery struct {
+	UserID int64
+	Limit  int32
+	Offset int32
+}
+
+type DeleteMeasurementCommand struct {
+	UserID        int64
+	MeasurementID int64
 }

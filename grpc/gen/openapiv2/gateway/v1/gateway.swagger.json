@@ -228,6 +228,70 @@
         ]
       }
     },
+    "/v1/measurements": {
+      "post": {
+        "operationId": "ProfileService_CreateMyMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateMeasurementRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/measurements/{measurement_id}": {
+      "delete": {
+        "operationId": "ProfileService_DeleteMyMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/notifications": {
       "get": {
         "operationId": "NotificationService_ListMyNotifications",
@@ -896,6 +960,51 @@
         ],
         "tags": [
           "DonationService"
+        ]
+      }
+    },
+    "/v1/profiles/{user_id}/measurements": {
+      "get": {
+        "operationId": "ProfileService_ListMeasurements",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMeasurementsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProfileService"
         ]
       }
     },
@@ -1657,6 +1766,38 @@
         }
       }
     },
+    "v1CreateMeasurementRequest": {
+      "type": "object",
+      "properties": {
+        "measured_at": {
+          "type": "string",
+          "title": "\"YYYY-MM-DD\""
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
@@ -1769,6 +1910,18 @@
         }
       }
     },
+    "v1ListMeasurementsResponse": {
+      "type": "object",
+      "properties": {
+        "measurements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Measurement"
+          }
+        }
+      }
+    },
     "v1ListNotificationsResponse": {
       "type": "object",
       "properties": {
@@ -1823,6 +1976,62 @@
         },
         "password": {
           "type": "string"
+        }
+      }
+    },
+    "v1Measurement": {
+      "type": "object",
+      "properties": {
+        "measurement_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "measured_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeasurementResponse": {
+      "type": "object",
+      "properties": {
+        "measurement": {
+          "$ref": "#/definitions/v1Measurement"
         }
       }
     },

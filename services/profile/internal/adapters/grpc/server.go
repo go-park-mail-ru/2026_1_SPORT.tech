@@ -29,11 +29,18 @@ type SportUseCase interface {
 	ListSportTypes(ctx context.Context) ([]domain.SportType, error)
 }
 
+type MeasurementUseCase interface {
+	CreateMeasurement(ctx context.Context, command usecase.CreateMeasurementCommand) (domain.Measurement, error)
+	ListMeasurements(ctx context.Context, query usecase.ListMeasurementsQuery) ([]domain.Measurement, error)
+	DeleteMeasurement(ctx context.Context, command usecase.DeleteMeasurementCommand) error
+}
+
 type UseCases struct {
-	Profiles ProfileUseCase
-	Authors  AuthorUseCase
-	Avatars  AvatarUseCase
-	Sports   SportUseCase
+	Profiles     ProfileUseCase
+	Authors      AuthorUseCase
+	Avatars      AvatarUseCase
+	Sports       SportUseCase
+	Measurements MeasurementUseCase
 }
 
 type Server struct {
@@ -105,4 +112,34 @@ func (server *Server) ListSportTypes(ctx context.Context, request *emptypb.Empty
 	}
 
 	return mappers.NewListSportTypesResponse(sportTypes), nil
+}
+
+func (server *Server) CreateMeasurement(ctx context.Context, request *profilev1.CreateMeasurementRequest) (*profilev1.MeasurementResponse, error) {
+	m, err := server.useCases.Measurements.CreateMeasurement(ctx, mappers.CreateMeasurementRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.NewMeasurementResponse(m), nil
+}
+
+func (server *Server) ListMeasurements(ctx context.Context, request *profilev1.ListMeasurementsRequest) (*profilev1.ListMeasurementsResponse, error) {
+	measurements, err := server.useCases.Measurements.ListMeasurements(ctx, usecase.ListMeasurementsQuery{
+		UserID: request.GetUserId(),
+		Limit:  request.GetLimit(),
+		Offset: request.GetOffset(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.NewListMeasurementsResponse(measurements), nil
+}
+
+func (server *Server) DeleteMeasurement(ctx context.Context, request *profilev1.DeleteMeasurementRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Measurements.DeleteMeasurement(ctx, usecase.DeleteMeasurementCommand{
+		UserID:        request.GetUserId(),
+		MeasurementID: request.GetMeasurementId(),
+	}); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.Empty(), nil
 }

@@ -48,6 +48,21 @@ service ProfileService {
   rpc ListSportTypes(google.protobuf.Empty) returns (ListSportTypesResponse) {
     option (google.api.http).get = "/v1/sport-types";
   }
+
+  rpc CreateMeasurement(CreateMeasurementRequest) returns (MeasurementResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles/{user_id}/measurements"
+      body: "*"
+    };
+  }
+
+  rpc ListMeasurements(ListMeasurementsRequest) returns (ListMeasurementsResponse) {
+    option (google.api.http).get = "/v1/profiles/{user_id}/measurements";
+  }
+
+  rpc DeleteMeasurement(DeleteMeasurementRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/profiles/{user_id}/measurements/{measurement_id}";
+  }
 }
 
 message TrainerSport {
@@ -144,4 +159,48 @@ message DeleteAvatarRequest {
 
 message ListSportTypesResponse {
   repeated SportType sport_types = 1;
+}
+
+message Measurement {
+  int64 measurement_id = 1;
+  int64 user_id = 2;
+  google.protobuf.Timestamp measured_at = 3;
+  optional double weight_kg = 4;
+  optional double body_fat_pct = 5;
+  optional int32 chest_cm = 6;
+  optional int32 waist_cm = 7;
+  optional int32 hips_cm = 8;
+  optional string notes = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message MeasurementResponse {
+  Measurement measurement = 1;
+}
+
+message ListMeasurementsResponse {
+  repeated Measurement measurements = 1;
+}
+
+message CreateMeasurementRequest {
+  int64 user_id = 1;
+  string measured_at = 2; // "YYYY-MM-DD"
+  optional double weight_kg = 3;
+  optional double body_fat_pct = 4;
+  optional int32 chest_cm = 5;
+  optional int32 waist_cm = 6;
+  optional int32 hips_cm = 7;
+  optional string notes = 8;
+}
+
+message ListMeasurementsRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message DeleteMeasurementRequest {
+  int64 user_id = 1;
+  int64 measurement_id = 2;
 }
