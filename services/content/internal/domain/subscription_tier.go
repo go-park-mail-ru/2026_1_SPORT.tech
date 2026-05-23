@@ -8,6 +8,7 @@ type SubscriptionTier struct {
 	Name          string
 	Price         int32
 	Description   *string
+	ChatEnabled   bool
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

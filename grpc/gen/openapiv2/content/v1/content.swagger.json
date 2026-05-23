@@ -75,6 +75,78 @@
         ]
       }
     },
+    "/v1/chat/messages": {
+      "post": {
+        "operationId": "ContentService_SendChatMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ChatMessage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SendChatMessageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/chat/messages/{message_id}/read": {
+      "patch": {
+        "operationId": "ContentService_MarkChatMessageRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceMarkChatMessageReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/payments/donations": {
       "post": {
         "operationId": "ContentService_CreateDonationPayment",
@@ -1080,6 +1152,89 @@
         ]
       }
     },
+    "/v1/users/{user_id}/chat/conversations": {
+      "get": {
+        "operationId": "ContentService_ListChatConversations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChatConversationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{user_id}/chat/messages/{other_user_id}": {
+      "get": {
+        "operationId": "ContentService_ListChatMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChatMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "other_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/users/{user_id}/notifications": {
       "get": {
         "operationId": "ContentService_ListNotifications",
@@ -1213,6 +1368,9 @@
         },
         "description": {
           "type": "string"
+        },
+        "chat_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1245,6 +1403,15 @@
         "viewer_subscription_level": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ContentServiceMarkChatMessageReadBody": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1324,6 +1491,9 @@
         },
         "clear_description": {
           "type": "boolean"
+        },
+        "chat_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1368,6 +1538,49 @@
         },
         "currency": {
           "type": "string"
+        }
+      }
+    },
+    "v1ChatConversation": {
+      "type": "object",
+      "properties": {
+        "other_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "last_message": {
+          "$ref": "#/definitions/v1ChatMessage"
+        },
+        "unread_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1ChatMessage": {
+      "type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1570,6 +1783,30 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1PostSummary"
+          }
+        }
+      }
+    },
+    "v1ListChatConversationsResponse": {
+      "type": "object",
+      "properties": {
+        "conversations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatConversation"
+          }
+        }
+      }
+    },
+    "v1ListChatMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatMessage"
           }
         }
       }
@@ -2035,6 +2272,22 @@
         }
       }
     },
+    "v1SendChatMessageRequest": {
+      "type": "object",
+      "properties": {
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
     "v1Subscription": {
       "type": "object",
       "properties": {
@@ -2106,6 +2359,9 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "chat_enabled": {
+          "type": "boolean"
         }
       }
     },

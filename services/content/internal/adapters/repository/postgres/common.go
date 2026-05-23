@@ -47,6 +47,7 @@ func scanSubscriptionTier(scanner sqlScanner) (domain.SubscriptionTier, error) {
 		&tier.Name,
 		&tier.Price,
 		&description,
+		&tier.ChatEnabled,
 		&tier.CreatedAt,
 		&tier.UpdatedAt,
 	); err != nil {

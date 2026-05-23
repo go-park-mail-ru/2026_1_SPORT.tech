@@ -13,6 +13,7 @@ type Repositories struct {
 	Money         MonetizationRepository
 	Engagement    EngagementRepository
 	Notifications NotificationRepository
+	Chat          ChatRepository
 }
 
 type PostRepository interface {
@@ -61,6 +62,15 @@ type NotificationRepository interface {
 	MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
 }
 
+type ChatRepository interface {
+	HasActiveChatSubscription(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error)
+	IsTrainerOf(ctx context.Context, trainerUserID int64, clientUserID int64) (bool, error)
+	SaveChatMessage(ctx context.Context, msg domain.ChatMessage) (domain.ChatMessage, error)
+	ListChatMessages(ctx context.Context, userID int64, otherUserID int64, limit int32, offset int32) ([]domain.ChatMessage, error)
+	ListChatConversations(ctx context.Context, userID int64) ([]domain.ChatConversation, error)
+	MarkChatMessageRead(ctx context.Context, userID int64, messageID int64) error
+}
+
 type PostMediaStorage interface {
 	UploadPostMedia(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
 }
@@ -84,208 +94,4 @@ type PaymentProviderPayment struct {
 	ProviderPaymentID string
 	Status            string
 	ConfirmationURL   string
-}
-
-type PostBlockInput struct {
-	Kind        domain.BlockKind
-	TextContent *string
-	FileURL     *string
-}
-
-type ListAuthorPostsQuery struct {
-	AuthorUserID            int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-	Limit                   int32
-	Offset                  int32
-}
-
-const (
-	PostSortRecent  = "recent"
-	PostSortPopular = "popular"
-)
-
-type SearchPostsQuery struct {
-	Query                        string
-	AuthorUserIDs                []int64
-	SportTypeIDs                 []int64
-	BlockKinds                   []domain.BlockKind
-	MinRequiredSubscriptionLevel *int32
-	MaxRequiredSubscriptionLevel *int32
-	OnlyAvailable                bool
-	ViewerUserID                 int64
-	ViewerSubscriptionLevel      *int32
-	Limit                        int32
-	Offset                       int32
-	Sort                         string
-}
-
-type CreatePostCommand struct {
-	AuthorUserID              int64
-	Title                     string
-	RequiredSubscriptionLevel *int32
-	SportTypeID               *int64
-	Blocks                    []PostBlockInput
-}
-
-type UploadPostMediaCommand struct {
-	AuthorUserID int64
-	FileName     string
-	ContentType  string
-	Content      []byte
-}
-
-type GetPostQuery struct {
-	PostID                  int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-}
-
-type UpdatePostCommand struct {
-	PostID                         int64
-	AuthorUserID                   int64
-	Title                          *string
-	RequiredSubscriptionLevel      *int32
-	ClearRequiredSubscriptionLevel bool
-	SportTypeID                    *int64
-	ClearSportTypeID               bool
-	Blocks                         []PostBlockInput
-	ReplaceBlocks                  bool
-}
-
-type ListSubscriptionTiersQuery struct {
-	TrainerUserID int64
-}
-
-type CreateSubscriptionTierCommand struct {
-	TrainerUserID int64
-	Name          string
-	Price         int32
-	Description   *string
-}
-
-type UpdateSubscriptionTierCommand struct {
-	TrainerUserID    int64
-	TierID           int64
-	Name             *string
-	Price            *int32
-	Description      *string
-	ClearDescription bool
-}
-
-type DeleteSubscriptionTierCommand struct {
-	TrainerUserID int64
-	TierID        int64
-}
-
-type SubscribeToTrainerCommand struct {
-	ClientUserID  int64
-	TrainerUserID int64
-	TierID        int64
-}
-
-type ListMySubscriptionsQuery struct {
-	ClientUserID int64
-}
-
-type ListTrainerSubscribersQuery struct {
-	TrainerUserID int64
-	Limit         int32
-	Offset        int32
-}
-
-type UpdateSubscriptionCommand struct {
-	ClientUserID   int64
-	SubscriptionID int64
-	TierID         int64
-}
-
-type CancelSubscriptionCommand struct {
-	ClientUserID   int64
-	SubscriptionID int64
-}
-
-type DonateToProfileCommand struct {
-	SenderUserID    int64
-	RecipientUserID int64
-	AmountValue     int32
-	Currency        string
-	Message         *string
-}
-
-type CreateDonationPaymentCommand struct {
-	SenderUserID    int64
-	RecipientUserID int64
-	AmountValue     int32
-	Currency        string
-	Message         *string
-	ReturnURL       *string
-	CancelURL       *string
-}
-
-type CreateSubscriptionPaymentCommand struct {
-	ClientUserID  int64
-	TrainerUserID int64
-	TierID        int64
-	ReturnURL     *string
-	CancelURL     *string
-}
-
-type ConfirmDonationPaymentCommand struct {
-	SenderUserID      int64
-	PaymentID         int64
-	ConfirmationToken string
-}
-
-type GetBalanceQuery struct {
-	TrainerUserID int64
-	Currency      string
-}
-
-type GetTrainerStatisticsQuery struct {
-	TrainerUserID int64
-	Currency      string
-}
-
-type DeletePostCommand struct {
-	PostID       int64
-	AuthorUserID int64
-}
-
-type LikePostCommand struct {
-	PostID                  int64
-	UserID                  int64
-	ViewerSubscriptionLevel *int32
-}
-
-type CreateCommentCommand struct {
-	PostID                  int64
-	AuthorUserID            int64
-	ViewerSubscriptionLevel *int32
-	Body                    string
-}
-
-type ListCommentsQuery struct {
-	PostID                  int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-	Limit                   int32
-	Offset                  int32
-}
-
-type ListNotificationsQuery struct {
-	UserID int64
-	Limit  int32
-	Offset int32
-}
-
-type MarkNotificationReadCommand struct {
-	UserID         int64
-	NotificationID int64
-}
-
-type ListReceivedDonationsQuery struct {
-	TrainerUserID int64
-	Limit         int32
-	Offset        int32
 }

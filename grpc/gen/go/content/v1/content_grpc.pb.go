@@ -49,6 +49,10 @@ const (
 	ContentService_ListComments_FullMethodName              = "/sporttech.content.v1.ContentService/ListComments"
 	ContentService_ListNotifications_FullMethodName         = "/sporttech.content.v1.ContentService/ListNotifications"
 	ContentService_MarkNotificationRead_FullMethodName      = "/sporttech.content.v1.ContentService/MarkNotificationRead"
+	ContentService_SendChatMessage_FullMethodName           = "/sporttech.content.v1.ContentService/SendChatMessage"
+	ContentService_ListChatMessages_FullMethodName          = "/sporttech.content.v1.ContentService/ListChatMessages"
+	ContentService_ListChatConversations_FullMethodName     = "/sporttech.content.v1.ContentService/ListChatConversations"
+	ContentService_MarkChatMessageRead_FullMethodName       = "/sporttech.content.v1.ContentService/MarkChatMessageRead"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -84,6 +88,10 @@ type ContentServiceClient interface {
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
 	ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
 	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
+	SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error)
+	ListChatMessages(ctx context.Context, in *ListChatMessagesRequest, opts ...grpc.CallOption) (*ListChatMessagesResponse, error)
+	ListChatConversations(ctx context.Context, in *ListChatConversationsRequest, opts ...grpc.CallOption) (*ListChatConversationsResponse, error)
+	MarkChatMessageRead(ctx context.Context, in *MarkChatMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type contentServiceClient struct {
@@ -384,6 +392,46 @@ func (c *contentServiceClient) MarkNotificationRead(ctx context.Context, in *Mar
 	return out, nil
 }
 
+func (c *contentServiceClient) SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatMessage)
+	err := c.cc.Invoke(ctx, ContentService_SendChatMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListChatMessages(ctx context.Context, in *ListChatMessagesRequest, opts ...grpc.CallOption) (*ListChatMessagesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListChatMessagesResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListChatMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListChatConversations(ctx context.Context, in *ListChatConversationsRequest, opts ...grpc.CallOption) (*ListChatConversationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListChatConversationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListChatConversations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) MarkChatMessageRead(ctx context.Context, in *MarkChatMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_MarkChatMessageRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContentServiceServer is the server API for ContentService service.
 // All implementations should embed UnimplementedContentServiceServer
 // for forward compatibility.
@@ -417,6 +465,10 @@ type ContentServiceServer interface {
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
 	ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
 	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
+	SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error)
+	ListChatMessages(context.Context, *ListChatMessagesRequest) (*ListChatMessagesResponse, error)
+	ListChatConversations(context.Context, *ListChatConversationsRequest) (*ListChatConversationsResponse, error)
+	MarkChatMessageRead(context.Context, *MarkChatMessageReadRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedContentServiceServer should be embedded to have
@@ -512,6 +564,18 @@ func (UnimplementedContentServiceServer) ListNotifications(context.Context, *Lis
 }
 func (UnimplementedContentServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedContentServiceServer) SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendChatMessage not implemented")
+}
+func (UnimplementedContentServiceServer) ListChatMessages(context.Context, *ListChatMessagesRequest) (*ListChatMessagesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListChatMessages not implemented")
+}
+func (UnimplementedContentServiceServer) ListChatConversations(context.Context, *ListChatConversationsRequest) (*ListChatConversationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListChatConversations not implemented")
+}
+func (UnimplementedContentServiceServer) MarkChatMessageRead(context.Context, *MarkChatMessageReadRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkChatMessageRead not implemented")
 }
 func (UnimplementedContentServiceServer) testEmbeddedByValue() {}
 
@@ -1055,6 +1119,78 @@ func _ContentService_MarkNotificationRead_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_SendChatMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendChatMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SendChatMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_SendChatMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SendChatMessage(ctx, req.(*SendChatMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListChatMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListChatMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListChatMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListChatMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListChatMessages(ctx, req.(*ListChatMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListChatConversations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListChatConversationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListChatConversations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListChatConversations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListChatConversations(ctx, req.(*ListChatConversationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_MarkChatMessageRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkChatMessageReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).MarkChatMessageRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_MarkChatMessageRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).MarkChatMessageRead(ctx, req.(*MarkChatMessageReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1177,6 +1313,22 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarkNotificationRead",
 			Handler:    _ContentService_MarkNotificationRead_Handler,
+		},
+		{
+			MethodName: "SendChatMessage",
+			Handler:    _ContentService_SendChatMessage_Handler,
+		},
+		{
+			MethodName: "ListChatMessages",
+			Handler:    _ContentService_ListChatMessages_Handler,
+		},
+		{
+			MethodName: "ListChatConversations",
+			Handler:    _ContentService_ListChatConversations_Handler,
+		},
+		{
+			MethodName: "MarkChatMessageRead",
+			Handler:    _ContentService_MarkChatMessageRead_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

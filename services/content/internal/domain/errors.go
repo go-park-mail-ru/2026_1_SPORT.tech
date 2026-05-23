@@ -17,4 +17,6 @@ var (
 	ErrNotificationNotFound     = errors.New("notification not found")
 	ErrInvalidBlockKind         = errors.New("invalid block kind")
 	ErrInvalidBlockData         = errors.New("invalid block data")
+	ErrChatAccessForbidden      = errors.New("chat access forbidden: no active chat-enabled subscription")
+	ErrChatMessageNotFound      = errors.New("chat message not found")
 )

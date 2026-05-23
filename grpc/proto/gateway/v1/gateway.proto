@@ -289,6 +289,30 @@ service NotificationService {
   }
 }
 
+service ChatService {
+  rpc SendMessage(SendMessageRequest) returns (ChatMessage) {
+    option (google.api.http) = {
+      post: "/v1/chat/messages"
+      body: "*"
+    };
+  }
+
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http).get = "/v1/chat/messages/{other_user_id}";
+  }
+
+  rpc ListConversations(google.protobuf.Empty) returns (ListConversationsResponse) {
+    option (google.api.http).get = "/v1/chat/conversations";
+  }
+
+  rpc MarkMessageRead(MarkMessageReadRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/v1/chat/messages/{message_id}/read"
+      body: "*"
+    };
+  }
+}
+
 message ValidationErrorField {
   string field = 1;
   string message = 2;
@@ -578,6 +602,7 @@ message Tier {
   optional string description = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
+  bool chat_enabled = 7;
 }
 
 message TiersResponse {
@@ -588,6 +613,7 @@ message CreateTierRequest {
   string name = 1;
   int32 price = 2;
   optional string description = 3;
+  bool chat_enabled = 4;
 }
 
 message UpdateTierRequest {
@@ -596,6 +622,7 @@ message UpdateTierRequest {
   optional int32 price = 3;
   optional string description = 4;
   bool clear_description = 5;
+  optional bool chat_enabled = 6;
 }
 
 message DeleteTierRequest {
@@ -840,4 +867,42 @@ message ListDonationsRequest {
 message ListDonationsResponse {
   repeated DonationItem donations = 1;
   int32 total = 2;
+}
+
+message ChatMessage {
+  int64 message_id = 1;
+  int64 sender_user_id = 2;
+  int64 receiver_user_id = 3;
+  string body = 4;
+  bool is_read = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ChatConversation {
+  int64 other_user_id = 1;
+  ChatMessage last_message = 2;
+  int32 unread_count = 3;
+}
+
+message SendMessageRequest {
+  int64 receiver_user_id = 1;
+  string body = 2;
+}
+
+message ListMessagesRequest {
+  int64 other_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListMessagesResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message ListConversationsResponse {
+  repeated ChatConversation conversations = 1;
+}
+
+message MarkMessageReadRequest {
+  int64 message_id = 1;
 }

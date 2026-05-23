@@ -169,6 +169,28 @@ service ContentService {
       body: "*"
     };
   }
+
+  rpc SendChatMessage(SendChatMessageRequest) returns (ChatMessage) {
+    option (google.api.http) = {
+      post: "/v1/chat/messages"
+      body: "*"
+    };
+  }
+
+  rpc ListChatMessages(ListChatMessagesRequest) returns (ListChatMessagesResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/chat/messages/{other_user_id}";
+  }
+
+  rpc ListChatConversations(ListChatConversationsRequest) returns (ListChatConversationsResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/chat/conversations";
+  }
+
+  rpc MarkChatMessageRead(MarkChatMessageReadRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/v1/chat/messages/{message_id}/read"
+      body: "*"
+    };
+  }
 }
 
 enum ContentBlockKind {
@@ -333,6 +355,7 @@ message SubscriptionTier {
   optional string description = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+  bool chat_enabled = 8;
 }
 
 message ListSubscriptionTiersRequest {
@@ -348,6 +371,7 @@ message CreateSubscriptionTierRequest {
   string name = 2;
   int32 price = 3;
   optional string description = 4;
+  bool chat_enabled = 5;
 }
 
 message UpdateSubscriptionTierRequest {
@@ -357,6 +381,7 @@ message UpdateSubscriptionTierRequest {
   optional int32 price = 4;
   optional string description = 5;
   bool clear_description = 6;
+  optional bool chat_enabled = 7;
 }
 
 message DeleteSubscriptionTierRequest {
@@ -572,6 +597,51 @@ message NotificationResponse {
 
 message ListNotificationsResponse {
   repeated Notification notifications = 1;
+}
+
+message ChatMessage {
+  int64 message_id = 1;
+  int64 sender_user_id = 2;
+  int64 receiver_user_id = 3;
+  string body = 4;
+  bool is_read = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ChatConversation {
+  int64 other_user_id = 1;
+  ChatMessage last_message = 2;
+  int32 unread_count = 3;
+}
+
+message SendChatMessageRequest {
+  int64 sender_user_id = 1;
+  int64 receiver_user_id = 2;
+  string body = 3;
+}
+
+message ListChatMessagesRequest {
+  int64 user_id = 1;
+  int64 other_user_id = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListChatMessagesResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message ListChatConversationsRequest {
+  int64 user_id = 1;
+}
+
+message ListChatConversationsResponse {
+  repeated ChatConversation conversations = 1;
+}
+
+message MarkChatMessageReadRequest {
+  int64 user_id = 1;
+  int64 message_id = 2;
 }
 
 message DonationRecord {

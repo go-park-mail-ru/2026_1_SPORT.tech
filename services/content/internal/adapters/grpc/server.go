@@ -8,7 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/mappers"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type PostUseCase interface {
@@ -61,6 +60,13 @@ type NotificationUseCase interface {
 	MarkNotificationRead(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
 }
 
+type ChatUseCase interface {
+	SendChatMessage(ctx context.Context, command usecase.SendChatMessageCommand) (domain.ChatMessage, error)
+	ListChatMessages(ctx context.Context, query usecase.ListChatMessagesQuery) ([]domain.ChatMessage, error)
+	ListChatConversations(ctx context.Context, query usecase.ListChatConversationsQuery) ([]domain.ChatConversation, error)
+	MarkChatMessageRead(ctx context.Context, command usecase.MarkChatMessageReadCommand) error
+}
+
 type UseCases struct {
 	Posts         PostUseCase
 	PostMedia     PostMediaUseCase
@@ -69,6 +75,7 @@ type UseCases struct {
 	Comments      CommentUseCase
 	Donations     DonationUseCase
 	Notifications NotificationUseCase
+	Chat          ChatUseCase
 }
 
 type Server struct {
@@ -89,284 +96,4 @@ func NewServer(useCases UseCases, loggers ...*slog.Logger) *Server {
 func (server *Server) statusError(method string, err error) error {
 	server.logger.Error("content grpc method failed", "method", method, "error", err)
 	return mappers.ErrorToStatus(err)
-}
-
-func (server *Server) ListAuthorPosts(ctx context.Context, request *contentv1.ListAuthorPostsRequest) (*contentv1.ListAuthorPostsResponse, error) {
-	posts, err := server.useCases.Posts.ListAuthorPosts(ctx, mappers.ListAuthorPostsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListAuthorPostsResponse(posts), nil
-}
-
-func (server *Server) SearchPosts(ctx context.Context, request *contentv1.SearchPostsRequest) (*contentv1.SearchPostsResponse, error) {
-	posts, err := server.useCases.Posts.SearchPosts(ctx, mappers.SearchPostsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewSearchPostsResponse(posts), nil
-}
-
-func (server *Server) CreatePost(ctx context.Context, request *contentv1.CreatePostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.useCases.Posts.CreatePost(ctx, mappers.CreatePostRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostResponse(post), nil
-}
-
-func (server *Server) UploadPostMedia(ctx context.Context, request *contentv1.UploadPostMediaRequest) (*contentv1.PostMediaResponse, error) {
-	media, err := server.useCases.PostMedia.UploadPostMedia(ctx, mappers.UploadPostMediaRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostMediaResponse(media), nil
-}
-
-func (server *Server) GetPost(ctx context.Context, request *contentv1.GetPostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.useCases.Posts.GetPost(ctx, mappers.GetPostRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostResponse(post), nil
-}
-
-func (server *Server) UpdatePost(ctx context.Context, request *contentv1.UpdatePostRequest) (*contentv1.PostResponse, error) {
-	post, err := server.useCases.Posts.UpdatePost(ctx, mappers.UpdatePostRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostResponse(post), nil
-}
-
-func (server *Server) DeletePost(ctx context.Context, request *contentv1.DeletePostRequest) (*emptypb.Empty, error) {
-	if err := server.useCases.Posts.DeletePost(ctx, mappers.DeletePostRequestToCommand(request)); err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.Empty(), nil
-}
-
-func (server *Server) ListSubscriptionTiers(ctx context.Context, request *contentv1.ListSubscriptionTiersRequest) (*contentv1.ListSubscriptionTiersResponse, error) {
-	tiers, err := server.useCases.Tiers.ListSubscriptionTiers(ctx, mappers.ListSubscriptionTiersRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListSubscriptionTiersResponse(tiers), nil
-}
-
-func (server *Server) CreateSubscriptionTier(ctx context.Context, request *contentv1.CreateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
-	tier, err := server.useCases.Tiers.CreateSubscriptionTier(ctx, mappers.CreateSubscriptionTierRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewSubscriptionTierResponse(tier), nil
-}
-
-func (server *Server) UpdateSubscriptionTier(ctx context.Context, request *contentv1.UpdateSubscriptionTierRequest) (*contentv1.SubscriptionTier, error) {
-	tier, err := server.useCases.Tiers.UpdateSubscriptionTier(ctx, mappers.UpdateSubscriptionTierRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewSubscriptionTierResponse(tier), nil
-}
-
-func (server *Server) DeleteSubscriptionTier(ctx context.Context, request *contentv1.DeleteSubscriptionTierRequest) (*emptypb.Empty, error) {
-	if err := server.useCases.Tiers.DeleteSubscriptionTier(ctx, mappers.DeleteSubscriptionTierRequestToCommand(request)); err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.Empty(), nil
-}
-
-func (server *Server) SubscribeToTrainer(ctx context.Context, request *contentv1.SubscribeToTrainerRequest) (*contentv1.Subscription, error) {
-	subscription, err := server.useCases.Subscriptions.SubscribeToTrainer(ctx, mappers.SubscribeToTrainerRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewSubscriptionResponse(subscription), nil
-}
-
-func (server *Server) ListMySubscriptions(ctx context.Context, request *contentv1.ListMySubscriptionsRequest) (*contentv1.ListMySubscriptionsResponse, error) {
-	subscriptions, err := server.useCases.Subscriptions.ListMySubscriptions(ctx, mappers.ListMySubscriptionsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListMySubscriptionsResponse(subscriptions), nil
-}
-
-func (server *Server) ListTrainerSubscribers(ctx context.Context, request *contentv1.ListTrainerSubscribersRequest) (*contentv1.ListTrainerSubscribersResponse, error) {
-	subscribers, err := server.useCases.Subscriptions.ListTrainerSubscribers(ctx, mappers.ListTrainerSubscribersRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListTrainerSubscribersResponse(subscribers), nil
-}
-
-func (server *Server) UpdateSubscription(ctx context.Context, request *contentv1.UpdateSubscriptionRequest) (*contentv1.Subscription, error) {
-	subscription, err := server.useCases.Subscriptions.UpdateSubscription(ctx, mappers.UpdateSubscriptionRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewSubscriptionResponse(subscription), nil
-}
-
-func (server *Server) CancelSubscription(ctx context.Context, request *contentv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {
-	if err := server.useCases.Subscriptions.CancelSubscription(ctx, mappers.CancelSubscriptionRequestToCommand(request)); err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.Empty(), nil
-}
-
-func (server *Server) DonateToProfile(ctx context.Context, request *contentv1.DonateToProfileRequest) (*contentv1.DonationResponse, error) {
-	donation, err := server.useCases.Donations.DonateToProfile(ctx, mappers.DonateToProfileRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewDonationResponse(donation), nil
-}
-
-func (server *Server) CreateDonationPayment(ctx context.Context, request *contentv1.CreateDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
-	payment, err := server.useCases.Donations.CreateDonationPayment(ctx, mappers.CreateDonationPaymentRequestToCommand(request))
-	if err != nil {
-		return nil, server.statusError("CreateDonationPayment", err)
-	}
-
-	return mappers.NewPaymentResponse(payment), nil
-}
-
-func (server *Server) CreateSubscriptionPayment(ctx context.Context, request *contentv1.CreateSubscriptionPaymentRequest) (*contentv1.PaymentResponse, error) {
-	payment, err := server.useCases.Donations.CreateSubscriptionPayment(ctx, mappers.CreateSubscriptionPaymentRequestToCommand(request))
-	if err != nil {
-		return nil, server.statusError("CreateSubscriptionPayment", err)
-	}
-
-	return mappers.NewPaymentResponse(payment), nil
-}
-
-func (server *Server) ConfirmDonationPayment(ctx context.Context, request *contentv1.ConfirmDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
-	payment, err := server.useCases.Donations.ConfirmDonationPayment(ctx, mappers.ConfirmDonationPaymentRequestToCommand(request))
-	if err != nil {
-		return nil, server.statusError("ConfirmDonationPayment", err)
-	}
-
-	return mappers.NewPaymentResponse(payment), nil
-}
-
-func (server *Server) GetBalance(ctx context.Context, request *contentv1.GetBalanceRequest) (*contentv1.BalanceResponse, error) {
-	balance, err := server.useCases.Donations.GetBalance(ctx, mappers.GetBalanceRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewBalanceResponse(balance), nil
-}
-
-func (server *Server) GetTrainerStatistics(ctx context.Context, request *contentv1.GetTrainerStatisticsRequest) (*contentv1.TrainerStatisticsResponse, error) {
-	statistics, err := server.useCases.Donations.GetTrainerStatistics(ctx, mappers.GetTrainerStatisticsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewTrainerStatisticsResponse(statistics), nil
-}
-
-func (server *Server) LikePost(ctx context.Context, request *contentv1.LikePostRequest) (*contentv1.PostLikeStateResponse, error) {
-	state, err := server.useCases.Posts.LikePost(ctx, mappers.LikePostRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostLikeStateResponse(state), nil
-}
-
-func (server *Server) UnlikePost(ctx context.Context, request *contentv1.UnlikePostRequest) (*contentv1.PostLikeStateResponse, error) {
-	state, err := server.useCases.Posts.UnlikePost(ctx, mappers.UnlikePostRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewPostLikeStateResponse(state), nil
-}
-
-func (server *Server) CreateComment(ctx context.Context, request *contentv1.CreateCommentRequest) (*contentv1.CommentResponse, error) {
-	comment, err := server.useCases.Comments.CreateComment(ctx, mappers.CreateCommentRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewCommentResponse(comment), nil
-}
-
-func (server *Server) ListComments(ctx context.Context, request *contentv1.ListCommentsRequest) (*contentv1.ListCommentsResponse, error) {
-	comments, err := server.useCases.Comments.ListComments(ctx, mappers.ListCommentsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListCommentsResponse(comments), nil
-}
-
-func (server *Server) ListNotifications(ctx context.Context, request *contentv1.ListNotificationsRequest) (*contentv1.ListNotificationsResponse, error) {
-	notifications, err := server.useCases.Notifications.ListNotifications(ctx, mappers.ListNotificationsRequestToQuery(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewListNotificationsResponse(notifications), nil
-}
-
-func (server *Server) MarkNotificationRead(ctx context.Context, request *contentv1.MarkNotificationReadRequest) (*contentv1.NotificationResponse, error) {
-	notification, err := server.useCases.Notifications.MarkNotificationRead(ctx, mappers.MarkNotificationReadRequestToCommand(request))
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	return mappers.NewNotificationResponse(notification), nil
-}
-
-func (server *Server) ListReceivedDonations(ctx context.Context, request *contentv1.ListReceivedDonationsRequest) (*contentv1.ListReceivedDonationsResponse, error) {
-	donations, total, err := server.useCases.Donations.ListReceivedDonations(ctx, usecase.ListReceivedDonationsQuery{
-		TrainerUserID: request.GetTrainerUserId(),
-		Limit:         request.GetLimit(),
-		Offset:        request.GetOffset(),
-	})
-	if err != nil {
-		return nil, mappers.ErrorToStatus(err)
-	}
-
-	records := make([]*contentv1.DonationRecord, 0, len(donations))
-	for _, d := range donations {
-		rec := &contentv1.DonationRecord{
-			DonationId:   d.DonationID,
-			SenderUserId: d.SenderUserID,
-			AmountValue:  d.AmountValue,
-			Currency:     d.Currency,
-			CreatedAt:    d.CreatedAt.Format("2006-01-02T15:04:05Z"),
-		}
-		if d.Message != nil {
-			rec.Message = d.Message
-		}
-		records = append(records, rec)
-	}
-
-	return &contentv1.ListReceivedDonationsResponse{
-		Donations: records,
-		Total:     total,
-	}, nil
 }
