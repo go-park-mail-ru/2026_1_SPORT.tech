@@ -611,13 +611,20 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 	if command.TierID <= 0 {
 		return domain.DonationPayment{}, ErrInvalidSubscriptionTierID
 	}
-	if service.paymentProvider == nil {
-		return domain.DonationPayment{}, ErrPaymentProviderUnavailable
-	}
 
 	tier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 	if err != nil {
 		return domain.DonationPayment{}, err
+	}
+
+	// Бесплатный уровень оформляем сразу, без платёжного провайдера
+	// (провайдер не умеет создавать платёж на 0).
+	if tier.Price == 0 {
+		return service.createFreeSubscription(ctx, command, tier.TierID)
+	}
+
+	if service.paymentProvider == nil {
+		return domain.DonationPayment{}, ErrPaymentProviderUnavailable
 	}
 
 	confirmationToken, err := randomToken("confirm")
@@ -653,6 +660,27 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 	}
 
 	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
+}
+
+func (service *Service) createFreeSubscription(ctx context.Context, command CreateSubscriptionPaymentCommand, tierID int64) (domain.DonationPayment, error) {
+	subscription, err := service.createPaidSubscription(ctx, SubscribeToTrainerCommand{
+		ClientUserID:  command.ClientUserID,
+		TrainerUserID: command.TrainerUserID,
+		TierID:        command.TierID,
+	})
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	return domain.DonationPayment{
+		Status:          domain.PaymentStatusConfirmed,
+		SenderUserID:    command.ClientUserID,
+		RecipientUserID: command.TrainerUserID,
+		AmountValue:     0,
+		Currency:        "RUB",
+		TierID:          &tierID,
+		Subscription:    &subscription,
+	}, nil
 }
 
 func (service *Service) ConfirmDonationPayment(ctx context.Context, command ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {
