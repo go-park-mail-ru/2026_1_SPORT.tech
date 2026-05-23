@@ -166,8 +166,6 @@ func (service *Service) ListSportTypes(ctx context.Context) ([]domain.SportType,
 	return service.sports.ListSportTypes(ctx)
 }
 
-// ─── Measurements ────────────────────────────────────────────────────────────
-
 func (service *Service) CreateMeasurement(ctx context.Context, command CreateMeasurementCommand) (domain.Measurement, error) {
 	if err := validateUserID(command.UserID); err != nil {
 		return domain.Measurement{}, err
@@ -205,7 +203,6 @@ func (service *Service) ListMeasurements(ctx context.Context, query ListMeasurem
 		query.Offset = 0
 	}
 
-	// Проверяем доступ, если запрашивает не сам пользователь.
 	viewerID := query.ViewerUserID
 	if viewerID != 0 && viewerID != query.UserID && service.measurementSharing != nil {
 		allowed, err := service.measurementSharing.HasAccess(ctx, query.UserID, viewerID)
@@ -227,13 +224,10 @@ func (service *Service) DeleteMeasurement(ctx context.Context, command DeleteMea
 	return service.measurements.DeleteMeasurement(ctx, command.UserID, command.MeasurementID)
 }
 
-// ─── Measurement Sharing ─────────────────────────────────────────────────────
-
 func (service *Service) SetMeasurementSharing(ctx context.Context, cmd SetMeasurementSharingCommand) error {
 	if err := validateUserID(cmd.ClientUserID); err != nil {
 		return err
 	}
-	// Убираем дубли и невалидные ID
 	seen := make(map[int64]struct{}, len(cmd.TrainerUserIDs))
 	unique := cmd.TrainerUserIDs[:0]
 	for _, id := range cmd.TrainerUserIDs {

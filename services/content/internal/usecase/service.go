@@ -617,8 +617,6 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 		return domain.DonationPayment{}, err
 	}
 
-	// Бесплатный уровень оформляем сразу, без платёжного провайдера
-	// (провайдер не умеет создавать платёж на 0).
 	if tier.Price == 0 {
 		return service.createFreeSubscription(ctx, command, tier.TierID)
 	}
@@ -741,6 +739,29 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 	}
 
 	return payment, nil
+}
+
+func (service *Service) ListReceivedDonations(ctx context.Context, query ListReceivedDonationsQuery) ([]domain.Donation, int32, error) {
+	if query.TrainerUserID <= 0 {
+		return nil, 0, ErrInvalidUserID
+	}
+	limit := query.Limit
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+	offset := query.Offset
+	if offset < 0 {
+		offset = 0
+	}
+	donations, err := service.money.ListReceivedDonations(ctx, query.TrainerUserID, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	total, err := service.money.CountReceivedDonations(ctx, query.TrainerUserID)
+	if err != nil {
+		return nil, 0, err
+	}
+	return donations, total, nil
 }
 
 func (service *Service) GetBalance(ctx context.Context, query GetBalanceQuery) (domain.Balance, error) {

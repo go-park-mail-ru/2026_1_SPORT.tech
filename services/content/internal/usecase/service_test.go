@@ -222,6 +222,14 @@ func (repository stubContentRepository) GetTrainerStatistics(ctx context.Context
 	return repository.getStatisticsFunc(ctx, trainerUserID, currency, monthStart)
 }
 
+func (repository stubContentRepository) ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error) {
+	return nil, nil
+}
+
+func (repository stubContentRepository) CountReceivedDonations(ctx context.Context, recipientUserID int64) (int32, error) {
+	return 0, nil
+}
+
 func (repository stubContentRepository) CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
 	if repository.createNotificationFunc == nil {
 		return notification, nil

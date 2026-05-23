@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-// MeasurementSharingRepository хранит информацию о том, каким тренерам
-// клиент разрешил видеть свои замеры.
 type MeasurementSharingRepository struct {
 	db *sql.DB
 }
@@ -16,8 +14,6 @@ func NewMeasurementSharingRepository(db *sql.DB) *MeasurementSharingRepository {
 	return &MeasurementSharingRepository{db: db}
 }
 
-// SetSharing заменяет текущий список разрешённых тренеров для clientUserID
-// на переданный trainerUserIDs. Операция атомарна (DELETE + INSERT в транзакции).
 func (r *MeasurementSharingRepository) SetSharing(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -46,7 +42,6 @@ func (r *MeasurementSharingRepository) SetSharing(ctx context.Context, clientUse
 	return tx.Commit()
 }
 
-// GetSharing возвращает список trainer_user_id, которым clientUserID разрешил доступ.
 func (r *MeasurementSharingRepository) GetSharing(ctx context.Context, clientUserID int64) ([]int64, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT trainer_user_id FROM measurement_sharing WHERE client_user_id = $1 ORDER BY created_at`,
@@ -68,7 +63,6 @@ func (r *MeasurementSharingRepository) GetSharing(ctx context.Context, clientUse
 	return ids, rows.Err()
 }
 
-// HasAccess проверяет, разрешил ли clientUserID просматривать свои замеры трейнеру trainerUserID.
 func (r *MeasurementSharingRepository) HasAccess(ctx context.Context, clientUserID, trainerUserID int64) (bool, error) {
 	var exists bool
 	err := r.db.QueryRowContext(ctx,

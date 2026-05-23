@@ -133,6 +133,10 @@ service ContentService {
     option (google.api.http).get = "/v1/users/{trainer_user_id}/statistics";
   }
 
+  rpc ListReceivedDonations(ListReceivedDonationsRequest) returns (ListReceivedDonationsResponse) {
+    option (google.api.http).get = "/v1/users/{trainer_user_id}/donations/received";
+  }
+
   rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
     option (google.api.http) = {
       post: "/v1/posts/{post_id}/likes"
@@ -568,4 +572,24 @@ message NotificationResponse {
 
 message ListNotificationsResponse {
   repeated Notification notifications = 1;
+}
+
+message DonationRecord {
+  int64 donation_id = 1;
+  int64 sender_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+  string created_at = 6;
+}
+
+message ListReceivedDonationsRequest {
+  int64 trainer_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListReceivedDonationsResponse {
+  repeated DonationRecord donations = 1;
+  int32 total = 2;
 }

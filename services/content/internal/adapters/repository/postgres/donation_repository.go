@@ -629,3 +629,42 @@ func (repository *Repository) GetTrainerStatistics(ctx context.Context, trainerU
 
 	return statistics, nil
 }
+
+func (repository *Repository) ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error) {
+	const query = `
+		SELECT donation_id, sender_user_id, recipient_user_id, amount_value, currency, message, created_at
+		FROM content_donation
+		WHERE recipient_user_id = $1
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3
+	`
+	rows, err := repository.db.QueryContext(ctx, query, recipientUserID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []domain.Donation
+	for rows.Next() {
+		var d domain.Donation
+		var msg sql.NullString
+		if err := rows.Scan(&d.DonationID, &d.SenderUserID, &d.RecipientUserID,
+			&d.AmountValue, &d.Currency, &msg, &d.CreatedAt); err != nil {
+			return nil, err
+		}
+		if msg.Valid {
+			d.Message = &msg.String
+		}
+		result = append(result, d)
+	}
+	return result, rows.Err()
+}
+
+func (repository *Repository) CountReceivedDonations(ctx context.Context, recipientUserID int64) (int32, error) {
+	var count int32
+	const query = `SELECT COUNT(*)::int FROM content_donation WHERE recipient_user_id = $1`
+	if err := repository.db.QueryRowContext(ctx, query, recipientUserID).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

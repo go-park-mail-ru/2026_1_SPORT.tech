@@ -1878,8 +1878,9 @@ var SportService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	DonationService_DonateToProfile_FullMethodName = "/sporttech.gateway.v1.DonationService/DonateToProfile"
-	DonationService_GetMyBalance_FullMethodName    = "/sporttech.gateway.v1.DonationService/GetMyBalance"
+	DonationService_DonateToProfile_FullMethodName         = "/sporttech.gateway.v1.DonationService/DonateToProfile"
+	DonationService_GetMyBalance_FullMethodName            = "/sporttech.gateway.v1.DonationService/GetMyBalance"
+	DonationService_ListMyReceivedDonations_FullMethodName = "/sporttech.gateway.v1.DonationService/ListMyReceivedDonations"
 )
 
 // DonationServiceClient is the client API for DonationService service.
@@ -1888,6 +1889,8 @@ const (
 type DonationServiceClient interface {
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
 	GetMyBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BalanceResponse, error)
+	// История полученных донатов (для тренера).
+	ListMyReceivedDonations(ctx context.Context, in *ListDonationsRequest, opts ...grpc.CallOption) (*ListDonationsResponse, error)
 }
 
 type donationServiceClient struct {
@@ -1918,12 +1921,24 @@ func (c *donationServiceClient) GetMyBalance(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
+func (c *donationServiceClient) ListMyReceivedDonations(ctx context.Context, in *ListDonationsRequest, opts ...grpc.CallOption) (*ListDonationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListDonationsResponse)
+	err := c.cc.Invoke(ctx, DonationService_ListMyReceivedDonations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DonationServiceServer is the server API for DonationService service.
 // All implementations should embed UnimplementedDonationServiceServer
 // for forward compatibility.
 type DonationServiceServer interface {
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
 	GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error)
+	// История полученных донатов (для тренера).
+	ListMyReceivedDonations(context.Context, *ListDonationsRequest) (*ListDonationsResponse, error)
 }
 
 // UnimplementedDonationServiceServer should be embedded to have
@@ -1938,6 +1953,9 @@ func (UnimplementedDonationServiceServer) DonateToProfile(context.Context, *Dona
 }
 func (UnimplementedDonationServiceServer) GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyBalance not implemented")
+}
+func (UnimplementedDonationServiceServer) ListMyReceivedDonations(context.Context, *ListDonationsRequest) (*ListDonationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyReceivedDonations not implemented")
 }
 func (UnimplementedDonationServiceServer) testEmbeddedByValue() {}
 
@@ -1995,6 +2013,24 @@ func _DonationService_GetMyBalance_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DonationService_ListMyReceivedDonations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDonationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DonationServiceServer).ListMyReceivedDonations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DonationService_ListMyReceivedDonations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DonationServiceServer).ListMyReceivedDonations(ctx, req.(*ListDonationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DonationService_ServiceDesc is the grpc.ServiceDesc for DonationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2009,6 +2045,10 @@ var DonationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMyBalance",
 			Handler:    _DonationService_GetMyBalance_Handler,
+		},
+		{
+			MethodName: "ListMyReceivedDonations",
+			Handler:    _DonationService_ListMyReceivedDonations_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

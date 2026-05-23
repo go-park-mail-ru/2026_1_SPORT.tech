@@ -200,3 +200,7 @@ func (mock ContentUseCase) MarkNotificationRead(ctx context.Context, command use
 	}
 	return mock.MarkNotificationFunc(ctx, command)
 }
+
+func (mock ContentUseCase) ListReceivedDonations(ctx context.Context, query usecase.ListReceivedDonationsQuery) ([]domain.Donation, int32, error) {
+	return nil, 0, nil
+}

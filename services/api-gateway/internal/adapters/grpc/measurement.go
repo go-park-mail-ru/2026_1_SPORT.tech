@@ -52,7 +52,6 @@ func (server *Server) ListMeasurements(ctx context.Context, request *gatewayv1.L
 		userID = viewerID
 	}
 
-	// Если смотрим свой профиль, viewer = 0 (без ограничений).
 	passViewerID := viewerID
 	if viewerID == userID {
 		passViewerID = 0
@@ -142,8 +141,6 @@ func (server *Server) DeleteMyMeasurement(ctx context.Context, request *gatewayv
 	}
 	return &emptypb.Empty{}, nil
 }
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
 
 func measurementFromProfile(m *profilev1.Measurement) *gatewayv1.Measurement {
 	if m == nil {

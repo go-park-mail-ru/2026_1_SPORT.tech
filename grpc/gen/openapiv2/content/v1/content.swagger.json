@@ -998,6 +998,51 @@
         ]
       }
     },
+    "/v1/users/{trainer_user_id}/donations/received": {
+      "get": {
+        "operationId": "ContentService_ListReceivedDonations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListReceivedDonationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/users/{trainer_user_id}/statistics": {
       "get": {
         "operationId": "ContentService_GetTrainerStatistics",
@@ -1483,6 +1528,32 @@
         }
       }
     },
+    "v1DonationRecord": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        }
+      }
+    },
     "v1DonationResponse": {
       "type": "object",
       "properties": {
@@ -1536,6 +1607,22 @@
             "type": "object",
             "$ref": "#/definitions/v1Notification"
           }
+        }
+      }
+    },
+    "v1ListReceivedDonationsResponse": {
+      "type": "object",
+      "properties": {
+        "donations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1DonationRecord"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

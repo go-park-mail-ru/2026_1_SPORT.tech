@@ -53,6 +53,7 @@ type DonationUseCase interface {
 	ConfirmDonationPayment(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error)
 	GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
+	ListReceivedDonations(ctx context.Context, query usecase.ListReceivedDonationsQuery) ([]domain.Donation, int32, error)
 }
 
 type NotificationUseCase interface {
@@ -337,4 +338,35 @@ func (server *Server) MarkNotificationRead(ctx context.Context, request *content
 	}
 
 	return mappers.NewNotificationResponse(notification), nil
+}
+
+func (server *Server) ListReceivedDonations(ctx context.Context, request *contentv1.ListReceivedDonationsRequest) (*contentv1.ListReceivedDonationsResponse, error) {
+	donations, total, err := server.useCases.Donations.ListReceivedDonations(ctx, usecase.ListReceivedDonationsQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+		Limit:         request.GetLimit(),
+		Offset:        request.GetOffset(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	records := make([]*contentv1.DonationRecord, 0, len(donations))
+	for _, d := range donations {
+		rec := &contentv1.DonationRecord{
+			DonationId:   d.DonationID,
+			SenderUserId: d.SenderUserID,
+			AmountValue:  d.AmountValue,
+			Currency:     d.Currency,
+			CreatedAt:    d.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		}
+		if d.Message != nil {
+			rec.Message = d.Message
+		}
+		records = append(records, rec)
+	}
+
+	return &contentv1.ListReceivedDonationsResponse{
+		Donations: records,
+		Total:     total,
+	}, nil
 }

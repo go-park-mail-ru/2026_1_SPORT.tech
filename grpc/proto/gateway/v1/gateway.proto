@@ -240,6 +240,11 @@ service DonationService {
   rpc GetMyBalance(google.protobuf.Empty) returns (BalanceResponse) {
     option (google.api.http).get = "/v1/balance";
   }
+
+  // История полученных донатов (для тренера).
+  rpc ListMyReceivedDonations(ListDonationsRequest) returns (ListDonationsResponse) {
+    option (google.api.http).get = "/v1/donations/received";
+  }
 }
 
 service PaymentService {
@@ -816,4 +821,23 @@ message SetMeasurementSharingRequest {
 
 message MeasurementSharingResponse {
   repeated int64 trainer_user_ids = 1;
+}
+
+message DonationItem {
+  int64 donation_id = 1;
+  int64 sender_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+  string created_at = 6;
+}
+
+message ListDonationsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message ListDonationsResponse {
+  repeated DonationItem donations = 1;
+  int32 total = 2;
 }

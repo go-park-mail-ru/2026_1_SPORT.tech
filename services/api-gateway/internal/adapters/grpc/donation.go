@@ -19,6 +19,27 @@ func (server *Server) DonateToProfile(ctx context.Context, request *gatewayv1.Do
 	return nil, status.Error(codes.FailedPrecondition, "create and confirm a donation payment instead")
 }
 
+func (server *Server) ListMyReceivedDonations(ctx context.Context, request *gatewayv1.ListDonationsRequest) (*gatewayv1.ListDonationsResponse, error) {
+	trainerUserID, err := server.requireTrainerUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.ListReceivedDonations(
+		forwardContext(ctx),
+		&contentv1.ListReceivedDonationsRequest{
+			TrainerUserId: trainerUserID,
+			Limit:         request.GetLimit(),
+			Offset:        request.GetOffset(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.ListDonationsResponseFromContent(response)
+}
+
 func (server *Server) GetMyBalance(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.BalanceResponse, error) {
 	trainerUserID, err := server.requireTrainerUserID(ctx)
 	if err != nil {

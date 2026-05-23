@@ -43,6 +43,8 @@ type MonetizationRepository interface {
 	ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
+	ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error)
+	CountReceivedDonations(ctx context.Context, recipientUserID int64) (int32, error)
 }
 
 type EngagementRepository interface {
@@ -280,4 +282,10 @@ type ListNotificationsQuery struct {
 type MarkNotificationReadCommand struct {
 	UserID         int64
 	NotificationID int64
+}
+
+type ListReceivedDonationsQuery struct {
+	TrainerUserID int64
+	Limit         int32
+	Offset        int32
 }

@@ -42,6 +42,7 @@ const (
 	ContentService_ConfirmDonationPayment_FullMethodName    = "/sporttech.content.v1.ContentService/ConfirmDonationPayment"
 	ContentService_GetBalance_FullMethodName                = "/sporttech.content.v1.ContentService/GetBalance"
 	ContentService_GetTrainerStatistics_FullMethodName      = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
+	ContentService_ListReceivedDonations_FullMethodName     = "/sporttech.content.v1.ContentService/ListReceivedDonations"
 	ContentService_LikePost_FullMethodName                  = "/sporttech.content.v1.ContentService/LikePost"
 	ContentService_UnlikePost_FullMethodName                = "/sporttech.content.v1.ContentService/UnlikePost"
 	ContentService_CreateComment_FullMethodName             = "/sporttech.content.v1.ContentService/CreateComment"
@@ -76,6 +77,7 @@ type ContentServiceClient interface {
 	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	GetTrainerStatistics(ctx context.Context, in *GetTrainerStatisticsRequest, opts ...grpc.CallOption) (*TrainerStatisticsResponse, error)
+	ListReceivedDonations(ctx context.Context, in *ListReceivedDonationsRequest, opts ...grpc.CallOption) (*ListReceivedDonationsResponse, error)
 	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
@@ -312,6 +314,16 @@ func (c *contentServiceClient) GetTrainerStatistics(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *contentServiceClient) ListReceivedDonations(ctx context.Context, in *ListReceivedDonationsRequest, opts ...grpc.CallOption) (*ListReceivedDonationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListReceivedDonationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListReceivedDonations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostLikeStateResponse)
@@ -398,6 +410,7 @@ type ContentServiceServer interface {
 	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
 	GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error)
 	GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error)
+	ListReceivedDonations(context.Context, *ListReceivedDonationsRequest) (*ListReceivedDonationsResponse, error)
 	LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error)
 	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
@@ -478,6 +491,9 @@ func (UnimplementedContentServiceServer) GetBalance(context.Context, *GetBalance
 }
 func (UnimplementedContentServiceServer) GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTrainerStatistics not implemented")
+}
+func (UnimplementedContentServiceServer) ListReceivedDonations(context.Context, *ListReceivedDonationsRequest) (*ListReceivedDonationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListReceivedDonations not implemented")
 }
 func (UnimplementedContentServiceServer) LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LikePost not implemented")
@@ -913,6 +929,24 @@ func _ContentService_GetTrainerStatistics_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListReceivedDonations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListReceivedDonationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListReceivedDonations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListReceivedDonations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListReceivedDonations(ctx, req.(*ListReceivedDonationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LikePostRequest)
 	if err := dec(in); err != nil {
@@ -1115,6 +1149,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTrainerStatistics",
 			Handler:    _ContentService_GetTrainerStatistics_Handler,
+		},
+		{
+			MethodName: "ListReceivedDonations",
+			Handler:    _ContentService_ListReceivedDonations_Handler,
 		},
 		{
 			MethodName: "LikePost",
