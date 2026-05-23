@@ -20,16 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProfileService_CreateProfile_FullMethodName     = "/sporttech.profile.v1.ProfileService/CreateProfile"
-	ProfileService_GetProfile_FullMethodName        = "/sporttech.profile.v1.ProfileService/GetProfile"
-	ProfileService_UpdateProfile_FullMethodName     = "/sporttech.profile.v1.ProfileService/UpdateProfile"
-	ProfileService_SearchAuthors_FullMethodName     = "/sporttech.profile.v1.ProfileService/SearchAuthors"
-	ProfileService_UploadAvatar_FullMethodName      = "/sporttech.profile.v1.ProfileService/UploadAvatar"
-	ProfileService_DeleteAvatar_FullMethodName      = "/sporttech.profile.v1.ProfileService/DeleteAvatar"
-	ProfileService_ListSportTypes_FullMethodName    = "/sporttech.profile.v1.ProfileService/ListSportTypes"
-	ProfileService_CreateMeasurement_FullMethodName = "/sporttech.profile.v1.ProfileService/CreateMeasurement"
-	ProfileService_ListMeasurements_FullMethodName  = "/sporttech.profile.v1.ProfileService/ListMeasurements"
-	ProfileService_DeleteMeasurement_FullMethodName = "/sporttech.profile.v1.ProfileService/DeleteMeasurement"
+	ProfileService_CreateProfile_FullMethodName         = "/sporttech.profile.v1.ProfileService/CreateProfile"
+	ProfileService_GetProfile_FullMethodName            = "/sporttech.profile.v1.ProfileService/GetProfile"
+	ProfileService_UpdateProfile_FullMethodName         = "/sporttech.profile.v1.ProfileService/UpdateProfile"
+	ProfileService_SearchAuthors_FullMethodName         = "/sporttech.profile.v1.ProfileService/SearchAuthors"
+	ProfileService_UploadAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/UploadAvatar"
+	ProfileService_DeleteAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/DeleteAvatar"
+	ProfileService_ListSportTypes_FullMethodName        = "/sporttech.profile.v1.ProfileService/ListSportTypes"
+	ProfileService_CreateMeasurement_FullMethodName     = "/sporttech.profile.v1.ProfileService/CreateMeasurement"
+	ProfileService_ListMeasurements_FullMethodName      = "/sporttech.profile.v1.ProfileService/ListMeasurements"
+	ProfileService_DeleteMeasurement_FullMethodName     = "/sporttech.profile.v1.ProfileService/DeleteMeasurement"
+	ProfileService_SetMeasurementSharing_FullMethodName = "/sporttech.profile.v1.ProfileService/SetMeasurementSharing"
+	ProfileService_GetMeasurementSharing_FullMethodName = "/sporttech.profile.v1.ProfileService/GetMeasurementSharing"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
@@ -46,6 +48,10 @@ type ProfileServiceClient interface {
 	CreateMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
 	ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error)
 	DeleteMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Установить список тренеров, которым клиент разрешает видеть свои замеры.
+	SetMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
+	GetMeasurementSharing(ctx context.Context, in *GetMeasurementSharingRequest, opts ...grpc.CallOption) (*MeasurementSharingResponse, error)
 }
 
 type profileServiceClient struct {
@@ -156,6 +162,26 @@ func (c *profileServiceClient) DeleteMeasurement(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *profileServiceClient) SetMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_SetMeasurementSharing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetMeasurementSharing(ctx context.Context, in *GetMeasurementSharingRequest, opts ...grpc.CallOption) (*MeasurementSharingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeasurementSharingResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetMeasurementSharing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations should embed UnimplementedProfileServiceServer
 // for forward compatibility.
@@ -170,6 +196,10 @@ type ProfileServiceServer interface {
 	CreateMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
 	ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error)
 	DeleteMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
+	// Установить список тренеров, которым клиент разрешает видеть свои замеры.
+	SetMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error)
+	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
+	GetMeasurementSharing(context.Context, *GetMeasurementSharingRequest) (*MeasurementSharingResponse, error)
 }
 
 // UnimplementedProfileServiceServer should be embedded to have
@@ -208,6 +238,12 @@ func (UnimplementedProfileServiceServer) ListMeasurements(context.Context, *List
 }
 func (UnimplementedProfileServiceServer) DeleteMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteMeasurement not implemented")
+}
+func (UnimplementedProfileServiceServer) SetMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetMeasurementSharing not implemented")
+}
+func (UnimplementedProfileServiceServer) GetMeasurementSharing(context.Context, *GetMeasurementSharingRequest) (*MeasurementSharingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMeasurementSharing not implemented")
 }
 func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
 
@@ -409,6 +445,42 @@ func _ProfileService_DeleteMeasurement_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_SetMeasurementSharing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetMeasurementSharingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).SetMeasurementSharing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_SetMeasurementSharing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).SetMeasurementSharing(ctx, req.(*SetMeasurementSharingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetMeasurementSharing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeasurementSharingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetMeasurementSharing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetMeasurementSharing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetMeasurementSharing(ctx, req.(*GetMeasurementSharingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -455,6 +527,14 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteMeasurement",
 			Handler:    _ProfileService_DeleteMeasurement_Handler,
+		},
+		{
+			MethodName: "SetMeasurementSharing",
+			Handler:    _ProfileService_SetMeasurementSharing_Handler,
+		},
+		{
+			MethodName: "GetMeasurementSharing",
+			Handler:    _ProfileService_GetMeasurementSharing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -28,9 +28,36 @@ func (r stubMeasurementRepository) DeleteMeasurement(ctx context.Context, userID
 	return r.deleteFunc(ctx, userID, measurementID)
 }
 
+// ── stub MeasurementSharingRepository ────────────────────────────────────────
+
+type stubSharingRepository struct {
+	setFunc       func(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error
+	getFunc       func(ctx context.Context, clientUserID int64) ([]int64, error)
+	hasAccessFunc func(ctx context.Context, clientUserID, trainerUserID int64) (bool, error)
+}
+
+func (r stubSharingRepository) SetSharing(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error {
+	return r.setFunc(ctx, clientUserID, trainerUserIDs)
+}
+
+func (r stubSharingRepository) GetSharing(ctx context.Context, clientUserID int64) ([]int64, error) {
+	return r.getFunc(ctx, clientUserID)
+}
+
+func (r stubSharingRepository) HasAccess(ctx context.Context, clientUserID, trainerUserID int64) (bool, error) {
+	return r.hasAccessFunc(ctx, clientUserID, trainerUserID)
+}
+
 func newMeasurementService(stub stubMeasurementRepository) *Service {
 	return &Service{
 		measurements: stub,
+	}
+}
+
+func newMeasurementServiceWithSharing(mStub stubMeasurementRepository, sStub stubSharingRepository) *Service {
+	return &Service{
+		measurements:       mStub,
+		measurementSharing: sStub,
 	}
 }
 
@@ -219,5 +246,143 @@ func TestDeleteMeasurement_NotFound(t *testing.T) {
 	err := svc.DeleteMeasurement(context.Background(), DeleteMeasurementCommand{UserID: 1, MeasurementID: 99})
 	if err != ErrMeasurementNotFound {
 		t.Fatalf("expected ErrMeasurementNotFound, got %v", err)
+	}
+}
+
+// ── SetMeasurementSharing ─────────────────────────────────────────────────────
+
+func TestSetMeasurementSharing_Success(t *testing.T) {
+	t.Parallel()
+	var gotIDs []int64
+	sStub := stubSharingRepository{
+		setFunc: func(_ context.Context, _ int64, ids []int64) error {
+			gotIDs = ids
+			return nil
+		},
+	}
+	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, sStub)
+	err := svc.SetMeasurementSharing(context.Background(), SetMeasurementSharingCommand{
+		ClientUserID:   1,
+		TrainerUserIDs: []int64{2, 3, 2}, // дубль
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(gotIDs) != 2 {
+		t.Fatalf("expected 2 unique IDs, got %d: %v", len(gotIDs), gotIDs)
+	}
+}
+
+func TestSetMeasurementSharing_InvalidClientUserID(t *testing.T) {
+	t.Parallel()
+	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, stubSharingRepository{})
+	err := svc.SetMeasurementSharing(context.Background(), SetMeasurementSharingCommand{ClientUserID: 0})
+	if err != ErrInvalidUserID {
+		t.Fatalf("expected ErrInvalidUserID, got %v", err)
+	}
+}
+
+// ── GetMeasurementSharing ─────────────────────────────────────────────────────
+
+func TestGetMeasurementSharing_Success(t *testing.T) {
+	t.Parallel()
+	sStub := stubSharingRepository{
+		getFunc: func(_ context.Context, _ int64) ([]int64, error) {
+			return []int64{10, 20}, nil
+		},
+	}
+	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, sStub)
+	ids, err := svc.GetMeasurementSharing(context.Background(), GetMeasurementSharingQuery{ClientUserID: 1})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(ids) != 2 || ids[0] != 10 || ids[1] != 20 {
+		t.Fatalf("unexpected ids: %v", ids)
+	}
+}
+
+func TestGetMeasurementSharing_ReturnsEmptySlice(t *testing.T) {
+	t.Parallel()
+	sStub := stubSharingRepository{
+		getFunc: func(_ context.Context, _ int64) ([]int64, error) {
+			return nil, nil // nil из базы
+		},
+	}
+	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, sStub)
+	ids, err := svc.GetMeasurementSharing(context.Background(), GetMeasurementSharingQuery{ClientUserID: 1})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if ids == nil {
+		t.Fatal("expected empty slice, got nil")
+	}
+}
+
+// ── ListMeasurements with access check ───────────────────────────────────────
+
+func TestListMeasurements_AccessDenied(t *testing.T) {
+	t.Parallel()
+	sStub := stubSharingRepository{
+		hasAccessFunc: func(_ context.Context, _, _ int64) (bool, error) {
+			return false, nil
+		},
+	}
+	mStub := stubMeasurementRepository{}
+	svc := newMeasurementServiceWithSharing(mStub, sStub)
+	_, err := svc.ListMeasurements(context.Background(), ListMeasurementsQuery{
+		UserID:       1,
+		ViewerUserID: 99, // другой пользователь, не в списке
+	})
+	if err != ErrMeasurementAccessDenied {
+		t.Fatalf("expected ErrMeasurementAccessDenied, got %v", err)
+	}
+}
+
+func TestListMeasurements_AccessGranted(t *testing.T) {
+	t.Parallel()
+	sStub := stubSharingRepository{
+		hasAccessFunc: func(_ context.Context, _, _ int64) (bool, error) {
+			return true, nil
+		},
+	}
+	mStub := stubMeasurementRepository{
+		listFunc: func(_ context.Context, _ int64, _, _ int32) ([]domain.Measurement, error) {
+			return []domain.Measurement{{MeasurementID: 1}}, nil
+		},
+	}
+	svc := newMeasurementServiceWithSharing(mStub, sStub)
+	got, err := svc.ListMeasurements(context.Background(), ListMeasurementsQuery{
+		UserID:       1,
+		ViewerUserID: 42,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("expected 1 measurement, got %d", len(got))
+	}
+}
+
+func TestListMeasurements_OwnProfile_NoAccessCheck(t *testing.T) {
+	t.Parallel()
+	// viewerUserID == userID → нет проверки доступа, sharing nil
+	mStub := stubMeasurementRepository{
+		listFunc: func(_ context.Context, _ int64, _, _ int32) ([]domain.Measurement, error) {
+			return []domain.Measurement{{MeasurementID: 5}}, nil
+		},
+	}
+	svc := &Service{
+		measurements:       mStub,
+		measurementSharing: nil, // не инициализирован намеренно
+	}
+	got, err := svc.ListMeasurements(context.Background(), ListMeasurementsQuery{
+		UserID:       1,
+		ViewerUserID: 1, // == userID
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("expected 1 measurement, got %d", len(got))
 	}
 }

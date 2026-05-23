@@ -514,6 +514,54 @@ func local_request_ProfileService_DeleteMyMeasurement_0(ctx context.Context, mar
 	return msg, metadata, err
 }
 
+func request_ProfileService_SetMyMeasurementSharing_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SetMeasurementSharingRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.SetMyMeasurementSharing(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ProfileService_SetMyMeasurementSharing_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SetMeasurementSharingRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.SetMyMeasurementSharing(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ProfileService_GetMyMeasurementSharing_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.GetMyMeasurementSharing(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ProfileService_GetMyMeasurementSharing_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.GetMyMeasurementSharing(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_PostService_SearchPosts_0(ctx context.Context, marshaler runtime.Marshaler, client PostServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq SearchPostsRequest
@@ -1873,6 +1921,46 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ProfileService_DeleteMyMeasurement_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPut, pattern_ProfileService_SetMyMeasurementSharing_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.gateway.v1.ProfileService/SetMyMeasurementSharing", runtime.WithHTTPPathPattern("/v1/measurements/sharing"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ProfileService_SetMyMeasurementSharing_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ProfileService_SetMyMeasurementSharing_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ProfileService_GetMyMeasurementSharing_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.gateway.v1.ProfileService/GetMyMeasurementSharing", runtime.WithHTTPPathPattern("/v1/measurements/sharing"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ProfileService_GetMyMeasurementSharing_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ProfileService_GetMyMeasurementSharing_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 
 	return nil
 }
@@ -2902,33 +2990,71 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ProfileService_DeleteMyMeasurement_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPut, pattern_ProfileService_SetMyMeasurementSharing_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.gateway.v1.ProfileService/SetMyMeasurementSharing", runtime.WithHTTPPathPattern("/v1/measurements/sharing"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ProfileService_SetMyMeasurementSharing_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ProfileService_SetMyMeasurementSharing_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ProfileService_GetMyMeasurementSharing_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.gateway.v1.ProfileService/GetMyMeasurementSharing", runtime.WithHTTPPathPattern("/v1/measurements/sharing"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ProfileService_GetMyMeasurementSharing_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ProfileService_GetMyMeasurementSharing_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_ProfileService_GetProfile_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "profiles", "user_id"}, ""))
-	pattern_ProfileService_ListTrainers_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "trainers"}, ""))
-	pattern_ProfileService_SearchTrainers_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "trainers"}, "search"))
-	pattern_ProfileService_UpdateMyProfile_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "profiles", "me"}, ""))
-	pattern_ProfileService_UploadMyAvatar_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "profiles", "me", "avatar"}, ""))
-	pattern_ProfileService_DeleteMyAvatar_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "profiles", "me", "avatar"}, ""))
-	pattern_ProfileService_ListProfilePosts_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "profiles", "user_id", "posts"}, ""))
-	pattern_ProfileService_CreateMyMeasurement_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "measurements"}, ""))
-	pattern_ProfileService_ListMeasurements_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "profiles", "user_id", "measurements"}, ""))
-	pattern_ProfileService_DeleteMyMeasurement_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "measurements", "measurement_id"}, ""))
+	pattern_ProfileService_GetProfile_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "profiles", "user_id"}, ""))
+	pattern_ProfileService_ListTrainers_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "trainers"}, ""))
+	pattern_ProfileService_SearchTrainers_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "trainers"}, "search"))
+	pattern_ProfileService_UpdateMyProfile_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "profiles", "me"}, ""))
+	pattern_ProfileService_UploadMyAvatar_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "profiles", "me", "avatar"}, ""))
+	pattern_ProfileService_DeleteMyAvatar_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "profiles", "me", "avatar"}, ""))
+	pattern_ProfileService_ListProfilePosts_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "profiles", "user_id", "posts"}, ""))
+	pattern_ProfileService_CreateMyMeasurement_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "measurements"}, ""))
+	pattern_ProfileService_ListMeasurements_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "profiles", "user_id", "measurements"}, ""))
+	pattern_ProfileService_DeleteMyMeasurement_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "measurements", "measurement_id"}, ""))
+	pattern_ProfileService_SetMyMeasurementSharing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "measurements", "sharing"}, ""))
+	pattern_ProfileService_GetMyMeasurementSharing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "measurements", "sharing"}, ""))
 )
 
 var (
-	forward_ProfileService_GetProfile_0          = runtime.ForwardResponseMessage
-	forward_ProfileService_ListTrainers_0        = runtime.ForwardResponseMessage
-	forward_ProfileService_SearchTrainers_0      = runtime.ForwardResponseMessage
-	forward_ProfileService_UpdateMyProfile_0     = runtime.ForwardResponseMessage
-	forward_ProfileService_UploadMyAvatar_0      = runtime.ForwardResponseMessage
-	forward_ProfileService_DeleteMyAvatar_0      = runtime.ForwardResponseMessage
-	forward_ProfileService_ListProfilePosts_0    = runtime.ForwardResponseMessage
-	forward_ProfileService_CreateMyMeasurement_0 = runtime.ForwardResponseMessage
-	forward_ProfileService_ListMeasurements_0    = runtime.ForwardResponseMessage
-	forward_ProfileService_DeleteMyMeasurement_0 = runtime.ForwardResponseMessage
+	forward_ProfileService_GetProfile_0              = runtime.ForwardResponseMessage
+	forward_ProfileService_ListTrainers_0            = runtime.ForwardResponseMessage
+	forward_ProfileService_SearchTrainers_0          = runtime.ForwardResponseMessage
+	forward_ProfileService_UpdateMyProfile_0         = runtime.ForwardResponseMessage
+	forward_ProfileService_UploadMyAvatar_0          = runtime.ForwardResponseMessage
+	forward_ProfileService_DeleteMyAvatar_0          = runtime.ForwardResponseMessage
+	forward_ProfileService_ListProfilePosts_0        = runtime.ForwardResponseMessage
+	forward_ProfileService_CreateMyMeasurement_0     = runtime.ForwardResponseMessage
+	forward_ProfileService_ListMeasurements_0        = runtime.ForwardResponseMessage
+	forward_ProfileService_DeleteMyMeasurement_0     = runtime.ForwardResponseMessage
+	forward_ProfileService_SetMyMeasurementSharing_0 = runtime.ForwardResponseMessage
+	forward_ProfileService_GetMyMeasurementSharing_0 = runtime.ForwardResponseMessage
 )
 
 // RegisterPostServiceHandlerFromEndpoint is same as RegisterPostServiceHandler but

@@ -46,15 +46,23 @@ func (server *Server) ListMeasurements(ctx context.Context, request *gatewayv1.L
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
+	viewerID := principal.User.GetUserId()
 	userID := request.GetUserId()
 	if userID == 0 {
-		userID = principal.User.GetUserId()
+		userID = viewerID
+	}
+
+	// Если смотрим свой профиль, viewer = 0 (без ограничений).
+	passViewerID := viewerID
+	if viewerID == userID {
+		passViewerID = 0
 	}
 
 	resp, err := server.profileClient.ListMeasurements(forwardContext(ctx), &profilev1.ListMeasurementsRequest{
-		UserId: userID,
-		Limit:  request.GetLimit(),
-		Offset: request.GetOffset(),
+		UserId:       userID,
+		Limit:        request.GetLimit(),
+		Offset:       request.GetOffset(),
+		ViewerUserId: passViewerID,
 	})
 	if err != nil {
 		return nil, err
@@ -67,6 +75,49 @@ func (server *Server) ListMeasurements(ctx context.Context, request *gatewayv1.L
 		out.Measurements = append(out.Measurements, measurementFromProfile(m))
 	}
 	return out, nil
+}
+
+func (server *Server) SetMyMeasurementSharing(ctx context.Context, request *gatewayv1.SetMeasurementSharingRequest) (*emptypb.Empty, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	clientUserID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	if _, err := server.profileClient.SetMeasurementSharing(forwardContext(ctx), &profilev1.SetMeasurementSharingRequest{
+		ClientUserId:   clientUserID,
+		TrainerUserIds: request.GetTrainerUserIds(),
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := setHTTPStatus(ctx, 204); err != nil {
+		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (server *Server) GetMyMeasurementSharing(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.MeasurementSharingResponse, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	clientUserID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	resp, err := server.profileClient.GetMeasurementSharing(forwardContext(ctx), &profilev1.GetMeasurementSharingRequest{
+		ClientUserId: clientUserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &gatewayv1.MeasurementSharingResponse{TrainerUserIds: resp.GetTrainerUserIds()}, nil
 }
 
 func (server *Server) DeleteMyMeasurement(ctx context.Context, request *gatewayv1.DeleteMeasurementRequest) (*emptypb.Empty, error) {

@@ -260,6 +260,61 @@
         ]
       }
     },
+    "/v1/measurements/sharing": {
+      "get": {
+        "summary": "Получить список тренеров, которым клиент разрешил видеть свои замеры.",
+        "operationId": "ProfileService_GetMyMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementSharingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "summary": "Установить список тренеров, которым клиент разрешает просматривать свои замеры.",
+        "operationId": "ProfileService_SetMyMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SetMeasurementSharingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/measurements/{measurement_id}": {
       "delete": {
         "operationId": "ProfileService_DeleteMyMeasurement",
@@ -2035,6 +2090,18 @@
         }
       }
     },
+    "v1MeasurementSharingResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "v1Notification": {
       "type": "object",
       "properties": {
@@ -2457,6 +2524,19 @@
             "type": "object",
             "$ref": "#/definitions/v1PostListItem"
           }
+        }
+      }
+    },
+    "v1SetMeasurementSharingRequest": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          },
+          "description": "Список trainer_user_id, которым клиент разрешает доступ к своим замерам.\nПустой список — отозвать доступ у всех."
         }
       }
     },

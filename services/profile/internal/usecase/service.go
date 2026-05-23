@@ -9,12 +9,13 @@ import (
 )
 
 type Service struct {
-	profiles     ProfileRepository
-	authors      AuthorRepository
-	avatars      AvatarRepository
-	sports       SportTypeRepository
-	measurements MeasurementRepository
-	storage      AvatarStorage
+	profiles            ProfileRepository
+	authors             AuthorRepository
+	avatars             AvatarRepository
+	sports              SportTypeRepository
+	measurements        MeasurementRepository
+	measurementSharing  MeasurementSharingRepository
+	storage             AvatarStorage
 }
 
 func NewService(
@@ -22,12 +23,13 @@ func NewService(
 	avatarStorage AvatarStorage,
 ) *Service {
 	return &Service{
-		profiles:     repositories.Profiles,
-		authors:      repositories.Authors,
-		avatars:      repositories.Avatars,
-		sports:       repositories.Sports,
-		measurements: repositories.Measurements,
-		storage:      avatarStorage,
+		profiles:           repositories.Profiles,
+		authors:            repositories.Authors,
+		avatars:            repositories.Avatars,
+		sports:             repositories.Sports,
+		measurements:       repositories.Measurements,
+		measurementSharing: repositories.MeasurementSharing,
+		storage:            avatarStorage,
 	}
 }
 
@@ -202,6 +204,19 @@ func (service *Service) ListMeasurements(ctx context.Context, query ListMeasurem
 	if query.Offset < 0 {
 		query.Offset = 0
 	}
+
+	// Проверяем доступ, если запрашивает не сам пользователь.
+	viewerID := query.ViewerUserID
+	if viewerID != 0 && viewerID != query.UserID && service.measurementSharing != nil {
+		allowed, err := service.measurementSharing.HasAccess(ctx, query.UserID, viewerID)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
+			return nil, ErrMeasurementAccessDenied
+		}
+	}
+
 	return service.measurements.ListMeasurements(ctx, query.UserID, limit, query.Offset)
 }
 
@@ -210,6 +225,42 @@ func (service *Service) DeleteMeasurement(ctx context.Context, command DeleteMea
 		return err
 	}
 	return service.measurements.DeleteMeasurement(ctx, command.UserID, command.MeasurementID)
+}
+
+// ─── Measurement Sharing ─────────────────────────────────────────────────────
+
+func (service *Service) SetMeasurementSharing(ctx context.Context, cmd SetMeasurementSharingCommand) error {
+	if err := validateUserID(cmd.ClientUserID); err != nil {
+		return err
+	}
+	// Убираем дубли и невалидные ID
+	seen := make(map[int64]struct{}, len(cmd.TrainerUserIDs))
+	unique := cmd.TrainerUserIDs[:0]
+	for _, id := range cmd.TrainerUserIDs {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		unique = append(unique, id)
+	}
+	return service.measurementSharing.SetSharing(ctx, cmd.ClientUserID, unique)
+}
+
+func (service *Service) GetMeasurementSharing(ctx context.Context, query GetMeasurementSharingQuery) ([]int64, error) {
+	if err := validateUserID(query.ClientUserID); err != nil {
+		return nil, err
+	}
+	ids, err := service.measurementSharing.GetSharing(ctx, query.ClientUserID)
+	if err != nil {
+		return nil, err
+	}
+	if ids == nil {
+		ids = []int64{}
+	}
+	return ids, nil
 }
 
 func buildProfile(command CreateProfileCommand) (domain.Profile, error) {

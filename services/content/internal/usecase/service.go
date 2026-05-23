@@ -826,15 +826,19 @@ func (service *Service) notifySubscribersAboutPost(ctx context.Context, post dom
 
 func (service *Service) createSubscriptionNotifications(ctx context.Context, subscription domain.Subscription) error {
 	isNewSubscription := subscription.CreatedAt.Equal(subscription.UpdatedAt)
+	tierInfo := subscription.TierName
+	if subscription.Price > 0 {
+		tierInfo = fmt.Sprintf("%s · %d ₽", tierInfo, subscription.Price)
+	}
 	trainerTitle := "Новая подписка"
-	trainerBody := "Пользователь купил подписку на ваш профиль"
+	trainerBody := fmt.Sprintf("Оформлена подписка «%s»", tierInfo)
 	clientTitle := "Подписка оформлена"
-	clientBody := "Доступ к материалам тренера открыт на месяц"
+	clientBody := fmt.Sprintf("Доступ к материалам открыт на месяц · %s", tierInfo)
 	if !isNewSubscription {
 		trainerTitle = "Подписка обновлена"
-		trainerBody = "Пользователь изменил тариф подписки"
-		clientTitle = "Тариф обновлен"
-		clientBody = "Новый тариф подписки уже активен"
+		trainerBody = fmt.Sprintf("Обновлён тариф на «%s»", tierInfo)
+		clientTitle = "Тариф обновлён"
+		clientBody = fmt.Sprintf("Новый тариф уже активен · %s", tierInfo)
 	}
 
 	if err := service.createNotification(ctx, domain.Notification{

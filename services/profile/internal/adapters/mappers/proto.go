@@ -176,6 +176,8 @@ func ErrorToStatus(err error) error {
 		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, usecase.ErrAvatarStorageUnavailable):
 		return status.Error(codes.FailedPrecondition, err.Error())
+	case errors.Is(err, usecase.ErrMeasurementAccessDenied):
+		return status.Error(codes.PermissionDenied, err.Error())
 	default:
 		return status.Error(codes.Internal, "internal error")
 	}

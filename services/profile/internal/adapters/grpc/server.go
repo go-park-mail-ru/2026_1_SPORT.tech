@@ -33,6 +33,8 @@ type MeasurementUseCase interface {
 	CreateMeasurement(ctx context.Context, command usecase.CreateMeasurementCommand) (domain.Measurement, error)
 	ListMeasurements(ctx context.Context, query usecase.ListMeasurementsQuery) ([]domain.Measurement, error)
 	DeleteMeasurement(ctx context.Context, command usecase.DeleteMeasurementCommand) error
+	SetMeasurementSharing(ctx context.Context, cmd usecase.SetMeasurementSharingCommand) error
+	GetMeasurementSharing(ctx context.Context, query usecase.GetMeasurementSharingQuery) ([]int64, error)
 }
 
 type UseCases struct {
@@ -124,14 +126,35 @@ func (server *Server) CreateMeasurement(ctx context.Context, request *profilev1.
 
 func (server *Server) ListMeasurements(ctx context.Context, request *profilev1.ListMeasurementsRequest) (*profilev1.ListMeasurementsResponse, error) {
 	measurements, err := server.useCases.Measurements.ListMeasurements(ctx, usecase.ListMeasurementsQuery{
-		UserID: request.GetUserId(),
-		Limit:  request.GetLimit(),
-		Offset: request.GetOffset(),
+		UserID:       request.GetUserId(),
+		Limit:        request.GetLimit(),
+		Offset:       request.GetOffset(),
+		ViewerUserID: request.GetViewerUserId(),
 	})
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
 	return mappers.NewListMeasurementsResponse(measurements), nil
+}
+
+func (server *Server) SetMeasurementSharing(ctx context.Context, request *profilev1.SetMeasurementSharingRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Measurements.SetMeasurementSharing(ctx, usecase.SetMeasurementSharingCommand{
+		ClientUserID:   request.GetClientUserId(),
+		TrainerUserIDs: request.GetTrainerUserIds(),
+	}); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.Empty(), nil
+}
+
+func (server *Server) GetMeasurementSharing(ctx context.Context, request *profilev1.GetMeasurementSharingRequest) (*profilev1.MeasurementSharingResponse, error) {
+	ids, err := server.useCases.Measurements.GetMeasurementSharing(ctx, usecase.GetMeasurementSharingQuery{
+		ClientUserID: request.GetClientUserId(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return &profilev1.MeasurementSharingResponse{TrainerUserIds: ids}, nil
 }
 
 func (server *Server) DeleteMeasurement(ctx context.Context, request *profilev1.DeleteMeasurementRequest) (*emptypb.Empty, error) {

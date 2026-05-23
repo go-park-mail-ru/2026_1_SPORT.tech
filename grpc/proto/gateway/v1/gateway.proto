@@ -95,6 +95,19 @@ service ProfileService {
   rpc DeleteMyMeasurement(DeleteMeasurementRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/measurements/{measurement_id}";
   }
+
+  // Установить список тренеров, которым клиент разрешает просматривать свои замеры.
+  rpc SetMyMeasurementSharing(SetMeasurementSharingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/measurements/sharing"
+      body: "*"
+    };
+  }
+
+  // Получить список тренеров, которым клиент разрешил видеть свои замеры.
+  rpc GetMyMeasurementSharing(google.protobuf.Empty) returns (MeasurementSharingResponse) {
+    option (google.api.http).get = "/v1/measurements/sharing";
+  }
 }
 
 service PostService {
@@ -793,4 +806,14 @@ message ListMeasurementsRequest {
 
 message DeleteMeasurementRequest {
   int64 measurement_id = 1;
+}
+
+message SetMeasurementSharingRequest {
+  // Список trainer_user_id, которым клиент разрешает доступ к своим замерам.
+  // Пустой список — отозвать доступ у всех.
+  repeated int64 trainer_user_ids = 1;
+}
+
+message MeasurementSharingResponse {
+  repeated int64 trainer_user_ids = 1;
 }

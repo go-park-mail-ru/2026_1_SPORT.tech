@@ -18,7 +18,8 @@ var (
 	ErrAvatarContentRequired     = errors.New("avatar content is required")
 	ErrAvatarStorageUnavailable  = errors.New("avatar storage is unavailable")
 
-	ErrMeasurementNotFound    = errors.New("measurement not found")
-	ErrInvalidMeasuredAt      = errors.New("invalid measured_at date")
-	ErrInvalidMeasurementData = errors.New("at least one measurement value must be provided")
+	ErrMeasurementNotFound     = errors.New("measurement not found")
+	ErrInvalidMeasuredAt       = errors.New("invalid measured_at date")
+	ErrInvalidMeasurementData  = errors.New("at least one measurement value must be provided")
+	ErrMeasurementAccessDenied = errors.New("access to measurements not granted by client")
 )

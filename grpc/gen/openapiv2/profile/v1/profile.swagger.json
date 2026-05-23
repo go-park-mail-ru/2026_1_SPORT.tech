@@ -80,6 +80,77 @@
         ]
       }
     },
+    "/v1/profiles/{client_user_id}/measurements/sharing": {
+      "get": {
+        "summary": "Получить список тренеров, которым клиент разрешил видеть свои замеры.",
+        "operationId": "ProfileService_GetMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementSharingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "summary": "Установить список тренеров, которым клиент разрешает видеть свои замеры.",
+        "operationId": "ProfileService_SetMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileServiceSetMeasurementSharingBody"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/profiles/{user_id}": {
       "get": {
         "operationId": "ProfileService_GetProfile",
@@ -255,6 +326,14 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "viewer_user_id",
+            "description": "Кто запрашивает данные. 0 = сам пользователь (без ограничений).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -391,6 +470,19 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "ProfileServiceSetMeasurementSharingBody": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          },
+          "description": "Список trainer_user_id, которым разрешён доступ."
         }
       }
     },
@@ -588,6 +680,18 @@
       "properties": {
         "measurement": {
           "$ref": "#/definitions/v1Measurement"
+        }
+      }
+    },
+    "v1MeasurementSharingResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },

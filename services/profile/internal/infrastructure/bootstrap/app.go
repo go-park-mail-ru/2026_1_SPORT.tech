@@ -49,12 +49,14 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		_ = database.Close()
 		return nil, fmt.Errorf("new avatar storage: %w", err)
 	}
+	measurementSharingRepository := postgresadapter.NewMeasurementSharingRepository(database)
 	profileUseCase := usecase.NewService(usecase.Repositories{
-		Profiles:     profileRepository,
-		Authors:      profileRepository,
-		Avatars:      profileRepository,
-		Sports:       sportTypeRepository,
-		Measurements: measurementRepository,
+		Profiles:           profileRepository,
+		Authors:            profileRepository,
+		Avatars:            profileRepository,
+		Sports:             sportTypeRepository,
+		Measurements:       measurementRepository,
+		MeasurementSharing: measurementSharingRepository,
 	}, avatarStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
