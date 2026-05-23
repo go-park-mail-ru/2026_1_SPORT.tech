@@ -1221,3 +1221,129 @@ func TestServiceListComments(t *testing.T) {
 func stringPtr(value string) *string {
 	return &value
 }
+
+func TestServiceListAuthorPosts(t *testing.T) {
+	requiredLevel := int32(1)
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			listAuthorPostsFunc: func(ctx context.Context, authorUserID int64, viewerUserID int64, limit int32, offset int32) ([]domain.PostSummary, error) {
+				if authorUserID != 7 {
+					t.Fatalf("unexpected author user id: %d", authorUserID)
+				}
+				return []domain.PostSummary{
+					{PostID: 101, AuthorUserID: 7, Title: "Run Day 1", RequiredSubscriptionLevel: &requiredLevel, CanView: false},
+					{PostID: 102, AuthorUserID: 7, Title: "Run Day 2", RequiredSubscriptionLevel: nil, CanView: true},
+				}, nil
+			},
+			activeLevelFunc: func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error) {
+				level := int32(2)
+				return &level, nil
+			},
+		}),
+		nil,
+	)
+
+	posts, err := service.ListAuthorPosts(context.Background(), ListAuthorPostsQuery{
+		AuthorUserID: 7,
+		ViewerUserID: 3,
+		Limit:        10,
+		Offset:       0,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(posts) != 2 {
+		t.Fatalf("unexpected posts count: %d", len(posts))
+	}
+}
+
+func TestServiceListAuthorPostsInvalidID(t *testing.T) {
+	service := NewService(stubRepositories(stubContentRepository{}), nil)
+
+	_, err := service.ListAuthorPosts(context.Background(), ListAuthorPostsQuery{
+		AuthorUserID: 0,
+		ViewerUserID: 3,
+	})
+	if err == nil {
+		t.Fatal("expected error for invalid author id")
+	}
+}
+
+func TestServiceListNotifications(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			listNotificationsFunc: func(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error) {
+				if userID != 5 {
+					t.Fatalf("unexpected user id: %d", userID)
+				}
+				return []domain.Notification{
+					{NotificationID: 1, UserID: 5, Type: "new_post"},
+					{NotificationID: 2, UserID: 5, Type: "donation"},
+				}, nil
+			},
+		}),
+		nil,
+	)
+
+	notifications, err := service.ListNotifications(context.Background(), ListNotificationsQuery{
+		UserID: 5,
+		Limit:  20,
+		Offset: 0,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(notifications) != 2 {
+		t.Fatalf("unexpected notifications count: %d", len(notifications))
+	}
+}
+
+func TestServiceListNotificationsInvalidUserID(t *testing.T) {
+	service := NewService(stubRepositories(stubContentRepository{}), nil)
+
+	_, err := service.ListNotifications(context.Background(), ListNotificationsQuery{UserID: 0})
+	if err == nil {
+		t.Fatal("expected error for zero user id")
+	}
+}
+
+func TestServiceMarkNotificationRead(t *testing.T) {
+	markCalled := false
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			markNotificationFunc: func(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error) {
+				markCalled = true
+				return domain.Notification{NotificationID: notificationID, UserID: userID, Type: "new_post"}, nil
+			},
+		}),
+		nil,
+	)
+
+	notification, err := service.MarkNotificationRead(context.Background(), MarkNotificationReadCommand{
+		UserID:         5,
+		NotificationID: 10,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !markCalled {
+		t.Fatal("expected repository mark to be called")
+	}
+	if notification.NotificationID != 10 {
+		t.Fatalf("unexpected notification id: %d", notification.NotificationID)
+	}
+}
+
+func TestServiceMarkNotificationReadInvalidIDs(t *testing.T) {
+	service := NewService(stubRepositories(stubContentRepository{}), nil)
+
+	_, err := service.MarkNotificationRead(context.Background(), MarkNotificationReadCommand{UserID: 0, NotificationID: 5})
+	if err == nil {
+		t.Fatal("expected error for zero user id")
+	}
+
+	_, err = service.MarkNotificationRead(context.Background(), MarkNotificationReadCommand{UserID: 5, NotificationID: 0})
+	if err == nil {
+		t.Fatal("expected error for zero notification id")
+	}
+}

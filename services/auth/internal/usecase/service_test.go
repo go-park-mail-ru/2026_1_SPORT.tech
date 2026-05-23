@@ -172,3 +172,115 @@ func TestServiceLoginInvalidCredentials(t *testing.T) {
 		t.Fatalf("unexpected error: got %v, want %v", err, domain.ErrInvalidCredentials)
 	}
 }
+
+func TestServiceLogout(t *testing.T) {
+	revokeCalled := false
+	service := NewService(
+		stubAccountRepository{},
+		stubSessionRepository{
+			revokeByHashFunc: func(ctx context.Context, sessionHash string) error {
+				revokeCalled = true
+				if sessionHash != hashSessionToken("valid-token-xyz") {
+					t.Fatalf("unexpected session hash: %s", sessionHash)
+				}
+				return nil
+			},
+		},
+		stubPasswordHasher{},
+		stubTokenGenerator{},
+		fixedClock{now: time.Now().UTC()},
+		24*time.Hour,
+	)
+
+	err := service.Logout(context.Background(), LogoutCommand{SessionToken: "valid-token-xyz"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !revokeCalled {
+		t.Fatal("expected session repository Revoke to be called")
+	}
+}
+
+func TestServiceLogoutEmptyToken(t *testing.T) {
+	service := NewService(
+		stubAccountRepository{},
+		stubSessionRepository{},
+		stubPasswordHasher{},
+		stubTokenGenerator{},
+		fixedClock{now: time.Now().UTC()},
+		24*time.Hour,
+	)
+
+	err := service.Logout(context.Background(), LogoutCommand{SessionToken: "   "})
+	if !errors.Is(err, ErrMissingSessionToken) {
+		t.Fatalf("expected ErrMissingSessionToken, got %v", err)
+	}
+}
+
+func TestServiceGetSession(t *testing.T) {
+	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
+	session := domain.Session{
+		IDHash:    hashSessionToken("active-token"),
+		UserID:    42,
+		ExpiresAt: now.Add(24 * time.Hour),
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+
+	service := NewService(
+		stubAccountRepository{
+			getByIDFunc: func(ctx context.Context, userID int64) (domain.Account, error) {
+				return domain.Account{ID: userID, Email: "user@example.com", Status: domain.StatusActive, Role: domain.RoleClient}, nil
+			},
+		},
+		stubSessionRepository{
+			getByHashFunc: func(ctx context.Context, sessionHash string) (domain.Session, error) {
+				return session, nil
+			},
+		},
+		stubPasswordHasher{},
+		stubTokenGenerator{},
+		fixedClock{now: now},
+		24*time.Hour,
+	)
+
+	result, err := service.GetSession(context.Background(), GetSessionQuery{SessionToken: "active-token"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Account.ID != 42 {
+		t.Fatalf("unexpected account id: %d", result.Account.ID)
+	}
+	if result.Session.UserID != 42 {
+		t.Fatalf("unexpected session user id: %d", result.Session.UserID)
+	}
+}
+
+func TestServiceGetSessionExpired(t *testing.T) {
+	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
+	session := domain.Session{
+		IDHash:    hashSessionToken("expired-token"),
+		UserID:    42,
+		ExpiresAt: now.Add(-1 * time.Hour), // already expired
+		CreatedAt: now.Add(-25 * time.Hour),
+		UpdatedAt: now.Add(-25 * time.Hour),
+	}
+
+	service := NewService(
+		stubAccountRepository{},
+		stubSessionRepository{
+			getByHashFunc: func(ctx context.Context, sessionHash string) (domain.Session, error) {
+				return session, nil
+			},
+		},
+		stubPasswordHasher{},
+		stubTokenGenerator{},
+		fixedClock{now: now},
+		24*time.Hour,
+	)
+
+	_, err := service.GetSession(context.Background(), GetSessionQuery{SessionToken: "expired-token"})
+	if !errors.Is(err, domain.ErrSessionExpired) {
+		t.Fatalf("expected ErrSessionExpired, got %v", err)
+	}
+}
