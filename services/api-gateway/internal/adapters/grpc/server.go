@@ -48,6 +48,7 @@ type Server struct {
 	gatewayv1.UnimplementedStatisticsServiceServer
 	gatewayv1.UnimplementedNotificationServiceServer
 	gatewayv1.UnimplementedChatServiceServer
+	gatewayv1.UnimplementedMeetingServiceServer
 	authClient    authv1.AuthServiceClient
 	profileClient profilev1.ProfileServiceClient
 	contentClient contentv1.ContentServiceClient

@@ -37,6 +37,9 @@
     },
     {
       "name": "ChatService"
+    },
+    {
+      "name": "MeetingService"
     }
   ],
   "consumes": [
@@ -372,7 +375,6 @@
     },
     "/v1/donations/received": {
       "get": {
-        "summary": "История полученных донатов (для тренера).",
         "operationId": "DonationService_ListMyReceivedDonations",
         "responses": {
           "200": {
@@ -443,7 +445,6 @@
     },
     "/v1/measurements/sharing": {
       "get": {
-        "summary": "Получить список тренеров, которым клиент разрешил видеть свои замеры.",
         "operationId": "ProfileService_GetMyMeasurementSharing",
         "responses": {
           "200": {
@@ -464,7 +465,6 @@
         ]
       },
       "put": {
-        "summary": "Установить список тренеров, которым клиент разрешает просматривать свои замеры.",
         "operationId": "ProfileService_SetMyMeasurementSharing",
         "responses": {
           "200": {
@@ -525,6 +525,240 @@
         ],
         "tags": [
           "ProfileService"
+        ]
+      }
+    },
+    "/v1/meetings/assign": {
+      "post": {
+        "operationId": "MeetingService_AssignMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingBooking"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AssignMeetingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/rules": {
+      "get": {
+        "operationId": "MeetingService_ListMyAvailabilityRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityRulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      },
+      "post": {
+        "operationId": "MeetingService_CreateAvailabilityRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAvailabilityRuleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/rules/{rule_id}": {
+      "delete": {
+        "operationId": "MeetingService_DeleteAvailabilityRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/slots": {
+      "post": {
+        "operationId": "MeetingService_CreateAvailabilitySlot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingSlot"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAvailabilitySlotRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/slots/{slot_id}": {
+      "delete": {
+        "operationId": "MeetingService_DeleteAvailabilitySlot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/me": {
+      "get": {
+        "operationId": "MeetingService_ListMyMeetings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/{booking_id}": {
+      "delete": {
+        "operationId": "MeetingService_CancelMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
         ]
       }
     },
@@ -1644,6 +1878,88 @@
         ]
       }
     },
+    "/v1/trainers/{trainer_id}/meetings/availability": {
+      "get": {
+        "operationId": "MeetingService_GetTrainerAvailability",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/trainers/{trainer_id}/meetings/book": {
+      "post": {
+        "operationId": "MeetingService_BookMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingBooking"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MeetingServiceBookMeetingBody"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
     "/v1/trainers/{trainer_id}/subscribe": {
       "post": {
         "operationId": "SubscriptionService_SubscribeToTrainer",
@@ -1766,6 +2082,15 @@
         }
       }
     },
+    "MeetingServiceBookMeetingBody": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "NotificationServiceMarkNotificationReadBody": {
       "type": "object"
     },
@@ -1853,6 +2178,9 @@
         },
         "chat_enabled": {
           "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1881,6 +2209,26 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1AssignMeetingRequest": {
+      "type": "object",
+      "properties": {
+        "client_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_hours": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "note": {
+          "type": "string"
         }
       }
     },
@@ -2026,6 +2374,28 @@
         }
       }
     },
+    "v1CreateAvailabilityRuleRequest": {
+      "type": "object",
+      "properties": {
+        "weekday": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start_hour": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1CreateAvailabilitySlotRequest": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1CreateDonationPaymentRequest": {
       "type": "object",
       "properties": {
@@ -2055,8 +2425,7 @@
       "type": "object",
       "properties": {
         "measured_at": {
-          "type": "string",
-          "title": "\"YYYY-MM-DD\""
+          "type": "string"
         },
         "weight_kg": {
           "type": "number",
@@ -2139,6 +2508,9 @@
           "type": "string"
         },
         "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
           "type": "boolean"
         }
       }
@@ -2397,6 +2769,139 @@
           "items": {
             "type": "string",
             "format": "int64"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilityResponse": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingAvailabilitySlot"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilityRule": {
+      "type": "object",
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "weekday": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start_hour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingAvailabilityRulesResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingAvailabilityRule"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilitySlot": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingBooking": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "client_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "created_by_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "role": {
+          "type": "string"
+        },
+        "other_user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1MeetingSlot": {
+      "type": "object",
+      "properties": {
+        "slot_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingsResponse": {
+      "type": "object",
+      "properties": {
+        "bookings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingBooking"
           }
         }
       }
@@ -2846,8 +3351,7 @@
           "items": {
             "type": "string",
             "format": "int64"
-          },
-          "description": "Список trainer_user_id, которым клиент разрешает доступ к своим замерам.\nПустой список — отозвать доступ у всех."
+          }
         }
       }
     },
@@ -3031,6 +3535,9 @@
           "format": "date-time"
         },
         "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
           "type": "boolean"
         }
       }

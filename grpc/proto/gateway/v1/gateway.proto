@@ -310,6 +310,60 @@ service ChatService {
   }
 }
 
+service MeetingService {
+  rpc ListMyAvailabilityRules(google.protobuf.Empty) returns (MeetingAvailabilityRulesResponse) {
+    option (google.api.http).get = "/v1/meetings/availability/rules";
+  }
+
+  rpc CreateAvailabilityRule(CreateAvailabilityRuleRequest) returns (MeetingAvailabilityRule) {
+    option (google.api.http) = {
+      post: "/v1/meetings/availability/rules"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAvailabilityRule(DeleteAvailabilityRuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/availability/rules/{rule_id}";
+  }
+
+  rpc CreateAvailabilitySlot(CreateAvailabilitySlotRequest) returns (MeetingSlot) {
+    option (google.api.http) = {
+      post: "/v1/meetings/availability/slots"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAvailabilitySlot(DeleteAvailabilitySlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/availability/slots/{slot_id}";
+  }
+
+  rpc GetTrainerAvailability(GetTrainerAvailabilityRequest) returns (MeetingAvailabilityResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_id}/meetings/availability";
+  }
+
+  rpc BookMeeting(BookMeetingRequest) returns (MeetingBooking) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_id}/meetings/book"
+      body: "*"
+    };
+  }
+
+  rpc AssignMeeting(AssignMeetingRequest) returns (MeetingBooking) {
+    option (google.api.http) = {
+      post: "/v1/meetings/assign"
+      body: "*"
+    };
+  }
+
+  rpc ListMyMeetings(google.protobuf.Empty) returns (MeetingsResponse) {
+    option (google.api.http).get = "/v1/meetings/me";
+  }
+
+  rpc CancelMeeting(CancelMeetingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/{booking_id}";
+  }
+}
+
 message ValidationErrorField {
   string field = 1;
   string message = 2;
@@ -600,6 +654,7 @@ message Tier {
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
   bool chat_enabled = 7;
+  bool calendar_enabled = 8;
 }
 
 message TiersResponse {
@@ -611,6 +666,7 @@ message CreateTierRequest {
   int32 price = 2;
   optional string description = 3;
   bool chat_enabled = 4;
+  bool calendar_enabled = 5;
 }
 
 message UpdateTierRequest {
@@ -620,6 +676,7 @@ message UpdateTierRequest {
   optional string description = 4;
   bool clear_description = 5;
   optional bool chat_enabled = 6;
+  optional bool calendar_enabled = 7;
 }
 
 message DeleteTierRequest {
@@ -900,4 +957,87 @@ message ListConversationsResponse {
 
 message MarkMessageReadRequest {
   int64 message_id = 1;
+}
+
+message MeetingAvailabilityRule {
+  int64 rule_id = 1;
+  int32 weekday = 2;
+  int32 start_hour = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message MeetingAvailabilityRulesResponse {
+  repeated MeetingAvailabilityRule rules = 1;
+}
+
+message CreateAvailabilityRuleRequest {
+  int32 weekday = 1;
+  int32 start_hour = 2;
+}
+
+message DeleteAvailabilityRuleRequest {
+  int64 rule_id = 1;
+}
+
+message MeetingSlot {
+  int64 slot_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message CreateAvailabilitySlotRequest {
+  google.protobuf.Timestamp starts_at = 1;
+}
+
+message DeleteAvailabilitySlotRequest {
+  int64 slot_id = 1;
+}
+
+message MeetingAvailabilitySlot {
+  google.protobuf.Timestamp starts_at = 1;
+  google.protobuf.Timestamp ends_at = 2;
+}
+
+message GetTrainerAvailabilityRequest {
+  int64 trainer_id = 1;
+  string from = 2;
+  string to = 3;
+}
+
+message MeetingAvailabilityResponse {
+  repeated MeetingAvailabilitySlot slots = 1;
+}
+
+message MeetingBooking {
+  int64 booking_id = 1;
+  int64 trainer_user_id = 2;
+  int64 client_user_id = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp ends_at = 5;
+  string status = 6;
+  int64 created_by_user_id = 7;
+  optional string note = 8;
+  google.protobuf.Timestamp created_at = 9;
+  string role = 10;
+  int64 other_user_id = 11;
+}
+
+message BookMeetingRequest {
+  int64 trainer_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+}
+
+message AssignMeetingRequest {
+  int64 client_user_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  int32 duration_hours = 3;
+  optional string note = 4;
+}
+
+message MeetingsResponse {
+  repeated MeetingBooking bookings = 1;
+}
+
+message CancelMeetingRequest {
+  int64 booking_id = 1;
 }

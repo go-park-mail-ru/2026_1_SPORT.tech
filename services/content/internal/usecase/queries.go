@@ -96,3 +96,18 @@ type ListChatMessagesQuery struct {
 type ListChatConversationsQuery struct {
 	UserID int64
 }
+
+type ListMeetingAvailabilityRulesQuery struct {
+	TrainerUserID int64
+}
+
+type ListTrainerMeetingAvailabilityQuery struct {
+	TrainerUserID int64
+	ViewerUserID  int64
+	From          string
+	To            string
+}
+
+type ListMeetingsQuery struct {
+	UserID int64
+}

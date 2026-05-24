@@ -20,6 +20,7 @@ type Service struct {
 	engagement      EngagementRepository
 	notifications   NotificationRepository
 	chat            ChatRepository
+	meeting         MeetingRepository
 	postMedia       PostMediaStorage
 	paymentProvider PaymentProvider
 }
@@ -36,6 +37,7 @@ func NewService(repositories Repositories, postMediaStorage PostMediaStorage, pa
 		engagement:      repositories.Engagement,
 		notifications:   repositories.Notifications,
 		chat:            repositories.Chat,
+		meeting:         repositories.Meeting,
 		postMedia:       postMediaStorage,
 		paymentProvider: paymentProvider,
 	}

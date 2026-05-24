@@ -1371,6 +1371,9 @@
         },
         "chat_enabled": {
           "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1493,6 +1496,9 @@
           "type": "boolean"
         },
         "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
           "type": "boolean"
         }
       }
@@ -2361,6 +2367,9 @@
           "format": "date-time"
         },
         "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
           "type": "boolean"
         }
       }

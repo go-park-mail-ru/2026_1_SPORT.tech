@@ -17,11 +17,12 @@ func (service *Service) ListSubscriptionTiers(ctx context.Context, query ListSub
 
 func (service *Service) CreateSubscriptionTier(ctx context.Context, command CreateSubscriptionTierCommand) (domain.SubscriptionTier, error) {
 	tier := domain.SubscriptionTier{
-		TrainerUserID: command.TrainerUserID,
-		Name:          normalizeRequiredText(command.Name),
-		Price:         command.Price,
-		Description:   normalizeOptionalText(command.Description),
-		ChatEnabled:   command.ChatEnabled,
+		TrainerUserID:   command.TrainerUserID,
+		Name:            normalizeRequiredText(command.Name),
+		Price:           command.Price,
+		Description:     normalizeOptionalText(command.Description),
+		ChatEnabled:     command.ChatEnabled,
+		CalendarEnabled: command.CalendarEnabled,
 	}
 	if err := validateSubscriptionTier(tier); err != nil {
 		return domain.SubscriptionTier{}, err
@@ -54,6 +55,9 @@ func (service *Service) UpdateSubscriptionTier(ctx context.Context, command Upda
 	}
 	if command.ChatEnabled != nil {
 		tier.ChatEnabled = *command.ChatEnabled
+	}
+	if command.CalendarEnabled != nil {
+		tier.CalendarEnabled = *command.CalendarEnabled
 	}
 
 	if err := validateSubscriptionTier(tier); err != nil {

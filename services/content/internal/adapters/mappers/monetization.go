@@ -15,11 +15,12 @@ func ListSubscriptionTiersRequestToQuery(request *contentv1.ListSubscriptionTier
 
 func CreateSubscriptionTierRequestToCommand(request *contentv1.CreateSubscriptionTierRequest) usecase.CreateSubscriptionTierCommand {
 	return usecase.CreateSubscriptionTierCommand{
-		TrainerUserID: request.GetTrainerUserId(),
-		Name:          request.GetName(),
-		Price:         request.GetPrice(),
-		Description:   request.Description,
-		ChatEnabled:   request.GetChatEnabled(),
+		TrainerUserID:   request.GetTrainerUserId(),
+		Name:            request.GetName(),
+		Price:           request.GetPrice(),
+		Description:     request.Description,
+		ChatEnabled:     request.GetChatEnabled(),
+		CalendarEnabled: request.GetCalendarEnabled(),
 	}
 }
 
@@ -32,6 +33,7 @@ func UpdateSubscriptionTierRequestToCommand(request *contentv1.UpdateSubscriptio
 		Description:      request.Description,
 		ClearDescription: request.GetClearDescription(),
 		ChatEnabled:      request.ChatEnabled,
+		CalendarEnabled:  request.CalendarEnabled,
 	}
 }
 
@@ -207,13 +209,14 @@ func NewTrainerStatisticsResponse(statistics domain.TrainerStatistics) *contentv
 
 func subscriptionTierToProto(tier domain.SubscriptionTier) *contentv1.SubscriptionTier {
 	response := &contentv1.SubscriptionTier{
-		TierId:        tier.TierID,
-		TrainerUserId: tier.TrainerUserID,
-		Name:          tier.Name,
-		Price:         tier.Price,
-		ChatEnabled:   tier.ChatEnabled,
-		CreatedAt:     timestamppb.New(tier.CreatedAt),
-		UpdatedAt:     timestamppb.New(tier.UpdatedAt),
+		TierId:          tier.TierID,
+		TrainerUserId:   tier.TrainerUserID,
+		Name:            tier.Name,
+		Price:           tier.Price,
+		ChatEnabled:     tier.ChatEnabled,
+		CalendarEnabled: tier.CalendarEnabled,
+		CreatedAt:       timestamppb.New(tier.CreatedAt),
+		UpdatedAt:       timestamppb.New(tier.UpdatedAt),
 	}
 	if tier.Description != nil {
 		response.Description = tier.Description

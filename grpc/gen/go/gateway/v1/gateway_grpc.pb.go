@@ -338,9 +338,7 @@ type ProfileServiceClient interface {
 	CreateMyMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
 	ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error)
 	DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Установить список тренеров, которым клиент разрешает просматривать свои замеры.
 	SetMyMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
 	GetMyMeasurementSharing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeasurementSharingResponse, error)
 }
 
@@ -486,9 +484,7 @@ type ProfileServiceServer interface {
 	CreateMyMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
 	ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error)
 	DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
-	// Установить список тренеров, которым клиент разрешает просматривать свои замеры.
 	SetMyMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error)
-	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
 	GetMyMeasurementSharing(context.Context, *emptypb.Empty) (*MeasurementSharingResponse, error)
 }
 
@@ -1889,7 +1885,6 @@ const (
 type DonationServiceClient interface {
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
 	GetMyBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BalanceResponse, error)
-	// История полученных донатов (для тренера).
 	ListMyReceivedDonations(ctx context.Context, in *ListDonationsRequest, opts ...grpc.CallOption) (*ListDonationsResponse, error)
 }
 
@@ -1937,7 +1932,6 @@ func (c *donationServiceClient) ListMyReceivedDonations(ctx context.Context, in 
 type DonationServiceServer interface {
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
 	GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error)
-	// История полученных донатов (для тренера).
 	ListMyReceivedDonations(context.Context, *ListDonationsRequest) (*ListDonationsResponse, error)
 }
 
@@ -2677,6 +2671,448 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarkMessageRead",
 			Handler:    _ChatService_MarkMessageRead_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	MeetingService_ListMyAvailabilityRules_FullMethodName = "/sporttech.gateway.v1.MeetingService/ListMyAvailabilityRules"
+	MeetingService_CreateAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilityRule"
+	MeetingService_DeleteAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilityRule"
+	MeetingService_CreateAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilitySlot"
+	MeetingService_DeleteAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilitySlot"
+	MeetingService_GetTrainerAvailability_FullMethodName  = "/sporttech.gateway.v1.MeetingService/GetTrainerAvailability"
+	MeetingService_BookMeeting_FullMethodName             = "/sporttech.gateway.v1.MeetingService/BookMeeting"
+	MeetingService_AssignMeeting_FullMethodName           = "/sporttech.gateway.v1.MeetingService/AssignMeeting"
+	MeetingService_ListMyMeetings_FullMethodName          = "/sporttech.gateway.v1.MeetingService/ListMyMeetings"
+	MeetingService_CancelMeeting_FullMethodName           = "/sporttech.gateway.v1.MeetingService/CancelMeeting"
+)
+
+// MeetingServiceClient is the client API for MeetingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MeetingServiceClient interface {
+	ListMyAvailabilityRules(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingAvailabilityRulesResponse, error)
+	CreateAvailabilityRule(ctx context.Context, in *CreateAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error)
+	DeleteAvailabilityRule(ctx context.Context, in *DeleteAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateAvailabilitySlot(ctx context.Context, in *CreateAvailabilitySlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error)
+	DeleteAvailabilitySlot(ctx context.Context, in *DeleteAvailabilitySlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetTrainerAvailability(ctx context.Context, in *GetTrainerAvailabilityRequest, opts ...grpc.CallOption) (*MeetingAvailabilityResponse, error)
+	BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	ListMyMeetings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingsResponse, error)
+	CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type meetingServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMeetingServiceClient(cc grpc.ClientConnInterface) MeetingServiceClient {
+	return &meetingServiceClient{cc}
+}
+
+func (c *meetingServiceClient) ListMyAvailabilityRules(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingAvailabilityRulesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityRulesResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyAvailabilityRules_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CreateAvailabilityRule(ctx context.Context, in *CreateAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityRule)
+	err := c.cc.Invoke(ctx, MeetingService_CreateAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) DeleteAvailabilityRule(ctx context.Context, in *DeleteAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_DeleteAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CreateAvailabilitySlot(ctx context.Context, in *CreateAvailabilitySlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingSlot)
+	err := c.cc.Invoke(ctx, MeetingService_CreateAvailabilitySlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) DeleteAvailabilitySlot(ctx context.Context, in *DeleteAvailabilitySlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_DeleteAvailabilitySlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) GetTrainerAvailability(ctx context.Context, in *GetTrainerAvailabilityRequest, opts ...grpc.CallOption) (*MeetingAvailabilityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityResponse)
+	err := c.cc.Invoke(ctx, MeetingService_GetTrainerAvailability_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, MeetingService_BookMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, MeetingService_AssignMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) ListMyMeetings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingsResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyMeetings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_CancelMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MeetingServiceServer is the server API for MeetingService service.
+// All implementations should embed UnimplementedMeetingServiceServer
+// for forward compatibility.
+type MeetingServiceServer interface {
+	ListMyAvailabilityRules(context.Context, *emptypb.Empty) (*MeetingAvailabilityRulesResponse, error)
+	CreateAvailabilityRule(context.Context, *CreateAvailabilityRuleRequest) (*MeetingAvailabilityRule, error)
+	DeleteAvailabilityRule(context.Context, *DeleteAvailabilityRuleRequest) (*emptypb.Empty, error)
+	CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error)
+	DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error)
+	GetTrainerAvailability(context.Context, *GetTrainerAvailabilityRequest) (*MeetingAvailabilityResponse, error)
+	BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error)
+	AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error)
+	ListMyMeetings(context.Context, *emptypb.Empty) (*MeetingsResponse, error)
+	CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error)
+}
+
+// UnimplementedMeetingServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedMeetingServiceServer struct{}
+
+func (UnimplementedMeetingServiceServer) ListMyAvailabilityRules(context.Context, *emptypb.Empty) (*MeetingAvailabilityRulesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyAvailabilityRules not implemented")
+}
+func (UnimplementedMeetingServiceServer) CreateAvailabilityRule(context.Context, *CreateAvailabilityRuleRequest) (*MeetingAvailabilityRule, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateAvailabilityRule not implemented")
+}
+func (UnimplementedMeetingServiceServer) DeleteAvailabilityRule(context.Context, *DeleteAvailabilityRuleRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAvailabilityRule not implemented")
+}
+func (UnimplementedMeetingServiceServer) CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateAvailabilitySlot not implemented")
+}
+func (UnimplementedMeetingServiceServer) DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAvailabilitySlot not implemented")
+}
+func (UnimplementedMeetingServiceServer) GetTrainerAvailability(context.Context, *GetTrainerAvailabilityRequest) (*MeetingAvailabilityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetTrainerAvailability not implemented")
+}
+func (UnimplementedMeetingServiceServer) BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method BookMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method AssignMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) ListMyMeetings(context.Context, *emptypb.Empty) (*MeetingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyMeetings not implemented")
+}
+func (UnimplementedMeetingServiceServer) CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) testEmbeddedByValue() {}
+
+// UnsafeMeetingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MeetingServiceServer will
+// result in compilation errors.
+type UnsafeMeetingServiceServer interface {
+	mustEmbedUnimplementedMeetingServiceServer()
+}
+
+func RegisterMeetingServiceServer(s grpc.ServiceRegistrar, srv MeetingServiceServer) {
+	// If the following call panics, it indicates UnimplementedMeetingServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&MeetingService_ServiceDesc, srv)
+}
+
+func _MeetingService_ListMyAvailabilityRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyAvailabilityRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyAvailabilityRules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyAvailabilityRules(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CreateAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CreateAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CreateAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CreateAvailabilityRule(ctx, req.(*CreateAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_DeleteAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).DeleteAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_DeleteAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).DeleteAvailabilityRule(ctx, req.(*DeleteAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CreateAvailabilitySlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAvailabilitySlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CreateAvailabilitySlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CreateAvailabilitySlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CreateAvailabilitySlot(ctx, req.(*CreateAvailabilitySlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_DeleteAvailabilitySlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAvailabilitySlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).DeleteAvailabilitySlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_DeleteAvailabilitySlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).DeleteAvailabilitySlot(ctx, req.(*DeleteAvailabilitySlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_GetTrainerAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTrainerAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).GetTrainerAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_GetTrainerAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).GetTrainerAvailability(ctx, req.(*GetTrainerAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_BookMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).BookMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_BookMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).BookMeeting(ctx, req.(*BookMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_AssignMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).AssignMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_AssignMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).AssignMeeting(ctx, req.(*AssignMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_ListMyMeetings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyMeetings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyMeetings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyMeetings(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CancelMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CancelMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CancelMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CancelMeeting(ctx, req.(*CancelMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// MeetingService_ServiceDesc is the grpc.ServiceDesc for MeetingService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var MeetingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.MeetingService",
+	HandlerType: (*MeetingServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListMyAvailabilityRules",
+			Handler:    _MeetingService_ListMyAvailabilityRules_Handler,
+		},
+		{
+			MethodName: "CreateAvailabilityRule",
+			Handler:    _MeetingService_CreateAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "DeleteAvailabilityRule",
+			Handler:    _MeetingService_DeleteAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "CreateAvailabilitySlot",
+			Handler:    _MeetingService_CreateAvailabilitySlot_Handler,
+		},
+		{
+			MethodName: "DeleteAvailabilitySlot",
+			Handler:    _MeetingService_DeleteAvailabilitySlot_Handler,
+		},
+		{
+			MethodName: "GetTrainerAvailability",
+			Handler:    _MeetingService_GetTrainerAvailability_Handler,
+		},
+		{
+			MethodName: "BookMeeting",
+			Handler:    _MeetingService_BookMeeting_Handler,
+		},
+		{
+			MethodName: "AssignMeeting",
+			Handler:    _MeetingService_AssignMeeting_Handler,
+		},
+		{
+			MethodName: "ListMyMeetings",
+			Handler:    _MeetingService_ListMyMeetings_Handler,
+		},
+		{
+			MethodName: "CancelMeeting",
+			Handler:    _MeetingService_CancelMeeting_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

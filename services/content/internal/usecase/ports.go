@@ -14,6 +14,7 @@ type Repositories struct {
 	Engagement    EngagementRepository
 	Notifications NotificationRepository
 	Chat          ChatRepository
+	Meeting       MeetingRepository
 }
 
 type PostRepository interface {
@@ -69,6 +70,22 @@ type ChatRepository interface {
 	ListChatMessages(ctx context.Context, userID int64, otherUserID int64, limit int32, offset int32) ([]domain.ChatMessage, error)
 	ListChatConversations(ctx context.Context, userID int64) ([]domain.ChatConversation, error)
 	MarkChatMessageRead(ctx context.Context, userID int64, messageID int64) error
+}
+
+type MeetingRepository interface {
+	HasActiveCalendarSubscription(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error)
+	CreateMeetingAvailabilityRule(ctx context.Context, rule domain.MeetingAvailabilityRule) (domain.MeetingAvailabilityRule, error)
+	ListMeetingAvailabilityRules(ctx context.Context, trainerUserID int64) ([]domain.MeetingAvailabilityRule, error)
+	DeleteMeetingAvailabilityRule(ctx context.Context, trainerUserID int64, ruleID int64) error
+	CreateMeetingSlot(ctx context.Context, slot domain.MeetingSlot) (domain.MeetingSlot, error)
+	DeleteMeetingSlot(ctx context.Context, trainerUserID int64, slotID int64) error
+	ListMeetingSlots(ctx context.Context, trainerUserID int64, from time.Time, to time.Time) ([]domain.MeetingSlot, error)
+	ListConfirmedBookings(ctx context.Context, trainerUserID int64, from time.Time, to time.Time) ([]domain.MeetingBooking, error)
+	CountActiveClientBookings(ctx context.Context, clientUserID int64, trainerUserID int64, now time.Time) (int32, error)
+	CreateBooking(ctx context.Context, booking domain.MeetingBooking) (domain.MeetingBooking, error)
+	GetBooking(ctx context.Context, bookingID int64) (domain.MeetingBooking, error)
+	CancelBooking(ctx context.Context, bookingID int64, cancelledByUserID int64) (domain.MeetingBooking, error)
+	ListUserBookings(ctx context.Context, userID int64) ([]domain.MeetingBooking, error)
 }
 
 type PostMediaStorage interface {

@@ -67,6 +67,19 @@ type ChatUseCase interface {
 	MarkChatMessageRead(ctx context.Context, command usecase.MarkChatMessageReadCommand) error
 }
 
+type MeetingUseCase interface {
+	CreateMeetingAvailabilityRule(ctx context.Context, command usecase.CreateMeetingAvailabilityRuleCommand) (domain.MeetingAvailabilityRule, error)
+	ListMeetingAvailabilityRules(ctx context.Context, query usecase.ListMeetingAvailabilityRulesQuery) ([]domain.MeetingAvailabilityRule, error)
+	DeleteMeetingAvailabilityRule(ctx context.Context, command usecase.DeleteMeetingAvailabilityRuleCommand) error
+	CreateMeetingSlot(ctx context.Context, command usecase.CreateMeetingSlotCommand) (domain.MeetingSlot, error)
+	DeleteMeetingSlot(ctx context.Context, command usecase.DeleteMeetingSlotCommand) error
+	ListTrainerMeetingAvailability(ctx context.Context, query usecase.ListTrainerMeetingAvailabilityQuery) ([]domain.MeetingAvailabilitySlot, error)
+	BookMeeting(ctx context.Context, command usecase.BookMeetingCommand) (domain.MeetingBooking, error)
+	AssignMeeting(ctx context.Context, command usecase.AssignMeetingCommand) (domain.MeetingBooking, error)
+	CancelMeeting(ctx context.Context, command usecase.CancelMeetingCommand) error
+	ListMeetings(ctx context.Context, query usecase.ListMeetingsQuery) ([]domain.MeetingBooking, error)
+}
+
 type UseCases struct {
 	Posts         PostUseCase
 	PostMedia     PostMediaUseCase
@@ -76,6 +89,7 @@ type UseCases struct {
 	Donations     DonationUseCase
 	Notifications NotificationUseCase
 	Chat          ChatUseCase
+	Meeting       MeetingUseCase
 }
 
 type Server struct {

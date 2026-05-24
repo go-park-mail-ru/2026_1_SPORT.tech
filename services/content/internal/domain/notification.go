@@ -10,6 +10,7 @@ const (
 	NotificationTypeLike         NotificationType = "like"
 	NotificationTypePost         NotificationType = "post"
 	NotificationTypeSubscription NotificationType = "subscription"
+	NotificationTypeMeeting      NotificationType = "meeting"
 )
 
 type Notification struct {
@@ -37,7 +38,8 @@ func (notificationType NotificationType) IsValid() bool {
 		NotificationTypeDonation,
 		NotificationTypeLike,
 		NotificationTypePost,
-		NotificationTypeSubscription:
+		NotificationTypeSubscription,
+		NotificationTypeMeeting:
 		return true
 	default:
 		return false

@@ -48,9 +48,7 @@ type ProfileServiceClient interface {
 	CreateMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
 	ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error)
 	DeleteMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Установить список тренеров, которым клиент разрешает видеть свои замеры.
 	SetMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
 	GetMeasurementSharing(ctx context.Context, in *GetMeasurementSharingRequest, opts ...grpc.CallOption) (*MeasurementSharingResponse, error)
 }
 
@@ -196,9 +194,7 @@ type ProfileServiceServer interface {
 	CreateMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
 	ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error)
 	DeleteMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
-	// Установить список тренеров, которым клиент разрешает видеть свои замеры.
 	SetMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error)
-	// Получить список тренеров, которым клиент разрешил видеть свои замеры.
 	GetMeasurementSharing(context.Context, *GetMeasurementSharingRequest) (*MeasurementSharingResponse, error)
 }
 

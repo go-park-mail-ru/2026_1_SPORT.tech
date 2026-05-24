@@ -191,6 +191,17 @@ service ContentService {
       body: "*"
     };
   }
+
+  rpc CreateMeetingAvailabilityRule(CreateMeetingAvailabilityRuleRequest) returns (MeetingAvailabilityRule);
+  rpc ListMeetingAvailabilityRules(ListMeetingAvailabilityRulesRequest) returns (ListMeetingAvailabilityRulesResponse);
+  rpc DeleteMeetingAvailabilityRule(DeleteMeetingAvailabilityRuleRequest) returns (google.protobuf.Empty);
+  rpc CreateMeetingSlot(CreateMeetingSlotRequest) returns (MeetingSlot);
+  rpc DeleteMeetingSlot(DeleteMeetingSlotRequest) returns (google.protobuf.Empty);
+  rpc ListTrainerMeetingAvailability(ListTrainerMeetingAvailabilityRequest) returns (ListTrainerMeetingAvailabilityResponse);
+  rpc BookMeeting(BookMeetingRequest) returns (MeetingBooking);
+  rpc AssignMeeting(AssignMeetingRequest) returns (MeetingBooking);
+  rpc CancelMeeting(CancelMeetingRequest) returns (google.protobuf.Empty);
+  rpc ListMeetings(ListMeetingsRequest) returns (ListMeetingsResponse);
 }
 
 enum ContentBlockKind {
@@ -356,6 +367,7 @@ message SubscriptionTier {
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
   bool chat_enabled = 8;
+  bool calendar_enabled = 9;
 }
 
 message ListSubscriptionTiersRequest {
@@ -372,6 +384,7 @@ message CreateSubscriptionTierRequest {
   int32 price = 3;
   optional string description = 4;
   bool chat_enabled = 5;
+  bool calendar_enabled = 6;
 }
 
 message UpdateSubscriptionTierRequest {
@@ -382,6 +395,7 @@ message UpdateSubscriptionTierRequest {
   optional string description = 5;
   bool clear_description = 6;
   optional bool chat_enabled = 7;
+  optional bool calendar_enabled = 8;
 }
 
 message DeleteSubscriptionTierRequest {
@@ -642,6 +656,105 @@ message ListChatConversationsResponse {
 message MarkChatMessageReadRequest {
   int64 user_id = 1;
   int64 message_id = 2;
+}
+
+message MeetingAvailabilityRule {
+  int64 rule_id = 1;
+  int64 trainer_user_id = 2;
+  int32 weekday = 3;
+  int32 start_hour = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message MeetingSlot {
+  int64 slot_id = 1;
+  int64 trainer_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message MeetingAvailabilitySlot {
+  google.protobuf.Timestamp starts_at = 1;
+  google.protobuf.Timestamp ends_at = 2;
+}
+
+message MeetingBooking {
+  int64 booking_id = 1;
+  int64 trainer_user_id = 2;
+  int64 client_user_id = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp ends_at = 5;
+  string status = 6;
+  int64 created_by_user_id = 7;
+  optional string note = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message CreateMeetingAvailabilityRuleRequest {
+  int64 trainer_user_id = 1;
+  int32 weekday = 2;
+  int32 start_hour = 3;
+}
+
+message ListMeetingAvailabilityRulesRequest {
+  int64 trainer_user_id = 1;
+}
+
+message ListMeetingAvailabilityRulesResponse {
+  repeated MeetingAvailabilityRule rules = 1;
+}
+
+message DeleteMeetingAvailabilityRuleRequest {
+  int64 trainer_user_id = 1;
+  int64 rule_id = 2;
+}
+
+message CreateMeetingSlotRequest {
+  int64 trainer_user_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+}
+
+message DeleteMeetingSlotRequest {
+  int64 trainer_user_id = 1;
+  int64 slot_id = 2;
+}
+
+message ListTrainerMeetingAvailabilityRequest {
+  int64 trainer_user_id = 1;
+  int64 viewer_user_id = 2;
+  string from = 3;
+  string to = 4;
+}
+
+message ListTrainerMeetingAvailabilityResponse {
+  repeated MeetingAvailabilitySlot slots = 1;
+}
+
+message BookMeetingRequest {
+  int64 client_user_id = 1;
+  int64 trainer_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+}
+
+message AssignMeetingRequest {
+  int64 trainer_user_id = 1;
+  int64 client_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+  int32 duration_hours = 4;
+  optional string note = 5;
+}
+
+message CancelMeetingRequest {
+  int64 user_id = 1;
+  int64 booking_id = 2;
+}
+
+message ListMeetingsRequest {
+  int64 user_id = 1;
+}
+
+message ListMeetingsResponse {
+  repeated MeetingBooking bookings = 1;
 }
 
 message DonationRecord {

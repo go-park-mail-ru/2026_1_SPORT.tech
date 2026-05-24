@@ -1,5 +1,7 @@
 package usecase
 
+import "time"
+
 type CreatePostCommand struct {
 	AuthorUserID              int64
 	Title                     string
@@ -46,11 +48,12 @@ type CreateCommentCommand struct {
 }
 
 type CreateSubscriptionTierCommand struct {
-	TrainerUserID int64
-	Name          string
-	Price         int32
-	Description   *string
-	ChatEnabled   bool
+	TrainerUserID   int64
+	Name            string
+	Price           int32
+	Description     *string
+	ChatEnabled     bool
+	CalendarEnabled bool
 }
 
 type UpdateSubscriptionTierCommand struct {
@@ -61,6 +64,7 @@ type UpdateSubscriptionTierCommand struct {
 	Description      *string
 	ClearDescription bool
 	ChatEnabled      *bool
+	CalendarEnabled  *bool
 }
 
 type DeleteSubscriptionTierCommand struct {
@@ -131,4 +135,44 @@ type SendChatMessageCommand struct {
 type MarkChatMessageReadCommand struct {
 	UserID    int64
 	MessageID int64
+}
+
+type CreateMeetingAvailabilityRuleCommand struct {
+	TrainerUserID int64
+	Weekday       int32
+	StartHour     int32
+}
+
+type DeleteMeetingAvailabilityRuleCommand struct {
+	TrainerUserID int64
+	RuleID        int64
+}
+
+type CreateMeetingSlotCommand struct {
+	TrainerUserID int64
+	StartsAt      time.Time
+}
+
+type DeleteMeetingSlotCommand struct {
+	TrainerUserID int64
+	SlotID        int64
+}
+
+type BookMeetingCommand struct {
+	ClientUserID  int64
+	TrainerUserID int64
+	StartsAt      time.Time
+}
+
+type AssignMeetingCommand struct {
+	TrainerUserID int64
+	ClientUserID  int64
+	StartsAt      time.Time
+	DurationHours int32
+	Note          *string
+}
+
+type CancelMeetingCommand struct {
+	UserID    int64
+	BookingID int64
 }

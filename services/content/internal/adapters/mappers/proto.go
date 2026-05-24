@@ -56,7 +56,17 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, usecase.ErrInvalidNotificationTitle),
 		errors.Is(err, usecase.ErrInvalidNotificationBody),
 		errors.Is(err, domain.ErrInvalidBlockKind),
-		errors.Is(err, domain.ErrInvalidBlockData):
+		errors.Is(err, domain.ErrInvalidBlockData),
+		errors.Is(err, usecase.ErrInvalidMeetingWeekday),
+		errors.Is(err, usecase.ErrInvalidMeetingHour),
+		errors.Is(err, usecase.ErrInvalidMeetingTime),
+		errors.Is(err, usecase.ErrMeetingTimeInPast),
+		errors.Is(err, usecase.ErrInvalidMeetingDuration),
+		errors.Is(err, usecase.ErrInvalidMeetingRange),
+		errors.Is(err, usecase.ErrInvalidMeetingRuleID),
+		errors.Is(err, usecase.ErrInvalidMeetingSlotID),
+		errors.Is(err, usecase.ErrInvalidMeetingBookingID),
+		errors.Is(err, usecase.ErrInvalidMeetingNote):
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, domain.ErrPostNotFound),
 		errors.Is(err, domain.ErrCommentNotFound),
@@ -65,18 +75,27 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, domain.ErrDonationNotFound),
 		errors.Is(err, domain.ErrPaymentNotFound),
 		errors.Is(err, domain.ErrNotificationNotFound),
-		errors.Is(err, domain.ErrChatMessageNotFound):
+		errors.Is(err, domain.ErrChatMessageNotFound),
+		errors.Is(err, domain.ErrMeetingRuleNotFound),
+		errors.Is(err, domain.ErrMeetingSlotNotFound),
+		errors.Is(err, domain.ErrMeetingBookingNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden),
 		errors.Is(err, domain.ErrPaymentForbidden),
 		errors.Is(err, domain.ErrPaymentTokenMismatch),
-		errors.Is(err, domain.ErrChatAccessForbidden):
+		errors.Is(err, domain.ErrChatAccessForbidden),
+		errors.Is(err, domain.ErrMeetingAccessForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
 	case errors.Is(err, domain.ErrSubscriptionTierInUse),
 		errors.Is(err, domain.ErrPaymentAlreadyConfirmed),
 		errors.Is(err, usecase.ErrPaymentNotSucceeded),
-		errors.Is(err, usecase.ErrSubscriptionPaymentRequired):
+		errors.Is(err, usecase.ErrSubscriptionPaymentRequired),
+		errors.Is(err, domain.ErrMeetingSlotUnavailable),
+		errors.Is(err, domain.ErrMeetingNotCancelable):
 		return status.Error(codes.FailedPrecondition, err.Error())
+	case errors.Is(err, domain.ErrMeetingSlotTaken),
+		errors.Is(err, domain.ErrMeetingClientLimit):
+		return status.Error(codes.AlreadyExists, err.Error())
 	case errors.Is(err, usecase.ErrPostMediaStorageUnavailable),
 		errors.Is(err, usecase.ErrPaymentProviderUnavailable):
 		return status.Error(codes.Unavailable, err.Error())

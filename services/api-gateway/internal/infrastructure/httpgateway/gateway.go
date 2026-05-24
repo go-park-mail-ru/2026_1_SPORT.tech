@@ -27,6 +27,7 @@ func NewMux(
 	statisticsServer gatewayv1.StatisticsServiceServer,
 	notificationServer gatewayv1.NotificationServiceServer,
 	chatServer gatewayv1.ChatServiceServer,
+	meetingServer gatewayv1.MeetingServiceServer,
 ) (http.Handler, error) {
 	mux := newMux()
 
@@ -61,6 +62,9 @@ func NewMux(
 		return nil, err
 	}
 	if err := gatewayv1.RegisterChatServiceHandlerServer(ctx, mux, chatServer); err != nil {
+		return nil, err
+	}
+	if err := gatewayv1.RegisterMeetingServiceHandlerServer(ctx, mux, meetingServer); err != nil {
 		return nil, err
 	}
 

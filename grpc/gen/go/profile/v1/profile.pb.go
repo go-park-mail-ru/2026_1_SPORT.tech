@@ -1175,7 +1175,7 @@ func (x *ListMeasurementsResponse) GetMeasurements() []*Measurement {
 type CreateMeasurementRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	MeasuredAt    string                 `protobuf:"bytes,2,opt,name=measured_at,json=measuredAt,proto3" json:"measured_at,omitempty"` // "YYYY-MM-DD"
+	MeasuredAt    string                 `protobuf:"bytes,2,opt,name=measured_at,json=measuredAt,proto3" json:"measured_at,omitempty"`
 	WeightKg      *float64               `protobuf:"fixed64,3,opt,name=weight_kg,json=weightKg,proto3,oneof" json:"weight_kg,omitempty"`
 	BodyFatPct    *float64               `protobuf:"fixed64,4,opt,name=body_fat_pct,json=bodyFatPct,proto3,oneof" json:"body_fat_pct,omitempty"`
 	ChestCm       *int32                 `protobuf:"varint,5,opt,name=chest_cm,json=chestCm,proto3,oneof" json:"chest_cm,omitempty"`
@@ -1273,12 +1273,11 @@ func (x *CreateMeasurementRequest) GetNotes() string {
 }
 
 type ListMeasurementsRequest struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	UserId int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Limit  int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
-	// Кто запрашивает данные. 0 = сам пользователь (без ограничений).
-	ViewerUserId  int64 `protobuf:"varint,4,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	ViewerUserId  int64                  `protobuf:"varint,4,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1394,10 +1393,9 @@ func (x *DeleteMeasurementRequest) GetMeasurementId() int64 {
 }
 
 type SetMeasurementSharingRequest struct {
-	state        protoimpl.MessageState `protogen:"open.v1"`
-	ClientUserId int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
-	// Список trainer_user_id, которым разрешён доступ.
-	TrainerUserIds []int64 `protobuf:"varint,2,rep,packed,name=trainer_user_ids,json=trainerUserIds,proto3" json:"trainer_user_ids,omitempty"`
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId   int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	TrainerUserIds []int64                `protobuf:"varint,2,rep,packed,name=trainer_user_ids,json=trainerUserIds,proto3" json:"trainer_user_ids,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }

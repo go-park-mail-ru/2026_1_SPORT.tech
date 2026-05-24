@@ -82,7 +82,6 @@
     },
     "/v1/profiles/{client_user_id}/measurements/sharing": {
       "get": {
-        "summary": "Получить список тренеров, которым клиент разрешил видеть свои замеры.",
         "operationId": "ProfileService_GetMeasurementSharing",
         "responses": {
           "200": {
@@ -112,7 +111,6 @@
         ]
       },
       "put": {
-        "summary": "Установить список тренеров, которым клиент разрешает видеть свои замеры.",
         "operationId": "ProfileService_SetMeasurementSharing",
         "responses": {
           "200": {
@@ -329,7 +327,6 @@
           },
           {
             "name": "viewer_user_id",
-            "description": "Кто запрашивает данные. 0 = сам пользователь (без ограничений).",
             "in": "query",
             "required": false,
             "type": "string",
@@ -445,8 +442,7 @@
       "type": "object",
       "properties": {
         "measured_at": {
-          "type": "string",
-          "title": "\"YYYY-MM-DD\""
+          "type": "string"
         },
         "weight_kg": {
           "type": "number",
@@ -481,8 +477,7 @@
           "items": {
             "type": "string",
             "format": "int64"
-          },
-          "description": "Список trainer_user_id, которым разрешён доступ."
+          }
         }
       }
     },

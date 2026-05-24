@@ -9,11 +9,12 @@ import (
 
 func CreateTierRequestToContent(trainerUserID int64, request *gatewayv1.CreateTierRequest) *contentv1.CreateSubscriptionTierRequest {
 	return &contentv1.CreateSubscriptionTierRequest{
-		TrainerUserId: trainerUserID,
-		Name:          request.GetName(),
-		Price:         request.GetPrice(),
-		Description:   request.Description,
-		ChatEnabled:   request.GetChatEnabled(),
+		TrainerUserId:   trainerUserID,
+		Name:            request.GetName(),
+		Price:           request.GetPrice(),
+		Description:     request.Description,
+		ChatEnabled:     request.GetChatEnabled(),
+		CalendarEnabled: request.GetCalendarEnabled(),
 	}
 }
 
@@ -26,6 +27,7 @@ func UpdateTierRequestToContent(trainerUserID int64, request *gatewayv1.UpdateTi
 		Description:      request.Description,
 		ClearDescription: request.GetClearDescription(),
 		ChatEnabled:      request.ChatEnabled,
+		CalendarEnabled:  request.CalendarEnabled,
 	}
 }
 
@@ -56,12 +58,13 @@ func TierFromContent(tier *contentv1.SubscriptionTier) (*gatewayv1.Tier, error) 
 	}
 
 	return &gatewayv1.Tier{
-		TierId:      tierID,
-		Name:        tier.GetName(),
-		Price:       tier.GetPrice(),
-		Description: tier.Description,
-		ChatEnabled: tier.GetChatEnabled(),
-		CreatedAt:   tier.GetCreatedAt(),
-		UpdatedAt:   tier.GetUpdatedAt(),
+		TierId:          tierID,
+		Name:            tier.GetName(),
+		Price:           tier.GetPrice(),
+		Description:     tier.Description,
+		ChatEnabled:     tier.GetChatEnabled(),
+		CalendarEnabled: tier.GetCalendarEnabled(),
+		CreatedAt:       tier.GetCreatedAt(),
+		UpdatedAt:       tier.GetUpdatedAt(),
 	}, nil
 }

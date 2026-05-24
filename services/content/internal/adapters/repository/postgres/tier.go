@@ -12,7 +12,7 @@ func (repository *Repository) ListSubscriptionTiers(ctx context.Context, trainer
 	rows, err := repository.db.QueryContext(
 		ctx,
 		`
-			SELECT tier_id, trainer_user_id, name, price, description, chat_enabled, created_at, updated_at
+			SELECT tier_id, trainer_user_id, name, price, description, chat_enabled, calendar_enabled, created_at, updated_at
 			FROM content_subscription_tier
 			WHERE trainer_user_id = $1
 			ORDER BY price ASC, tier_id ASC
@@ -40,7 +40,7 @@ func (repository *Repository) GetSubscriptionTier(ctx context.Context, trainerUs
 	row := repository.db.QueryRowContext(
 		ctx,
 		`
-			SELECT tier_id, trainer_user_id, name, price, description, chat_enabled, created_at, updated_at
+			SELECT tier_id, trainer_user_id, name, price, description, chat_enabled, calendar_enabled, created_at, updated_at
 			FROM content_subscription_tier
 			WHERE trainer_user_id = $1
 				AND tier_id = $2
@@ -78,18 +78,20 @@ func (repository *Repository) CreateSubscriptionTier(ctx context.Context, tier d
 				price,
 				description,
 				chat_enabled,
+				calendar_enabled,
 				created_at,
 				updated_at
 			)
-			SELECT $1, next_tier.tier_id, $2, $3, $4, $5, $6, $6
+			SELECT $1, next_tier.tier_id, $2, $3, $4, $5, $6, $7, $7
 			FROM next_tier
-			RETURNING tier_id, trainer_user_id, name, price, description, chat_enabled, created_at, updated_at
+			RETURNING tier_id, trainer_user_id, name, price, description, chat_enabled, calendar_enabled, created_at, updated_at
 		`,
 		tier.TrainerUserID,
 		tier.Name,
 		tier.Price,
 		nullString(tier.Description),
 		tier.ChatEnabled,
+		tier.CalendarEnabled,
 		now,
 	)
 
@@ -112,10 +114,11 @@ func (repository *Repository) UpdateSubscriptionTier(ctx context.Context, tier d
 				price = $4,
 				description = $5,
 				chat_enabled = $6,
-				updated_at = $7
+				calendar_enabled = $7,
+				updated_at = $8
 			WHERE trainer_user_id = $1
 				AND tier_id = $2
-			RETURNING tier_id, trainer_user_id, name, price, description, chat_enabled, created_at, updated_at
+			RETURNING tier_id, trainer_user_id, name, price, description, chat_enabled, calendar_enabled, created_at, updated_at
 		`,
 		tier.TrainerUserID,
 		tier.TierID,
@@ -123,6 +126,7 @@ func (repository *Repository) UpdateSubscriptionTier(ctx context.Context, tier d
 		tier.Price,
 		nullString(tier.Description),
 		tier.ChatEnabled,
+		tier.CalendarEnabled,
 		now,
 	)
 

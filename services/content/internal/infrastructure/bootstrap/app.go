@@ -59,6 +59,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Engagement:    contentRepository,
 		Notifications: contentRepository,
 		Chat:          contentRepository,
+		Meeting:       contentRepository,
 	}, postMediaStorage, paymentProvider)
 
 	metricsSet := metrics.New(cfg.ServiceName)
@@ -71,6 +72,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Donations:     contentUseCase,
 		Notifications: contentUseCase,
 		Chat:          contentUseCase,
+		Meeting:       contentUseCase,
 	}, logger)
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 
