@@ -1,6 +1,4 @@
 -- +goose Up
--- Таблица доступа тренеров к замерам клиента.
--- Клиент явно разрешает конкретным тренерам просматривать свои замеры.
 CREATE TABLE measurement_sharing (
     client_user_id  BIGINT NOT NULL,
     trainer_user_id BIGINT NOT NULL,

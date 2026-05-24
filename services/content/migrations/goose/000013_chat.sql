@@ -1,10 +1,8 @@
 -- +goose Up
 
--- Add chat_enabled flag to subscription tiers
 ALTER TABLE content_subscription_tier
 ADD COLUMN chat_enabled BOOLEAN NOT NULL DEFAULT false;
 
--- Chat messages table
 CREATE TABLE content_chat_message (
   message_id      BIGSERIAL PRIMARY KEY,
   sender_user_id  BIGINT NOT NULL,

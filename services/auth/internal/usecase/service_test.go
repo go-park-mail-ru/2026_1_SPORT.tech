@@ -261,7 +261,7 @@ func TestServiceGetSessionExpired(t *testing.T) {
 	session := domain.Session{
 		IDHash:    hashSessionToken("expired-token"),
 		UserID:    42,
-		ExpiresAt: now.Add(-1 * time.Hour), // already expired
+		ExpiresAt: now.Add(-1 * time.Hour),
 		CreatedAt: now.Add(-25 * time.Hour),
 		UpdatedAt: now.Add(-25 * time.Hour),
 	}

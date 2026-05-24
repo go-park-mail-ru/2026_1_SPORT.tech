@@ -100,8 +100,6 @@ func Empty() *emptypb.Empty {
 	return &emptypb.Empty{}
 }
 
-// ─── Measurement mappers ──────────────────────────────────────────────────────
-
 func CreateMeasurementRequestToCommand(request *profilev1.CreateMeasurementRequest) usecase.CreateMeasurementCommand {
 	return usecase.CreateMeasurementCommand{
 		UserID:     request.GetUserId(),

@@ -16,11 +16,8 @@ func (service *Service) SendChatMessage(ctx context.Context, command SendChatMes
 		return domain.ChatMessage{}, domain.ErrInvalidBlockData
 	}
 
-	// Check access: sender must have a chat-enabled subscription to receiver (as a subscriber to trainer),
-	// OR sender is the trainer and receiver has an active chat-enabled subscription to sender.
 	canSend := false
 
-	// Case 1: sender is subscriber, receiver is trainer
 	ok, err := service.chat.HasActiveChatSubscription(ctx, command.SenderUserID, command.ReceiverUserID)
 	if err != nil {
 		return domain.ChatMessage{}, err
@@ -29,7 +26,6 @@ func (service *Service) SendChatMessage(ctx context.Context, command SendChatMes
 		canSend = true
 	}
 
-	// Case 2: sender is trainer, receiver is subscriber
 	if !canSend {
 		ok, err = service.chat.IsTrainerOf(ctx, command.SenderUserID, command.ReceiverUserID)
 		if err != nil {

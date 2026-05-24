@@ -114,8 +114,6 @@ func (r *MeasurementRepository) DeleteMeasurement(ctx context.Context, userID, m
 	return nil
 }
 
-// nullable helpers (не конфликтуют с common.go, разные типы)
-
 func nullableFloat64(v *float64) any {
 	if v == nil {
 		return nil

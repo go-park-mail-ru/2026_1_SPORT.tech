@@ -2,7 +2,6 @@ package domain
 
 import "time"
 
-// Measurement хранит замеры прогресса клиента.
 type Measurement struct {
 	MeasurementID int64
 	UserID        int64

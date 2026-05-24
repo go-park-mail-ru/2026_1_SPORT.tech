@@ -8,8 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 )
 
-// ── stub MeasurementRepository ────────────────────────────────────────────────
-
 type stubMeasurementRepository struct {
 	createFunc func(ctx context.Context, m domain.Measurement) (domain.Measurement, error)
 	listFunc   func(ctx context.Context, userID int64, limit, offset int32) ([]domain.Measurement, error)
@@ -27,8 +25,6 @@ func (r stubMeasurementRepository) ListMeasurements(ctx context.Context, userID 
 func (r stubMeasurementRepository) DeleteMeasurement(ctx context.Context, userID, measurementID int64) error {
 	return r.deleteFunc(ctx, userID, measurementID)
 }
-
-// ── stub MeasurementSharingRepository ────────────────────────────────────────
 
 type stubSharingRepository struct {
 	setFunc       func(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error
@@ -61,13 +57,9 @@ func newMeasurementServiceWithSharing(mStub stubMeasurementRepository, sStub stu
 	}
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
-
 func floatPtr(f float64) *float64 { return &f }
 func int32Ptr(i int32) *int32     { return &i }
 func strPtr(s string) *string     { return &s }
-
-// ── CreateMeasurement ─────────────────────────────────────────────────────────
 
 func TestCreateMeasurement_Success(t *testing.T) {
 	t.Parallel()
@@ -164,8 +156,6 @@ func TestCreateMeasurement_AllFields(t *testing.T) {
 	}
 }
 
-// ── ListMeasurements ──────────────────────────────────────────────────────────
-
 func TestListMeasurements_Success(t *testing.T) {
 	t.Parallel()
 	now := time.Now()
@@ -215,8 +205,6 @@ func TestListMeasurements_DefaultLimit(t *testing.T) {
 	}
 }
 
-// ── DeleteMeasurement ─────────────────────────────────────────────────────────
-
 func TestDeleteMeasurement_Success(t *testing.T) {
 	t.Parallel()
 	stub := stubMeasurementRepository{
@@ -249,8 +237,6 @@ func TestDeleteMeasurement_NotFound(t *testing.T) {
 	}
 }
 
-// ── SetMeasurementSharing ─────────────────────────────────────────────────────
-
 func TestSetMeasurementSharing_Success(t *testing.T) {
 	t.Parallel()
 	var gotIDs []int64
@@ -263,7 +249,7 @@ func TestSetMeasurementSharing_Success(t *testing.T) {
 	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, sStub)
 	err := svc.SetMeasurementSharing(context.Background(), SetMeasurementSharingCommand{
 		ClientUserID:   1,
-		TrainerUserIDs: []int64{2, 3, 2}, // дубль
+		TrainerUserIDs: []int64{2, 3, 2},
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -281,8 +267,6 @@ func TestSetMeasurementSharing_InvalidClientUserID(t *testing.T) {
 		t.Fatalf("expected ErrInvalidUserID, got %v", err)
 	}
 }
-
-// ── GetMeasurementSharing ─────────────────────────────────────────────────────
 
 func TestGetMeasurementSharing_Success(t *testing.T) {
 	t.Parallel()
@@ -305,7 +289,7 @@ func TestGetMeasurementSharing_ReturnsEmptySlice(t *testing.T) {
 	t.Parallel()
 	sStub := stubSharingRepository{
 		getFunc: func(_ context.Context, _ int64) ([]int64, error) {
-			return nil, nil // nil из базы
+			return nil, nil
 		},
 	}
 	svc := newMeasurementServiceWithSharing(stubMeasurementRepository{}, sStub)
@@ -318,8 +302,6 @@ func TestGetMeasurementSharing_ReturnsEmptySlice(t *testing.T) {
 	}
 }
 
-// ── ListMeasurements with access check ───────────────────────────────────────
-
 func TestListMeasurements_AccessDenied(t *testing.T) {
 	t.Parallel()
 	sStub := stubSharingRepository{
@@ -331,7 +313,7 @@ func TestListMeasurements_AccessDenied(t *testing.T) {
 	svc := newMeasurementServiceWithSharing(mStub, sStub)
 	_, err := svc.ListMeasurements(context.Background(), ListMeasurementsQuery{
 		UserID:       1,
-		ViewerUserID: 99, // другой пользователь, не в списке
+		ViewerUserID: 99,
 	})
 	if err != ErrMeasurementAccessDenied {
 		t.Fatalf("expected ErrMeasurementAccessDenied, got %v", err)
@@ -365,7 +347,7 @@ func TestListMeasurements_AccessGranted(t *testing.T) {
 
 func TestListMeasurements_OwnProfile_NoAccessCheck(t *testing.T) {
 	t.Parallel()
-	// viewerUserID == userID → нет проверки доступа, sharing nil
+
 	mStub := stubMeasurementRepository{
 		listFunc: func(_ context.Context, _ int64, _, _ int32) ([]domain.Measurement, error) {
 			return []domain.Measurement{{MeasurementID: 5}}, nil
@@ -373,11 +355,11 @@ func TestListMeasurements_OwnProfile_NoAccessCheck(t *testing.T) {
 	}
 	svc := &Service{
 		measurements:       mStub,
-		measurementSharing: nil, // не инициализирован намеренно
+		measurementSharing: nil,
 	}
 	got, err := svc.ListMeasurements(context.Background(), ListMeasurementsQuery{
 		UserID:       1,
-		ViewerUserID: 1, // == userID
+		ViewerUserID: 1,
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

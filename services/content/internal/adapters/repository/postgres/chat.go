@@ -9,10 +9,6 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
 
-// HasActiveChatSubscription returns true when clientUserID has an active,
-// unexpired subscription to trainerUserID whose tier has chat_enabled = true.
-// It also returns true when the two users are the same (trainer talks to themselves
-// during testing) or when trainerUserID is the trainer checking client access.
 func (repository *Repository) HasActiveChatSubscription(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error) {
 	var exists bool
 	err := repository.db.QueryRowContext(
@@ -41,8 +37,6 @@ func (repository *Repository) HasActiveChatSubscription(ctx context.Context, cli
 	return exists, nil
 }
 
-// IsTrainerOf returns true when trainerUserID is a trainer that clientUserID
-// has (or had) a subscription with — used so trainers can reply to subscribers.
 func (repository *Repository) IsTrainerOf(ctx context.Context, trainerUserID int64, clientUserID int64) (bool, error) {
 	var exists bool
 	err := repository.db.QueryRowContext(
@@ -123,7 +117,7 @@ func (repository *Repository) ListChatMessages(ctx context.Context, userID int64
 }
 
 func (repository *Repository) ListChatConversations(ctx context.Context, userID int64) ([]domain.ChatConversation, error) {
-	// Find all distinct conversation partners, with last message and unread count.
+
 	rows, err := repository.db.QueryContext(
 		ctx,
 		`

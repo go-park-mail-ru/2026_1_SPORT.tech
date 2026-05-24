@@ -86,17 +86,16 @@ type MeasurementRepository interface {
 }
 
 type MeasurementSharingRepository interface {
-	// SetSharing заменяет список тренеров, которым clientUserID разрешил доступ.
 	SetSharing(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error
-	// GetSharing возвращает список разрешённых trainer_user_id.
+
 	GetSharing(ctx context.Context, clientUserID int64) ([]int64, error)
-	// HasAccess проверяет наличие разрешения.
+
 	HasAccess(ctx context.Context, clientUserID, trainerUserID int64) (bool, error)
 }
 
 type CreateMeasurementCommand struct {
 	UserID     int64
-	MeasuredAt string // "YYYY-MM-DD"
+	MeasuredAt string
 	WeightKg   *float64
 	BodyFatPct *float64
 	ChestCm    *int32
@@ -123,7 +122,6 @@ type ListMeasurementsQuery struct {
 	UserID int64
 	Limit  int32
 	Offset int32
-	// ViewerUserID — кто запрашивает данные.
-	// 0 или == UserID означает «сам пользователь», ограничения не применяются.
+
 	ViewerUserID int64
 }
