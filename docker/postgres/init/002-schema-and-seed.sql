@@ -328,7 +328,7 @@ CREATE TABLE content_notification (
   post_id         bigint REFERENCES content_post(post_id)         ON DELETE CASCADE,
   comment_id      bigint REFERENCES content_comment(comment_id)   ON DELETE CASCADE,
   donation_id     bigint REFERENCES content_donation(donation_id) ON DELETE CASCADE,
-  subscription_id bigint,
+  subscription_id bigint REFERENCES content_subscription(subscription_id) ON DELETE CASCADE,
   read_at         timestamptz,
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now()

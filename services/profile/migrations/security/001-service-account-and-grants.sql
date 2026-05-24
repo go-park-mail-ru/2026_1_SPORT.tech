@@ -23,6 +23,9 @@ GRANT SELECT, INSERT, UPDATE ON TABLE profile TO :"profile_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE trainer_profile TO :"profile_app_user";
 GRANT SELECT, INSERT, DELETE ON TABLE trainer_sport TO :"profile_app_user";
 GRANT SELECT ON TABLE sport_type TO :"profile_app_user";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE measurement TO :"profile_app_user";
+GRANT SELECT, INSERT, DELETE ON TABLE measurement_sharing TO :"profile_app_user";
+GRANT USAGE, SELECT ON SEQUENCE measurement_measurement_id_seq TO :"profile_app_user";
 
 ALTER ROLE :"profile_app_user" IN DATABASE sporttech_profile SET statement_timeout = '5s';
 ALTER ROLE :"profile_app_user" IN DATABASE sporttech_profile SET lock_timeout = '1s';
