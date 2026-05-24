@@ -31,7 +31,7 @@ func (service *Service) DonateToProfile(ctx context.Context, command DonateToPro
 		Type:        domain.NotificationTypeDonation,
 		ActorUserID: donation.SenderUserID,
 		Title:       "Новый донат",
-		Body:        "Пользователь отправил вам донат",
+		Body:        fmt.Sprintf("Пользователь отправил вам донат на %d ₽", donation.AmountValue),
 		DonationID:  &donation.DonationID,
 	}); err != nil {
 		return domain.Donation{}, err
@@ -215,7 +215,7 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 			Type:        domain.NotificationTypeDonation,
 			ActorUserID: payment.Donation.SenderUserID,
 			Title:       "Новый донат",
-			Body:        "Пользователь отправил вам донат",
+			Body:        fmt.Sprintf("Пользователь отправил вам донат на %d ₽", payment.Donation.AmountValue),
 			DonationID:  &payment.Donation.DonationID,
 		}); err != nil {
 			return domain.DonationPayment{}, err

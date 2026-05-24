@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
@@ -28,12 +29,13 @@ func (service *Service) LikePost(ctx context.Context, command LikePostCommand) (
 		return domain.PostLikeState{}, err
 	}
 	if wasCreated && post.AuthorUserID != command.UserID {
+		body := fmt.Sprintf("Пользователь оценил пост «%s»", post.Title)
 		if err := service.createNotification(ctx, domain.Notification{
 			UserID:      post.AuthorUserID,
 			Type:        domain.NotificationTypeLike,
 			ActorUserID: command.UserID,
 			Title:       "Новый лайк",
-			Body:        "Пользователь оценил ваш пост",
+			Body:        body,
 			PostID:      &post.PostID,
 		}); err != nil {
 			return domain.PostLikeState{}, err

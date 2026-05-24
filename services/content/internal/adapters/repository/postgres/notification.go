@@ -26,6 +26,7 @@ func (repository *Repository) CreateNotification(ctx context.Context, notificati
 			created_at,
 			updated_at
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+		ON CONFLICT DO NOTHING
 		RETURNING notification_id, created_at, read_at
 	`
 
@@ -45,6 +46,10 @@ func (repository *Repository) CreateNotification(ctx context.Context, notificati
 		now,
 	).Scan(&created.NotificationID, &created.CreatedAt, &created.ReadAt)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// конфликт с уникальным индексом — уведомление уже существует, игнорируем
+			return notification, nil
+		}
 		return domain.Notification{}, err
 	}
 
