@@ -29,6 +29,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE content_subscription TO :"content_app_user
 GRANT SELECT, INSERT ON TABLE content_donation TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE content_notification TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE content_payment TO :"content_app_user";
+GRANT SELECT, INSERT, UPDATE ON TABLE content_chat_message TO :"content_app_user";
 
 GRANT USAGE, SELECT ON SEQUENCE content_post_post_id_seq TO :"content_app_user";
 GRANT USAGE, SELECT ON SEQUENCE content_post_block_post_block_id_seq TO :"content_app_user";
@@ -37,6 +38,7 @@ GRANT USAGE, SELECT ON SEQUENCE content_subscription_subscription_id_seq TO :"co
 GRANT USAGE, SELECT ON SEQUENCE content_donation_donation_id_seq TO :"content_app_user";
 GRANT USAGE, SELECT ON SEQUENCE content_notification_notification_id_seq TO :"content_app_user";
 GRANT USAGE, SELECT ON SEQUENCE content_payment_payment_id_seq TO :"content_app_user";
+GRANT USAGE, SELECT ON SEQUENCE content_chat_message_message_id_seq TO :"content_app_user";
 
 ALTER ROLE :"content_app_user" IN DATABASE sporttech_content SET statement_timeout = '5s';
 ALTER ROLE :"content_app_user" IN DATABASE sporttech_content SET lock_timeout = '1s';
