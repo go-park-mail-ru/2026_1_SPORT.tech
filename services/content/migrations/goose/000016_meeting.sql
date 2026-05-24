@@ -1,7 +1,7 @@
 -- +goose Up
 
 ALTER TABLE content_subscription_tier
-ADD COLUMN calendar_enabled BOOLEAN NOT NULL DEFAULT false;
+ADD COLUMN IF NOT EXISTS calendar_enabled BOOLEAN NOT NULL DEFAULT false;
 
 ALTER TABLE content_notification
   DROP CONSTRAINT IF EXISTS content_notification_type_check;
@@ -10,7 +10,7 @@ ALTER TABLE content_notification
   ADD CONSTRAINT content_notification_type_check
   CHECK (type IN ('comment', 'donation', 'like', 'post', 'subscription', 'meeting'));
 
-CREATE TABLE content_meeting_availability_rule (
+CREATE TABLE IF NOT EXISTS content_meeting_availability_rule (
   rule_id         BIGSERIAL PRIMARY KEY,
   trainer_user_id BIGINT NOT NULL,
   weekday         SMALLINT NOT NULL CHECK (weekday BETWEEN 0 AND 6),
@@ -19,7 +19,7 @@ CREATE TABLE content_meeting_availability_rule (
   UNIQUE (trainer_user_id, weekday, start_hour)
 );
 
-CREATE TABLE content_meeting_slot (
+CREATE TABLE IF NOT EXISTS content_meeting_slot (
   slot_id         BIGSERIAL PRIMARY KEY,
   trainer_user_id BIGINT NOT NULL,
   starts_at       TIMESTAMPTZ NOT NULL,
@@ -27,10 +27,10 @@ CREATE TABLE content_meeting_slot (
   UNIQUE (trainer_user_id, starts_at)
 );
 
-CREATE INDEX content_meeting_slot_trainer_starts_idx
+CREATE INDEX IF NOT EXISTS content_meeting_slot_trainer_starts_idx
   ON content_meeting_slot (trainer_user_id, starts_at);
 
-CREATE TABLE content_meeting_booking (
+CREATE TABLE IF NOT EXISTS content_meeting_booking (
   booking_id           BIGSERIAL PRIMARY KEY,
   trainer_user_id      BIGINT NOT NULL,
   client_user_id       BIGINT NOT NULL,
@@ -45,15 +45,15 @@ CREATE TABLE content_meeting_booking (
   CHECK (ends_at > starts_at)
 );
 
-CREATE UNIQUE INDEX content_meeting_booking_trainer_start_unique_idx
+CREATE UNIQUE INDEX IF NOT EXISTS content_meeting_booking_trainer_start_unique_idx
   ON content_meeting_booking (trainer_user_id, starts_at)
   WHERE status = 'confirmed';
 
-CREATE INDEX content_meeting_booking_trainer_range_idx
+CREATE INDEX IF NOT EXISTS content_meeting_booking_trainer_range_idx
   ON content_meeting_booking (trainer_user_id, starts_at, ends_at)
   WHERE status = 'confirmed';
 
-CREATE INDEX content_meeting_booking_client_idx
+CREATE INDEX IF NOT EXISTS content_meeting_booking_client_idx
   ON content_meeting_booking (client_user_id, starts_at);
 
 -- +goose Down

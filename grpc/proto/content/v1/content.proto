@@ -197,6 +197,7 @@ service ContentService {
   rpc DeleteMeetingAvailabilityRule(DeleteMeetingAvailabilityRuleRequest) returns (google.protobuf.Empty);
   rpc CreateMeetingSlot(CreateMeetingSlotRequest) returns (MeetingSlot);
   rpc DeleteMeetingSlot(DeleteMeetingSlotRequest) returns (google.protobuf.Empty);
+  rpc ListMeetingSlots(ListMeetingSlotsRequest) returns (ListMeetingSlotsResponse);
   rpc ListTrainerMeetingAvailability(ListTrainerMeetingAvailabilityRequest) returns (ListTrainerMeetingAvailabilityResponse);
   rpc BookMeeting(BookMeetingRequest) returns (MeetingBooking);
   rpc AssignMeeting(AssignMeetingRequest) returns (MeetingBooking);
@@ -717,6 +718,14 @@ message CreateMeetingSlotRequest {
 message DeleteMeetingSlotRequest {
   int64 trainer_user_id = 1;
   int64 slot_id = 2;
+}
+
+message ListMeetingSlotsRequest {
+  int64 trainer_user_id = 1;
+}
+
+message ListMeetingSlotsResponse {
+  repeated MeetingSlot slots = 1;
 }
 
 message ListTrainerMeetingAvailabilityRequest {

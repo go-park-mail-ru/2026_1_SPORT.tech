@@ -101,6 +101,10 @@ type ListMeetingAvailabilityRulesQuery struct {
 	TrainerUserID int64
 }
 
+type ListMyMeetingSlotsQuery struct {
+	TrainerUserID int64
+}
+
 type ListTrainerMeetingAvailabilityQuery struct {
 	TrainerUserID int64
 	ViewerUserID  int64

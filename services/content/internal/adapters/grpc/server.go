@@ -73,6 +73,7 @@ type MeetingUseCase interface {
 	DeleteMeetingAvailabilityRule(ctx context.Context, command usecase.DeleteMeetingAvailabilityRuleCommand) error
 	CreateMeetingSlot(ctx context.Context, command usecase.CreateMeetingSlotCommand) (domain.MeetingSlot, error)
 	DeleteMeetingSlot(ctx context.Context, command usecase.DeleteMeetingSlotCommand) error
+	ListMyMeetingSlots(ctx context.Context, query usecase.ListMyMeetingSlotsQuery) ([]domain.MeetingSlot, error)
 	ListTrainerMeetingAvailability(ctx context.Context, query usecase.ListTrainerMeetingAvailabilityQuery) ([]domain.MeetingAvailabilitySlot, error)
 	BookMeeting(ctx context.Context, command usecase.BookMeetingCommand) (domain.MeetingBooking, error)
 	AssignMeeting(ctx context.Context, command usecase.AssignMeetingCommand) (domain.MeetingBooking, error)

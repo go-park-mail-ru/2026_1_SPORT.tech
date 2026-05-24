@@ -645,6 +645,26 @@
       }
     },
     "/v1/meetings/availability/slots": {
+      "get": {
+        "operationId": "MeetingService_ListMyAvailabilitySlots",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingSlotsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      },
       "post": {
         "operationId": "MeetingService_CreateAvailabilitySlot",
         "responses": {
@@ -2891,6 +2911,18 @@
         "created_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingSlotsResponse": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingSlot"
+          }
         }
       }
     },

@@ -333,6 +333,10 @@ service MeetingService {
     };
   }
 
+  rpc ListMyAvailabilitySlots(google.protobuf.Empty) returns (MeetingSlotsResponse) {
+    option (google.api.http).get = "/v1/meetings/availability/slots";
+  }
+
   rpc DeleteAvailabilitySlot(DeleteAvailabilitySlotRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/meetings/availability/slots/{slot_id}";
   }
@@ -987,6 +991,10 @@ message MeetingSlot {
 
 message CreateAvailabilitySlotRequest {
   google.protobuf.Timestamp starts_at = 1;
+}
+
+message MeetingSlotsResponse {
+  repeated MeetingSlot slots = 1;
 }
 
 message DeleteAvailabilitySlotRequest {

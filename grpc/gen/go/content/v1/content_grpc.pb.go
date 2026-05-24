@@ -58,6 +58,7 @@ const (
 	ContentService_DeleteMeetingAvailabilityRule_FullMethodName  = "/sporttech.content.v1.ContentService/DeleteMeetingAvailabilityRule"
 	ContentService_CreateMeetingSlot_FullMethodName              = "/sporttech.content.v1.ContentService/CreateMeetingSlot"
 	ContentService_DeleteMeetingSlot_FullMethodName              = "/sporttech.content.v1.ContentService/DeleteMeetingSlot"
+	ContentService_ListMeetingSlots_FullMethodName               = "/sporttech.content.v1.ContentService/ListMeetingSlots"
 	ContentService_ListTrainerMeetingAvailability_FullMethodName = "/sporttech.content.v1.ContentService/ListTrainerMeetingAvailability"
 	ContentService_BookMeeting_FullMethodName                    = "/sporttech.content.v1.ContentService/BookMeeting"
 	ContentService_AssignMeeting_FullMethodName                  = "/sporttech.content.v1.ContentService/AssignMeeting"
@@ -107,6 +108,7 @@ type ContentServiceClient interface {
 	DeleteMeetingAvailabilityRule(ctx context.Context, in *DeleteMeetingAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateMeetingSlot(ctx context.Context, in *CreateMeetingSlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error)
 	DeleteMeetingSlot(ctx context.Context, in *DeleteMeetingSlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListMeetingSlots(ctx context.Context, in *ListMeetingSlotsRequest, opts ...grpc.CallOption) (*ListMeetingSlotsResponse, error)
 	ListTrainerMeetingAvailability(ctx context.Context, in *ListTrainerMeetingAvailabilityRequest, opts ...grpc.CallOption) (*ListTrainerMeetingAvailabilityResponse, error)
 	BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
 	AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
@@ -502,6 +504,16 @@ func (c *contentServiceClient) DeleteMeetingSlot(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *contentServiceClient) ListMeetingSlots(ctx context.Context, in *ListMeetingSlotsRequest, opts ...grpc.CallOption) (*ListMeetingSlotsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeetingSlotsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListMeetingSlots_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) ListTrainerMeetingAvailability(ctx context.Context, in *ListTrainerMeetingAvailabilityRequest, opts ...grpc.CallOption) (*ListTrainerMeetingAvailabilityResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListTrainerMeetingAvailabilityResponse)
@@ -594,6 +606,7 @@ type ContentServiceServer interface {
 	DeleteMeetingAvailabilityRule(context.Context, *DeleteMeetingAvailabilityRuleRequest) (*emptypb.Empty, error)
 	CreateMeetingSlot(context.Context, *CreateMeetingSlotRequest) (*MeetingSlot, error)
 	DeleteMeetingSlot(context.Context, *DeleteMeetingSlotRequest) (*emptypb.Empty, error)
+	ListMeetingSlots(context.Context, *ListMeetingSlotsRequest) (*ListMeetingSlotsResponse, error)
 	ListTrainerMeetingAvailability(context.Context, *ListTrainerMeetingAvailabilityRequest) (*ListTrainerMeetingAvailabilityResponse, error)
 	BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error)
 	AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error)
@@ -721,6 +734,9 @@ func (UnimplementedContentServiceServer) CreateMeetingSlot(context.Context, *Cre
 }
 func (UnimplementedContentServiceServer) DeleteMeetingSlot(context.Context, *DeleteMeetingSlotRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteMeetingSlot not implemented")
+}
+func (UnimplementedContentServiceServer) ListMeetingSlots(context.Context, *ListMeetingSlotsRequest) (*ListMeetingSlotsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeetingSlots not implemented")
 }
 func (UnimplementedContentServiceServer) ListTrainerMeetingAvailability(context.Context, *ListTrainerMeetingAvailabilityRequest) (*ListTrainerMeetingAvailabilityResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTrainerMeetingAvailability not implemented")
@@ -1441,6 +1457,24 @@ func _ContentService_DeleteMeetingSlot_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListMeetingSlots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeetingSlotsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListMeetingSlots(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListMeetingSlots_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListMeetingSlots(ctx, req.(*ListMeetingSlotsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_ListTrainerMeetingAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListTrainerMeetingAvailabilityRequest)
 	if err := dec(in); err != nil {
@@ -1689,6 +1723,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteMeetingSlot",
 			Handler:    _ContentService_DeleteMeetingSlot_Handler,
+		},
+		{
+			MethodName: "ListMeetingSlots",
+			Handler:    _ContentService_ListMeetingSlots_Handler,
 		},
 		{
 			MethodName: "ListTrainerMeetingAvailability",

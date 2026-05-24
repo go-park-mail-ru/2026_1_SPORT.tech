@@ -80,6 +80,15 @@ func (service *Service) DeleteMeetingSlot(ctx context.Context, command DeleteMee
 	return service.meeting.DeleteMeetingSlot(ctx, command.TrainerUserID, command.SlotID)
 }
 
+func (service *Service) ListMyMeetingSlots(ctx context.Context, query ListMyMeetingSlotsQuery) ([]domain.MeetingSlot, error) {
+	if query.TrainerUserID <= 0 {
+		return nil, ErrInvalidUserID
+	}
+
+	now := time.Now().UTC().Truncate(time.Hour)
+	return service.meeting.ListMeetingSlots(ctx, query.TrainerUserID, now, now.AddDate(1, 0, 0))
+}
+
 func (service *Service) ListTrainerMeetingAvailability(ctx context.Context, query ListTrainerMeetingAvailabilityQuery) ([]domain.MeetingAvailabilitySlot, error) {
 	if query.TrainerUserID <= 0 || query.ViewerUserID <= 0 {
 		return nil, ErrInvalidUserID

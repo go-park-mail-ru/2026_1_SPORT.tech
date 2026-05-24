@@ -86,6 +86,23 @@ func (server *Server) CreateAvailabilitySlot(ctx context.Context, request *gatew
 	return mappers.MeetingSlotFromContent(response), nil
 }
 
+func (server *Server) ListMyAvailabilitySlots(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.MeetingSlotsResponse, error) {
+	userID, err := server.requireTrainerUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.ListMeetingSlots(
+		forwardContext(ctx),
+		&contentv1.ListMeetingSlotsRequest{TrainerUserId: userID},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.MeetingSlotsResponseFromContent(response), nil
+}
+
 func (server *Server) DeleteAvailabilitySlot(ctx context.Context, request *gatewayv1.DeleteAvailabilitySlotRequest) (*emptypb.Empty, error) {
 	userID, err := server.requireTrainerUserID(ctx)
 	if err != nil {

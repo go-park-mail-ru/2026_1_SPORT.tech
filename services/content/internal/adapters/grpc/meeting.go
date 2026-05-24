@@ -67,6 +67,17 @@ func (server *Server) DeleteMeetingSlot(ctx context.Context, request *contentv1.
 	return &emptypb.Empty{}, nil
 }
 
+func (server *Server) ListMeetingSlots(ctx context.Context, request *contentv1.ListMeetingSlotsRequest) (*contentv1.ListMeetingSlotsResponse, error) {
+	slots, err := server.useCases.Meeting.ListMyMeetingSlots(ctx, usecase.ListMyMeetingSlotsQuery{
+		TrainerUserID: request.GetTrainerUserId(),
+	})
+	if err != nil {
+		return nil, server.statusError("ListMeetingSlots", err)
+	}
+
+	return mappers.NewListMeetingSlotsResponse(slots), nil
+}
+
 func (server *Server) ListTrainerMeetingAvailability(ctx context.Context, request *contentv1.ListTrainerMeetingAvailabilityRequest) (*contentv1.ListTrainerMeetingAvailabilityResponse, error) {
 	slots, err := server.useCases.Meeting.ListTrainerMeetingAvailability(ctx, usecase.ListTrainerMeetingAvailabilityQuery{
 		TrainerUserID: request.GetTrainerUserId(),

@@ -36,6 +36,17 @@ func MeetingSlotToProto(slot domain.MeetingSlot) *contentv1.MeetingSlot {
 	}
 }
 
+func NewListMeetingSlotsResponse(slots []domain.MeetingSlot) *contentv1.ListMeetingSlotsResponse {
+	response := &contentv1.ListMeetingSlotsResponse{
+		Slots: make([]*contentv1.MeetingSlot, 0, len(slots)),
+	}
+	for _, slot := range slots {
+		response.Slots = append(response.Slots, MeetingSlotToProto(slot))
+	}
+
+	return response
+}
+
 func NewListTrainerMeetingAvailabilityResponse(slots []domain.MeetingAvailabilitySlot) *contentv1.ListTrainerMeetingAvailabilityResponse {
 	response := &contentv1.ListTrainerMeetingAvailabilityResponse{
 		Slots: make([]*contentv1.MeetingAvailabilitySlot, 0, len(slots)),

@@ -209,6 +209,24 @@ func TestCreateMeetingSlotValidation(t *testing.T) {
 	}
 }
 
+func TestListMyMeetingSlots(t *testing.T) {
+	slotStart := futureHour(48)
+	service := newMeetingService(stubMeetingRepository{
+		listSlotsFunc: func(ctx context.Context, trainerUserID int64, from time.Time, to time.Time) ([]domain.MeetingSlot, error) {
+			return []domain.MeetingSlot{{SlotID: 11, TrainerUserID: trainerUserID, StartsAt: slotStart}}, nil
+		},
+	})
+
+	slots, err := service.ListMyMeetingSlots(context.Background(), ListMyMeetingSlotsQuery{TrainerUserID: 4})
+	if err != nil || len(slots) != 1 || slots[0].SlotID != 11 {
+		t.Fatalf("expected 1 slot id 11, got %+v (err %v)", slots, err)
+	}
+
+	if _, err := service.ListMyMeetingSlots(context.Background(), ListMyMeetingSlotsQuery{TrainerUserID: 0}); !errors.Is(err, ErrInvalidUserID) {
+		t.Fatalf("expected ErrInvalidUserID, got %v", err)
+	}
+}
+
 func TestListTrainerMeetingAvailabilityAccess(t *testing.T) {
 	service := newMeetingService(stubMeetingRepository{
 		hasCalendarSubFunc: func(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error) {

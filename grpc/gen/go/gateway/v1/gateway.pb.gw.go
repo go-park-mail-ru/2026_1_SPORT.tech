@@ -1880,6 +1880,27 @@ func local_request_MeetingService_CreateAvailabilitySlot_0(ctx context.Context, 
 	return msg, metadata, err
 }
 
+func request_MeetingService_ListMyAvailabilitySlots_0(ctx context.Context, marshaler runtime.Marshaler, client MeetingServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.ListMyAvailabilitySlots(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_MeetingService_ListMyAvailabilitySlots_0(ctx context.Context, marshaler runtime.Marshaler, server MeetingServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.ListMyAvailabilitySlots(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_MeetingService_DeleteAvailabilitySlot_0(ctx context.Context, marshaler runtime.Marshaler, client MeetingServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq DeleteAvailabilitySlotRequest
@@ -3339,6 +3360,26 @@ func RegisterMeetingServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_MeetingService_CreateAvailabilitySlot_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_MeetingService_ListMyAvailabilitySlots_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.gateway.v1.MeetingService/ListMyAvailabilitySlots", runtime.WithHTTPPathPattern("/v1/meetings/availability/slots"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_MeetingService_ListMyAvailabilitySlots_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MeetingService_ListMyAvailabilitySlots_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodDelete, pattern_MeetingService_DeleteAvailabilitySlot_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -5051,6 +5092,23 @@ func RegisterMeetingServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_MeetingService_CreateAvailabilitySlot_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_MeetingService_ListMyAvailabilitySlots_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.gateway.v1.MeetingService/ListMyAvailabilitySlots", runtime.WithHTTPPathPattern("/v1/meetings/availability/slots"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_MeetingService_ListMyAvailabilitySlots_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MeetingService_ListMyAvailabilitySlots_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodDelete, pattern_MeetingService_DeleteAvailabilitySlot_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -5161,6 +5219,7 @@ var (
 	pattern_MeetingService_CreateAvailabilityRule_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "meetings", "availability", "rules"}, ""))
 	pattern_MeetingService_DeleteAvailabilityRule_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "meetings", "availability", "rules", "rule_id"}, ""))
 	pattern_MeetingService_CreateAvailabilitySlot_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "meetings", "availability", "slots"}, ""))
+	pattern_MeetingService_ListMyAvailabilitySlots_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "meetings", "availability", "slots"}, ""))
 	pattern_MeetingService_DeleteAvailabilitySlot_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "meetings", "availability", "slots", "slot_id"}, ""))
 	pattern_MeetingService_GetTrainerAvailability_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "trainers", "trainer_id", "meetings", "availability"}, ""))
 	pattern_MeetingService_BookMeeting_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "trainers", "trainer_id", "meetings", "book"}, ""))
@@ -5174,6 +5233,7 @@ var (
 	forward_MeetingService_CreateAvailabilityRule_0  = runtime.ForwardResponseMessage
 	forward_MeetingService_DeleteAvailabilityRule_0  = runtime.ForwardResponseMessage
 	forward_MeetingService_CreateAvailabilitySlot_0  = runtime.ForwardResponseMessage
+	forward_MeetingService_ListMyAvailabilitySlots_0 = runtime.ForwardResponseMessage
 	forward_MeetingService_DeleteAvailabilitySlot_0  = runtime.ForwardResponseMessage
 	forward_MeetingService_GetTrainerAvailability_0  = runtime.ForwardResponseMessage
 	forward_MeetingService_BookMeeting_0             = runtime.ForwardResponseMessage

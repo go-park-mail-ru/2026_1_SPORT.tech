@@ -2682,6 +2682,7 @@ const (
 	MeetingService_CreateAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilityRule"
 	MeetingService_DeleteAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilityRule"
 	MeetingService_CreateAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilitySlot"
+	MeetingService_ListMyAvailabilitySlots_FullMethodName = "/sporttech.gateway.v1.MeetingService/ListMyAvailabilitySlots"
 	MeetingService_DeleteAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilitySlot"
 	MeetingService_GetTrainerAvailability_FullMethodName  = "/sporttech.gateway.v1.MeetingService/GetTrainerAvailability"
 	MeetingService_BookMeeting_FullMethodName             = "/sporttech.gateway.v1.MeetingService/BookMeeting"
@@ -2698,6 +2699,7 @@ type MeetingServiceClient interface {
 	CreateAvailabilityRule(ctx context.Context, in *CreateAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error)
 	DeleteAvailabilityRule(ctx context.Context, in *DeleteAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateAvailabilitySlot(ctx context.Context, in *CreateAvailabilitySlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error)
+	ListMyAvailabilitySlots(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingSlotsResponse, error)
 	DeleteAvailabilitySlot(ctx context.Context, in *DeleteAvailabilitySlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetTrainerAvailability(ctx context.Context, in *GetTrainerAvailabilityRequest, opts ...grpc.CallOption) (*MeetingAvailabilityResponse, error)
 	BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
@@ -2748,6 +2750,16 @@ func (c *meetingServiceClient) CreateAvailabilitySlot(ctx context.Context, in *C
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MeetingSlot)
 	err := c.cc.Invoke(ctx, MeetingService_CreateAvailabilitySlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) ListMyAvailabilitySlots(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingSlotsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingSlotsResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyAvailabilitySlots_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2822,6 +2834,7 @@ type MeetingServiceServer interface {
 	CreateAvailabilityRule(context.Context, *CreateAvailabilityRuleRequest) (*MeetingAvailabilityRule, error)
 	DeleteAvailabilityRule(context.Context, *DeleteAvailabilityRuleRequest) (*emptypb.Empty, error)
 	CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error)
+	ListMyAvailabilitySlots(context.Context, *emptypb.Empty) (*MeetingSlotsResponse, error)
 	DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error)
 	GetTrainerAvailability(context.Context, *GetTrainerAvailabilityRequest) (*MeetingAvailabilityResponse, error)
 	BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error)
@@ -2848,6 +2861,9 @@ func (UnimplementedMeetingServiceServer) DeleteAvailabilityRule(context.Context,
 }
 func (UnimplementedMeetingServiceServer) CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateAvailabilitySlot not implemented")
+}
+func (UnimplementedMeetingServiceServer) ListMyAvailabilitySlots(context.Context, *emptypb.Empty) (*MeetingSlotsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyAvailabilitySlots not implemented")
 }
 func (UnimplementedMeetingServiceServer) DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteAvailabilitySlot not implemented")
@@ -2955,6 +2971,24 @@ func _MeetingService_CreateAvailabilitySlot_Handler(srv interface{}, ctx context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MeetingServiceServer).CreateAvailabilitySlot(ctx, req.(*CreateAvailabilitySlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_ListMyAvailabilitySlots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyAvailabilitySlots(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyAvailabilitySlots_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyAvailabilitySlots(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3089,6 +3123,10 @@ var MeetingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAvailabilitySlot",
 			Handler:    _MeetingService_CreateAvailabilitySlot_Handler,
+		},
+		{
+			MethodName: "ListMyAvailabilitySlots",
+			Handler:    _MeetingService_ListMyAvailabilitySlots_Handler,
 		},
 		{
 			MethodName: "DeleteAvailabilitySlot",

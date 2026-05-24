@@ -42,6 +42,18 @@ func MeetingSlotFromContent(slot *contentv1.MeetingSlot) *gatewayv1.MeetingSlot 
 	}
 }
 
+func MeetingSlotsResponseFromContent(response *contentv1.ListMeetingSlotsResponse) *gatewayv1.MeetingSlotsResponse {
+	slots := make([]*gatewayv1.MeetingSlot, 0)
+	if response != nil {
+		slots = make([]*gatewayv1.MeetingSlot, 0, len(response.GetSlots()))
+		for _, slot := range response.GetSlots() {
+			slots = append(slots, MeetingSlotFromContent(slot))
+		}
+	}
+
+	return &gatewayv1.MeetingSlotsResponse{Slots: slots}
+}
+
 func MeetingAvailabilityResponseFromContent(response *contentv1.ListTrainerMeetingAvailabilityResponse) *gatewayv1.MeetingAvailabilityResponse {
 	slots := make([]*gatewayv1.MeetingAvailabilitySlot, 0)
 	if response != nil {
