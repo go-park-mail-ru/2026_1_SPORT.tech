@@ -101,10 +101,12 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	protectedAPIHandler := httpgateway.CSRFMiddleware(apiHandler)
 	httpMux.Handle("/api/v1/profiles/me/avatar", httpgateway.CSRFMiddleware(httpgateway.MultipartAvatarHandler(gatewayService, apiHandler)))
 	httpMux.Handle("/api/v1/posts/media", httpgateway.CSRFMiddleware(httpgateway.MultipartPostMediaHandler(gatewayService, apiHandler)))
-	httpMux.Handle("/api/v1/chat/messages/", httpgateway.SSEChatHandler(protectedAPIHandler, httpgateway.SSEChatDeps{
+	sseChatDeps := httpgateway.SSEChatDeps{
 		AuthClient:    authv1.NewAuthServiceClient(authConn),
 		ContentClient: contentv1.NewContentServiceClient(contentConn),
-	}))
+	}
+	httpMux.Handle("/api/v1/chat/messages", protectedAPIHandler)
+	httpMux.Handle("/api/v1/chat/messages/", httpgateway.SSEChatHandler(protectedAPIHandler, sseChatDeps))
 	httpMux.Handle("/api/", protectedAPIHandler)
 
 	handler := metricsSet.HTTPMiddleware(httpMux)
