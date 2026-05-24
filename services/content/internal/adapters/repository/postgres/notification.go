@@ -47,7 +47,7 @@ func (repository *Repository) CreateNotification(ctx context.Context, notificati
 	).Scan(&created.NotificationID, &created.CreatedAt, &created.ReadAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			// конфликт с уникальным индексом — уведомление уже существует, игнорируем
+
 			return notification, nil
 		}
 		return domain.Notification{}, err

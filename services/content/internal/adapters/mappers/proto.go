@@ -64,11 +64,13 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, domain.ErrSubscriptionNotFound),
 		errors.Is(err, domain.ErrDonationNotFound),
 		errors.Is(err, domain.ErrPaymentNotFound),
-		errors.Is(err, domain.ErrNotificationNotFound):
+		errors.Is(err, domain.ErrNotificationNotFound),
+		errors.Is(err, domain.ErrChatMessageNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden),
 		errors.Is(err, domain.ErrPaymentForbidden),
-		errors.Is(err, domain.ErrPaymentTokenMismatch):
+		errors.Is(err, domain.ErrPaymentTokenMismatch),
+		errors.Is(err, domain.ErrChatAccessForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
 	case errors.Is(err, domain.ErrSubscriptionTierInUse),
 		errors.Is(err, domain.ErrPaymentAlreadyConfirmed),
