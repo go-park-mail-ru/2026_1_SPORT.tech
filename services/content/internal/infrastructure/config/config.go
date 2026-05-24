@@ -47,7 +47,7 @@ type StorageConfig struct {
 	Host          string `yaml:"host" env:"CONTENT_STORAGE_HOST" env-default:"localhost" validate:"required"`
 	Port          string `yaml:"port" env:"CONTENT_STORAGE_PORT" env-default:"8000" validate:"required"`
 	Bucket        string `yaml:"bucket" env:"CONTENT_STORAGE_BUCKET" env-default:"post-media" validate:"required"`
-	PublicBaseURL string `yaml:"public_base_url" env:"CONTENT_STORAGE_PUBLIC_BASE_URL" env-default:"http://localhost:8000/post-media" validate:"required"`
+	PublicBaseURL string `yaml:"public_base_url" env:"CONTENT_STORAGE_PUBLIC_BASE_URL" env-default:"/post-media" validate:"required"`
 	UseSSL        bool   `yaml:"use_ssl" env:"CONTENT_STORAGE_USE_SSL" env-default:"false"`
 	AccessKey     string `yaml:"access_key" env:"MINIO_ACCESS_KEY" validate:"required"`
 	SecretKey     string `yaml:"secret_key" env:"MINIO_SECRET_KEY" validate:"required"`

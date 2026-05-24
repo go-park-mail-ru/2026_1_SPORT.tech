@@ -23,7 +23,7 @@ storage:
   host: localhost
   port: "8000"
   bucket: avatars
-  public_base_url: http://localhost:8000/avatars
+  public_base_url: /avatars
   use_ssl: false
 
 openapi:

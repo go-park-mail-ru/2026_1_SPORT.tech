@@ -23,7 +23,7 @@ storage:
   host: localhost
   port: "8000"
   bucket: post-media
-  public_base_url: http://localhost:8000/post-media
+  public_base_url: /post-media
   use_ssl: false
 
 payment:
