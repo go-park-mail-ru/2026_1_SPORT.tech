@@ -54,6 +54,14 @@ func (service *Service) GetProfile(ctx context.Context, userID int64) (domain.Pr
 	return service.profiles.GetByID(ctx, userID)
 }
 
+func (service *Service) GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error) {
+	if err := validateUsername(username); err != nil {
+		return domain.Profile{}, err
+	}
+
+	return service.profiles.GetByUsername(ctx, username)
+}
+
 func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfileCommand) (domain.Profile, error) {
 	if err := validateUserID(command.UserID); err != nil {
 		return domain.Profile{}, err

@@ -18,6 +18,14 @@ func validateUserID(userID int64) error {
 	return nil
 }
 
+func validateUsername(username string) error {
+	if !usernamePattern.MatchString(username) {
+		return ErrInvalidUsername
+	}
+
+	return nil
+}
+
 func validateSearchAuthorsQuery(query SearchAuthorsQuery) error {
 	if query.Limit < 0 || query.Limit > 100 {
 		return ErrInvalidSearchLimit

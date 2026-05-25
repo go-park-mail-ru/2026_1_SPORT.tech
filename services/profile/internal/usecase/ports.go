@@ -19,6 +19,7 @@ type Repositories struct {
 type ProfileRepository interface {
 	Create(ctx context.Context, profile domain.Profile) error
 	GetByID(ctx context.Context, userID int64) (domain.Profile, error)
+	GetByUsername(ctx context.Context, username string) (domain.Profile, error)
 	Update(ctx context.Context, profile domain.Profile) error
 }
 

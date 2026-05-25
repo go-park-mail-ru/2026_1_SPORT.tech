@@ -584,6 +584,50 @@ func (x *GetProfileRequest) GetUserId() int64 {
 	return 0
 }
 
+type GetProfileByUsernameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetProfileByUsernameRequest) Reset() {
+	*x = GetProfileByUsernameRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetProfileByUsernameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetProfileByUsernameRequest) ProtoMessage() {}
+
+func (x *GetProfileByUsernameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetProfileByUsernameRequest.ProtoReflect.Descriptor instead.
+func (*GetProfileByUsernameRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetProfileByUsernameRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 type UpdateProfileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -598,7 +642,7 @@ type UpdateProfileRequest struct {
 
 func (x *UpdateProfileRequest) Reset() {
 	*x = UpdateProfileRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	mi := &file_profile_v1_profile_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -610,7 +654,7 @@ func (x *UpdateProfileRequest) String() string {
 func (*UpdateProfileRequest) ProtoMessage() {}
 
 func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	mi := &file_profile_v1_profile_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -623,7 +667,7 @@ func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProfileRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{8}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateProfileRequest) GetUserId() int64 {
@@ -683,7 +727,7 @@ type SearchAuthorsRequest struct {
 
 func (x *SearchAuthorsRequest) Reset() {
 	*x = SearchAuthorsRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[9]
+	mi := &file_profile_v1_profile_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +739,7 @@ func (x *SearchAuthorsRequest) String() string {
 func (*SearchAuthorsRequest) ProtoMessage() {}
 
 func (x *SearchAuthorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[9]
+	mi := &file_profile_v1_profile_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -708,7 +752,7 @@ func (x *SearchAuthorsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAuthorsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAuthorsRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{9}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SearchAuthorsRequest) GetQuery() string {
@@ -769,7 +813,7 @@ type SearchAuthorsResponse struct {
 
 func (x *SearchAuthorsResponse) Reset() {
 	*x = SearchAuthorsResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[10]
+	mi := &file_profile_v1_profile_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -781,7 +825,7 @@ func (x *SearchAuthorsResponse) String() string {
 func (*SearchAuthorsResponse) ProtoMessage() {}
 
 func (x *SearchAuthorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[10]
+	mi := &file_profile_v1_profile_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -794,7 +838,7 @@ func (x *SearchAuthorsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAuthorsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAuthorsResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{10}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SearchAuthorsResponse) GetAuthors() []*AuthorSummary {
@@ -816,7 +860,7 @@ type UploadAvatarRequest struct {
 
 func (x *UploadAvatarRequest) Reset() {
 	*x = UploadAvatarRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[11]
+	mi := &file_profile_v1_profile_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -828,7 +872,7 @@ func (x *UploadAvatarRequest) String() string {
 func (*UploadAvatarRequest) ProtoMessage() {}
 
 func (x *UploadAvatarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[11]
+	mi := &file_profile_v1_profile_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -841,7 +885,7 @@ func (x *UploadAvatarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadAvatarRequest.ProtoReflect.Descriptor instead.
 func (*UploadAvatarRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{11}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UploadAvatarRequest) GetUserId() int64 {
@@ -881,7 +925,7 @@ type DeleteAvatarRequest struct {
 
 func (x *DeleteAvatarRequest) Reset() {
 	*x = DeleteAvatarRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[12]
+	mi := &file_profile_v1_profile_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -893,7 +937,7 @@ func (x *DeleteAvatarRequest) String() string {
 func (*DeleteAvatarRequest) ProtoMessage() {}
 
 func (x *DeleteAvatarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[12]
+	mi := &file_profile_v1_profile_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -906,7 +950,7 @@ func (x *DeleteAvatarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAvatarRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAvatarRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{12}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteAvatarRequest) GetUserId() int64 {
@@ -925,7 +969,7 @@ type ListSportTypesResponse struct {
 
 func (x *ListSportTypesResponse) Reset() {
 	*x = ListSportTypesResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[13]
+	mi := &file_profile_v1_profile_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -937,7 +981,7 @@ func (x *ListSportTypesResponse) String() string {
 func (*ListSportTypesResponse) ProtoMessage() {}
 
 func (x *ListSportTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[13]
+	mi := &file_profile_v1_profile_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -950,7 +994,7 @@ func (x *ListSportTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSportTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListSportTypesResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{13}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListSportTypesResponse) GetSportTypes() []*SportType {
@@ -979,7 +1023,7 @@ type Measurement struct {
 
 func (x *Measurement) Reset() {
 	*x = Measurement{}
-	mi := &file_profile_v1_profile_proto_msgTypes[14]
+	mi := &file_profile_v1_profile_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -991,7 +1035,7 @@ func (x *Measurement) String() string {
 func (*Measurement) ProtoMessage() {}
 
 func (x *Measurement) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[14]
+	mi := &file_profile_v1_profile_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1004,7 +1048,7 @@ func (x *Measurement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Measurement.ProtoReflect.Descriptor instead.
 func (*Measurement) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{14}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Measurement) GetMeasurementId() int64 {
@@ -1093,7 +1137,7 @@ type MeasurementResponse struct {
 
 func (x *MeasurementResponse) Reset() {
 	*x = MeasurementResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[15]
+	mi := &file_profile_v1_profile_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1105,7 +1149,7 @@ func (x *MeasurementResponse) String() string {
 func (*MeasurementResponse) ProtoMessage() {}
 
 func (x *MeasurementResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[15]
+	mi := &file_profile_v1_profile_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1118,7 +1162,7 @@ func (x *MeasurementResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeasurementResponse.ProtoReflect.Descriptor instead.
 func (*MeasurementResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{15}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *MeasurementResponse) GetMeasurement() *Measurement {
@@ -1137,7 +1181,7 @@ type ListMeasurementsResponse struct {
 
 func (x *ListMeasurementsResponse) Reset() {
 	*x = ListMeasurementsResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[16]
+	mi := &file_profile_v1_profile_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1149,7 +1193,7 @@ func (x *ListMeasurementsResponse) String() string {
 func (*ListMeasurementsResponse) ProtoMessage() {}
 
 func (x *ListMeasurementsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[16]
+	mi := &file_profile_v1_profile_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1162,7 +1206,7 @@ func (x *ListMeasurementsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeasurementsResponse.ProtoReflect.Descriptor instead.
 func (*ListMeasurementsResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{16}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListMeasurementsResponse) GetMeasurements() []*Measurement {
@@ -1188,7 +1232,7 @@ type CreateMeasurementRequest struct {
 
 func (x *CreateMeasurementRequest) Reset() {
 	*x = CreateMeasurementRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[17]
+	mi := &file_profile_v1_profile_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1200,7 +1244,7 @@ func (x *CreateMeasurementRequest) String() string {
 func (*CreateMeasurementRequest) ProtoMessage() {}
 
 func (x *CreateMeasurementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[17]
+	mi := &file_profile_v1_profile_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1213,7 +1257,7 @@ func (x *CreateMeasurementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMeasurementRequest.ProtoReflect.Descriptor instead.
 func (*CreateMeasurementRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{17}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CreateMeasurementRequest) GetUserId() int64 {
@@ -1284,7 +1328,7 @@ type ListMeasurementsRequest struct {
 
 func (x *ListMeasurementsRequest) Reset() {
 	*x = ListMeasurementsRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[18]
+	mi := &file_profile_v1_profile_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1296,7 +1340,7 @@ func (x *ListMeasurementsRequest) String() string {
 func (*ListMeasurementsRequest) ProtoMessage() {}
 
 func (x *ListMeasurementsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[18]
+	mi := &file_profile_v1_profile_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1309,7 +1353,7 @@ func (x *ListMeasurementsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeasurementsRequest.ProtoReflect.Descriptor instead.
 func (*ListMeasurementsRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{18}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListMeasurementsRequest) GetUserId() int64 {
@@ -1350,7 +1394,7 @@ type DeleteMeasurementRequest struct {
 
 func (x *DeleteMeasurementRequest) Reset() {
 	*x = DeleteMeasurementRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[19]
+	mi := &file_profile_v1_profile_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1362,7 +1406,7 @@ func (x *DeleteMeasurementRequest) String() string {
 func (*DeleteMeasurementRequest) ProtoMessage() {}
 
 func (x *DeleteMeasurementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[19]
+	mi := &file_profile_v1_profile_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1375,7 +1419,7 @@ func (x *DeleteMeasurementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMeasurementRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMeasurementRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{19}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DeleteMeasurementRequest) GetUserId() int64 {
@@ -1402,7 +1446,7 @@ type SetMeasurementSharingRequest struct {
 
 func (x *SetMeasurementSharingRequest) Reset() {
 	*x = SetMeasurementSharingRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[20]
+	mi := &file_profile_v1_profile_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1414,7 +1458,7 @@ func (x *SetMeasurementSharingRequest) String() string {
 func (*SetMeasurementSharingRequest) ProtoMessage() {}
 
 func (x *SetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[20]
+	mi := &file_profile_v1_profile_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1427,7 +1471,7 @@ func (x *SetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMeasurementSharingRequest.ProtoReflect.Descriptor instead.
 func (*SetMeasurementSharingRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{20}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SetMeasurementSharingRequest) GetClientUserId() int64 {
@@ -1453,7 +1497,7 @@ type GetMeasurementSharingRequest struct {
 
 func (x *GetMeasurementSharingRequest) Reset() {
 	*x = GetMeasurementSharingRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[21]
+	mi := &file_profile_v1_profile_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1465,7 +1509,7 @@ func (x *GetMeasurementSharingRequest) String() string {
 func (*GetMeasurementSharingRequest) ProtoMessage() {}
 
 func (x *GetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[21]
+	mi := &file_profile_v1_profile_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1478,7 +1522,7 @@ func (x *GetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMeasurementSharingRequest.ProtoReflect.Descriptor instead.
 func (*GetMeasurementSharingRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{21}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetMeasurementSharingRequest) GetClientUserId() int64 {
@@ -1497,7 +1541,7 @@ type MeasurementSharingResponse struct {
 
 func (x *MeasurementSharingResponse) Reset() {
 	*x = MeasurementSharingResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[22]
+	mi := &file_profile_v1_profile_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1509,7 +1553,7 @@ func (x *MeasurementSharingResponse) String() string {
 func (*MeasurementSharingResponse) ProtoMessage() {}
 
 func (x *MeasurementSharingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[22]
+	mi := &file_profile_v1_profile_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1522,7 +1566,7 @@ func (x *MeasurementSharingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeasurementSharingResponse.ProtoReflect.Descriptor instead.
 func (*MeasurementSharingResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{22}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *MeasurementSharingResponse) GetTrainerUserIds() []int64 {
@@ -1600,7 +1644,9 @@ const file_profile_v1_profile_proto_rawDesc = "" +
 	"\x04_bioB\x12\n" +
 	"\x10_trainer_details\",\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\xc7\x02\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"9\n" +
+	"\x1bGetProfileByUsernameRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\"\xc7\x02\n" +
 	"\x14UpdateProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1f\n" +
 	"\busername\x18\x02 \x01(\tH\x00R\busername\x88\x01\x01\x12\"\n" +
@@ -1699,11 +1745,12 @@ const file_profile_v1_profile_proto_rawDesc = "" +
 	"\x1cGetMeasurementSharingRequest\x12$\n" +
 	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\"F\n" +
 	"\x1aMeasurementSharingResponse\x12(\n" +
-	"\x10trainer_user_ids\x18\x01 \x03(\x03R\x0etrainerUserIds2\xd4\r\n" +
+	"\x10trainer_user_ids\x18\x01 \x03(\x03R\x0etrainerUserIds2\xf4\x0e\n" +
 	"\x0eProfileService\x12{\n" +
 	"\rCreateProfile\x12*.sporttech.profile.v1.CreateProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/profiles\x12|\n" +
 	"\n" +
-	"GetProfile\x12'.sporttech.profile.v1.GetProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12\x85\x01\n" +
+	"GetProfile\x12'.sporttech.profile.v1.GetProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12\x9d\x01\n" +
+	"\x14GetProfileByUsername\x121.sporttech.profile.v1.GetProfileByUsernameRequest\x1a%.sporttech.profile.v1.ProfileResponse\"+\x82\xd3\xe4\x93\x02%\x12#/v1/profiles/by-username/{username}\x12\x85\x01\n" +
 	"\rUpdateProfile\x12*.sporttech.profile.v1.UpdateProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*2\x16/v1/profiles/{user_id}\x12\x87\x01\n" +
 	"\rSearchAuthors\x12*.sporttech.profile.v1.SearchAuthorsRequest\x1a+.sporttech.profile.v1.SearchAuthorsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authors:search\x12\x8a\x01\n" +
 	"\fUploadAvatar\x12).sporttech.profile.v1.UploadAvatarRequest\x1a%.sporttech.profile.v1.ProfileResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/v1/profiles/{user_id}/avatar\x12x\n" +
@@ -1727,7 +1774,7 @@ func file_profile_v1_profile_proto_rawDescGZIP() []byte {
 	return file_profile_v1_profile_proto_rawDescData
 }
 
-var file_profile_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_profile_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_profile_v1_profile_proto_goTypes = []any{
 	(*TrainerSport)(nil),                 // 0: sporttech.profile.v1.TrainerSport
 	(*TrainerDetails)(nil),               // 1: sporttech.profile.v1.TrainerDetails
@@ -1737,29 +1784,30 @@ var file_profile_v1_profile_proto_goTypes = []any{
 	(*ProfileResponse)(nil),              // 5: sporttech.profile.v1.ProfileResponse
 	(*CreateProfileRequest)(nil),         // 6: sporttech.profile.v1.CreateProfileRequest
 	(*GetProfileRequest)(nil),            // 7: sporttech.profile.v1.GetProfileRequest
-	(*UpdateProfileRequest)(nil),         // 8: sporttech.profile.v1.UpdateProfileRequest
-	(*SearchAuthorsRequest)(nil),         // 9: sporttech.profile.v1.SearchAuthorsRequest
-	(*SearchAuthorsResponse)(nil),        // 10: sporttech.profile.v1.SearchAuthorsResponse
-	(*UploadAvatarRequest)(nil),          // 11: sporttech.profile.v1.UploadAvatarRequest
-	(*DeleteAvatarRequest)(nil),          // 12: sporttech.profile.v1.DeleteAvatarRequest
-	(*ListSportTypesResponse)(nil),       // 13: sporttech.profile.v1.ListSportTypesResponse
-	(*Measurement)(nil),                  // 14: sporttech.profile.v1.Measurement
-	(*MeasurementResponse)(nil),          // 15: sporttech.profile.v1.MeasurementResponse
-	(*ListMeasurementsResponse)(nil),     // 16: sporttech.profile.v1.ListMeasurementsResponse
-	(*CreateMeasurementRequest)(nil),     // 17: sporttech.profile.v1.CreateMeasurementRequest
-	(*ListMeasurementsRequest)(nil),      // 18: sporttech.profile.v1.ListMeasurementsRequest
-	(*DeleteMeasurementRequest)(nil),     // 19: sporttech.profile.v1.DeleteMeasurementRequest
-	(*SetMeasurementSharingRequest)(nil), // 20: sporttech.profile.v1.SetMeasurementSharingRequest
-	(*GetMeasurementSharingRequest)(nil), // 21: sporttech.profile.v1.GetMeasurementSharingRequest
-	(*MeasurementSharingResponse)(nil),   // 22: sporttech.profile.v1.MeasurementSharingResponse
-	(*timestamppb.Timestamp)(nil),        // 23: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                // 24: google.protobuf.Empty
+	(*GetProfileByUsernameRequest)(nil),  // 8: sporttech.profile.v1.GetProfileByUsernameRequest
+	(*UpdateProfileRequest)(nil),         // 9: sporttech.profile.v1.UpdateProfileRequest
+	(*SearchAuthorsRequest)(nil),         // 10: sporttech.profile.v1.SearchAuthorsRequest
+	(*SearchAuthorsResponse)(nil),        // 11: sporttech.profile.v1.SearchAuthorsResponse
+	(*UploadAvatarRequest)(nil),          // 12: sporttech.profile.v1.UploadAvatarRequest
+	(*DeleteAvatarRequest)(nil),          // 13: sporttech.profile.v1.DeleteAvatarRequest
+	(*ListSportTypesResponse)(nil),       // 14: sporttech.profile.v1.ListSportTypesResponse
+	(*Measurement)(nil),                  // 15: sporttech.profile.v1.Measurement
+	(*MeasurementResponse)(nil),          // 16: sporttech.profile.v1.MeasurementResponse
+	(*ListMeasurementsResponse)(nil),     // 17: sporttech.profile.v1.ListMeasurementsResponse
+	(*CreateMeasurementRequest)(nil),     // 18: sporttech.profile.v1.CreateMeasurementRequest
+	(*ListMeasurementsRequest)(nil),      // 19: sporttech.profile.v1.ListMeasurementsRequest
+	(*DeleteMeasurementRequest)(nil),     // 20: sporttech.profile.v1.DeleteMeasurementRequest
+	(*SetMeasurementSharingRequest)(nil), // 21: sporttech.profile.v1.SetMeasurementSharingRequest
+	(*GetMeasurementSharingRequest)(nil), // 22: sporttech.profile.v1.GetMeasurementSharingRequest
+	(*MeasurementSharingResponse)(nil),   // 23: sporttech.profile.v1.MeasurementSharingResponse
+	(*timestamppb.Timestamp)(nil),        // 24: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                // 25: google.protobuf.Empty
 }
 var file_profile_v1_profile_proto_depIdxs = []int32{
-	23, // 0: sporttech.profile.v1.TrainerDetails.career_since_date:type_name -> google.protobuf.Timestamp
+	24, // 0: sporttech.profile.v1.TrainerDetails.career_since_date:type_name -> google.protobuf.Timestamp
 	0,  // 1: sporttech.profile.v1.TrainerDetails.sports:type_name -> sporttech.profile.v1.TrainerSport
-	23, // 2: sporttech.profile.v1.Profile.created_at:type_name -> google.protobuf.Timestamp
-	23, // 3: sporttech.profile.v1.Profile.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 2: sporttech.profile.v1.Profile.created_at:type_name -> google.protobuf.Timestamp
+	24, // 3: sporttech.profile.v1.Profile.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 4: sporttech.profile.v1.Profile.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	1,  // 5: sporttech.profile.v1.AuthorSummary.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	2,  // 6: sporttech.profile.v1.ProfileResponse.profile:type_name -> sporttech.profile.v1.Profile
@@ -1767,37 +1815,39 @@ var file_profile_v1_profile_proto_depIdxs = []int32{
 	1,  // 8: sporttech.profile.v1.UpdateProfileRequest.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	3,  // 9: sporttech.profile.v1.SearchAuthorsResponse.authors:type_name -> sporttech.profile.v1.AuthorSummary
 	4,  // 10: sporttech.profile.v1.ListSportTypesResponse.sport_types:type_name -> sporttech.profile.v1.SportType
-	23, // 11: sporttech.profile.v1.Measurement.measured_at:type_name -> google.protobuf.Timestamp
-	23, // 12: sporttech.profile.v1.Measurement.created_at:type_name -> google.protobuf.Timestamp
-	23, // 13: sporttech.profile.v1.Measurement.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 14: sporttech.profile.v1.MeasurementResponse.measurement:type_name -> sporttech.profile.v1.Measurement
-	14, // 15: sporttech.profile.v1.ListMeasurementsResponse.measurements:type_name -> sporttech.profile.v1.Measurement
+	24, // 11: sporttech.profile.v1.Measurement.measured_at:type_name -> google.protobuf.Timestamp
+	24, // 12: sporttech.profile.v1.Measurement.created_at:type_name -> google.protobuf.Timestamp
+	24, // 13: sporttech.profile.v1.Measurement.updated_at:type_name -> google.protobuf.Timestamp
+	15, // 14: sporttech.profile.v1.MeasurementResponse.measurement:type_name -> sporttech.profile.v1.Measurement
+	15, // 15: sporttech.profile.v1.ListMeasurementsResponse.measurements:type_name -> sporttech.profile.v1.Measurement
 	6,  // 16: sporttech.profile.v1.ProfileService.CreateProfile:input_type -> sporttech.profile.v1.CreateProfileRequest
 	7,  // 17: sporttech.profile.v1.ProfileService.GetProfile:input_type -> sporttech.profile.v1.GetProfileRequest
-	8,  // 18: sporttech.profile.v1.ProfileService.UpdateProfile:input_type -> sporttech.profile.v1.UpdateProfileRequest
-	9,  // 19: sporttech.profile.v1.ProfileService.SearchAuthors:input_type -> sporttech.profile.v1.SearchAuthorsRequest
-	11, // 20: sporttech.profile.v1.ProfileService.UploadAvatar:input_type -> sporttech.profile.v1.UploadAvatarRequest
-	12, // 21: sporttech.profile.v1.ProfileService.DeleteAvatar:input_type -> sporttech.profile.v1.DeleteAvatarRequest
-	24, // 22: sporttech.profile.v1.ProfileService.ListSportTypes:input_type -> google.protobuf.Empty
-	17, // 23: sporttech.profile.v1.ProfileService.CreateMeasurement:input_type -> sporttech.profile.v1.CreateMeasurementRequest
-	18, // 24: sporttech.profile.v1.ProfileService.ListMeasurements:input_type -> sporttech.profile.v1.ListMeasurementsRequest
-	19, // 25: sporttech.profile.v1.ProfileService.DeleteMeasurement:input_type -> sporttech.profile.v1.DeleteMeasurementRequest
-	20, // 26: sporttech.profile.v1.ProfileService.SetMeasurementSharing:input_type -> sporttech.profile.v1.SetMeasurementSharingRequest
-	21, // 27: sporttech.profile.v1.ProfileService.GetMeasurementSharing:input_type -> sporttech.profile.v1.GetMeasurementSharingRequest
-	5,  // 28: sporttech.profile.v1.ProfileService.CreateProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	5,  // 29: sporttech.profile.v1.ProfileService.GetProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	5,  // 30: sporttech.profile.v1.ProfileService.UpdateProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	10, // 31: sporttech.profile.v1.ProfileService.SearchAuthors:output_type -> sporttech.profile.v1.SearchAuthorsResponse
-	5,  // 32: sporttech.profile.v1.ProfileService.UploadAvatar:output_type -> sporttech.profile.v1.ProfileResponse
-	24, // 33: sporttech.profile.v1.ProfileService.DeleteAvatar:output_type -> google.protobuf.Empty
-	13, // 34: sporttech.profile.v1.ProfileService.ListSportTypes:output_type -> sporttech.profile.v1.ListSportTypesResponse
-	15, // 35: sporttech.profile.v1.ProfileService.CreateMeasurement:output_type -> sporttech.profile.v1.MeasurementResponse
-	16, // 36: sporttech.profile.v1.ProfileService.ListMeasurements:output_type -> sporttech.profile.v1.ListMeasurementsResponse
-	24, // 37: sporttech.profile.v1.ProfileService.DeleteMeasurement:output_type -> google.protobuf.Empty
-	24, // 38: sporttech.profile.v1.ProfileService.SetMeasurementSharing:output_type -> google.protobuf.Empty
-	22, // 39: sporttech.profile.v1.ProfileService.GetMeasurementSharing:output_type -> sporttech.profile.v1.MeasurementSharingResponse
-	28, // [28:40] is the sub-list for method output_type
-	16, // [16:28] is the sub-list for method input_type
+	8,  // 18: sporttech.profile.v1.ProfileService.GetProfileByUsername:input_type -> sporttech.profile.v1.GetProfileByUsernameRequest
+	9,  // 19: sporttech.profile.v1.ProfileService.UpdateProfile:input_type -> sporttech.profile.v1.UpdateProfileRequest
+	10, // 20: sporttech.profile.v1.ProfileService.SearchAuthors:input_type -> sporttech.profile.v1.SearchAuthorsRequest
+	12, // 21: sporttech.profile.v1.ProfileService.UploadAvatar:input_type -> sporttech.profile.v1.UploadAvatarRequest
+	13, // 22: sporttech.profile.v1.ProfileService.DeleteAvatar:input_type -> sporttech.profile.v1.DeleteAvatarRequest
+	25, // 23: sporttech.profile.v1.ProfileService.ListSportTypes:input_type -> google.protobuf.Empty
+	18, // 24: sporttech.profile.v1.ProfileService.CreateMeasurement:input_type -> sporttech.profile.v1.CreateMeasurementRequest
+	19, // 25: sporttech.profile.v1.ProfileService.ListMeasurements:input_type -> sporttech.profile.v1.ListMeasurementsRequest
+	20, // 26: sporttech.profile.v1.ProfileService.DeleteMeasurement:input_type -> sporttech.profile.v1.DeleteMeasurementRequest
+	21, // 27: sporttech.profile.v1.ProfileService.SetMeasurementSharing:input_type -> sporttech.profile.v1.SetMeasurementSharingRequest
+	22, // 28: sporttech.profile.v1.ProfileService.GetMeasurementSharing:input_type -> sporttech.profile.v1.GetMeasurementSharingRequest
+	5,  // 29: sporttech.profile.v1.ProfileService.CreateProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 30: sporttech.profile.v1.ProfileService.GetProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 31: sporttech.profile.v1.ProfileService.GetProfileByUsername:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 32: sporttech.profile.v1.ProfileService.UpdateProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	11, // 33: sporttech.profile.v1.ProfileService.SearchAuthors:output_type -> sporttech.profile.v1.SearchAuthorsResponse
+	5,  // 34: sporttech.profile.v1.ProfileService.UploadAvatar:output_type -> sporttech.profile.v1.ProfileResponse
+	25, // 35: sporttech.profile.v1.ProfileService.DeleteAvatar:output_type -> google.protobuf.Empty
+	14, // 36: sporttech.profile.v1.ProfileService.ListSportTypes:output_type -> sporttech.profile.v1.ListSportTypesResponse
+	16, // 37: sporttech.profile.v1.ProfileService.CreateMeasurement:output_type -> sporttech.profile.v1.MeasurementResponse
+	17, // 38: sporttech.profile.v1.ProfileService.ListMeasurements:output_type -> sporttech.profile.v1.ListMeasurementsResponse
+	25, // 39: sporttech.profile.v1.ProfileService.DeleteMeasurement:output_type -> google.protobuf.Empty
+	25, // 40: sporttech.profile.v1.ProfileService.SetMeasurementSharing:output_type -> google.protobuf.Empty
+	23, // 41: sporttech.profile.v1.ProfileService.GetMeasurementSharing:output_type -> sporttech.profile.v1.MeasurementSharingResponse
+	29, // [29:42] is the sub-list for method output_type
+	16, // [16:29] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name
 	16, // [16:16] is the sub-list for extension extendee
 	0,  // [0:16] is the sub-list for field type_name
@@ -1813,17 +1863,17 @@ func file_profile_v1_profile_proto_init() {
 	file_profile_v1_profile_proto_msgTypes[2].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[3].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[6].OneofWrappers = []any{}
-	file_profile_v1_profile_proto_msgTypes[8].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[9].OneofWrappers = []any{}
-	file_profile_v1_profile_proto_msgTypes[14].OneofWrappers = []any{}
-	file_profile_v1_profile_proto_msgTypes[17].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[10].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[15].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_profile_v1_profile_proto_rawDesc), len(file_profile_v1_profile_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

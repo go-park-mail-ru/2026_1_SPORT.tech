@@ -48,6 +48,10 @@ service ProfileService {
     option (google.api.http).get = "/v1/profiles/{user_id}";
   }
 
+  rpc GetProfileByUsername(GetProfileByUsernameRequest) returns (ProfileResponse) {
+    option (google.api.http).get = "/v1/profiles/by-username/{username}";
+  }
+
   rpc ListTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
     option (google.api.http).get = "/v1/trainers";
   }
@@ -443,6 +447,10 @@ message CSRFTokenResponse {
 
 message GetProfileRequest {
   int32 user_id = 1;
+}
+
+message GetProfileByUsernameRequest {
+  string username = 1;
 }
 
 message ProfileResponse {

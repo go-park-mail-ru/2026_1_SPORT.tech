@@ -13,6 +13,7 @@ import (
 type ProfileUseCase interface {
 	CreateProfile(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error)
 	GetProfile(ctx context.Context, userID int64) (domain.Profile, error)
+	GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error)
 	UpdateProfile(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error)
 }
 
@@ -65,6 +66,15 @@ func (server *Server) CreateProfile(ctx context.Context, request *profilev1.Crea
 
 func (server *Server) GetProfile(ctx context.Context, request *profilev1.GetProfileRequest) (*profilev1.ProfileResponse, error) {
 	profile, err := server.useCases.Profiles.GetProfile(ctx, request.GetUserId())
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewProfileResponse(profile), nil
+}
+
+func (server *Server) GetProfileByUsername(ctx context.Context, request *profilev1.GetProfileByUsernameRequest) (*profilev1.ProfileResponse, error) {
+	profile, err := server.useCases.Profiles.GetProfileByUsername(ctx, request.GetUsername())
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}

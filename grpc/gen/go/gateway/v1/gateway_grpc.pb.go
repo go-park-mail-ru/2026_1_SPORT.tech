@@ -311,6 +311,7 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 
 const (
 	ProfileService_GetProfile_FullMethodName              = "/sporttech.gateway.v1.ProfileService/GetProfile"
+	ProfileService_GetProfileByUsername_FullMethodName    = "/sporttech.gateway.v1.ProfileService/GetProfileByUsername"
 	ProfileService_ListTrainers_FullMethodName            = "/sporttech.gateway.v1.ProfileService/ListTrainers"
 	ProfileService_SearchTrainers_FullMethodName          = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
 	ProfileService_UpdateMyProfile_FullMethodName         = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
@@ -329,6 +330,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	GetProfileByUsername(ctx context.Context, in *GetProfileByUsernameRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	ListTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	SearchTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	UpdateMyProfile(ctx context.Context, in *UpdateMyProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
@@ -354,6 +356,16 @@ func (c *profileServiceClient) GetProfile(ctx context.Context, in *GetProfileReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProfileResponse)
 	err := c.cc.Invoke(ctx, ProfileService_GetProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetProfileByUsername(ctx context.Context, in *GetProfileByUsernameRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetProfileByUsername_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -475,6 +487,7 @@ func (c *profileServiceClient) GetMyMeasurementSharing(ctx context.Context, in *
 // for forward compatibility.
 type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
+	GetProfileByUsername(context.Context, *GetProfileByUsernameRequest) (*ProfileResponse, error)
 	ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
 	SearchTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
 	UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error)
@@ -497,6 +510,9 @@ type UnimplementedProfileServiceServer struct{}
 
 func (UnimplementedProfileServiceServer) GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) GetProfileByUsername(context.Context, *GetProfileByUsernameRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProfileByUsername not implemented")
 }
 func (UnimplementedProfileServiceServer) ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTrainers not implemented")
@@ -565,6 +581,24 @@ func _ProfileService_GetProfile_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProfileServiceServer).GetProfile(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetProfileByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetProfileByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetProfileByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetProfileByUsername(ctx, req.(*GetProfileByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -777,6 +811,10 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfile",
 			Handler:    _ProfileService_GetProfile_Handler,
+		},
+		{
+			MethodName: "GetProfileByUsername",
+			Handler:    _ProfileService_GetProfileByUsername_Handler,
 		},
 		{
 			MethodName: "ListTrainers",

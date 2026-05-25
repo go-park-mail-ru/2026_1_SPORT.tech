@@ -63,6 +63,28 @@ func (repository *ProfileRepository) Create(ctx context.Context, profile domain.
 	return tx.Commit()
 }
 
+func (repository *ProfileRepository) GetByUsername(ctx context.Context, username string) (domain.Profile, error) {
+	const query = `
+		SELECT
+			p.user_id,
+			p.username,
+			p.first_name,
+			p.last_name,
+			p.bio,
+			p.avatar_url,
+			p.is_trainer,
+			p.created_at,
+			p.updated_at,
+			tp.education_degree,
+			tp.career_since_date
+		FROM profile p
+		LEFT JOIN trainer_profile tp ON tp.user_id = p.user_id
+		WHERE p.username = $1
+	`
+
+	return repository.scanProfile(ctx, repository.db.QueryRowContext(ctx, query, username))
+}
+
 func (repository *ProfileRepository) GetByID(ctx context.Context, userID int64) (domain.Profile, error) {
 	const query = `
 		SELECT
@@ -82,8 +104,10 @@ func (repository *ProfileRepository) GetByID(ctx context.Context, userID int64) 
 		WHERE p.user_id = $1
 	`
 
-	loader := repository.db.QueryRowContext(ctx, query, userID)
+	return repository.scanProfile(ctx, repository.db.QueryRowContext(ctx, query, userID))
+}
 
+func (repository *ProfileRepository) scanProfile(ctx context.Context, loader *sql.Row) (domain.Profile, error) {
 	var (
 		profile         domain.Profile
 		bio             sql.NullString
@@ -128,7 +152,7 @@ func (repository *ProfileRepository) GetByID(ctx context.Context, userID int64) 
 			profile.TrainerDetails.CareerSinceDate = &careerSinceDate.Time
 		}
 
-		sports, err := repository.listTrainerSports(ctx, userID)
+		sports, err := repository.listTrainerSports(ctx, profile.UserID)
 		if err != nil {
 			return domain.Profile{}, err
 		}

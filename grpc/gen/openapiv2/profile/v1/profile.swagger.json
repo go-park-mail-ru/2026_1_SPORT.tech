@@ -80,6 +80,36 @@
         ]
       }
     },
+    "/v1/profiles/by-username/{username}": {
+      "get": {
+        "operationId": "ProfileService_GetProfileByUsername",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/profiles/{client_user_id}/measurements/sharing": {
       "get": {
         "operationId": "ProfileService_GetMeasurementSharing",
