@@ -108,6 +108,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	}
 	httpMux.Handle("/api/v1/chat/messages", protectedAPIHandler)
 	httpMux.Handle("/api/v1/chat/messages/", httpgateway.SSEChatHandler(protectedAPIHandler, sseChatDeps))
+	httpMux.Handle("/api/v1/chat/conversations/stream", httpgateway.SSEChatConversationsHandler(protectedAPIHandler, sseChatDeps))
 	httpMux.Handle("/api/", protectedAPIHandler)
 
 	handler := metricsSet.HTTPMiddleware(httpMux)
