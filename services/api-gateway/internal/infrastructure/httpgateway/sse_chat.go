@@ -29,6 +29,10 @@ type sseChatMessagePayload struct {
 	CreatedAt      string `json:"created_at"`
 }
 
+type sseChatReadPayload struct {
+	MessageIDs []int64 `json:"message_ids"`
+}
+
 func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || !strings.HasSuffix(r.URL.Path, "/stream") {
@@ -92,8 +96,9 @@ func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 		contentCtx := metadata.NewOutgoingContext(r.Context(), contentOutMD)
 
 		lastMessageID := afterID
+		readStateByMessageID := make(map[int64]bool)
 
-		pollTicker := time.NewTicker(500 * time.Millisecond)
+		pollTicker := time.NewTicker(300 * time.Millisecond)
 		defer pollTicker.Stop()
 		keepaliveTicker := time.NewTicker(15 * time.Second)
 		defer keepaliveTicker.Stop()
@@ -118,11 +123,8 @@ func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 					return
 				}
 
+				readMessageIDs := make([]int64, 0)
 				for _, msg := range resp.GetMessages() {
-					if msg.GetMessageId() <= lastMessageID {
-						continue
-					}
-
 					createdAt := ""
 					if ts := msg.GetCreatedAt(); ts != nil {
 						createdAt = ts.AsTime().UTC().Format(time.RFC3339Nano)
@@ -137,13 +139,28 @@ func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 						CreatedAt:      createdAt,
 					}
 
-					data, err := json.Marshal(payload)
-					if err != nil {
-						continue
+					if msg.GetMessageId() > lastMessageID {
+						data, err := json.Marshal(payload)
+						if err != nil {
+							continue
+						}
+
+						fmt.Fprintf(w, "event: message\ndata: %s\n\n", data)
+						lastMessageID = msg.GetMessageId()
 					}
 
-					fmt.Fprintf(w, "data: %s\n\n", data)
-					lastMessageID = msg.GetMessageId()
+					wasRead, known := readStateByMessageID[msg.GetMessageId()]
+					if msg.GetSenderUserId() == userID && msg.GetIsRead() && (!known || !wasRead) {
+						readMessageIDs = append(readMessageIDs, msg.GetMessageId())
+					}
+					readStateByMessageID[msg.GetMessageId()] = msg.GetIsRead()
+				}
+
+				if len(readMessageIDs) > 0 {
+					data, err := json.Marshal(sseChatReadPayload{MessageIDs: readMessageIDs})
+					if err == nil {
+						fmt.Fprintf(w, "event: read\ndata: %s\n\n", data)
+					}
 				}
 				_ = rc.Flush()
 			}

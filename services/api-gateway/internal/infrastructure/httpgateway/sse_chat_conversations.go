@@ -91,7 +91,7 @@ func SSEChatConversationsHandler(fallback http.Handler, deps SSEChatDeps) http.H
 			return
 		}
 
-		pollTicker := time.NewTicker(1500 * time.Millisecond)
+		pollTicker := time.NewTicker(500 * time.Millisecond)
 		defer pollTicker.Stop()
 		keepaliveTicker := time.NewTicker(15 * time.Second)
 		defer keepaliveTicker.Stop()
@@ -149,7 +149,7 @@ func fetchConversationsSnapshot(ctx context.Context, client contentv1.ContentSer
 			UnreadCount: conv.GetUnreadCount(),
 		})
 
-		fmt.Fprintf(&sb, "%d:%d:%d|", conv.GetOtherUserId(), lastMessageID, conv.GetUnreadCount())
+		fmt.Fprintf(&sb, "%d:%d:%d:%t|", conv.GetOtherUserId(), lastMessageID, conv.GetUnreadCount(), conv.GetLastMessage().GetIsRead())
 	}
 
 	return sseConversationsSnapshot{Conversations: conversations, UnreadTotal: unreadTotal}, sb.String(), nil
