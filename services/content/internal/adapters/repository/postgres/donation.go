@@ -332,10 +332,22 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 
 func (repository *Repository) GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error) {
 	const query = `
-		SELECT COALESCE(SUM(amount_value), 0)
-		FROM content_donation
-		WHERE recipient_user_id = $1::bigint
-			AND currency = $2::text
+		SELECT
+			COALESCE((
+				SELECT SUM(amount_value)
+				FROM content_donation
+				WHERE recipient_user_id = $1::bigint
+					AND currency = $2::text
+			), 0)
+			+
+			COALESCE((
+				SELECT SUM(amount_value)
+				FROM content_payment
+				WHERE recipient_user_id = $1::bigint
+					AND currency = $2::text
+					AND status = 'confirmed'
+					AND tier_id IS NOT NULL
+			), 0)
 	`
 
 	balance := domain.Balance{
@@ -604,13 +616,23 @@ func (repository *Repository) GetTrainerStatistics(ctx context.Context, trainerU
 		SELECT
 			(SELECT COUNT(*)::int FROM content_post WHERE author_user_id = $1),
 			(SELECT COUNT(*)::int FROM content_donation WHERE recipient_user_id = $1 AND currency = $2),
-			(SELECT COALESCE(SUM(amount_value), 0)::int FROM content_donation WHERE recipient_user_id = $1 AND currency = $2),
+			(SELECT COALESCE(SUM(amount_value), 0)::int FROM content_donation WHERE recipient_user_id = $1 AND currency = $2)
+			+ (SELECT COALESCE(SUM(amount_value), 0)::int FROM content_payment WHERE recipient_user_id = $1 AND currency = $2 AND status = 'confirmed' AND tier_id IS NOT NULL),
 			(
 				SELECT COALESCE(SUM(amount_value), 0)::int
 				FROM content_donation
 				WHERE recipient_user_id = $1
 					AND currency = $2
 					AND created_at >= $3
+			)
+			+ (
+				SELECT COALESCE(SUM(amount_value), 0)::int
+				FROM content_payment
+				WHERE recipient_user_id = $1
+					AND currency = $2
+					AND status = 'confirmed'
+					AND tier_id IS NOT NULL
+					AND confirmed_at >= $3
 			)
 	`
 
