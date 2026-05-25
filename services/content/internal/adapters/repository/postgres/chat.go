@@ -88,11 +88,15 @@ func (repository *Repository) ListChatMessages(ctx context.Context, userID int64
 		ctx,
 		`
 			SELECT message_id, sender_user_id, receiver_user_id, body, is_read, created_at
-			FROM content_chat_message
-			WHERE (sender_user_id = $1 AND receiver_user_id = $2)
-				OR (sender_user_id = $2 AND receiver_user_id = $1)
-			ORDER BY created_at ASC
-			LIMIT $3 OFFSET $4
+			FROM (
+				SELECT message_id, sender_user_id, receiver_user_id, body, is_read, created_at
+				FROM content_chat_message
+				WHERE (sender_user_id = $1 AND receiver_user_id = $2)
+					OR (sender_user_id = $2 AND receiver_user_id = $1)
+				ORDER BY message_id DESC
+				LIMIT $3 OFFSET $4
+			) recent
+			ORDER BY message_id ASC
 		`,
 		userID,
 		otherUserID,
