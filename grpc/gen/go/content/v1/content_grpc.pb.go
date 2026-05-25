@@ -47,6 +47,7 @@ const (
 	ContentService_UnlikePost_FullMethodName                     = "/sporttech.content.v1.ContentService/UnlikePost"
 	ContentService_CreateComment_FullMethodName                  = "/sporttech.content.v1.ContentService/CreateComment"
 	ContentService_ListComments_FullMethodName                   = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_ListPostLikes_FullMethodName                  = "/sporttech.content.v1.ContentService/ListPostLikes"
 	ContentService_ListNotifications_FullMethodName              = "/sporttech.content.v1.ContentService/ListNotifications"
 	ContentService_MarkNotificationRead_FullMethodName           = "/sporttech.content.v1.ContentService/MarkNotificationRead"
 	ContentService_SendChatMessage_FullMethodName                = "/sporttech.content.v1.ContentService/SendChatMessage"
@@ -97,6 +98,7 @@ type ContentServiceClient interface {
 	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
 	ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
 	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
 	SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error)
@@ -394,6 +396,16 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 	return out, nil
 }
 
+func (c *contentServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPostLikesResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListPostLikes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListNotificationsResponse)
@@ -595,6 +607,7 @@ type ContentServiceServer interface {
 	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
 	ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
 	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
 	SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error)
@@ -701,6 +714,9 @@ func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateC
 }
 func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedContentServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
 }
 func (UnimplementedContentServiceServer) ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListNotifications not implemented")
@@ -1259,6 +1275,24 @@ func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPostLikesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListPostLikes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListPostLikes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListPostLikes(ctx, req.(*ListPostLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_ListNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListNotificationsRequest)
 	if err := dec(in); err != nil {
@@ -1679,6 +1713,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _ContentService_ListComments_Handler,
+		},
+		{
+			MethodName: "ListPostLikes",
+			Handler:    _ContentService_ListPostLikes_Handler,
 		},
 		{
 			MethodName: "ListNotifications",

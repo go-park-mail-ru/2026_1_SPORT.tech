@@ -26,6 +26,16 @@ func ListCommentsRequestToQuery(request *contentv1.ListCommentsRequest) usecase.
 	}
 }
 
+func ListPostLikesRequestToQuery(request *contentv1.ListPostLikesRequest) usecase.ListPostLikesQuery {
+	return usecase.ListPostLikesQuery{
+		PostID:                  request.GetPostId(),
+		ViewerUserID:            request.GetViewerUserId(),
+		ViewerSubscriptionLevel: request.ViewerSubscriptionLevel,
+		Limit:                   request.GetLimit(),
+		Offset:                  request.GetOffset(),
+	}
+}
+
 func ListNotificationsRequestToQuery(request *contentv1.ListNotificationsRequest) usecase.ListNotificationsQuery {
 	return usecase.ListNotificationsQuery{
 		UserID: request.GetUserId(),
@@ -73,6 +83,25 @@ func NewListNotificationsResponse(notifications []domain.Notification) *contentv
 	}
 
 	return response
+}
+
+func NewListPostLikesResponse(likes []domain.PostLike) *contentv1.ListPostLikesResponse {
+	response := &contentv1.ListPostLikesResponse{
+		Likes: make([]*contentv1.PostLike, 0, len(likes)),
+	}
+	for _, like := range likes {
+		response.Likes = append(response.Likes, postLikeToProto(like))
+	}
+
+	return response
+}
+
+func postLikeToProto(like domain.PostLike) *contentv1.PostLike {
+	return &contentv1.PostLike{
+		PostId:    like.PostID,
+		UserId:    like.UserID,
+		CreatedAt: timestamppb.New(like.CreatedAt),
+	}
 }
 
 func commentToProto(comment domain.Comment) *contentv1.Comment {

@@ -53,6 +53,12 @@ type PostLikeState struct {
 	IsLiked    bool
 }
 
+type PostLike struct {
+	PostID    int64
+	UserID    int64
+	CreatedAt time.Time
+}
+
 type Comment struct {
 	CommentID    int64
 	PostID       int64

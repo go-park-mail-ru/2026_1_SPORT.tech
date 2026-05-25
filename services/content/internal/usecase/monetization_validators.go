@@ -96,7 +96,7 @@ func validateDonateToProfileCommand(command DonateToProfileCommand) error {
 	if command.SenderUserID == command.RecipientUserID {
 		return ErrInvalidDonationTarget
 	}
-	if command.AmountValue <= 0 || command.AmountValue > maxDonationAmount {
+	if command.AmountValue < minDonationAmount || command.AmountValue > maxDonationAmount {
 		return ErrInvalidDonationAmount
 	}
 	if normalizeCurrency(command.Currency) != defaultCurrency {

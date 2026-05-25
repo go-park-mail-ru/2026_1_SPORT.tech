@@ -7,6 +7,7 @@ const (
 	maxMediaFileSize      = 10 * 1024 * 1024
 	maxTierNameLen        = 80
 	maxTierDescLen        = 500
+	minDonationAmount     = 50
 	maxDonationAmount     = 1_000_000
 	maxDonationMessageLen = 500
 	defaultCurrency       = "RUB"

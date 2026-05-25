@@ -183,3 +183,14 @@ func validateListCommentsQuery(query ListCommentsQuery) error {
 
 	return nil
 }
+
+func validateListPostLikesQuery(query ListPostLikesQuery) error {
+	if query.PostID <= 0 {
+		return ErrInvalidPostID
+	}
+	if query.ViewerUserID < 0 {
+		return ErrInvalidUserID
+	}
+
+	return nil
+}

@@ -530,6 +530,63 @@
       }
     },
     "/v1/posts/{post_id}/likes": {
+      "get": {
+        "operationId": "ContentService_ListPostLikes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListPostLikesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
       "post": {
         "operationId": "ContentService_LikePost",
         "responses": {
@@ -1853,6 +1910,18 @@
         }
       }
     },
+    "v1ListPostLikesResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostLike"
+          }
+        }
+      }
+    },
     "v1ListReceivedDonationsResponse": {
       "type": "object",
       "properties": {
@@ -2105,6 +2174,23 @@
         },
         "file_url": {
           "type": "string"
+        }
+      }
+    },
+    "v1PostLike": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

@@ -19,6 +19,7 @@ type PostUseCase interface {
 	DeletePost(ctx context.Context, command usecase.DeletePostCommand) error
 	LikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
+	ListPostLikes(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error)
 }
 
 type PostMediaUseCase interface {

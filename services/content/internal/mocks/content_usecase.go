@@ -34,6 +34,7 @@ type ContentUseCase struct {
 	UnlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateCommentFunc      func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
 	ListCommentsFunc       func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
+	ListPostLikesFunc      func(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error)
 	ListNotificationsFunc  func(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error)
 	MarkNotificationFunc   func(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
 }
@@ -185,6 +186,10 @@ func (mock ContentUseCase) CreateComment(ctx context.Context, command usecase.Cr
 
 func (mock ContentUseCase) ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
 	return mock.ListCommentsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) ListPostLikes(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error) {
+	return mock.ListPostLikesFunc(ctx, query)
 }
 
 func (mock ContentUseCase) ListNotifications(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error) {

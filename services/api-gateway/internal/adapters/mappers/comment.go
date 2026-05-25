@@ -34,6 +34,44 @@ func ListCommentsRequestToContent(
 	}
 }
 
+func ListPostLikesRequestToContent(
+	viewerUserID int64,
+	viewerSubscriptionLevel *int32,
+	request *gatewayv1.ListPostLikesRequest,
+) *contentv1.ListPostLikesRequest {
+	return &contentv1.ListPostLikesRequest{
+		PostId:                  int32ToInt64(request.GetPostId()),
+		ViewerUserId:            viewerUserID,
+		ViewerSubscriptionLevel: viewerSubscriptionLevel,
+		Limit:                   request.GetLimit(),
+		Offset:                  request.GetOffset(),
+	}
+}
+
+func ListPostLikesResponseFromContent(response *contentv1.ListPostLikesResponse) (*gatewayv1.ListPostLikesResponse, error) {
+	likes := make([]*gatewayv1.PostLike, 0)
+	if response != nil {
+		likes = make([]*gatewayv1.PostLike, 0, len(response.GetLikes()))
+		for _, like := range response.GetLikes() {
+			if like == nil {
+				continue
+			}
+
+			userID, err := int64ToInt32("content.post_like.user_id", like.GetUserId())
+			if err != nil {
+				return nil, err
+			}
+
+			likes = append(likes, &gatewayv1.PostLike{
+				UserId:    userID,
+				CreatedAt: like.GetCreatedAt(),
+			})
+		}
+	}
+
+	return &gatewayv1.ListPostLikesResponse{Likes: likes}, nil
+}
+
 func CommentResponseFromContent(response *contentv1.CommentResponse) (*gatewayv1.CommentResponse, error) {
 	if response == nil || response.GetComment() == nil {
 		return nil, fmt.Errorf("comment is required")

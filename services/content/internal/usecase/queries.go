@@ -74,6 +74,14 @@ type ListCommentsQuery struct {
 	Offset                  int32
 }
 
+type ListPostLikesQuery struct {
+	PostID                  int64
+	ViewerUserID            int64
+	ViewerSubscriptionLevel *int32
+	Limit                   int32
+	Offset                  int32
+}
+
 type ListNotificationsQuery struct {
 	UserID int64
 	Limit  int32

@@ -876,6 +876,7 @@ const (
 	PostService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.PostService/UnlikePost"
 	PostService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.PostService/CreateComment"
 	PostService_ListComments_FullMethodName    = "/sporttech.gateway.v1.PostService/ListComments"
+	PostService_ListPostLikes_FullMethodName   = "/sporttech.gateway.v1.PostService/ListPostLikes"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -892,6 +893,7 @@ type PostServiceClient interface {
 	UnlikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
 }
 
 type postServiceClient struct {
@@ -1002,6 +1004,16 @@ func (c *postServiceClient) ListComments(ctx context.Context, in *ListCommentsRe
 	return out, nil
 }
 
+func (c *postServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPostLikesResponse)
+	err := c.cc.Invoke(ctx, PostService_ListPostLikes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations should embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -1016,6 +1028,7 @@ type PostServiceServer interface {
 	UnlikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
 }
 
 // UnimplementedPostServiceServer should be embedded to have
@@ -1054,6 +1067,9 @@ func (UnimplementedPostServiceServer) CreateComment(context.Context, *CreateComm
 }
 func (UnimplementedPostServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedPostServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
 }
 func (UnimplementedPostServiceServer) testEmbeddedByValue() {}
 
@@ -1255,6 +1271,24 @@ func _PostService_ListComments_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPostLikesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).ListPostLikes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_ListPostLikes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).ListPostLikes(ctx, req.(*ListPostLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1301,6 +1335,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _PostService_ListComments_Handler,
+		},
+		{
+			MethodName: "ListPostLikes",
+			Handler:    _PostService_ListPostLikes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

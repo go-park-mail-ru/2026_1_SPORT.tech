@@ -137,3 +137,28 @@ func (service *Service) ListComments(ctx context.Context, query ListCommentsQuer
 
 	return service.engagement.ListComments(ctx, query.PostID, limit, offset)
 }
+
+func (service *Service) ListPostLikes(ctx context.Context, query ListPostLikesQuery) ([]domain.PostLike, error) {
+	if err := validateListPostLikesQuery(query); err != nil {
+		return nil, err
+	}
+
+	limit, offset, err := normalizePage(query.Limit, query.Offset)
+	if err != nil {
+		return nil, err
+	}
+
+	post, err := service.posts.GetPost(ctx, query.PostID, query.ViewerUserID)
+	if err != nil {
+		return nil, err
+	}
+	canView, err := service.canViewPost(ctx, post.RequiredSubscriptionLevel, post.AuthorUserID, query.ViewerUserID)
+	if err != nil {
+		return nil, err
+	}
+	if !canView {
+		return nil, domain.ErrPostForbidden
+	}
+
+	return service.engagement.ListPostLikes(ctx, query.PostID, limit, offset)
+}

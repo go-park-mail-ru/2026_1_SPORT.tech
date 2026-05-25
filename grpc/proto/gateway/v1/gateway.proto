@@ -167,6 +167,10 @@ service PostService {
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
+
+  rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/likes";
+  }
 }
 
 service TierService {
@@ -656,6 +660,21 @@ message CommentResponse {
 
 message ListCommentsResponse {
   repeated Comment comments = 1;
+}
+
+message ListPostLikesRequest {
+  int32 post_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message PostLike {
+  int32 user_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+message ListPostLikesResponse {
+  repeated PostLike likes = 1;
 }
 
 message Tier {

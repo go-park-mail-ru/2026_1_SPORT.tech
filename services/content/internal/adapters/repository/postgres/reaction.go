@@ -46,6 +46,36 @@ func (repository *Repository) DeleteLike(ctx context.Context, postID int64, user
 	return err
 }
 
+func (repository *Repository) ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error) {
+	const query = `
+		SELECT
+			post_id,
+			user_id,
+			created_at
+		FROM content_post_like
+		WHERE post_id = $1
+		ORDER BY created_at DESC, user_id DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := repository.db.QueryContext(ctx, query, postID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	likes := make([]domain.PostLike, 0)
+	for rows.Next() {
+		var like domain.PostLike
+		if err := rows.Scan(&like.PostID, &like.UserID, &like.CreatedAt); err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+
+	return likes, rows.Err()
+}
+
 func (repository *Repository) GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {
 	const query = `
 		SELECT

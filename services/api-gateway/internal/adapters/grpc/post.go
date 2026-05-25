@@ -275,3 +275,30 @@ func (server *Server) ListComments(ctx context.Context, request *gatewayv1.ListC
 
 	return mappers.ListCommentsResponseFromContent(response)
 }
+
+func (server *Server) ListPostLikes(ctx context.Context, request *gatewayv1.ListPostLikesRequest) (*gatewayv1.ListPostLikesResponse, error) {
+	principal, err := server.optionalSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var viewerUserID int64
+	if principal != nil && principal.User != nil {
+		viewerUserID = principal.User.GetUserId()
+	}
+
+	viewerSubscriptionLevel, err := subscriptionLevelFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.contentClient.ListPostLikes(
+		forwardContext(ctx),
+		mappers.ListPostLikesRequestToContent(viewerUserID, viewerSubscriptionLevel, request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.ListPostLikesResponseFromContent(response)
+}

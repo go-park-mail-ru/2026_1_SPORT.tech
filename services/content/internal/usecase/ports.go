@@ -55,6 +55,7 @@ type EngagementRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 }
 
 type NotificationRepository interface {

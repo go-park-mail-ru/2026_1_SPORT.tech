@@ -34,6 +34,7 @@ type stubContentRepository struct {
 	getLikeStateFunc       func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	listPostLikesFunc      func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	createPaymentFunc      func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
 	confirmPaymentFunc     func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
@@ -166,6 +167,13 @@ func (repository stubContentRepository) CreateComment(ctx context.Context, comme
 
 func (repository stubContentRepository) ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 	return repository.listCommentsFunc(ctx, postID, limit, offset)
+}
+
+func (repository stubContentRepository) ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error) {
+	if repository.listPostLikesFunc == nil {
+		return nil, nil
+	}
+	return repository.listPostLikesFunc(ctx, postID, limit, offset)
 }
 
 func (repository stubContentRepository) CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error) {
@@ -798,6 +806,19 @@ func TestServiceDonateToProfileRejectsTooLargeAmount(t *testing.T) {
 		SenderUserID:    1002,
 		RecipientUserID: 1001,
 		AmountValue:     maxDonationAmount + 1,
+	})
+	if !errors.Is(err, ErrInvalidDonationAmount) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestServiceCreateDonationPaymentRejectsTooSmallAmount(t *testing.T) {
+	service := NewService(stubRepositories(stubContentRepository{}), nil)
+
+	_, err := service.CreateDonationPayment(context.Background(), CreateDonationPaymentCommand{
+		SenderUserID:    1002,
+		RecipientUserID: 1001,
+		AmountValue:     minDonationAmount - 1,
 	})
 	if !errors.Is(err, ErrInvalidDonationAmount) {
 		t.Fatalf("unexpected error: %v", err)

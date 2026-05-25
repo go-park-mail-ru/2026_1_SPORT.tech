@@ -87,3 +87,12 @@ func (server *Server) UnlikePost(ctx context.Context, request *contentv1.UnlikeP
 
 	return mappers.NewPostLikeStateResponse(state), nil
 }
+
+func (server *Server) ListPostLikes(ctx context.Context, request *contentv1.ListPostLikesRequest) (*contentv1.ListPostLikesResponse, error) {
+	likes, err := server.useCases.Posts.ListPostLikes(ctx, mappers.ListPostLikesRequestToQuery(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewListPostLikesResponse(likes), nil
+}
