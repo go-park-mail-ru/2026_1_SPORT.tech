@@ -34,6 +34,28 @@ func (server *Server) GetProfile(ctx context.Context, request *gatewayv1.GetProf
 	return mappers.ProfileResponseFromProfile(response.GetProfile(), currentUserID)
 }
 
+func (server *Server) GetProfileByUsername(ctx context.Context, request *gatewayv1.GetProfileByUsernameRequest) (*gatewayv1.ProfileResponse, error) {
+	principal, err := server.optionalSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.profileClient.GetProfileByUsername(
+		forwardContext(ctx),
+		&profilev1.GetProfileByUsernameRequest{Username: request.GetUsername()},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var currentUserID int64
+	if principal != nil && principal.User != nil {
+		currentUserID = principal.User.GetUserId()
+	}
+
+	return mappers.ProfileResponseFromProfile(response.GetProfile(), currentUserID)
+}
+
 func (server *Server) ListTrainers(ctx context.Context, request *gatewayv1.ListTrainersRequest) (*gatewayv1.GetTrainersResponse, error) {
 	return server.searchTrainers(ctx, request)
 }

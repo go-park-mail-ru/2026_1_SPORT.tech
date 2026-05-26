@@ -18,6 +18,14 @@ func validateUserID(userID int64) error {
 	return nil
 }
 
+func validateUsername(username string) error {
+	if !usernamePattern.MatchString(username) {
+		return ErrInvalidUsername
+	}
+
+	return nil
+}
+
 func validateSearchAuthorsQuery(query SearchAuthorsQuery) error {
 	if query.Limit < 0 || query.Limit > 100 {
 		return ErrInvalidSearchLimit
@@ -54,6 +62,10 @@ func validateUploadAvatarCommand(command UploadAvatarCommand) error {
 	}
 
 	return nil
+}
+
+func parseMeasuredAt(s string) (time.Time, error) {
+	return time.Parse("2006-01-02", s)
 }
 
 func validateProfile(profile domain.Profile) error {

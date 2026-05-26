@@ -43,24 +43,29 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 
 	profileRepository := postgresadapter.NewProfileRepository(database)
 	sportTypeRepository := postgresadapter.NewSportTypeRepository(database)
+	measurementRepository := postgresadapter.NewMeasurementRepository(database)
 	avatarStorage, err := minioadapter.NewAvatarStorage(cfg.Storage)
 	if err != nil {
 		_ = database.Close()
 		return nil, fmt.Errorf("new avatar storage: %w", err)
 	}
+	measurementSharingRepository := postgresadapter.NewMeasurementSharingRepository(database)
 	profileUseCase := usecase.NewService(usecase.Repositories{
-		Profiles: profileRepository,
-		Authors:  profileRepository,
-		Avatars:  profileRepository,
-		Sports:   sportTypeRepository,
+		Profiles:           profileRepository,
+		Authors:            profileRepository,
+		Avatars:            profileRepository,
+		Sports:             sportTypeRepository,
+		Measurements:       measurementRepository,
+		MeasurementSharing: measurementSharingRepository,
 	}, avatarStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
 	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{
-		Profiles: profileUseCase,
-		Authors:  profileUseCase,
-		Avatars:  profileUseCase,
-		Sports:   profileUseCase,
+		Profiles:     profileUseCase,
+		Authors:      profileUseCase,
+		Avatars:      profileUseCase,
+		Sports:       profileUseCase,
+		Measurements: profileUseCase,
 	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 

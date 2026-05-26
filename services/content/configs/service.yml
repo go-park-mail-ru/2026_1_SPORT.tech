@@ -23,8 +23,15 @@ storage:
   host: localhost
   port: "8000"
   bucket: post-media
-  public_base_url: http://localhost:8000/post-media
+  public_base_url: /post-media
   use_ssl: false
+
+payment:
+  provider: stripe
+  stripe_return_url: https://sporteon.ru/payment/success
+  stripe_cancel_url: https://sporteon.ru/payment/cancel
+  stripe_api_base_url: https://api.stripe.com/v1
+  http_timeout: 5s
 
 openapi:
   file_path: grpc/gen/openapiv2/content/v1/content.swagger.json

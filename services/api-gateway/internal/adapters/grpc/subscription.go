@@ -12,24 +12,7 @@ import (
 )
 
 func (server *Server) SubscribeToTrainer(ctx context.Context, request *gatewayv1.SubscribeRequest) (*gatewayv1.Subscription, error) {
-	userID, err := server.requireSubscriptionUserID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := server.contentClient.SubscribeToTrainer(
-		forwardContext(ctx),
-		mappers.SubscribeRequestToContent(userID, request),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := setHTTPStatus(ctx, 201); err != nil {
-		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
-	}
-
-	return mappers.SubscriptionFromContent(response)
+	return nil, status.Error(codes.FailedPrecondition, "subscription payment is required")
 }
 
 func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.SubscriptionsResponse, error) {
@@ -49,21 +32,37 @@ func (server *Server) ListMySubscriptions(ctx context.Context, _ *emptypb.Empty)
 	return mappers.SubscriptionsResponseFromContent(response)
 }
 
-func (server *Server) UpdateSubscription(ctx context.Context, request *gatewayv1.UpdateSubscriptionRequest) (*gatewayv1.Subscription, error) {
-	userID, err := server.requireSubscriptionUserID(ctx)
+func (server *Server) ListMySubscribers(ctx context.Context, request *gatewayv1.ListSubscribersRequest) (*gatewayv1.SubscribersResponse, error) {
+	principal, err := server.requireSession(ctx)
 	if err != nil {
 		return nil, err
 	}
+	if err := mappers.RequireTrainerRole(principal.User); err != nil {
+		return nil, status.Error(codes.PermissionDenied, err.Error())
+	}
 
-	response, err := server.contentClient.UpdateSubscription(
+	trainerUserID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	response, err := server.contentClient.ListTrainerSubscribers(
 		forwardContext(ctx),
-		mappers.UpdateSubscriptionRequestToContent(userID, request),
+		&contentv1.ListTrainerSubscribersRequest{
+			TrainerUserId: trainerUserID,
+			Limit:         request.GetLimit(),
+			Offset:        request.GetOffset(),
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return mappers.SubscriptionFromContent(response)
+	return mappers.SubscribersResponseFromContent(response)
+}
+
+func (server *Server) UpdateSubscription(ctx context.Context, request *gatewayv1.UpdateSubscriptionRequest) (*gatewayv1.Subscription, error) {
+	return nil, status.Error(codes.FailedPrecondition, "subscription payment is required")
 }
 
 func (server *Server) CancelSubscription(ctx context.Context, request *gatewayv1.CancelSubscriptionRequest) (*emptypb.Empty, error) {

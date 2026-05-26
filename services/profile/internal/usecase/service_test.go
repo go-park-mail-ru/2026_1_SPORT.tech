@@ -14,6 +14,7 @@ import (
 type stubProfileRepository struct {
 	createFunc          func(ctx context.Context, profile domain.Profile) error
 	getByIDFunc         func(ctx context.Context, userID int64) (domain.Profile, error)
+	getByUsernameFunc   func(ctx context.Context, username string) (domain.Profile, error)
 	updateFunc          func(ctx context.Context, profile domain.Profile) error
 	searchAuthorsFunc   func(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error)
 	updateAvatarURLFunc func(ctx context.Context, userID int64, avatarURL string) error
@@ -26,6 +27,10 @@ func (repository stubProfileRepository) Create(ctx context.Context, profile doma
 
 func (repository stubProfileRepository) GetByID(ctx context.Context, userID int64) (domain.Profile, error) {
 	return repository.getByIDFunc(ctx, userID)
+}
+
+func (repository stubProfileRepository) GetByUsername(ctx context.Context, username string) (domain.Profile, error) {
+	return repository.getByUsernameFunc(ctx, username)
 }
 
 func (repository stubProfileRepository) Update(ctx context.Context, profile domain.Profile) error {
@@ -190,6 +195,147 @@ func TestServiceUploadAvatar(t *testing.T) {
 	}
 	if !uploaded || !updated {
 		t.Fatal("expected upload and update to be called")
+	}
+}
+
+func TestServiceGetProfile(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{
+			getByIDFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
+				return domain.Profile{UserID: userID, Username: "athlete", FirstName: "Ivan", LastName: "Petrov"}, nil
+			},
+		}, stubSportTypeRepository{}),
+		nil,
+	)
+
+	profile, err := service.GetProfile(context.Background(), 5)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if profile.UserID != 5 || profile.Username != "athlete" {
+		t.Fatalf("unexpected profile: %+v", profile)
+	}
+}
+
+func TestServiceGetProfileInvalidID(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{}, stubSportTypeRepository{}),
+		nil,
+	)
+
+	_, err := service.GetProfile(context.Background(), 0)
+	if err == nil {
+		t.Fatal("expected error for zero user id")
+	}
+}
+
+func TestServiceGetProfileByUsername(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{
+			getByUsernameFunc: func(ctx context.Context, username string) (domain.Profile, error) {
+				return domain.Profile{UserID: 5, Username: username, FirstName: "Ivan", LastName: "Petrov"}, nil
+			},
+		}, stubSportTypeRepository{}),
+		nil,
+	)
+
+	profile, err := service.GetProfileByUsername(context.Background(), "athlete")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if profile.UserID != 5 || profile.Username != "athlete" {
+		t.Fatalf("unexpected profile: %+v", profile)
+	}
+}
+
+func TestServiceGetProfileByUsernameInvalid(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{}, stubSportTypeRepository{}),
+		nil,
+	)
+
+	_, err := service.GetProfileByUsername(context.Background(), "ab")
+	if !errors.Is(err, ErrInvalidUsername) {
+		t.Fatalf("expected ErrInvalidUsername, got %v", err)
+	}
+}
+
+func TestServiceDeleteAvatar(t *testing.T) {
+	avatarURL := "http://storage/old-avatar.png"
+	deleteCalled := false
+	clearCalled := false
+
+	service := NewService(
+		stubRepositories(stubProfileRepository{
+			getByIDFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
+				return domain.Profile{UserID: userID, Username: "john", FirstName: "John", LastName: "Doe", AvatarURL: &avatarURL}, nil
+			},
+			clearAvatarURLFunc: func(ctx context.Context, userID int64) error {
+				clearCalled = true
+				return nil
+			},
+		}, stubSportTypeRepository{}),
+		stubAvatarStorage{
+			deleteFunc: func(ctx context.Context, url string) error {
+				deleteCalled = true
+				if url != avatarURL {
+					t.Fatalf("unexpected avatar url: %s", url)
+				}
+				return nil
+			},
+		},
+	)
+
+	err := service.DeleteAvatar(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !deleteCalled {
+		t.Fatal("expected storage delete to be called")
+	}
+	if !clearCalled {
+		t.Fatal("expected repository clear to be called")
+	}
+}
+
+func TestServiceDeleteAvatarNoAvatar(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{
+			getByIDFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
+				return domain.Profile{UserID: userID, Username: "john", FirstName: "John", LastName: "Doe", AvatarURL: nil}, nil
+			},
+		}, stubSportTypeRepository{}),
+		nil,
+	)
+
+	err := service.DeleteAvatar(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("expected no error when no avatar: %v", err)
+	}
+}
+
+func TestServiceListSportTypes(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubProfileRepository{}, stubSportTypeRepository{
+			listFunc: func(ctx context.Context) ([]domain.SportType, error) {
+				return []domain.SportType{
+					{ID: 1, Name: "Running"},
+					{ID: 2, Name: "Swimming"},
+				}, nil
+			},
+		}),
+		nil,
+	)
+
+	sportTypes, err := service.ListSportTypes(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(sportTypes) != 2 {
+		t.Fatalf("unexpected sport types count: %d", len(sportTypes))
+	}
+	if sportTypes[0].Name != "Running" {
+		t.Fatalf("unexpected sport type: %+v", sportTypes[0])
 	}
 }
 

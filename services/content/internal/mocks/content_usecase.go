@@ -21,15 +21,22 @@ type ContentUseCase struct {
 	DeleteTierFunc         func(ctx context.Context, command usecase.DeleteSubscriptionTierCommand) error
 	SubscribeFunc          func(ctx context.Context, command usecase.SubscribeToTrainerCommand) (domain.Subscription, error)
 	ListSubscriptionsFunc  func(ctx context.Context, query usecase.ListMySubscriptionsQuery) ([]domain.Subscription, error)
+	ListSubscribersFunc    func(ctx context.Context, query usecase.ListTrainerSubscribersQuery) ([]domain.Subscription, error)
 	UpdateSubscriptionFunc func(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error)
 	CancelSubscriptionFunc func(ctx context.Context, command usecase.CancelSubscriptionCommand) error
 	DonateFunc             func(ctx context.Context, command usecase.DonateToProfileCommand) (domain.Donation, error)
+	CreatePaymentFunc      func(ctx context.Context, command usecase.CreateDonationPaymentCommand) (domain.DonationPayment, error)
+	CreateSubPaymentFunc   func(ctx context.Context, command usecase.CreateSubscriptionPaymentCommand) (domain.DonationPayment, error)
+	ConfirmPaymentFunc     func(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error)
 	GetBalanceFunc         func(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error)
 	GetStatisticsFunc      func(ctx context.Context, query usecase.GetTrainerStatisticsQuery) (domain.TrainerStatistics, error)
 	LikePostFunc           func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	UnlikePostFunc         func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateCommentFunc      func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
 	ListCommentsFunc       func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
+	ListPostLikesFunc      func(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error)
+	ListNotificationsFunc  func(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error)
+	MarkNotificationFunc   func(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
 }
 
 func (mock ContentUseCase) ListAuthorPosts(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
@@ -102,6 +109,13 @@ func (mock ContentUseCase) ListMySubscriptions(ctx context.Context, query usecas
 	return mock.ListSubscriptionsFunc(ctx, query)
 }
 
+func (mock ContentUseCase) ListTrainerSubscribers(ctx context.Context, query usecase.ListTrainerSubscribersQuery) ([]domain.Subscription, error) {
+	if mock.ListSubscribersFunc == nil {
+		return nil, nil
+	}
+	return mock.ListSubscribersFunc(ctx, query)
+}
+
 func (mock ContentUseCase) UpdateSubscription(ctx context.Context, command usecase.UpdateSubscriptionCommand) (domain.Subscription, error) {
 	if mock.UpdateSubscriptionFunc == nil {
 		return domain.Subscription{}, nil
@@ -121,6 +135,27 @@ func (mock ContentUseCase) DonateToProfile(ctx context.Context, command usecase.
 		return domain.Donation{}, nil
 	}
 	return mock.DonateFunc(ctx, command)
+}
+
+func (mock ContentUseCase) CreateDonationPayment(ctx context.Context, command usecase.CreateDonationPaymentCommand) (domain.DonationPayment, error) {
+	if mock.CreatePaymentFunc == nil {
+		return domain.DonationPayment{}, nil
+	}
+	return mock.CreatePaymentFunc(ctx, command)
+}
+
+func (mock ContentUseCase) CreateSubscriptionPayment(ctx context.Context, command usecase.CreateSubscriptionPaymentCommand) (domain.DonationPayment, error) {
+	if mock.CreateSubPaymentFunc == nil {
+		return domain.DonationPayment{}, nil
+	}
+	return mock.CreateSubPaymentFunc(ctx, command)
+}
+
+func (mock ContentUseCase) ConfirmDonationPayment(ctx context.Context, command usecase.ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {
+	if mock.ConfirmPaymentFunc == nil {
+		return domain.DonationPayment{}, nil
+	}
+	return mock.ConfirmPaymentFunc(ctx, command)
 }
 
 func (mock ContentUseCase) GetBalance(ctx context.Context, query usecase.GetBalanceQuery) (domain.Balance, error) {
@@ -151,4 +186,26 @@ func (mock ContentUseCase) CreateComment(ctx context.Context, command usecase.Cr
 
 func (mock ContentUseCase) ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
 	return mock.ListCommentsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) ListPostLikes(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error) {
+	return mock.ListPostLikesFunc(ctx, query)
+}
+
+func (mock ContentUseCase) ListNotifications(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error) {
+	if mock.ListNotificationsFunc == nil {
+		return nil, nil
+	}
+	return mock.ListNotificationsFunc(ctx, query)
+}
+
+func (mock ContentUseCase) MarkNotificationRead(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error) {
+	if mock.MarkNotificationFunc == nil {
+		return domain.Notification{}, nil
+	}
+	return mock.MarkNotificationFunc(ctx, command)
+}
+
+func (mock ContentUseCase) ListReceivedDonations(ctx context.Context, query usecase.ListReceivedDonationsQuery) ([]domain.Donation, int32, error) {
+	return nil, 0, nil
 }

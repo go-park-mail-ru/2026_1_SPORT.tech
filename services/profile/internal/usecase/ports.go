@@ -8,15 +8,18 @@ import (
 )
 
 type Repositories struct {
-	Profiles ProfileRepository
-	Authors  AuthorRepository
-	Avatars  AvatarRepository
-	Sports   SportTypeRepository
+	Profiles           ProfileRepository
+	Authors            AuthorRepository
+	Avatars            AvatarRepository
+	Sports             SportTypeRepository
+	Measurements       MeasurementRepository
+	MeasurementSharing MeasurementSharingRepository
 }
 
 type ProfileRepository interface {
 	Create(ctx context.Context, profile domain.Profile) error
 	GetByID(ctx context.Context, userID int64) (domain.Profile, error)
+	GetByUsername(ctx context.Context, username string) (domain.Profile, error)
 	Update(ctx context.Context, profile domain.Profile) error
 }
 
@@ -75,4 +78,51 @@ type UploadAvatarCommand struct {
 	FileName    string
 	ContentType string
 	Content     []byte
+}
+
+type MeasurementRepository interface {
+	CreateMeasurement(ctx context.Context, m domain.Measurement) (domain.Measurement, error)
+	ListMeasurements(ctx context.Context, userID int64, limit, offset int32) ([]domain.Measurement, error)
+	DeleteMeasurement(ctx context.Context, userID, measurementID int64) error
+}
+
+type MeasurementSharingRepository interface {
+	SetSharing(ctx context.Context, clientUserID int64, trainerUserIDs []int64) error
+
+	GetSharing(ctx context.Context, clientUserID int64) ([]int64, error)
+
+	HasAccess(ctx context.Context, clientUserID, trainerUserID int64) (bool, error)
+}
+
+type CreateMeasurementCommand struct {
+	UserID     int64
+	MeasuredAt string
+	WeightKg   *float64
+	BodyFatPct *float64
+	ChestCm    *int32
+	WaistCm    *int32
+	HipsCm     *int32
+	Notes      *string
+}
+
+type DeleteMeasurementCommand struct {
+	UserID        int64
+	MeasurementID int64
+}
+
+type SetMeasurementSharingCommand struct {
+	ClientUserID   int64
+	TrainerUserIDs []int64
+}
+
+type GetMeasurementSharingQuery struct {
+	ClientUserID int64
+}
+
+type ListMeasurementsQuery struct {
+	UserID int64
+	Limit  int32
+	Offset int32
+
+	ViewerUserID int64
 }

@@ -604,6 +604,59 @@ func local_request_ContentService_ListMySubscriptions_0(ctx context.Context, mar
 	return msg, metadata, err
 }
 
+var filter_ContentService_ListTrainerSubscribers_0 = &utilities.DoubleArray{Encoding: map[string]int{"trainer_user_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
+func request_ContentService_ListTrainerSubscribers_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListTrainerSubscribersRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["trainer_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "trainer_user_id")
+	}
+	protoReq.TrainerUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "trainer_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListTrainerSubscribers_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListTrainerSubscribers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListTrainerSubscribers_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListTrainerSubscribersRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["trainer_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "trainer_user_id")
+	}
+	protoReq.TrainerUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "trainer_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListTrainerSubscribers_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListTrainerSubscribers(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_ContentService_UpdateSubscription_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq UpdateSubscriptionRequest
@@ -765,6 +818,105 @@ func local_request_ContentService_DonateToProfile_0(ctx context.Context, marshal
 	return msg, metadata, err
 }
 
+func request_ContentService_CreateDonationPayment_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CreateDonationPaymentRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.CreateDonationPayment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_CreateDonationPayment_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CreateDonationPaymentRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.CreateDonationPayment(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_CreateSubscriptionPayment_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CreateSubscriptionPaymentRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.CreateSubscriptionPayment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_CreateSubscriptionPayment_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CreateSubscriptionPaymentRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.CreateSubscriptionPayment(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_ConfirmDonationPayment_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ConfirmDonationPaymentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["payment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payment_id")
+	}
+	protoReq.PaymentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payment_id", err)
+	}
+	msg, err := client.ConfirmDonationPayment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ConfirmDonationPayment_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ConfirmDonationPaymentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["payment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payment_id")
+	}
+	protoReq.PaymentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payment_id", err)
+	}
+	msg, err := server.ConfirmDonationPayment(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 var filter_ContentService_GetBalance_0 = &utilities.DoubleArray{Encoding: map[string]int{"trainer_user_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 
 func request_ContentService_GetBalance_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -868,6 +1020,59 @@ func local_request_ContentService_GetTrainerStatistics_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.GetTrainerStatistics(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_ContentService_ListReceivedDonations_0 = &utilities.DoubleArray{Encoding: map[string]int{"trainer_user_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
+func request_ContentService_ListReceivedDonations_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListReceivedDonationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["trainer_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "trainer_user_id")
+	}
+	protoReq.TrainerUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "trainer_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListReceivedDonations_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListReceivedDonations(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListReceivedDonations_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListReceivedDonationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["trainer_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "trainer_user_id")
+	}
+	protoReq.TrainerUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "trainer_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListReceivedDonations_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListReceivedDonations(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -1080,6 +1285,353 @@ func local_request_ContentService_ListComments_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.ListComments(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_ContentService_ListPostLikes_0 = &utilities.DoubleArray{Encoding: map[string]int{"post_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
+func request_ContentService_ListPostLikes_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListPostLikesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["post_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
+	}
+	protoReq.PostId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListPostLikes_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListPostLikes(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListPostLikes_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListPostLikesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["post_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
+	}
+	protoReq.PostId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListPostLikes_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListPostLikes(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_ContentService_ListNotifications_0 = &utilities.DoubleArray{Encoding: map[string]int{"user_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
+func request_ContentService_ListNotifications_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListNotificationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListNotifications_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListNotifications(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListNotifications_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListNotificationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListNotifications_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListNotifications(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_MarkNotificationRead_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq MarkNotificationReadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	val, ok = pathParams["notification_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "notification_id")
+	}
+	protoReq.NotificationId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "notification_id", err)
+	}
+	msg, err := client.MarkNotificationRead(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_MarkNotificationRead_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq MarkNotificationReadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	val, ok = pathParams["notification_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "notification_id")
+	}
+	protoReq.NotificationId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "notification_id", err)
+	}
+	msg, err := server.MarkNotificationRead(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_SendChatMessage_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SendChatMessageRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.SendChatMessage(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_SendChatMessage_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SendChatMessageRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.SendChatMessage(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_ContentService_ListChatMessages_0 = &utilities.DoubleArray{Encoding: map[string]int{"user_id": 0, "other_user_id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+
+func request_ContentService_ListChatMessages_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListChatMessagesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	val, ok = pathParams["other_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "other_user_id")
+	}
+	protoReq.OtherUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "other_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListChatMessages_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListChatMessages(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListChatMessages_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListChatMessagesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	val, ok = pathParams["other_user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "other_user_id")
+	}
+	protoReq.OtherUserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "other_user_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_ListChatMessages_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListChatMessages(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_ListChatConversations_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListChatConversationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := client.ListChatConversations(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_ListChatConversations_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListChatConversationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := server.ListChatConversations(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_MarkChatMessageRead_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq MarkChatMessageReadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["message_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "message_id")
+	}
+	protoReq.MessageId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "message_id", err)
+	}
+	msg, err := client.MarkChatMessageRead(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_MarkChatMessageRead_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq MarkChatMessageReadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["message_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "message_id")
+	}
+	protoReq.MessageId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "message_id", err)
+	}
+	msg, err := server.MarkChatMessageRead(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -1349,6 +1901,26 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_ListMySubscriptions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListTrainerSubscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListTrainerSubscribers", runtime.WithHTTPPathPattern("/v1/trainers/{trainer_user_id}/subscribers"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListTrainerSubscribers_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListTrainerSubscribers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPatch, pattern_ContentService_UpdateSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1409,6 +1981,66 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_DonateToProfile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_ContentService_CreateDonationPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/CreateDonationPayment", runtime.WithHTTPPathPattern("/v1/payments/donations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_CreateDonationPayment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_CreateDonationPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_CreateSubscriptionPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/CreateSubscriptionPayment", runtime.WithHTTPPathPattern("/v1/payments/subscriptions"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_CreateSubscriptionPayment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_CreateSubscriptionPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_ConfirmDonationPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ConfirmDonationPayment", runtime.WithHTTPPathPattern("/v1/payments/{payment_id}/confirm"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ConfirmDonationPayment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ConfirmDonationPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_ContentService_GetBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1448,6 +2080,26 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_ContentService_GetTrainerStatistics_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListReceivedDonations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListReceivedDonations", runtime.WithHTTPPathPattern("/v1/users/{trainer_user_id}/donations/received"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListReceivedDonations_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListReceivedDonations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodPost, pattern_ContentService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -1528,6 +2180,146 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_ContentService_ListComments_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListPostLikes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListPostLikes", runtime.WithHTTPPathPattern("/v1/posts/{post_id}/likes"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListPostLikes_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListPostLikes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListNotifications_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListNotifications", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notifications"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListNotifications_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListNotifications_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_MarkNotificationRead_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/MarkNotificationRead", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notifications/{notification_id}/read"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_MarkNotificationRead_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_MarkNotificationRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_SendChatMessage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/SendChatMessage", runtime.WithHTTPPathPattern("/v1/chat/messages"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_SendChatMessage_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_SendChatMessage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListChatMessages_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListChatMessages", runtime.WithHTTPPathPattern("/v1/users/{user_id}/chat/messages/{other_user_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListChatMessages_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListChatMessages_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListChatConversations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListChatConversations", runtime.WithHTTPPathPattern("/v1/users/{user_id}/chat/conversations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_ListChatConversations_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListChatConversations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_MarkChatMessageRead_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/MarkChatMessageRead", runtime.WithHTTPPathPattern("/v1/chat/messages/{message_id}/read"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_MarkChatMessageRead_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_MarkChatMessageRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -1790,6 +2582,23 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_ListMySubscriptions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListTrainerSubscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListTrainerSubscribers", runtime.WithHTTPPathPattern("/v1/trainers/{trainer_user_id}/subscribers"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListTrainerSubscribers_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListTrainerSubscribers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPatch, pattern_ContentService_UpdateSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1841,6 +2650,57 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_DonateToProfile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_ContentService_CreateDonationPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/CreateDonationPayment", runtime.WithHTTPPathPattern("/v1/payments/donations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_CreateDonationPayment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_CreateDonationPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_CreateSubscriptionPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/CreateSubscriptionPayment", runtime.WithHTTPPathPattern("/v1/payments/subscriptions"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_CreateSubscriptionPayment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_CreateSubscriptionPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_ConfirmDonationPayment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ConfirmDonationPayment", runtime.WithHTTPPathPattern("/v1/payments/{payment_id}/confirm"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ConfirmDonationPayment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ConfirmDonationPayment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_ContentService_GetBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1874,6 +2734,23 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_ContentService_GetTrainerStatistics_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListReceivedDonations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListReceivedDonations", runtime.WithHTTPPathPattern("/v1/users/{trainer_user_id}/donations/received"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListReceivedDonations_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListReceivedDonations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodPost, pattern_ContentService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -1943,55 +2820,198 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_ListComments_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListPostLikes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListPostLikes", runtime.WithHTTPPathPattern("/v1/posts/{post_id}/likes"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListPostLikes_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListPostLikes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListNotifications_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListNotifications", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notifications"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListNotifications_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListNotifications_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_MarkNotificationRead_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/MarkNotificationRead", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notifications/{notification_id}/read"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_MarkNotificationRead_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_MarkNotificationRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_ContentService_SendChatMessage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/SendChatMessage", runtime.WithHTTPPathPattern("/v1/chat/messages"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_SendChatMessage_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_SendChatMessage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListChatMessages_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListChatMessages", runtime.WithHTTPPathPattern("/v1/users/{user_id}/chat/messages/{other_user_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListChatMessages_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListChatMessages_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_ListChatConversations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/ListChatConversations", runtime.WithHTTPPathPattern("/v1/users/{user_id}/chat/conversations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_ListChatConversations_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_ListChatConversations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_MarkChatMessageRead_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/MarkChatMessageRead", runtime.WithHTTPPathPattern("/v1/chat/messages/{message_id}/read"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_MarkChatMessageRead_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_MarkChatMessageRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_ContentService_ListAuthorPosts_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "authors", "author_user_id", "posts"}, ""))
-	pattern_ContentService_SearchPosts_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, "search"))
-	pattern_ContentService_CreatePost_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, ""))
-	pattern_ContentService_UploadPostMedia_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "posts", "media"}, ""))
-	pattern_ContentService_GetPost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_UpdatePost_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_DeletePost_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_ListSubscriptionTiers_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
-	pattern_ContentService_CreateSubscriptionTier_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
-	pattern_ContentService_UpdateSubscriptionTier_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
-	pattern_ContentService_DeleteSubscriptionTier_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
-	pattern_ContentService_SubscribeToTrainer_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribe"}, ""))
-	pattern_ContentService_ListMySubscriptions_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "client_user_id", "subscriptions"}, ""))
-	pattern_ContentService_UpdateSubscription_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
-	pattern_ContentService_CancelSubscription_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
-	pattern_ContentService_DonateToProfile_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "recipient_user_id", "donations"}, ""))
-	pattern_ContentService_GetBalance_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "balance"}, ""))
-	pattern_ContentService_GetTrainerStatistics_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "statistics"}, ""))
-	pattern_ContentService_LikePost_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
-	pattern_ContentService_UnlikePost_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "posts", "post_id", "likes", "user_id"}, ""))
-	pattern_ContentService_CreateComment_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
-	pattern_ContentService_ListComments_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
+	pattern_ContentService_ListAuthorPosts_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "authors", "author_user_id", "posts"}, ""))
+	pattern_ContentService_SearchPosts_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, "search"))
+	pattern_ContentService_CreatePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, ""))
+	pattern_ContentService_UploadPostMedia_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "posts", "media"}, ""))
+	pattern_ContentService_GetPost_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_UpdatePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_DeletePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_ListSubscriptionTiers_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
+	pattern_ContentService_CreateSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
+	pattern_ContentService_UpdateSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
+	pattern_ContentService_DeleteSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
+	pattern_ContentService_SubscribeToTrainer_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribe"}, ""))
+	pattern_ContentService_ListMySubscriptions_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "client_user_id", "subscriptions"}, ""))
+	pattern_ContentService_ListTrainerSubscribers_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribers"}, ""))
+	pattern_ContentService_UpdateSubscription_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
+	pattern_ContentService_CancelSubscription_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
+	pattern_ContentService_DonateToProfile_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "recipient_user_id", "donations"}, ""))
+	pattern_ContentService_CreateDonationPayment_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "donations"}, ""))
+	pattern_ContentService_CreateSubscriptionPayment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "subscriptions"}, ""))
+	pattern_ContentService_ConfirmDonationPayment_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "payments", "payment_id", "confirm"}, ""))
+	pattern_ContentService_GetBalance_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "balance"}, ""))
+	pattern_ContentService_GetTrainerStatistics_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "statistics"}, ""))
+	pattern_ContentService_ListReceivedDonations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "trainer_user_id", "donations", "received"}, ""))
+	pattern_ContentService_LikePost_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
+	pattern_ContentService_UnlikePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "posts", "post_id", "likes", "user_id"}, ""))
+	pattern_ContentService_CreateComment_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
+	pattern_ContentService_ListComments_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
+	pattern_ContentService_ListPostLikes_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
+	pattern_ContentService_ListNotifications_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "notifications"}, ""))
+	pattern_ContentService_MarkNotificationRead_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"v1", "users", "user_id", "notifications", "notification_id", "read"}, ""))
+	pattern_ContentService_SendChatMessage_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "chat", "messages"}, ""))
+	pattern_ContentService_ListChatMessages_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "users", "user_id", "chat", "messages", "other_user_id"}, ""))
+	pattern_ContentService_ListChatConversations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "user_id", "chat", "conversations"}, ""))
+	pattern_ContentService_MarkChatMessageRead_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "chat", "messages", "message_id", "read"}, ""))
 )
 
 var (
-	forward_ContentService_ListAuthorPosts_0        = runtime.ForwardResponseMessage
-	forward_ContentService_SearchPosts_0            = runtime.ForwardResponseMessage
-	forward_ContentService_CreatePost_0             = runtime.ForwardResponseMessage
-	forward_ContentService_UploadPostMedia_0        = runtime.ForwardResponseMessage
-	forward_ContentService_GetPost_0                = runtime.ForwardResponseMessage
-	forward_ContentService_UpdatePost_0             = runtime.ForwardResponseMessage
-	forward_ContentService_DeletePost_0             = runtime.ForwardResponseMessage
-	forward_ContentService_ListSubscriptionTiers_0  = runtime.ForwardResponseMessage
-	forward_ContentService_CreateSubscriptionTier_0 = runtime.ForwardResponseMessage
-	forward_ContentService_UpdateSubscriptionTier_0 = runtime.ForwardResponseMessage
-	forward_ContentService_DeleteSubscriptionTier_0 = runtime.ForwardResponseMessage
-	forward_ContentService_SubscribeToTrainer_0     = runtime.ForwardResponseMessage
-	forward_ContentService_ListMySubscriptions_0    = runtime.ForwardResponseMessage
-	forward_ContentService_UpdateSubscription_0     = runtime.ForwardResponseMessage
-	forward_ContentService_CancelSubscription_0     = runtime.ForwardResponseMessage
-	forward_ContentService_DonateToProfile_0        = runtime.ForwardResponseMessage
-	forward_ContentService_GetBalance_0             = runtime.ForwardResponseMessage
-	forward_ContentService_GetTrainerStatistics_0   = runtime.ForwardResponseMessage
-	forward_ContentService_LikePost_0               = runtime.ForwardResponseMessage
-	forward_ContentService_UnlikePost_0             = runtime.ForwardResponseMessage
-	forward_ContentService_CreateComment_0          = runtime.ForwardResponseMessage
-	forward_ContentService_ListComments_0           = runtime.ForwardResponseMessage
+	forward_ContentService_ListAuthorPosts_0           = runtime.ForwardResponseMessage
+	forward_ContentService_SearchPosts_0               = runtime.ForwardResponseMessage
+	forward_ContentService_CreatePost_0                = runtime.ForwardResponseMessage
+	forward_ContentService_UploadPostMedia_0           = runtime.ForwardResponseMessage
+	forward_ContentService_GetPost_0                   = runtime.ForwardResponseMessage
+	forward_ContentService_UpdatePost_0                = runtime.ForwardResponseMessage
+	forward_ContentService_DeletePost_0                = runtime.ForwardResponseMessage
+	forward_ContentService_ListSubscriptionTiers_0     = runtime.ForwardResponseMessage
+	forward_ContentService_CreateSubscriptionTier_0    = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateSubscriptionTier_0    = runtime.ForwardResponseMessage
+	forward_ContentService_DeleteSubscriptionTier_0    = runtime.ForwardResponseMessage
+	forward_ContentService_SubscribeToTrainer_0        = runtime.ForwardResponseMessage
+	forward_ContentService_ListMySubscriptions_0       = runtime.ForwardResponseMessage
+	forward_ContentService_ListTrainerSubscribers_0    = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateSubscription_0        = runtime.ForwardResponseMessage
+	forward_ContentService_CancelSubscription_0        = runtime.ForwardResponseMessage
+	forward_ContentService_DonateToProfile_0           = runtime.ForwardResponseMessage
+	forward_ContentService_CreateDonationPayment_0     = runtime.ForwardResponseMessage
+	forward_ContentService_CreateSubscriptionPayment_0 = runtime.ForwardResponseMessage
+	forward_ContentService_ConfirmDonationPayment_0    = runtime.ForwardResponseMessage
+	forward_ContentService_GetBalance_0                = runtime.ForwardResponseMessage
+	forward_ContentService_GetTrainerStatistics_0      = runtime.ForwardResponseMessage
+	forward_ContentService_ListReceivedDonations_0     = runtime.ForwardResponseMessage
+	forward_ContentService_LikePost_0                  = runtime.ForwardResponseMessage
+	forward_ContentService_UnlikePost_0                = runtime.ForwardResponseMessage
+	forward_ContentService_CreateComment_0             = runtime.ForwardResponseMessage
+	forward_ContentService_ListComments_0              = runtime.ForwardResponseMessage
+	forward_ContentService_ListPostLikes_0             = runtime.ForwardResponseMessage
+	forward_ContentService_ListNotifications_0         = runtime.ForwardResponseMessage
+	forward_ContentService_MarkNotificationRead_0      = runtime.ForwardResponseMessage
+	forward_ContentService_SendChatMessage_0           = runtime.ForwardResponseMessage
+	forward_ContentService_ListChatMessages_0          = runtime.ForwardResponseMessage
+	forward_ContentService_ListChatConversations_0     = runtime.ForwardResponseMessage
+	forward_ContentService_MarkChatMessageRead_0       = runtime.ForwardResponseMessage
 )

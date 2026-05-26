@@ -204,6 +204,10 @@ func (recorder *statusRecorder) WriteHeader(statusCode int) {
 	recorder.ResponseWriter.WriteHeader(statusCode)
 }
 
+func (recorder *statusRecorder) Unwrap() http.ResponseWriter {
+	return recorder.ResponseWriter
+}
+
 func (recorder *statusRecorder) SetRoutePattern(routePattern string) {
 	recorder.routePattern = routePattern
 }

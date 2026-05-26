@@ -82,6 +82,10 @@ service ContentService {
     option (google.api.http).get = "/v1/users/{client_user_id}/subscriptions";
   }
 
+  rpc ListTrainerSubscribers(ListTrainerSubscribersRequest) returns (ListTrainerSubscribersResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_user_id}/subscribers";
+  }
+
   rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
       patch: "/v1/users/{client_user_id}/subscriptions/{subscription_id}"
@@ -100,12 +104,37 @@ service ContentService {
     };
   }
 
+  rpc CreateDonationPayment(CreateDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/donations"
+      body: "*"
+    };
+  }
+
+  rpc CreateSubscriptionPayment(CreateSubscriptionPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/subscriptions"
+      body: "*"
+    };
+  }
+
+  rpc ConfirmDonationPayment(ConfirmDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/{payment_id}/confirm"
+      body: "*"
+    };
+  }
+
   rpc GetBalance(GetBalanceRequest) returns (BalanceResponse) {
     option (google.api.http).get = "/v1/users/{trainer_user_id}/balance";
   }
 
   rpc GetTrainerStatistics(GetTrainerStatisticsRequest) returns (TrainerStatisticsResponse) {
     option (google.api.http).get = "/v1/users/{trainer_user_id}/statistics";
+  }
+
+  rpc ListReceivedDonations(ListReceivedDonationsRequest) returns (ListReceivedDonationsResponse) {
+    option (google.api.http).get = "/v1/users/{trainer_user_id}/donations/received";
   }
 
   rpc LikePost(LikePostRequest) returns (PostLikeStateResponse) {
@@ -129,6 +158,55 @@ service ContentService {
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
+
+  rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/likes";
+  }
+
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/notifications";
+  }
+
+  rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
+    option (google.api.http) = {
+      patch: "/v1/users/{user_id}/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+
+  rpc SendChatMessage(SendChatMessageRequest) returns (ChatMessage) {
+    option (google.api.http) = {
+      post: "/v1/chat/messages"
+      body: "*"
+    };
+  }
+
+  rpc ListChatMessages(ListChatMessagesRequest) returns (ListChatMessagesResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/chat/messages/{other_user_id}";
+  }
+
+  rpc ListChatConversations(ListChatConversationsRequest) returns (ListChatConversationsResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/chat/conversations";
+  }
+
+  rpc MarkChatMessageRead(MarkChatMessageReadRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/v1/chat/messages/{message_id}/read"
+      body: "*"
+    };
+  }
+
+  rpc CreateMeetingAvailabilityRule(CreateMeetingAvailabilityRuleRequest) returns (MeetingAvailabilityRule);
+  rpc ListMeetingAvailabilityRules(ListMeetingAvailabilityRulesRequest) returns (ListMeetingAvailabilityRulesResponse);
+  rpc DeleteMeetingAvailabilityRule(DeleteMeetingAvailabilityRuleRequest) returns (google.protobuf.Empty);
+  rpc CreateMeetingSlot(CreateMeetingSlotRequest) returns (MeetingSlot);
+  rpc DeleteMeetingSlot(DeleteMeetingSlotRequest) returns (google.protobuf.Empty);
+  rpc ListMeetingSlots(ListMeetingSlotsRequest) returns (ListMeetingSlotsResponse);
+  rpc ListTrainerMeetingAvailability(ListTrainerMeetingAvailabilityRequest) returns (ListTrainerMeetingAvailabilityResponse);
+  rpc BookMeeting(BookMeetingRequest) returns (MeetingBooking);
+  rpc AssignMeeting(AssignMeetingRequest) returns (MeetingBooking);
+  rpc CancelMeeting(CancelMeetingRequest) returns (google.protobuf.Empty);
+  rpc ListMeetings(ListMeetingsRequest) returns (ListMeetingsResponse);
 }
 
 enum ContentBlockKind {
@@ -197,6 +275,22 @@ message Comment {
   google.protobuf.Timestamp updated_at = 6;
 }
 
+message Notification {
+  int64 notification_id = 1;
+  int64 user_id = 2;
+  string type = 3;
+  int64 actor_user_id = 4;
+  string title = 5;
+  string body = 6;
+  bool is_read = 7;
+  google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp read_at = 9;
+  optional int64 post_id = 10;
+  optional int64 comment_id = 11;
+  optional int64 donation_id = 12;
+  optional int64 subscription_id = 13;
+}
+
 message PostResponse {
   Post post = 1;
 }
@@ -225,6 +319,7 @@ message SearchPostsRequest {
   int32 limit = 9;
   int32 offset = 10;
   repeated int64 sport_type_ids = 11;
+  string sort = 12;
 }
 
 message SearchPostsResponse {
@@ -276,6 +371,8 @@ message SubscriptionTier {
   optional string description = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+  bool chat_enabled = 8;
+  bool calendar_enabled = 9;
 }
 
 message ListSubscriptionTiersRequest {
@@ -291,6 +388,8 @@ message CreateSubscriptionTierRequest {
   string name = 2;
   int32 price = 3;
   optional string description = 4;
+  bool chat_enabled = 5;
+  bool calendar_enabled = 6;
 }
 
 message UpdateSubscriptionTierRequest {
@@ -300,6 +399,8 @@ message UpdateSubscriptionTierRequest {
   optional int32 price = 4;
   optional string description = 5;
   bool clear_description = 6;
+  optional bool chat_enabled = 7;
+  optional bool calendar_enabled = 8;
 }
 
 message DeleteSubscriptionTierRequest {
@@ -334,6 +435,16 @@ message ListMySubscriptionsResponse {
   repeated Subscription subscriptions = 1;
 }
 
+message ListTrainerSubscribersRequest {
+  int64 trainer_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListTrainerSubscribersResponse {
+  repeated Subscription subscribers = 1;
+}
+
 message UpdateSubscriptionRequest {
   int64 client_user_id = 1;
   int64 subscription_id = 2;
@@ -365,6 +476,52 @@ message DonateToProfileRequest {
 
 message DonationResponse {
   Donation donation = 1;
+}
+
+message Payment {
+  int64 payment_id = 1;
+  string provider_payment_id = 2;
+  string status = 3;
+  int64 sender_user_id = 4;
+  int64 recipient_user_id = 5;
+  int32 amount_value = 6;
+  string currency = 7;
+  optional string message = 8;
+  string confirmation_token = 9;
+  string confirmation_url = 10;
+  optional Donation donation = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  optional google.protobuf.Timestamp confirmed_at = 14;
+  optional Subscription subscription = 15;
+}
+
+message CreateDonationPaymentRequest {
+  int64 sender_user_id = 1;
+  int64 recipient_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+  optional string return_url = 6;
+  optional string cancel_url = 7;
+}
+
+message CreateSubscriptionPaymentRequest {
+  int64 client_user_id = 1;
+  int64 trainer_user_id = 2;
+  int64 tier_id = 3;
+  optional string return_url = 4;
+  optional string cancel_url = 5;
+}
+
+message ConfirmDonationPaymentRequest {
+  int64 sender_user_id = 1;
+  int64 payment_id = 2;
+  string confirmation_token = 3;
+}
+
+message PaymentResponse {
+  Payment payment = 1;
 }
 
 message GetBalanceRequest {
@@ -419,6 +576,24 @@ message PostLikeStateResponse {
   PostLikeState state = 1;
 }
 
+message PostLike {
+  int64 post_id = 1;
+  int64 user_id = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message ListPostLikesRequest {
+  int64 post_id = 1;
+  int64 viewer_user_id = 2;
+  optional int32 viewer_subscription_level = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListPostLikesResponse {
+  repeated PostLike likes = 1;
+}
+
 message CreateCommentRequest {
   int64 post_id = 1;
   int64 author_user_id = 2;
@@ -440,4 +615,195 @@ message ListCommentsRequest {
 
 message ListCommentsResponse {
   repeated Comment comments = 1;
+}
+
+message ListNotificationsRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message MarkNotificationReadRequest {
+  int64 user_id = 1;
+  int64 notification_id = 2;
+}
+
+message NotificationResponse {
+  Notification notification = 1;
+}
+
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
+}
+
+message ChatMessage {
+  int64 message_id = 1;
+  int64 sender_user_id = 2;
+  int64 receiver_user_id = 3;
+  string body = 4;
+  bool is_read = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ChatConversation {
+  int64 other_user_id = 1;
+  ChatMessage last_message = 2;
+  int32 unread_count = 3;
+}
+
+message SendChatMessageRequest {
+  int64 sender_user_id = 1;
+  int64 receiver_user_id = 2;
+  string body = 3;
+}
+
+message ListChatMessagesRequest {
+  int64 user_id = 1;
+  int64 other_user_id = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListChatMessagesResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message ListChatConversationsRequest {
+  int64 user_id = 1;
+}
+
+message ListChatConversationsResponse {
+  repeated ChatConversation conversations = 1;
+}
+
+message MarkChatMessageReadRequest {
+  int64 user_id = 1;
+  int64 message_id = 2;
+}
+
+message MeetingAvailabilityRule {
+  int64 rule_id = 1;
+  int64 trainer_user_id = 2;
+  int32 weekday = 3;
+  int32 start_hour = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message MeetingSlot {
+  int64 slot_id = 1;
+  int64 trainer_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message MeetingAvailabilitySlot {
+  google.protobuf.Timestamp starts_at = 1;
+  google.protobuf.Timestamp ends_at = 2;
+}
+
+message MeetingBooking {
+  int64 booking_id = 1;
+  int64 trainer_user_id = 2;
+  int64 client_user_id = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp ends_at = 5;
+  string status = 6;
+  int64 created_by_user_id = 7;
+  optional string note = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message CreateMeetingAvailabilityRuleRequest {
+  int64 trainer_user_id = 1;
+  int32 weekday = 2;
+  int32 start_hour = 3;
+}
+
+message ListMeetingAvailabilityRulesRequest {
+  int64 trainer_user_id = 1;
+}
+
+message ListMeetingAvailabilityRulesResponse {
+  repeated MeetingAvailabilityRule rules = 1;
+}
+
+message DeleteMeetingAvailabilityRuleRequest {
+  int64 trainer_user_id = 1;
+  int64 rule_id = 2;
+}
+
+message CreateMeetingSlotRequest {
+  int64 trainer_user_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+}
+
+message DeleteMeetingSlotRequest {
+  int64 trainer_user_id = 1;
+  int64 slot_id = 2;
+}
+
+message ListMeetingSlotsRequest {
+  int64 trainer_user_id = 1;
+}
+
+message ListMeetingSlotsResponse {
+  repeated MeetingSlot slots = 1;
+}
+
+message ListTrainerMeetingAvailabilityRequest {
+  int64 trainer_user_id = 1;
+  int64 viewer_user_id = 2;
+  string from = 3;
+  string to = 4;
+}
+
+message ListTrainerMeetingAvailabilityResponse {
+  repeated MeetingAvailabilitySlot slots = 1;
+}
+
+message BookMeetingRequest {
+  int64 client_user_id = 1;
+  int64 trainer_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+}
+
+message AssignMeetingRequest {
+  int64 trainer_user_id = 1;
+  int64 client_user_id = 2;
+  google.protobuf.Timestamp starts_at = 3;
+  int32 duration_hours = 4;
+  optional string note = 5;
+}
+
+message CancelMeetingRequest {
+  int64 user_id = 1;
+  int64 booking_id = 2;
+}
+
+message ListMeetingsRequest {
+  int64 user_id = 1;
+}
+
+message ListMeetingsResponse {
+  repeated MeetingBooking bookings = 1;
+}
+
+message DonationRecord {
+  int64 donation_id = 1;
+  int64 sender_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+  string created_at = 6;
+}
+
+message ListReceivedDonationsRequest {
+  int64 trainer_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListReceivedDonationsResponse {
+  repeated DonationRecord donations = 1;
+  int32 total = 2;
 }

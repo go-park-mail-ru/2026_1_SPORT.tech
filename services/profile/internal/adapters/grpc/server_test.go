@@ -92,3 +92,25 @@ func TestServerGetProfileMapsNotFound(t *testing.T) {
 		t.Fatalf("unexpected status code: %s", status.Code(err))
 	}
 }
+
+func TestServerGetProfileByUsername(t *testing.T) {
+	profileUseCase := mocks.ProfileUseCase{
+		GetProfileByUsernameFunc: func(ctx context.Context, username string) (domain.Profile, error) {
+			return domain.Profile{UserID: 7, Username: username, FirstName: "John", LastName: "Doe"}, nil
+		},
+	}
+	server := grpcadapter.NewServer(grpcadapter.UseCases{
+		Profiles: profileUseCase,
+		Authors:  profileUseCase,
+		Avatars:  profileUseCase,
+		Sports:   profileUseCase,
+	})
+
+	response, err := server.GetProfileByUsername(context.Background(), &profilev1.GetProfileByUsernameRequest{Username: "coach_john"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if response.GetProfile().GetUsername() != "coach_john" {
+		t.Fatalf("unexpected username: %s", response.GetProfile().GetUsername())
+	}
+}

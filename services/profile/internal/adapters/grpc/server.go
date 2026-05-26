@@ -13,6 +13,7 @@ import (
 type ProfileUseCase interface {
 	CreateProfile(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error)
 	GetProfile(ctx context.Context, userID int64) (domain.Profile, error)
+	GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error)
 	UpdateProfile(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error)
 }
 
@@ -29,11 +30,20 @@ type SportUseCase interface {
 	ListSportTypes(ctx context.Context) ([]domain.SportType, error)
 }
 
+type MeasurementUseCase interface {
+	CreateMeasurement(ctx context.Context, command usecase.CreateMeasurementCommand) (domain.Measurement, error)
+	ListMeasurements(ctx context.Context, query usecase.ListMeasurementsQuery) ([]domain.Measurement, error)
+	DeleteMeasurement(ctx context.Context, command usecase.DeleteMeasurementCommand) error
+	SetMeasurementSharing(ctx context.Context, cmd usecase.SetMeasurementSharingCommand) error
+	GetMeasurementSharing(ctx context.Context, query usecase.GetMeasurementSharingQuery) ([]int64, error)
+}
+
 type UseCases struct {
-	Profiles ProfileUseCase
-	Authors  AuthorUseCase
-	Avatars  AvatarUseCase
-	Sports   SportUseCase
+	Profiles     ProfileUseCase
+	Authors      AuthorUseCase
+	Avatars      AvatarUseCase
+	Sports       SportUseCase
+	Measurements MeasurementUseCase
 }
 
 type Server struct {
@@ -56,6 +66,15 @@ func (server *Server) CreateProfile(ctx context.Context, request *profilev1.Crea
 
 func (server *Server) GetProfile(ctx context.Context, request *profilev1.GetProfileRequest) (*profilev1.ProfileResponse, error) {
 	profile, err := server.useCases.Profiles.GetProfile(ctx, request.GetUserId())
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewProfileResponse(profile), nil
+}
+
+func (server *Server) GetProfileByUsername(ctx context.Context, request *profilev1.GetProfileByUsernameRequest) (*profilev1.ProfileResponse, error) {
+	profile, err := server.useCases.Profiles.GetProfileByUsername(ctx, request.GetUsername())
 	if err != nil {
 		return nil, mappers.ErrorToStatus(err)
 	}
@@ -105,4 +124,55 @@ func (server *Server) ListSportTypes(ctx context.Context, request *emptypb.Empty
 	}
 
 	return mappers.NewListSportTypesResponse(sportTypes), nil
+}
+
+func (server *Server) CreateMeasurement(ctx context.Context, request *profilev1.CreateMeasurementRequest) (*profilev1.MeasurementResponse, error) {
+	m, err := server.useCases.Measurements.CreateMeasurement(ctx, mappers.CreateMeasurementRequestToCommand(request))
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.NewMeasurementResponse(m), nil
+}
+
+func (server *Server) ListMeasurements(ctx context.Context, request *profilev1.ListMeasurementsRequest) (*profilev1.ListMeasurementsResponse, error) {
+	measurements, err := server.useCases.Measurements.ListMeasurements(ctx, usecase.ListMeasurementsQuery{
+		UserID:       request.GetUserId(),
+		Limit:        request.GetLimit(),
+		Offset:       request.GetOffset(),
+		ViewerUserID: request.GetViewerUserId(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.NewListMeasurementsResponse(measurements), nil
+}
+
+func (server *Server) SetMeasurementSharing(ctx context.Context, request *profilev1.SetMeasurementSharingRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Measurements.SetMeasurementSharing(ctx, usecase.SetMeasurementSharingCommand{
+		ClientUserID:   request.GetClientUserId(),
+		TrainerUserIDs: request.GetTrainerUserIds(),
+	}); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.Empty(), nil
+}
+
+func (server *Server) GetMeasurementSharing(ctx context.Context, request *profilev1.GetMeasurementSharingRequest) (*profilev1.MeasurementSharingResponse, error) {
+	ids, err := server.useCases.Measurements.GetMeasurementSharing(ctx, usecase.GetMeasurementSharingQuery{
+		ClientUserID: request.GetClientUserId(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return &profilev1.MeasurementSharingResponse{TrainerUserIds: ids}, nil
+}
+
+func (server *Server) DeleteMeasurement(ctx context.Context, request *profilev1.DeleteMeasurementRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Measurements.DeleteMeasurement(ctx, usecase.DeleteMeasurementCommand{
+		UserID:        request.GetUserId(),
+		MeasurementID: request.GetMeasurementId(),
+	}); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return mappers.Empty(), nil
 }

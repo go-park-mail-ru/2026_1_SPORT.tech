@@ -11,6 +11,7 @@ import (
 	"time"
 
 	minioadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/client/minio"
+	stripeadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/client/stripe"
 	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/grpc"
 	postgresadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/repository/postgres"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/infrastructure/config"
@@ -47,11 +48,19 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		_ = database.Close()
 		return nil, fmt.Errorf("new post media storage: %w", err)
 	}
+	paymentProvider, err := stripeadapter.NewPaymentProvider(cfg.Payment)
+	if err != nil {
+		_ = database.Close()
+		return nil, fmt.Errorf("new payment provider: %w", err)
+	}
 	contentUseCase := usecase.NewService(usecase.Repositories{
-		Posts:      contentRepository,
-		Money:      contentRepository,
-		Engagement: contentRepository,
-	}, postMediaStorage)
+		Posts:         contentRepository,
+		Money:         contentRepository,
+		Engagement:    contentRepository,
+		Notifications: contentRepository,
+		Chat:          contentRepository,
+		Meeting:       contentRepository,
+	}, postMediaStorage, paymentProvider)
 
 	metricsSet := metrics.New(cfg.ServiceName)
 	grpcHandler := grpcadapter.NewServer(grpcadapter.UseCases{
@@ -61,7 +70,10 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Subscriptions: contentUseCase,
 		Comments:      contentUseCase,
 		Donations:     contentUseCase,
-	})
+		Notifications: contentUseCase,
+		Chat:          contentUseCase,
+		Meeting:       contentUseCase,
+	}, logger)
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 
 	grpcListener, err := net.Listen("tcp", cfg.Server.GRPCAddress())

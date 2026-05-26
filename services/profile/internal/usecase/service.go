@@ -9,11 +9,13 @@ import (
 )
 
 type Service struct {
-	profiles ProfileRepository
-	authors  AuthorRepository
-	avatars  AvatarRepository
-	sports   SportTypeRepository
-	storage  AvatarStorage
+	profiles           ProfileRepository
+	authors            AuthorRepository
+	avatars            AvatarRepository
+	sports             SportTypeRepository
+	measurements       MeasurementRepository
+	measurementSharing MeasurementSharingRepository
+	storage            AvatarStorage
 }
 
 func NewService(
@@ -21,11 +23,13 @@ func NewService(
 	avatarStorage AvatarStorage,
 ) *Service {
 	return &Service{
-		profiles: repositories.Profiles,
-		authors:  repositories.Authors,
-		avatars:  repositories.Avatars,
-		sports:   repositories.Sports,
-		storage:  avatarStorage,
+		profiles:           repositories.Profiles,
+		authors:            repositories.Authors,
+		avatars:            repositories.Avatars,
+		sports:             repositories.Sports,
+		measurements:       repositories.Measurements,
+		measurementSharing: repositories.MeasurementSharing,
+		storage:            avatarStorage,
 	}
 }
 
@@ -48,6 +52,14 @@ func (service *Service) GetProfile(ctx context.Context, userID int64) (domain.Pr
 	}
 
 	return service.profiles.GetByID(ctx, userID)
+}
+
+func (service *Service) GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error) {
+	if err := validateUsername(username); err != nil {
+		return domain.Profile{}, err
+	}
+
+	return service.profiles.GetByUsername(ctx, username)
 }
 
 func (service *Service) UpdateProfile(ctx context.Context, command UpdateProfileCommand) (domain.Profile, error) {
@@ -160,6 +172,97 @@ func (service *Service) DeleteAvatar(ctx context.Context, userID int64) error {
 
 func (service *Service) ListSportTypes(ctx context.Context) ([]domain.SportType, error) {
 	return service.sports.ListSportTypes(ctx)
+}
+
+func (service *Service) CreateMeasurement(ctx context.Context, command CreateMeasurementCommand) (domain.Measurement, error) {
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.Measurement{}, err
+	}
+	measuredAt, err := parseMeasuredAt(command.MeasuredAt)
+	if err != nil {
+		return domain.Measurement{}, ErrInvalidMeasuredAt
+	}
+	if command.WeightKg == nil && command.BodyFatPct == nil &&
+		command.ChestCm == nil && command.WaistCm == nil && command.HipsCm == nil {
+		return domain.Measurement{}, ErrInvalidMeasurementData
+	}
+	m := domain.Measurement{
+		UserID:     command.UserID,
+		MeasuredAt: measuredAt,
+		WeightKg:   command.WeightKg,
+		BodyFatPct: command.BodyFatPct,
+		ChestCm:    command.ChestCm,
+		WaistCm:    command.WaistCm,
+		HipsCm:     command.HipsCm,
+		Notes:      command.Notes,
+	}
+	return service.measurements.CreateMeasurement(ctx, m)
+}
+
+func (service *Service) ListMeasurements(ctx context.Context, query ListMeasurementsQuery) ([]domain.Measurement, error) {
+	if err := validateUserID(query.UserID); err != nil {
+		return nil, err
+	}
+	limit := query.Limit
+	if limit <= 0 || limit > 200 {
+		limit = 100
+	}
+	if query.Offset < 0 {
+		query.Offset = 0
+	}
+
+	viewerID := query.ViewerUserID
+	if viewerID != 0 && viewerID != query.UserID && service.measurementSharing != nil {
+		allowed, err := service.measurementSharing.HasAccess(ctx, query.UserID, viewerID)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
+			return nil, ErrMeasurementAccessDenied
+		}
+	}
+
+	return service.measurements.ListMeasurements(ctx, query.UserID, limit, query.Offset)
+}
+
+func (service *Service) DeleteMeasurement(ctx context.Context, command DeleteMeasurementCommand) error {
+	if err := validateUserID(command.UserID); err != nil {
+		return err
+	}
+	return service.measurements.DeleteMeasurement(ctx, command.UserID, command.MeasurementID)
+}
+
+func (service *Service) SetMeasurementSharing(ctx context.Context, cmd SetMeasurementSharingCommand) error {
+	if err := validateUserID(cmd.ClientUserID); err != nil {
+		return err
+	}
+	seen := make(map[int64]struct{}, len(cmd.TrainerUserIDs))
+	unique := cmd.TrainerUserIDs[:0]
+	for _, id := range cmd.TrainerUserIDs {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		unique = append(unique, id)
+	}
+	return service.measurementSharing.SetSharing(ctx, cmd.ClientUserID, unique)
+}
+
+func (service *Service) GetMeasurementSharing(ctx context.Context, query GetMeasurementSharingQuery) ([]int64, error) {
+	if err := validateUserID(query.ClientUserID); err != nil {
+		return nil, err
+	}
+	ids, err := service.measurementSharing.GetSharing(ctx, query.ClientUserID)
+	if err != nil {
+		return nil, err
+	}
+	if ids == nil {
+		ids = []int64{}
+	}
+	return ids, nil
 }
 
 func buildProfile(command CreateProfileCommand) (domain.Profile, error) {

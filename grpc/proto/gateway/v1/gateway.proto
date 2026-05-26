@@ -48,6 +48,10 @@ service ProfileService {
     option (google.api.http).get = "/v1/profiles/{user_id}";
   }
 
+  rpc GetProfileByUsername(GetProfileByUsernameRequest) returns (ProfileResponse) {
+    option (google.api.http).get = "/v1/profiles/by-username/{username}";
+  }
+
   rpc ListTrainers(ListTrainersRequest) returns (GetTrainersResponse) {
     option (google.api.http).get = "/v1/trainers";
   }
@@ -79,6 +83,32 @@ service ProfileService {
 
   rpc ListProfilePosts(GetProfileRequest) returns (ProfilePostsResponse) {
     option (google.api.http).get = "/v1/profiles/{user_id}/posts";
+  }
+
+  rpc CreateMyMeasurement(CreateMeasurementRequest) returns (MeasurementResponse) {
+    option (google.api.http) = {
+      post: "/v1/measurements"
+      body: "*"
+    };
+  }
+
+  rpc ListMeasurements(ListMeasurementsRequest) returns (ListMeasurementsResponse) {
+    option (google.api.http).get = "/v1/profiles/{user_id}/measurements";
+  }
+
+  rpc DeleteMyMeasurement(DeleteMeasurementRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/measurements/{measurement_id}";
+  }
+
+  rpc SetMyMeasurementSharing(SetMeasurementSharingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/measurements/sharing"
+      body: "*"
+    };
+  }
+
+  rpc GetMyMeasurementSharing(google.protobuf.Empty) returns (MeasurementSharingResponse) {
+    option (google.api.http).get = "/v1/measurements/sharing";
   }
 }
 
@@ -137,6 +167,10 @@ service PostService {
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
+
+  rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
+    option (google.api.http).get = "/v1/posts/{post_id}/likes";
+  }
 }
 
 service TierService {
@@ -179,6 +213,10 @@ service SubscriptionService {
     option (google.api.http).get = "/v1/subscriptions/me";
   }
 
+  rpc ListMySubscribers(ListSubscribersRequest) returns (SubscribersResponse) {
+    option (google.api.http).get = "/v1/subscribers/me";
+  }
+
   rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
       patch: "/v1/subscriptions/{subscription_id}"
@@ -208,11 +246,133 @@ service DonationService {
   rpc GetMyBalance(google.protobuf.Empty) returns (BalanceResponse) {
     option (google.api.http).get = "/v1/balance";
   }
+
+  rpc ListMyReceivedDonations(ListDonationsRequest) returns (ListDonationsResponse) {
+    option (google.api.http).get = "/v1/donations/received";
+  }
+}
+
+service PaymentService {
+  rpc CreateDonationPayment(CreateDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/donations"
+      body: "*"
+    };
+  }
+
+  rpc CreateSubscriptionPayment(CreateSubscriptionPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/subscriptions"
+      body: "*"
+    };
+  }
+
+  rpc ConfirmDonationPayment(ConfirmDonationPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payments/{payment_id}/confirm"
+      body: "*"
+    };
+  }
 }
 
 service StatisticsService {
   rpc GetMyStatistics(google.protobuf.Empty) returns (StatisticsResponse) {
     option (google.api.http).get = "/v1/statistics/me";
+  }
+}
+
+service NotificationService {
+  rpc ListMyNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {
+    option (google.api.http).get = "/v1/notifications";
+  }
+
+  rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
+    option (google.api.http) = {
+      patch: "/v1/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+}
+
+service ChatService {
+  rpc SendMessage(SendMessageRequest) returns (ChatMessage) {
+    option (google.api.http) = {
+      post: "/v1/chat/messages"
+      body: "*"
+    };
+  }
+
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http).get = "/v1/chat/messages/{other_user_id}";
+  }
+
+  rpc ListConversations(google.protobuf.Empty) returns (ListConversationsResponse) {
+    option (google.api.http).get = "/v1/chat/conversations";
+  }
+
+  rpc MarkMessageRead(MarkMessageReadRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/v1/chat/messages/{message_id}/read"
+      body: "*"
+    };
+  }
+}
+
+service MeetingService {
+  rpc ListMyAvailabilityRules(google.protobuf.Empty) returns (MeetingAvailabilityRulesResponse) {
+    option (google.api.http).get = "/v1/meetings/availability/rules";
+  }
+
+  rpc CreateAvailabilityRule(CreateAvailabilityRuleRequest) returns (MeetingAvailabilityRule) {
+    option (google.api.http) = {
+      post: "/v1/meetings/availability/rules"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAvailabilityRule(DeleteAvailabilityRuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/availability/rules/{rule_id}";
+  }
+
+  rpc CreateAvailabilitySlot(CreateAvailabilitySlotRequest) returns (MeetingSlot) {
+    option (google.api.http) = {
+      post: "/v1/meetings/availability/slots"
+      body: "*"
+    };
+  }
+
+  rpc ListMyAvailabilitySlots(google.protobuf.Empty) returns (MeetingSlotsResponse) {
+    option (google.api.http).get = "/v1/meetings/availability/slots";
+  }
+
+  rpc DeleteAvailabilitySlot(DeleteAvailabilitySlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/availability/slots/{slot_id}";
+  }
+
+  rpc GetTrainerAvailability(GetTrainerAvailabilityRequest) returns (MeetingAvailabilityResponse) {
+    option (google.api.http).get = "/v1/trainers/{trainer_id}/meetings/availability";
+  }
+
+  rpc BookMeeting(BookMeetingRequest) returns (MeetingBooking) {
+    option (google.api.http) = {
+      post: "/v1/trainers/{trainer_id}/meetings/book"
+      body: "*"
+    };
+  }
+
+  rpc AssignMeeting(AssignMeetingRequest) returns (MeetingBooking) {
+    option (google.api.http) = {
+      post: "/v1/meetings/assign"
+      body: "*"
+    };
+  }
+
+  rpc ListMyMeetings(google.protobuf.Empty) returns (MeetingsResponse) {
+    option (google.api.http).get = "/v1/meetings/me";
+  }
+
+  rpc CancelMeeting(CancelMeetingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/meetings/{booking_id}";
   }
 }
 
@@ -291,6 +451,10 @@ message CSRFTokenResponse {
 
 message GetProfileRequest {
   int32 user_id = 1;
+}
+
+message GetProfileByUsernameRequest {
+  string username = 1;
 }
 
 message ProfileResponse {
@@ -430,6 +594,7 @@ message SearchPostsRequest {
   int32 limit = 7;
   int32 offset = 8;
   repeated int32 sport_type_ids = 9;
+  string sort = 10;
 }
 
 message SearchPostsResponse {
@@ -497,6 +662,21 @@ message ListCommentsResponse {
   repeated Comment comments = 1;
 }
 
+message ListPostLikesRequest {
+  int32 post_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message PostLike {
+  int32 user_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+message ListPostLikesResponse {
+  repeated PostLike likes = 1;
+}
+
 message Tier {
   int32 tier_id = 1;
   string name = 2;
@@ -504,6 +684,8 @@ message Tier {
   optional string description = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
+  bool chat_enabled = 7;
+  bool calendar_enabled = 8;
 }
 
 message TiersResponse {
@@ -514,6 +696,8 @@ message CreateTierRequest {
   string name = 1;
   int32 price = 2;
   optional string description = 3;
+  bool chat_enabled = 4;
+  bool calendar_enabled = 5;
 }
 
 message UpdateTierRequest {
@@ -522,6 +706,8 @@ message UpdateTierRequest {
   optional int32 price = 3;
   optional string description = 4;
   bool clear_description = 5;
+  optional bool chat_enabled = 6;
+  optional bool calendar_enabled = 7;
 }
 
 message DeleteTierRequest {
@@ -551,6 +737,27 @@ message Subscription {
 
 message SubscriptionsResponse {
   repeated Subscription subscriptions = 1;
+}
+
+message Subscriber {
+  int32 subscription_id = 1;
+  int32 client_id = 2;
+  int32 tier_id = 3;
+  string tier_name = 4;
+  int32 price = 5;
+  bool active = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message ListSubscribersRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message SubscribersResponse {
+  repeated Subscriber subscribers = 1;
 }
 
 message UpdateSubscriptionRequest {
@@ -585,6 +792,55 @@ message BalanceResponse {
   string currency = 3;
 }
 
+message CreateDonationPaymentRequest {
+  int32 user_id = 1;
+  int32 amount_value = 2;
+  string currency = 3;
+  optional string message = 4;
+  optional string return_url = 5;
+  optional string cancel_url = 6;
+}
+
+message CreateSubscriptionPaymentRequest {
+  int32 trainer_id = 1;
+  int32 tier_id = 2;
+  optional string return_url = 3;
+  optional string cancel_url = 4;
+}
+
+message ConfirmDonationPaymentRequest {
+  int32 payment_id = 1;
+  string confirmation_token = 2;
+}
+
+message PaymentDonation {
+  int32 donation_id = 1;
+  int32 sender_user_id = 2;
+  int32 recipient_user_id = 3;
+  int32 amount_value = 4;
+  string currency = 5;
+  optional string message = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message PaymentResponse {
+  int32 payment_id = 1;
+  string provider_payment_id = 2;
+  string status = 3;
+  int32 sender_user_id = 4;
+  int32 recipient_user_id = 5;
+  int32 amount_value = 6;
+  string currency = 7;
+  optional string message = 8;
+  string confirmation_token = 9;
+  string confirmation_url = 10;
+  optional PaymentDonation donation = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  optional google.protobuf.Timestamp confirmed_at = 14;
+  optional Subscription subscription = 15;
+}
+
 message StatisticsResponse {
   int32 trainer_id = 1;
   int32 posts_count = 2;
@@ -592,4 +848,231 @@ message StatisticsResponse {
   int32 total_revenue = 4;
   int32 monthly_revenue = 5;
   string currency = 6;
+}
+
+message Notification {
+  int32 notification_id = 1;
+  int32 user_id = 2;
+  string type = 3;
+  int32 actor_user_id = 4;
+  string title = 5;
+  string body = 6;
+  bool is_read = 7;
+  google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp read_at = 9;
+  optional int32 post_id = 10;
+  optional int32 comment_id = 11;
+  optional int32 donation_id = 12;
+  optional int32 subscription_id = 13;
+}
+
+message ListNotificationsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message MarkNotificationReadRequest {
+  int32 notification_id = 1;
+}
+
+message NotificationResponse {
+  Notification notification = 1;
+}
+
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
+}
+
+message Measurement {
+  int64 measurement_id = 1;
+  int64 user_id = 2;
+  google.protobuf.Timestamp measured_at = 3;
+  optional double weight_kg = 4;
+  optional double body_fat_pct = 5;
+  optional int32 chest_cm = 6;
+  optional int32 waist_cm = 7;
+  optional int32 hips_cm = 8;
+  optional string notes = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message MeasurementResponse {
+  Measurement measurement = 1;
+}
+
+message ListMeasurementsResponse {
+  repeated Measurement measurements = 1;
+}
+
+message CreateMeasurementRequest {
+  string measured_at = 1;
+  optional double weight_kg = 2;
+  optional double body_fat_pct = 3;
+  optional int32 chest_cm = 4;
+  optional int32 waist_cm = 5;
+  optional int32 hips_cm = 6;
+  optional string notes = 7;
+}
+
+message ListMeasurementsRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message DeleteMeasurementRequest {
+  int64 measurement_id = 1;
+}
+
+message SetMeasurementSharingRequest {
+  repeated int64 trainer_user_ids = 1;
+}
+
+message MeasurementSharingResponse {
+  repeated int64 trainer_user_ids = 1;
+}
+
+message DonationItem {
+  int64 donation_id = 1;
+  int64 sender_user_id = 2;
+  int32 amount_value = 3;
+  string currency = 4;
+  optional string message = 5;
+  string created_at = 6;
+}
+
+message ListDonationsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message ListDonationsResponse {
+  repeated DonationItem donations = 1;
+  int32 total = 2;
+}
+
+message ChatMessage {
+  int64 message_id = 1;
+  int64 sender_user_id = 2;
+  int64 receiver_user_id = 3;
+  string body = 4;
+  bool is_read = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ChatConversation {
+  int64 other_user_id = 1;
+  ChatMessage last_message = 2;
+  int32 unread_count = 3;
+}
+
+message SendMessageRequest {
+  int64 receiver_user_id = 1;
+  string body = 2;
+}
+
+message ListMessagesRequest {
+  int64 other_user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListMessagesResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message ListConversationsResponse {
+  repeated ChatConversation conversations = 1;
+}
+
+message MarkMessageReadRequest {
+  int64 message_id = 1;
+}
+
+message MeetingAvailabilityRule {
+  int64 rule_id = 1;
+  int32 weekday = 2;
+  int32 start_hour = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message MeetingAvailabilityRulesResponse {
+  repeated MeetingAvailabilityRule rules = 1;
+}
+
+message CreateAvailabilityRuleRequest {
+  int32 weekday = 1;
+  int32 start_hour = 2;
+}
+
+message DeleteAvailabilityRuleRequest {
+  int64 rule_id = 1;
+}
+
+message MeetingSlot {
+  int64 slot_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message CreateAvailabilitySlotRequest {
+  google.protobuf.Timestamp starts_at = 1;
+}
+
+message MeetingSlotsResponse {
+  repeated MeetingSlot slots = 1;
+}
+
+message DeleteAvailabilitySlotRequest {
+  int64 slot_id = 1;
+}
+
+message MeetingAvailabilitySlot {
+  google.protobuf.Timestamp starts_at = 1;
+  google.protobuf.Timestamp ends_at = 2;
+}
+
+message GetTrainerAvailabilityRequest {
+  int64 trainer_id = 1;
+  string from = 2;
+  string to = 3;
+}
+
+message MeetingAvailabilityResponse {
+  repeated MeetingAvailabilitySlot slots = 1;
+}
+
+message MeetingBooking {
+  int64 booking_id = 1;
+  int64 trainer_user_id = 2;
+  int64 client_user_id = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp ends_at = 5;
+  string status = 6;
+  int64 created_by_user_id = 7;
+  optional string note = 8;
+  google.protobuf.Timestamp created_at = 9;
+  string role = 10;
+  int64 other_user_id = 11;
+}
+
+message BookMeetingRequest {
+  int64 trainer_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+}
+
+message AssignMeetingRequest {
+  int64 client_user_id = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  int32 duration_hours = 3;
+  optional string note = 4;
+}
+
+message MeetingsResponse {
+  repeated MeetingBooking bookings = 1;
+}
+
+message CancelMeetingRequest {
+  int64 booking_id = 1;
 }

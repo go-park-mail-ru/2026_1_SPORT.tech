@@ -12,29 +12,32 @@ import (
 )
 
 func (server *Server) DonateToProfile(ctx context.Context, request *gatewayv1.DonateToProfileRequest) (*gatewayv1.DonationResponse, error) {
-	principal, err := server.requireSession(ctx)
+	if _, err := server.requireSession(ctx); err != nil {
+		return nil, err
+	}
+
+	return nil, status.Error(codes.FailedPrecondition, "create and confirm a donation payment instead")
+}
+
+func (server *Server) ListMyReceivedDonations(ctx context.Context, request *gatewayv1.ListDonationsRequest) (*gatewayv1.ListDonationsResponse, error) {
+	trainerUserID, err := server.requireTrainerUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	userID, err := userIDFromPrincipal(principal)
-	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
-	}
-
-	response, err := server.contentClient.DonateToProfile(
+	response, err := server.contentClient.ListReceivedDonations(
 		forwardContext(ctx),
-		mappers.DonateToProfileRequestToContent(userID, request),
+		&contentv1.ListReceivedDonationsRequest{
+			TrainerUserId: trainerUserID,
+			Limit:         request.GetLimit(),
+			Offset:        request.GetOffset(),
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := setHTTPStatus(ctx, 201); err != nil {
-		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
-	}
-
-	return mappers.DonationResponseFromContent(response)
+	return mappers.ListDonationsResponseFromContent(response)
 }
 
 func (server *Server) GetMyBalance(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.BalanceResponse, error) {

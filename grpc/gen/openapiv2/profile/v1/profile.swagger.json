@@ -80,6 +80,105 @@
         ]
       }
     },
+    "/v1/profiles/by-username/{username}": {
+      "get": {
+        "operationId": "ProfileService_GetProfileByUsername",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/profiles/{client_user_id}/measurements/sharing": {
+      "get": {
+        "operationId": "ProfileService_GetMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementSharingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileService_SetMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileServiceSetMeasurementSharingBody"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/profiles/{user_id}": {
       "get": {
         "operationId": "ProfileService_GetProfile",
@@ -217,6 +316,134 @@
         ]
       }
     },
+    "/v1/profiles/{user_id}/measurements": {
+      "get": {
+        "operationId": "ProfileService_ListMeasurements",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMeasurementsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "post": {
+        "operationId": "ProfileService_CreateMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileServiceCreateMeasurementBody"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/profiles/{user_id}/measurements/{measurement_id}": {
+      "delete": {
+        "operationId": "ProfileService_DeleteMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/sport-types": {
       "get": {
         "operationId": "ProfileService_ListSportTypes",
@@ -241,6 +468,49 @@
     }
   },
   "definitions": {
+    "ProfileServiceCreateMeasurementBody": {
+      "type": "object",
+      "properties": {
+        "measured_at": {
+          "type": "string"
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "ProfileServiceSetMeasurementSharingBody": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "ProfileServiceUpdateProfileBody": {
       "type": "object",
       "properties": {
@@ -358,6 +628,18 @@
         }
       }
     },
+    "v1ListMeasurementsResponse": {
+      "type": "object",
+      "properties": {
+        "measurements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Measurement"
+          }
+        }
+      }
+    },
     "v1ListSportTypesResponse": {
       "type": "object",
       "properties": {
@@ -366,6 +648,74 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1SportType"
+          }
+        }
+      }
+    },
+    "v1Measurement": {
+      "type": "object",
+      "properties": {
+        "measurement_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "measured_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeasurementResponse": {
+      "type": "object",
+      "properties": {
+        "measurement": {
+          "$ref": "#/definitions/v1Measurement"
+        }
+      }
+    },
+    "v1MeasurementSharingResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
           }
         }
       }

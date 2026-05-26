@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 	"github.com/lib/pq"
@@ -46,6 +47,8 @@ func scanSubscriptionTier(scanner sqlScanner) (domain.SubscriptionTier, error) {
 		&tier.Name,
 		&tier.Price,
 		&description,
+		&tier.ChatEnabled,
+		&tier.CalendarEnabled,
 		&tier.CreatedAt,
 		&tier.UpdatedAt,
 	); err != nil {
@@ -89,6 +92,28 @@ func nullString(value *string) sql.NullString {
 	}
 }
 
+func nullableString(value string) sql.NullString {
+	if value == "" {
+		return sql.NullString{}
+	}
+
+	return sql.NullString{
+		String: value,
+		Valid:  true,
+	}
+}
+
+func nullableInt64(value *int64) sql.NullInt64 {
+	if value == nil {
+		return sql.NullInt64{}
+	}
+
+	return sql.NullInt64{
+		Int64: *value,
+		Valid: true,
+	}
+}
+
 func escapeLikePattern(value string) string {
 	replacer := strings.NewReplacer(
 		`\`, `\\`,
@@ -119,6 +144,22 @@ func nullInt64(value *int64) sql.NullInt64 {
 		Int64: *value,
 		Valid: true,
 	}
+}
+
+func int64PtrFromNull(value sql.NullInt64) *int64 {
+	if !value.Valid {
+		return nil
+	}
+
+	return &value.Int64
+}
+
+func timePtrFromNull(value sql.NullTime) *time.Time {
+	if !value.Valid {
+		return nil
+	}
+
+	return &value.Time
 }
 
 func isForeignKeyViolation(err error) bool {

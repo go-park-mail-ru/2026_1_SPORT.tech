@@ -16,6 +16,7 @@ type Config struct {
 	Server      ServerConfig   `yaml:"server"`
 	Postgres    PostgresConfig `yaml:"postgres"`
 	Storage     StorageConfig  `yaml:"storage"`
+	Payment     PaymentConfig  `yaml:"payment"`
 	OpenAPI     OpenAPIConfig  `yaml:"openapi"`
 }
 
@@ -46,10 +47,19 @@ type StorageConfig struct {
 	Host          string `yaml:"host" env:"CONTENT_STORAGE_HOST" env-default:"localhost" validate:"required"`
 	Port          string `yaml:"port" env:"CONTENT_STORAGE_PORT" env-default:"8000" validate:"required"`
 	Bucket        string `yaml:"bucket" env:"CONTENT_STORAGE_BUCKET" env-default:"post-media" validate:"required"`
-	PublicBaseURL string `yaml:"public_base_url" env:"CONTENT_STORAGE_PUBLIC_BASE_URL" env-default:"http://localhost:8000/post-media" validate:"required"`
+	PublicBaseURL string `yaml:"public_base_url" env:"CONTENT_STORAGE_PUBLIC_BASE_URL" env-default:"/post-media" validate:"required"`
 	UseSSL        bool   `yaml:"use_ssl" env:"CONTENT_STORAGE_USE_SSL" env-default:"false"`
 	AccessKey     string `yaml:"access_key" env:"MINIO_ACCESS_KEY" validate:"required"`
 	SecretKey     string `yaml:"secret_key" env:"MINIO_SECRET_KEY" validate:"required"`
+}
+
+type PaymentConfig struct {
+	Provider         string `yaml:"provider" env:"CONTENT_PAYMENT_PROVIDER" env-default:"stripe" validate:"required,oneof=stripe"`
+	StripeSecretKey  string `yaml:"stripe_secret_key" env:"STRIPE_SECRET_KEY"`
+	StripeReturnURL  string `yaml:"stripe_return_url" env:"STRIPE_RETURN_URL" env-default:"https://sporteon.ru/payment/success"`
+	StripeCancelURL  string `yaml:"stripe_cancel_url" env:"STRIPE_CANCEL_URL" env-default:"https://sporteon.ru/payment/cancel"`
+	StripeAPIBaseURL string `yaml:"stripe_api_base_url" env:"STRIPE_API_BASE_URL" env-default:"https://api.stripe.com/v1"`
+	HTTPTimeout      string `yaml:"http_timeout" env:"CONTENT_PAYMENT_HTTP_TIMEOUT" env-default:"5s" validate:"required"`
 }
 
 type OpenAPIConfig struct {
@@ -70,8 +80,37 @@ func NewConfig(path string) (Config, error) {
 	if err := cfg.Postgres.Validate(); err != nil {
 		return Config{}, fmt.Errorf("validate postgres config: %w", err)
 	}
+	if err := cfg.Payment.Validate(); err != nil {
+		return Config{}, fmt.Errorf("validate payment config: %w", err)
+	}
 
 	return cfg, nil
+}
+
+func (cfg PaymentConfig) HTTPTimeoutDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.HTTPTimeout)
+}
+
+func (cfg PaymentConfig) Validate() error {
+	if cfg.Provider == "stripe" {
+		if cfg.StripeSecretKey == "" {
+			return fmt.Errorf("stripe_secret_key is required")
+		}
+		if cfg.StripeReturnURL == "" {
+			return fmt.Errorf("stripe_return_url is required")
+		}
+		if cfg.StripeCancelURL == "" {
+			return fmt.Errorf("stripe_cancel_url is required")
+		}
+		if cfg.StripeAPIBaseURL == "" {
+			return fmt.Errorf("stripe_api_base_url is required")
+		}
+	}
+	if _, err := parsePositiveDuration("payment_http_timeout", cfg.HTTPTimeout); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cfg ServerConfig) GRPCAddress() string {

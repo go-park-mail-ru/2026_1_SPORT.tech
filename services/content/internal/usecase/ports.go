@@ -9,9 +9,12 @@ import (
 )
 
 type Repositories struct {
-	Posts      PostRepository
-	Money      MonetizationRepository
-	Engagement EngagementRepository
+	Posts         PostRepository
+	Money         MonetizationRepository
+	Engagement    EngagementRepository
+	Notifications NotificationRepository
+	Chat          ChatRepository
+	Meeting       MeetingRepository
 }
 
 type PostRepository interface {
@@ -32,172 +35,81 @@ type MonetizationRepository interface {
 	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
+	ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
+	CreateDonationPayment(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
+	UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error)
+	GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error)
+	ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
+	ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error)
+	CountReceivedDonations(ctx context.Context, recipientUserID int64) (int32, error)
 }
 
 type EngagementRepository interface {
-	UpsertLike(ctx context.Context, postID int64, userID int64) error
+	UpsertLike(ctx context.Context, postID int64, userID int64) (bool, error)
 	DeleteLike(ctx context.Context, postID int64, userID int64) error
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
+}
+
+type NotificationRepository interface {
+	CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error)
+	ListNotifications(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error)
+	MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
+}
+
+type ChatRepository interface {
+	HasActiveChatSubscription(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error)
+	IsTrainerOf(ctx context.Context, trainerUserID int64, clientUserID int64) (bool, error)
+	SaveChatMessage(ctx context.Context, msg domain.ChatMessage) (domain.ChatMessage, error)
+	ListChatMessages(ctx context.Context, userID int64, otherUserID int64, limit int32, offset int32) ([]domain.ChatMessage, error)
+	ListChatConversations(ctx context.Context, userID int64) ([]domain.ChatConversation, error)
+	MarkChatMessageRead(ctx context.Context, userID int64, messageID int64) error
+}
+
+type MeetingRepository interface {
+	HasActiveCalendarSubscription(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error)
+	CreateMeetingAvailabilityRule(ctx context.Context, rule domain.MeetingAvailabilityRule) (domain.MeetingAvailabilityRule, error)
+	ListMeetingAvailabilityRules(ctx context.Context, trainerUserID int64) ([]domain.MeetingAvailabilityRule, error)
+	DeleteMeetingAvailabilityRule(ctx context.Context, trainerUserID int64, ruleID int64) error
+	CreateMeetingSlot(ctx context.Context, slot domain.MeetingSlot) (domain.MeetingSlot, error)
+	DeleteMeetingSlot(ctx context.Context, trainerUserID int64, slotID int64) error
+	ListMeetingSlots(ctx context.Context, trainerUserID int64, from time.Time, to time.Time) ([]domain.MeetingSlot, error)
+	ListConfirmedBookings(ctx context.Context, trainerUserID int64, from time.Time, to time.Time) ([]domain.MeetingBooking, error)
+	CountActiveClientBookings(ctx context.Context, clientUserID int64, trainerUserID int64, now time.Time) (int32, error)
+	CreateBooking(ctx context.Context, booking domain.MeetingBooking) (domain.MeetingBooking, error)
+	GetBooking(ctx context.Context, bookingID int64) (domain.MeetingBooking, error)
+	CancelBooking(ctx context.Context, bookingID int64, cancelledByUserID int64) (domain.MeetingBooking, error)
+	ListUserBookings(ctx context.Context, userID int64) ([]domain.MeetingBooking, error)
 }
 
 type PostMediaStorage interface {
 	UploadPostMedia(ctx context.Context, authorUserID int64, fileName string, contentType string, file io.Reader, size int64) (string, error)
 }
 
-type PostBlockInput struct {
-	Kind        domain.BlockKind
-	TextContent *string
-	FileURL     *string
+type PaymentProvider interface {
+	ProviderName() string
+	CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
+	GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
 }
 
-type ListAuthorPostsQuery struct {
-	AuthorUserID            int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-	Limit                   int32
-	Offset                  int32
+type PaymentProviderCreateRequest struct {
+	AmountValue    int32
+	Currency       string
+	Description    string
+	IdempotenceKey string
+	ReturnURL      string
+	CancelURL      string
 }
 
-type SearchPostsQuery struct {
-	Query                        string
-	AuthorUserIDs                []int64
-	SportTypeIDs                 []int64
-	BlockKinds                   []domain.BlockKind
-	MinRequiredSubscriptionLevel *int32
-	MaxRequiredSubscriptionLevel *int32
-	OnlyAvailable                bool
-	ViewerUserID                 int64
-	ViewerSubscriptionLevel      *int32
-	Limit                        int32
-	Offset                       int32
-}
-
-type CreatePostCommand struct {
-	AuthorUserID              int64
-	Title                     string
-	RequiredSubscriptionLevel *int32
-	SportTypeID               *int64
-	Blocks                    []PostBlockInput
-}
-
-type UploadPostMediaCommand struct {
-	AuthorUserID int64
-	FileName     string
-	ContentType  string
-	Content      []byte
-}
-
-type GetPostQuery struct {
-	PostID                  int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-}
-
-type UpdatePostCommand struct {
-	PostID                         int64
-	AuthorUserID                   int64
-	Title                          *string
-	RequiredSubscriptionLevel      *int32
-	ClearRequiredSubscriptionLevel bool
-	SportTypeID                    *int64
-	ClearSportTypeID               bool
-	Blocks                         []PostBlockInput
-	ReplaceBlocks                  bool
-}
-
-type ListSubscriptionTiersQuery struct {
-	TrainerUserID int64
-}
-
-type CreateSubscriptionTierCommand struct {
-	TrainerUserID int64
-	Name          string
-	Price         int32
-	Description   *string
-}
-
-type UpdateSubscriptionTierCommand struct {
-	TrainerUserID    int64
-	TierID           int64
-	Name             *string
-	Price            *int32
-	Description      *string
-	ClearDescription bool
-}
-
-type DeleteSubscriptionTierCommand struct {
-	TrainerUserID int64
-	TierID        int64
-}
-
-type SubscribeToTrainerCommand struct {
-	ClientUserID  int64
-	TrainerUserID int64
-	TierID        int64
-}
-
-type ListMySubscriptionsQuery struct {
-	ClientUserID int64
-}
-
-type UpdateSubscriptionCommand struct {
-	ClientUserID   int64
-	SubscriptionID int64
-	TierID         int64
-}
-
-type CancelSubscriptionCommand struct {
-	ClientUserID   int64
-	SubscriptionID int64
-}
-
-type DonateToProfileCommand struct {
-	SenderUserID    int64
-	RecipientUserID int64
-	AmountValue     int32
-	Currency        string
-	Message         *string
-}
-
-type GetBalanceQuery struct {
-	TrainerUserID int64
-	Currency      string
-}
-
-type GetTrainerStatisticsQuery struct {
-	TrainerUserID int64
-	Currency      string
-}
-
-type DeletePostCommand struct {
-	PostID       int64
-	AuthorUserID int64
-}
-
-type LikePostCommand struct {
-	PostID                  int64
-	UserID                  int64
-	ViewerSubscriptionLevel *int32
-}
-
-type CreateCommentCommand struct {
-	PostID                  int64
-	AuthorUserID            int64
-	ViewerSubscriptionLevel *int32
-	Body                    string
-}
-
-type ListCommentsQuery struct {
-	PostID                  int64
-	ViewerUserID            int64
-	ViewerSubscriptionLevel *int32
-	Limit                   int32
-	Offset                  int32
+type PaymentProviderPayment struct {
+	ProviderPaymentID string
+	Status            string
+	ConfirmationURL   string
 }

@@ -64,6 +64,33 @@ func BalanceResponseFromContent(response *contentv1.BalanceResponse) (*gatewayv1
 	}, nil
 }
 
+func ListDonationsResponseFromContent(response *contentv1.ListReceivedDonationsResponse) (*gatewayv1.ListDonationsResponse, error) {
+	if response == nil {
+		return nil, fmt.Errorf("list donations response is required")
+	}
+
+	items := make([]*gatewayv1.DonationItem, 0, len(response.GetDonations()))
+	for _, d := range response.GetDonations() {
+		item := &gatewayv1.DonationItem{
+			DonationId:   d.GetDonationId(),
+			SenderUserId: d.GetSenderUserId(),
+			AmountValue:  d.GetAmountValue(),
+			Currency:     d.GetCurrency(),
+			CreatedAt:    d.GetCreatedAt(),
+		}
+		if d.Message != nil {
+			msg := d.GetMessage()
+			item.Message = &msg
+		}
+		items = append(items, item)
+	}
+
+	return &gatewayv1.ListDonationsResponse{
+		Donations: items,
+		Total:     response.GetTotal(),
+	}, nil
+}
+
 func StatisticsResponseFromContent(response *contentv1.TrainerStatisticsResponse) (*gatewayv1.StatisticsResponse, error) {
 	if response == nil {
 		return nil, fmt.Errorf("statistics is required")

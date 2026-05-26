@@ -8,23 +8,31 @@ import (
 	"time"
 )
 
-func (repository *Repository) UpsertLike(ctx context.Context, postID int64, userID int64) error {
+func (repository *Repository) UpsertLike(ctx context.Context, postID int64, userID int64) (bool, error) {
 	now := time.Now().UTC()
 
-	_, err := repository.db.ExecContext(
+	var insertedPostID int64
+	err := repository.db.QueryRowContext(
 		ctx,
 		`
 			INSERT INTO content_post_like (post_id, user_id, created_at, updated_at)
 			VALUES ($1, $2, $3, $3)
 			ON CONFLICT (post_id, user_id)
-			DO UPDATE SET updated_at = EXCLUDED.updated_at
+			DO NOTHING
+			RETURNING post_id
 		`,
 		postID,
 		userID,
 		now,
-	)
+	).Scan(&insertedPostID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
 
-	return err
+	return true, nil
 }
 
 func (repository *Repository) DeleteLike(ctx context.Context, postID int64, userID int64) error {
@@ -36,6 +44,36 @@ func (repository *Repository) DeleteLike(ctx context.Context, postID int64, user
 	)
 
 	return err
+}
+
+func (repository *Repository) ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error) {
+	const query = `
+		SELECT
+			post_id,
+			user_id,
+			created_at
+		FROM content_post_like
+		WHERE post_id = $1
+		ORDER BY created_at DESC, user_id DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := repository.db.QueryContext(ctx, query, postID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	likes := make([]domain.PostLike, 0)
+	for rows.Next() {
+		var like domain.PostLike
+		if err := rows.Scan(&like.PostID, &like.UserID, &like.CreatedAt); err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+
+	return likes, rows.Err()
 }
 
 func (repository *Repository) GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error) {

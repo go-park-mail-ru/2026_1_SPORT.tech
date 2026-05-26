@@ -55,6 +55,22 @@ func TestSanitizeHTTPMetricPathRejectsInvalidUTF8(t *testing.T) {
 	}
 }
 
+func TestHTTPMiddlewarePreservesFlush(t *testing.T) {
+	metricsSet := New("test-service")
+
+	var flushErr error
+	handler := metricsSet.HTTPMiddleware(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		flushErr = http.NewResponseController(writer).Flush()
+	}))
+
+	request := &http.Request{Method: http.MethodGet, URL: &url.URL{Path: "/api/v1/chat/messages/1/stream"}}
+	handler.ServeHTTP(httptest.NewRecorder(), request)
+
+	if flushErr != nil {
+		t.Fatalf("ResponseController.Flush() through metrics middleware failed: %v (statusRecorder must implement Unwrap so SSE streams can flush)", flushErr)
+	}
+}
+
 func TestHTTPMiddlewareHandlesInvalidUTF8Path(t *testing.T) {
 	metricsSet := New("test-service")
 	handler := metricsSet.HTTPMiddleware(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

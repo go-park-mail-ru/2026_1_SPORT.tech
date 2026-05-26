@@ -584,6 +584,50 @@ func (x *GetProfileRequest) GetUserId() int64 {
 	return 0
 }
 
+type GetProfileByUsernameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetProfileByUsernameRequest) Reset() {
+	*x = GetProfileByUsernameRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetProfileByUsernameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetProfileByUsernameRequest) ProtoMessage() {}
+
+func (x *GetProfileByUsernameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetProfileByUsernameRequest.ProtoReflect.Descriptor instead.
+func (*GetProfileByUsernameRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetProfileByUsernameRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 type UpdateProfileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -598,7 +642,7 @@ type UpdateProfileRequest struct {
 
 func (x *UpdateProfileRequest) Reset() {
 	*x = UpdateProfileRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	mi := &file_profile_v1_profile_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -610,7 +654,7 @@ func (x *UpdateProfileRequest) String() string {
 func (*UpdateProfileRequest) ProtoMessage() {}
 
 func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[8]
+	mi := &file_profile_v1_profile_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -623,7 +667,7 @@ func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProfileRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{8}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateProfileRequest) GetUserId() int64 {
@@ -683,7 +727,7 @@ type SearchAuthorsRequest struct {
 
 func (x *SearchAuthorsRequest) Reset() {
 	*x = SearchAuthorsRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[9]
+	mi := &file_profile_v1_profile_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +739,7 @@ func (x *SearchAuthorsRequest) String() string {
 func (*SearchAuthorsRequest) ProtoMessage() {}
 
 func (x *SearchAuthorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[9]
+	mi := &file_profile_v1_profile_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -708,7 +752,7 @@ func (x *SearchAuthorsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAuthorsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAuthorsRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{9}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SearchAuthorsRequest) GetQuery() string {
@@ -769,7 +813,7 @@ type SearchAuthorsResponse struct {
 
 func (x *SearchAuthorsResponse) Reset() {
 	*x = SearchAuthorsResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[10]
+	mi := &file_profile_v1_profile_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -781,7 +825,7 @@ func (x *SearchAuthorsResponse) String() string {
 func (*SearchAuthorsResponse) ProtoMessage() {}
 
 func (x *SearchAuthorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[10]
+	mi := &file_profile_v1_profile_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -794,7 +838,7 @@ func (x *SearchAuthorsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAuthorsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAuthorsResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{10}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SearchAuthorsResponse) GetAuthors() []*AuthorSummary {
@@ -816,7 +860,7 @@ type UploadAvatarRequest struct {
 
 func (x *UploadAvatarRequest) Reset() {
 	*x = UploadAvatarRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[11]
+	mi := &file_profile_v1_profile_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -828,7 +872,7 @@ func (x *UploadAvatarRequest) String() string {
 func (*UploadAvatarRequest) ProtoMessage() {}
 
 func (x *UploadAvatarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[11]
+	mi := &file_profile_v1_profile_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -841,7 +885,7 @@ func (x *UploadAvatarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadAvatarRequest.ProtoReflect.Descriptor instead.
 func (*UploadAvatarRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{11}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UploadAvatarRequest) GetUserId() int64 {
@@ -881,7 +925,7 @@ type DeleteAvatarRequest struct {
 
 func (x *DeleteAvatarRequest) Reset() {
 	*x = DeleteAvatarRequest{}
-	mi := &file_profile_v1_profile_proto_msgTypes[12]
+	mi := &file_profile_v1_profile_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -893,7 +937,7 @@ func (x *DeleteAvatarRequest) String() string {
 func (*DeleteAvatarRequest) ProtoMessage() {}
 
 func (x *DeleteAvatarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[12]
+	mi := &file_profile_v1_profile_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -906,7 +950,7 @@ func (x *DeleteAvatarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAvatarRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAvatarRequest) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{12}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteAvatarRequest) GetUserId() int64 {
@@ -925,7 +969,7 @@ type ListSportTypesResponse struct {
 
 func (x *ListSportTypesResponse) Reset() {
 	*x = ListSportTypesResponse{}
-	mi := &file_profile_v1_profile_proto_msgTypes[13]
+	mi := &file_profile_v1_profile_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -937,7 +981,7 @@ func (x *ListSportTypesResponse) String() string {
 func (*ListSportTypesResponse) ProtoMessage() {}
 
 func (x *ListSportTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_profile_v1_profile_proto_msgTypes[13]
+	mi := &file_profile_v1_profile_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -950,12 +994,584 @@ func (x *ListSportTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSportTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListSportTypesResponse) Descriptor() ([]byte, []int) {
-	return file_profile_v1_profile_proto_rawDescGZIP(), []int{13}
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListSportTypesResponse) GetSportTypes() []*SportType {
 	if x != nil {
 		return x.SportTypes
+	}
+	return nil
+}
+
+type Measurement struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MeasurementId int64                  `protobuf:"varint,1,opt,name=measurement_id,json=measurementId,proto3" json:"measurement_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	MeasuredAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=measured_at,json=measuredAt,proto3" json:"measured_at,omitempty"`
+	WeightKg      *float64               `protobuf:"fixed64,4,opt,name=weight_kg,json=weightKg,proto3,oneof" json:"weight_kg,omitempty"`
+	BodyFatPct    *float64               `protobuf:"fixed64,5,opt,name=body_fat_pct,json=bodyFatPct,proto3,oneof" json:"body_fat_pct,omitempty"`
+	ChestCm       *int32                 `protobuf:"varint,6,opt,name=chest_cm,json=chestCm,proto3,oneof" json:"chest_cm,omitempty"`
+	WaistCm       *int32                 `protobuf:"varint,7,opt,name=waist_cm,json=waistCm,proto3,oneof" json:"waist_cm,omitempty"`
+	HipsCm        *int32                 `protobuf:"varint,8,opt,name=hips_cm,json=hipsCm,proto3,oneof" json:"hips_cm,omitempty"`
+	Notes         *string                `protobuf:"bytes,9,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Measurement) Reset() {
+	*x = Measurement{}
+	mi := &file_profile_v1_profile_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Measurement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Measurement) ProtoMessage() {}
+
+func (x *Measurement) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Measurement.ProtoReflect.Descriptor instead.
+func (*Measurement) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *Measurement) GetMeasurementId() int64 {
+	if x != nil {
+		return x.MeasurementId
+	}
+	return 0
+}
+
+func (x *Measurement) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *Measurement) GetMeasuredAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MeasuredAt
+	}
+	return nil
+}
+
+func (x *Measurement) GetWeightKg() float64 {
+	if x != nil && x.WeightKg != nil {
+		return *x.WeightKg
+	}
+	return 0
+}
+
+func (x *Measurement) GetBodyFatPct() float64 {
+	if x != nil && x.BodyFatPct != nil {
+		return *x.BodyFatPct
+	}
+	return 0
+}
+
+func (x *Measurement) GetChestCm() int32 {
+	if x != nil && x.ChestCm != nil {
+		return *x.ChestCm
+	}
+	return 0
+}
+
+func (x *Measurement) GetWaistCm() int32 {
+	if x != nil && x.WaistCm != nil {
+		return *x.WaistCm
+	}
+	return 0
+}
+
+func (x *Measurement) GetHipsCm() int32 {
+	if x != nil && x.HipsCm != nil {
+		return *x.HipsCm
+	}
+	return 0
+}
+
+func (x *Measurement) GetNotes() string {
+	if x != nil && x.Notes != nil {
+		return *x.Notes
+	}
+	return ""
+}
+
+func (x *Measurement) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Measurement) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type MeasurementResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Measurement   *Measurement           `protobuf:"bytes,1,opt,name=measurement,proto3" json:"measurement,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MeasurementResponse) Reset() {
+	*x = MeasurementResponse{}
+	mi := &file_profile_v1_profile_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MeasurementResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MeasurementResponse) ProtoMessage() {}
+
+func (x *MeasurementResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MeasurementResponse.ProtoReflect.Descriptor instead.
+func (*MeasurementResponse) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *MeasurementResponse) GetMeasurement() *Measurement {
+	if x != nil {
+		return x.Measurement
+	}
+	return nil
+}
+
+type ListMeasurementsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Measurements  []*Measurement         `protobuf:"bytes,1,rep,name=measurements,proto3" json:"measurements,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMeasurementsResponse) Reset() {
+	*x = ListMeasurementsResponse{}
+	mi := &file_profile_v1_profile_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMeasurementsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMeasurementsResponse) ProtoMessage() {}
+
+func (x *ListMeasurementsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMeasurementsResponse.ProtoReflect.Descriptor instead.
+func (*ListMeasurementsResponse) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ListMeasurementsResponse) GetMeasurements() []*Measurement {
+	if x != nil {
+		return x.Measurements
+	}
+	return nil
+}
+
+type CreateMeasurementRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	MeasuredAt    string                 `protobuf:"bytes,2,opt,name=measured_at,json=measuredAt,proto3" json:"measured_at,omitempty"`
+	WeightKg      *float64               `protobuf:"fixed64,3,opt,name=weight_kg,json=weightKg,proto3,oneof" json:"weight_kg,omitempty"`
+	BodyFatPct    *float64               `protobuf:"fixed64,4,opt,name=body_fat_pct,json=bodyFatPct,proto3,oneof" json:"body_fat_pct,omitempty"`
+	ChestCm       *int32                 `protobuf:"varint,5,opt,name=chest_cm,json=chestCm,proto3,oneof" json:"chest_cm,omitempty"`
+	WaistCm       *int32                 `protobuf:"varint,6,opt,name=waist_cm,json=waistCm,proto3,oneof" json:"waist_cm,omitempty"`
+	HipsCm        *int32                 `protobuf:"varint,7,opt,name=hips_cm,json=hipsCm,proto3,oneof" json:"hips_cm,omitempty"`
+	Notes         *string                `protobuf:"bytes,8,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMeasurementRequest) Reset() {
+	*x = CreateMeasurementRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMeasurementRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMeasurementRequest) ProtoMessage() {}
+
+func (x *CreateMeasurementRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMeasurementRequest.ProtoReflect.Descriptor instead.
+func (*CreateMeasurementRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *CreateMeasurementRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetMeasuredAt() string {
+	if x != nil {
+		return x.MeasuredAt
+	}
+	return ""
+}
+
+func (x *CreateMeasurementRequest) GetWeightKg() float64 {
+	if x != nil && x.WeightKg != nil {
+		return *x.WeightKg
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetBodyFatPct() float64 {
+	if x != nil && x.BodyFatPct != nil {
+		return *x.BodyFatPct
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetChestCm() int32 {
+	if x != nil && x.ChestCm != nil {
+		return *x.ChestCm
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetWaistCm() int32 {
+	if x != nil && x.WaistCm != nil {
+		return *x.WaistCm
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetHipsCm() int32 {
+	if x != nil && x.HipsCm != nil {
+		return *x.HipsCm
+	}
+	return 0
+}
+
+func (x *CreateMeasurementRequest) GetNotes() string {
+	if x != nil && x.Notes != nil {
+		return *x.Notes
+	}
+	return ""
+}
+
+type ListMeasurementsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	ViewerUserId  int64                  `protobuf:"varint,4,opt,name=viewer_user_id,json=viewerUserId,proto3" json:"viewer_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMeasurementsRequest) Reset() {
+	*x = ListMeasurementsRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMeasurementsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMeasurementsRequest) ProtoMessage() {}
+
+func (x *ListMeasurementsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMeasurementsRequest.ProtoReflect.Descriptor instead.
+func (*ListMeasurementsRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ListMeasurementsRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *ListMeasurementsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *ListMeasurementsRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *ListMeasurementsRequest) GetViewerUserId() int64 {
+	if x != nil {
+		return x.ViewerUserId
+	}
+	return 0
+}
+
+type DeleteMeasurementRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	MeasurementId int64                  `protobuf:"varint,2,opt,name=measurement_id,json=measurementId,proto3" json:"measurement_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteMeasurementRequest) Reset() {
+	*x = DeleteMeasurementRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteMeasurementRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMeasurementRequest) ProtoMessage() {}
+
+func (x *DeleteMeasurementRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMeasurementRequest.ProtoReflect.Descriptor instead.
+func (*DeleteMeasurementRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *DeleteMeasurementRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *DeleteMeasurementRequest) GetMeasurementId() int64 {
+	if x != nil {
+		return x.MeasurementId
+	}
+	return 0
+}
+
+type SetMeasurementSharingRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId   int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	TrainerUserIds []int64                `protobuf:"varint,2,rep,packed,name=trainer_user_ids,json=trainerUserIds,proto3" json:"trainer_user_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SetMeasurementSharingRequest) Reset() {
+	*x = SetMeasurementSharingRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetMeasurementSharingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetMeasurementSharingRequest) ProtoMessage() {}
+
+func (x *SetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetMeasurementSharingRequest.ProtoReflect.Descriptor instead.
+func (*SetMeasurementSharingRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *SetMeasurementSharingRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+func (x *SetMeasurementSharingRequest) GetTrainerUserIds() []int64 {
+	if x != nil {
+		return x.TrainerUserIds
+	}
+	return nil
+}
+
+type GetMeasurementSharingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ClientUserId  int64                  `protobuf:"varint,1,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeasurementSharingRequest) Reset() {
+	*x = GetMeasurementSharingRequest{}
+	mi := &file_profile_v1_profile_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeasurementSharingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeasurementSharingRequest) ProtoMessage() {}
+
+func (x *GetMeasurementSharingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeasurementSharingRequest.ProtoReflect.Descriptor instead.
+func (*GetMeasurementSharingRequest) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GetMeasurementSharingRequest) GetClientUserId() int64 {
+	if x != nil {
+		return x.ClientUserId
+	}
+	return 0
+}
+
+type MeasurementSharingResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TrainerUserIds []int64                `protobuf:"varint,1,rep,packed,name=trainer_user_ids,json=trainerUserIds,proto3" json:"trainer_user_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *MeasurementSharingResponse) Reset() {
+	*x = MeasurementSharingResponse{}
+	mi := &file_profile_v1_profile_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MeasurementSharingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MeasurementSharingResponse) ProtoMessage() {}
+
+func (x *MeasurementSharingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_v1_profile_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MeasurementSharingResponse.ProtoReflect.Descriptor instead.
+func (*MeasurementSharingResponse) Descriptor() ([]byte, []int) {
+	return file_profile_v1_profile_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *MeasurementSharingResponse) GetTrainerUserIds() []int64 {
+	if x != nil {
+		return x.TrainerUserIds
 	}
 	return nil
 }
@@ -1028,7 +1644,9 @@ const file_profile_v1_profile_proto_rawDesc = "" +
 	"\x04_bioB\x12\n" +
 	"\x10_trainer_details\",\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\xc7\x02\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"9\n" +
+	"\x1bGetProfileByUsernameRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\"\xc7\x02\n" +
 	"\x14UpdateProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1f\n" +
 	"\busername\x18\x02 \x01(\tH\x00R\busername\x88\x01\x01\x12\"\n" +
@@ -1064,16 +1682,85 @@ const file_profile_v1_profile_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"Z\n" +
 	"\x16ListSportTypesResponse\x12@\n" +
 	"\vsport_types\x18\x01 \x03(\v2\x1f.sporttech.profile.v1.SportTypeR\n" +
-	"sportTypes2\x95\a\n" +
+	"sportTypes\"\x91\x04\n" +
+	"\vMeasurement\x12%\n" +
+	"\x0emeasurement_id\x18\x01 \x01(\x03R\rmeasurementId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12;\n" +
+	"\vmeasured_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"measuredAt\x12 \n" +
+	"\tweight_kg\x18\x04 \x01(\x01H\x00R\bweightKg\x88\x01\x01\x12%\n" +
+	"\fbody_fat_pct\x18\x05 \x01(\x01H\x01R\n" +
+	"bodyFatPct\x88\x01\x01\x12\x1e\n" +
+	"\bchest_cm\x18\x06 \x01(\x05H\x02R\achestCm\x88\x01\x01\x12\x1e\n" +
+	"\bwaist_cm\x18\a \x01(\x05H\x03R\awaistCm\x88\x01\x01\x12\x1c\n" +
+	"\ahips_cm\x18\b \x01(\x05H\x04R\x06hipsCm\x88\x01\x01\x12\x19\n" +
+	"\x05notes\x18\t \x01(\tH\x05R\x05notes\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\f\n" +
+	"\n" +
+	"_weight_kgB\x0f\n" +
+	"\r_body_fat_pctB\v\n" +
+	"\t_chest_cmB\v\n" +
+	"\t_waist_cmB\n" +
+	"\n" +
+	"\b_hips_cmB\b\n" +
+	"\x06_notes\"Z\n" +
+	"\x13MeasurementResponse\x12C\n" +
+	"\vmeasurement\x18\x01 \x01(\v2!.sporttech.profile.v1.MeasurementR\vmeasurement\"a\n" +
+	"\x18ListMeasurementsResponse\x12E\n" +
+	"\fmeasurements\x18\x01 \x03(\v2!.sporttech.profile.v1.MeasurementR\fmeasurements\"\xe5\x02\n" +
+	"\x18CreateMeasurementRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1f\n" +
+	"\vmeasured_at\x18\x02 \x01(\tR\n" +
+	"measuredAt\x12 \n" +
+	"\tweight_kg\x18\x03 \x01(\x01H\x00R\bweightKg\x88\x01\x01\x12%\n" +
+	"\fbody_fat_pct\x18\x04 \x01(\x01H\x01R\n" +
+	"bodyFatPct\x88\x01\x01\x12\x1e\n" +
+	"\bchest_cm\x18\x05 \x01(\x05H\x02R\achestCm\x88\x01\x01\x12\x1e\n" +
+	"\bwaist_cm\x18\x06 \x01(\x05H\x03R\awaistCm\x88\x01\x01\x12\x1c\n" +
+	"\ahips_cm\x18\a \x01(\x05H\x04R\x06hipsCm\x88\x01\x01\x12\x19\n" +
+	"\x05notes\x18\b \x01(\tH\x05R\x05notes\x88\x01\x01B\f\n" +
+	"\n" +
+	"_weight_kgB\x0f\n" +
+	"\r_body_fat_pctB\v\n" +
+	"\t_chest_cmB\v\n" +
+	"\t_waist_cmB\n" +
+	"\n" +
+	"\b_hips_cmB\b\n" +
+	"\x06_notes\"\x86\x01\n" +
+	"\x17ListMeasurementsRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\x03 \x01(\x05R\x06offset\x12$\n" +
+	"\x0eviewer_user_id\x18\x04 \x01(\x03R\fviewerUserId\"Z\n" +
+	"\x18DeleteMeasurementRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12%\n" +
+	"\x0emeasurement_id\x18\x02 \x01(\x03R\rmeasurementId\"n\n" +
+	"\x1cSetMeasurementSharingRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\x12(\n" +
+	"\x10trainer_user_ids\x18\x02 \x03(\x03R\x0etrainerUserIds\"D\n" +
+	"\x1cGetMeasurementSharingRequest\x12$\n" +
+	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\"F\n" +
+	"\x1aMeasurementSharingResponse\x12(\n" +
+	"\x10trainer_user_ids\x18\x01 \x03(\x03R\x0etrainerUserIds2\xf4\x0e\n" +
 	"\x0eProfileService\x12{\n" +
 	"\rCreateProfile\x12*.sporttech.profile.v1.CreateProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/profiles\x12|\n" +
 	"\n" +
-	"GetProfile\x12'.sporttech.profile.v1.GetProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12\x85\x01\n" +
+	"GetProfile\x12'.sporttech.profile.v1.GetProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/profiles/{user_id}\x12\x9d\x01\n" +
+	"\x14GetProfileByUsername\x121.sporttech.profile.v1.GetProfileByUsernameRequest\x1a%.sporttech.profile.v1.ProfileResponse\"+\x82\xd3\xe4\x93\x02%\x12#/v1/profiles/by-username/{username}\x12\x85\x01\n" +
 	"\rUpdateProfile\x12*.sporttech.profile.v1.UpdateProfileRequest\x1a%.sporttech.profile.v1.ProfileResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*2\x16/v1/profiles/{user_id}\x12\x87\x01\n" +
 	"\rSearchAuthors\x12*.sporttech.profile.v1.SearchAuthorsRequest\x1a+.sporttech.profile.v1.SearchAuthorsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authors:search\x12\x8a\x01\n" +
 	"\fUploadAvatar\x12).sporttech.profile.v1.UploadAvatarRequest\x1a%.sporttech.profile.v1.ProfileResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/v1/profiles/{user_id}/avatar\x12x\n" +
 	"\fDeleteAvatar\x12).sporttech.profile.v1.DeleteAvatarRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/v1/profiles/{user_id}/avatar\x12o\n" +
-	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a,.sporttech.profile.v1.ListSportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-typesBOZMgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1;profilev1b\x06proto3"
+	"\x0eListSportTypes\x12\x16.google.protobuf.Empty\x1a,.sporttech.profile.v1.ListSportTypesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/sport-types\x12\x9e\x01\n" +
+	"\x11CreateMeasurement\x12..sporttech.profile.v1.CreateMeasurementRequest\x1a).sporttech.profile.v1.MeasurementResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/v1/profiles/{user_id}/measurements\x12\x9e\x01\n" +
+	"\x10ListMeasurements\x12-.sporttech.profile.v1.ListMeasurementsRequest\x1a..sporttech.profile.v1.ListMeasurementsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/v1/profiles/{user_id}/measurements\x12\x99\x01\n" +
+	"\x11DeleteMeasurement\x12..sporttech.profile.v1.DeleteMeasurementRequest\x1a\x16.google.protobuf.Empty\"<\x82\xd3\xe4\x93\x026*4/v1/profiles/{user_id}/measurements/{measurement_id}\x12\xa2\x01\n" +
+	"\x15SetMeasurementSharing\x122.sporttech.profile.v1.SetMeasurementSharingRequest\x1a\x16.google.protobuf.Empty\"=\x82\xd3\xe4\x93\x027:\x01*\x1a2/v1/profiles/{client_user_id}/measurements/sharing\x12\xb9\x01\n" +
+	"\x15GetMeasurementSharing\x122.sporttech.profile.v1.GetMeasurementSharingRequest\x1a0.sporttech.profile.v1.MeasurementSharingResponse\":\x82\xd3\xe4\x93\x024\x122/v1/profiles/{client_user_id}/measurements/sharingBOZMgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/profile/v1;profilev1b\x06proto3"
 
 var (
 	file_profile_v1_profile_proto_rawDescOnce sync.Once
@@ -1087,30 +1774,40 @@ func file_profile_v1_profile_proto_rawDescGZIP() []byte {
 	return file_profile_v1_profile_proto_rawDescData
 }
 
-var file_profile_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_profile_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_profile_v1_profile_proto_goTypes = []any{
-	(*TrainerSport)(nil),           // 0: sporttech.profile.v1.TrainerSport
-	(*TrainerDetails)(nil),         // 1: sporttech.profile.v1.TrainerDetails
-	(*Profile)(nil),                // 2: sporttech.profile.v1.Profile
-	(*AuthorSummary)(nil),          // 3: sporttech.profile.v1.AuthorSummary
-	(*SportType)(nil),              // 4: sporttech.profile.v1.SportType
-	(*ProfileResponse)(nil),        // 5: sporttech.profile.v1.ProfileResponse
-	(*CreateProfileRequest)(nil),   // 6: sporttech.profile.v1.CreateProfileRequest
-	(*GetProfileRequest)(nil),      // 7: sporttech.profile.v1.GetProfileRequest
-	(*UpdateProfileRequest)(nil),   // 8: sporttech.profile.v1.UpdateProfileRequest
-	(*SearchAuthorsRequest)(nil),   // 9: sporttech.profile.v1.SearchAuthorsRequest
-	(*SearchAuthorsResponse)(nil),  // 10: sporttech.profile.v1.SearchAuthorsResponse
-	(*UploadAvatarRequest)(nil),    // 11: sporttech.profile.v1.UploadAvatarRequest
-	(*DeleteAvatarRequest)(nil),    // 12: sporttech.profile.v1.DeleteAvatarRequest
-	(*ListSportTypesResponse)(nil), // 13: sporttech.profile.v1.ListSportTypesResponse
-	(*timestamppb.Timestamp)(nil),  // 14: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),          // 15: google.protobuf.Empty
+	(*TrainerSport)(nil),                 // 0: sporttech.profile.v1.TrainerSport
+	(*TrainerDetails)(nil),               // 1: sporttech.profile.v1.TrainerDetails
+	(*Profile)(nil),                      // 2: sporttech.profile.v1.Profile
+	(*AuthorSummary)(nil),                // 3: sporttech.profile.v1.AuthorSummary
+	(*SportType)(nil),                    // 4: sporttech.profile.v1.SportType
+	(*ProfileResponse)(nil),              // 5: sporttech.profile.v1.ProfileResponse
+	(*CreateProfileRequest)(nil),         // 6: sporttech.profile.v1.CreateProfileRequest
+	(*GetProfileRequest)(nil),            // 7: sporttech.profile.v1.GetProfileRequest
+	(*GetProfileByUsernameRequest)(nil),  // 8: sporttech.profile.v1.GetProfileByUsernameRequest
+	(*UpdateProfileRequest)(nil),         // 9: sporttech.profile.v1.UpdateProfileRequest
+	(*SearchAuthorsRequest)(nil),         // 10: sporttech.profile.v1.SearchAuthorsRequest
+	(*SearchAuthorsResponse)(nil),        // 11: sporttech.profile.v1.SearchAuthorsResponse
+	(*UploadAvatarRequest)(nil),          // 12: sporttech.profile.v1.UploadAvatarRequest
+	(*DeleteAvatarRequest)(nil),          // 13: sporttech.profile.v1.DeleteAvatarRequest
+	(*ListSportTypesResponse)(nil),       // 14: sporttech.profile.v1.ListSportTypesResponse
+	(*Measurement)(nil),                  // 15: sporttech.profile.v1.Measurement
+	(*MeasurementResponse)(nil),          // 16: sporttech.profile.v1.MeasurementResponse
+	(*ListMeasurementsResponse)(nil),     // 17: sporttech.profile.v1.ListMeasurementsResponse
+	(*CreateMeasurementRequest)(nil),     // 18: sporttech.profile.v1.CreateMeasurementRequest
+	(*ListMeasurementsRequest)(nil),      // 19: sporttech.profile.v1.ListMeasurementsRequest
+	(*DeleteMeasurementRequest)(nil),     // 20: sporttech.profile.v1.DeleteMeasurementRequest
+	(*SetMeasurementSharingRequest)(nil), // 21: sporttech.profile.v1.SetMeasurementSharingRequest
+	(*GetMeasurementSharingRequest)(nil), // 22: sporttech.profile.v1.GetMeasurementSharingRequest
+	(*MeasurementSharingResponse)(nil),   // 23: sporttech.profile.v1.MeasurementSharingResponse
+	(*timestamppb.Timestamp)(nil),        // 24: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                // 25: google.protobuf.Empty
 }
 var file_profile_v1_profile_proto_depIdxs = []int32{
-	14, // 0: sporttech.profile.v1.TrainerDetails.career_since_date:type_name -> google.protobuf.Timestamp
+	24, // 0: sporttech.profile.v1.TrainerDetails.career_since_date:type_name -> google.protobuf.Timestamp
 	0,  // 1: sporttech.profile.v1.TrainerDetails.sports:type_name -> sporttech.profile.v1.TrainerSport
-	14, // 2: sporttech.profile.v1.Profile.created_at:type_name -> google.protobuf.Timestamp
-	14, // 3: sporttech.profile.v1.Profile.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 2: sporttech.profile.v1.Profile.created_at:type_name -> google.protobuf.Timestamp
+	24, // 3: sporttech.profile.v1.Profile.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 4: sporttech.profile.v1.Profile.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	1,  // 5: sporttech.profile.v1.AuthorSummary.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	2,  // 6: sporttech.profile.v1.ProfileResponse.profile:type_name -> sporttech.profile.v1.Profile
@@ -1118,25 +1815,42 @@ var file_profile_v1_profile_proto_depIdxs = []int32{
 	1,  // 8: sporttech.profile.v1.UpdateProfileRequest.trainer_details:type_name -> sporttech.profile.v1.TrainerDetails
 	3,  // 9: sporttech.profile.v1.SearchAuthorsResponse.authors:type_name -> sporttech.profile.v1.AuthorSummary
 	4,  // 10: sporttech.profile.v1.ListSportTypesResponse.sport_types:type_name -> sporttech.profile.v1.SportType
-	6,  // 11: sporttech.profile.v1.ProfileService.CreateProfile:input_type -> sporttech.profile.v1.CreateProfileRequest
-	7,  // 12: sporttech.profile.v1.ProfileService.GetProfile:input_type -> sporttech.profile.v1.GetProfileRequest
-	8,  // 13: sporttech.profile.v1.ProfileService.UpdateProfile:input_type -> sporttech.profile.v1.UpdateProfileRequest
-	9,  // 14: sporttech.profile.v1.ProfileService.SearchAuthors:input_type -> sporttech.profile.v1.SearchAuthorsRequest
-	11, // 15: sporttech.profile.v1.ProfileService.UploadAvatar:input_type -> sporttech.profile.v1.UploadAvatarRequest
-	12, // 16: sporttech.profile.v1.ProfileService.DeleteAvatar:input_type -> sporttech.profile.v1.DeleteAvatarRequest
-	15, // 17: sporttech.profile.v1.ProfileService.ListSportTypes:input_type -> google.protobuf.Empty
-	5,  // 18: sporttech.profile.v1.ProfileService.CreateProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	5,  // 19: sporttech.profile.v1.ProfileService.GetProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	5,  // 20: sporttech.profile.v1.ProfileService.UpdateProfile:output_type -> sporttech.profile.v1.ProfileResponse
-	10, // 21: sporttech.profile.v1.ProfileService.SearchAuthors:output_type -> sporttech.profile.v1.SearchAuthorsResponse
-	5,  // 22: sporttech.profile.v1.ProfileService.UploadAvatar:output_type -> sporttech.profile.v1.ProfileResponse
-	15, // 23: sporttech.profile.v1.ProfileService.DeleteAvatar:output_type -> google.protobuf.Empty
-	13, // 24: sporttech.profile.v1.ProfileService.ListSportTypes:output_type -> sporttech.profile.v1.ListSportTypesResponse
-	18, // [18:25] is the sub-list for method output_type
-	11, // [11:18] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	24, // 11: sporttech.profile.v1.Measurement.measured_at:type_name -> google.protobuf.Timestamp
+	24, // 12: sporttech.profile.v1.Measurement.created_at:type_name -> google.protobuf.Timestamp
+	24, // 13: sporttech.profile.v1.Measurement.updated_at:type_name -> google.protobuf.Timestamp
+	15, // 14: sporttech.profile.v1.MeasurementResponse.measurement:type_name -> sporttech.profile.v1.Measurement
+	15, // 15: sporttech.profile.v1.ListMeasurementsResponse.measurements:type_name -> sporttech.profile.v1.Measurement
+	6,  // 16: sporttech.profile.v1.ProfileService.CreateProfile:input_type -> sporttech.profile.v1.CreateProfileRequest
+	7,  // 17: sporttech.profile.v1.ProfileService.GetProfile:input_type -> sporttech.profile.v1.GetProfileRequest
+	8,  // 18: sporttech.profile.v1.ProfileService.GetProfileByUsername:input_type -> sporttech.profile.v1.GetProfileByUsernameRequest
+	9,  // 19: sporttech.profile.v1.ProfileService.UpdateProfile:input_type -> sporttech.profile.v1.UpdateProfileRequest
+	10, // 20: sporttech.profile.v1.ProfileService.SearchAuthors:input_type -> sporttech.profile.v1.SearchAuthorsRequest
+	12, // 21: sporttech.profile.v1.ProfileService.UploadAvatar:input_type -> sporttech.profile.v1.UploadAvatarRequest
+	13, // 22: sporttech.profile.v1.ProfileService.DeleteAvatar:input_type -> sporttech.profile.v1.DeleteAvatarRequest
+	25, // 23: sporttech.profile.v1.ProfileService.ListSportTypes:input_type -> google.protobuf.Empty
+	18, // 24: sporttech.profile.v1.ProfileService.CreateMeasurement:input_type -> sporttech.profile.v1.CreateMeasurementRequest
+	19, // 25: sporttech.profile.v1.ProfileService.ListMeasurements:input_type -> sporttech.profile.v1.ListMeasurementsRequest
+	20, // 26: sporttech.profile.v1.ProfileService.DeleteMeasurement:input_type -> sporttech.profile.v1.DeleteMeasurementRequest
+	21, // 27: sporttech.profile.v1.ProfileService.SetMeasurementSharing:input_type -> sporttech.profile.v1.SetMeasurementSharingRequest
+	22, // 28: sporttech.profile.v1.ProfileService.GetMeasurementSharing:input_type -> sporttech.profile.v1.GetMeasurementSharingRequest
+	5,  // 29: sporttech.profile.v1.ProfileService.CreateProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 30: sporttech.profile.v1.ProfileService.GetProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 31: sporttech.profile.v1.ProfileService.GetProfileByUsername:output_type -> sporttech.profile.v1.ProfileResponse
+	5,  // 32: sporttech.profile.v1.ProfileService.UpdateProfile:output_type -> sporttech.profile.v1.ProfileResponse
+	11, // 33: sporttech.profile.v1.ProfileService.SearchAuthors:output_type -> sporttech.profile.v1.SearchAuthorsResponse
+	5,  // 34: sporttech.profile.v1.ProfileService.UploadAvatar:output_type -> sporttech.profile.v1.ProfileResponse
+	25, // 35: sporttech.profile.v1.ProfileService.DeleteAvatar:output_type -> google.protobuf.Empty
+	14, // 36: sporttech.profile.v1.ProfileService.ListSportTypes:output_type -> sporttech.profile.v1.ListSportTypesResponse
+	16, // 37: sporttech.profile.v1.ProfileService.CreateMeasurement:output_type -> sporttech.profile.v1.MeasurementResponse
+	17, // 38: sporttech.profile.v1.ProfileService.ListMeasurements:output_type -> sporttech.profile.v1.ListMeasurementsResponse
+	25, // 39: sporttech.profile.v1.ProfileService.DeleteMeasurement:output_type -> google.protobuf.Empty
+	25, // 40: sporttech.profile.v1.ProfileService.SetMeasurementSharing:output_type -> google.protobuf.Empty
+	23, // 41: sporttech.profile.v1.ProfileService.GetMeasurementSharing:output_type -> sporttech.profile.v1.MeasurementSharingResponse
+	29, // [29:42] is the sub-list for method output_type
+	16, // [16:29] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_profile_v1_profile_proto_init() }
@@ -1149,15 +1863,17 @@ func file_profile_v1_profile_proto_init() {
 	file_profile_v1_profile_proto_msgTypes[2].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[3].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[6].OneofWrappers = []any{}
-	file_profile_v1_profile_proto_msgTypes[8].OneofWrappers = []any{}
 	file_profile_v1_profile_proto_msgTypes[9].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[10].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[15].OneofWrappers = []any{}
+	file_profile_v1_profile_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_profile_v1_profile_proto_rawDesc), len(file_profile_v1_profile_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

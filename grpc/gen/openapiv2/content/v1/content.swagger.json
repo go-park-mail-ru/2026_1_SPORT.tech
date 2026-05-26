@@ -75,6 +75,181 @@
         ]
       }
     },
+    "/v1/chat/messages": {
+      "post": {
+        "operationId": "ContentService_SendChatMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ChatMessage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SendChatMessageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/chat/messages/{message_id}/read": {
+      "patch": {
+        "operationId": "ContentService_MarkChatMessageRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceMarkChatMessageReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/payments/donations": {
+      "post": {
+        "operationId": "ContentService_CreateDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateDonationPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/payments/subscriptions": {
+      "post": {
+        "operationId": "ContentService_CreateSubscriptionPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateSubscriptionPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/payments/{payment_id}/confirm": {
+      "post": {
+        "operationId": "ContentService_ConfirmDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceConfirmDonationPaymentBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/posts": {
       "post": {
         "operationId": "ContentService_CreatePost",
@@ -355,6 +530,63 @@
       }
     },
     "/v1/posts/{post_id}/likes": {
+      "get": {
+        "operationId": "ContentService_ListPostLikes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListPostLikesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "viewer_subscription_level",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
       "post": {
         "operationId": "ContentService_LikePost",
         "responses": {
@@ -502,6 +734,51 @@
             "schema": {
               "$ref": "#/definitions/ContentServiceSubscribeToTrainerBody"
             }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/trainers/{trainer_user_id}/subscribers": {
+      "get": {
+        "operationId": "ContentService_ListTrainerSubscribers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListTrainerSubscribersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -850,6 +1127,51 @@
         ]
       }
     },
+    "/v1/users/{trainer_user_id}/donations/received": {
+      "get": {
+        "operationId": "ContentService_ListReceivedDonations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListReceivedDonationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/users/{trainer_user_id}/statistics": {
       "get": {
         "operationId": "ContentService_GetTrainerStatistics",
@@ -886,9 +1208,195 @@
           "ContentService"
         ]
       }
+    },
+    "/v1/users/{user_id}/chat/conversations": {
+      "get": {
+        "operationId": "ContentService_ListChatConversations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChatConversationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{user_id}/chat/messages/{other_user_id}": {
+      "get": {
+        "operationId": "ContentService_ListChatMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChatMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "other_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{user_id}/notifications": {
+      "get": {
+        "operationId": "ContentService_ListNotifications",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListNotificationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
+    "/v1/users/{user_id}/notifications/{notification_id}/read": {
+      "patch": {
+        "operationId": "ContentService_MarkNotificationRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceMarkNotificationReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
     }
   },
   "definitions": {
+    "ContentServiceConfirmDonationPaymentBody": {
+      "type": "object",
+      "properties": {
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "confirmation_token": {
+          "type": "string"
+        }
+      }
+    },
     "ContentServiceCreateCommentBody": {
       "type": "object",
       "properties": {
@@ -917,6 +1425,12 @@
         },
         "description": {
           "type": "string"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -951,6 +1465,18 @@
           "format": "int32"
         }
       }
+    },
+    "ContentServiceMarkChatMessageReadBody": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ContentServiceMarkNotificationReadBody": {
+      "type": "object"
     },
     "ContentServiceSubscribeToTrainerBody": {
       "type": "object",
@@ -1025,6 +1551,12 @@
         },
         "clear_description": {
           "type": "boolean"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1069,6 +1601,49 @@
         },
         "currency": {
           "type": "string"
+        }
+      }
+    },
+    "v1ChatConversation": {
+      "type": "object",
+      "properties": {
+        "other_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "last_message": {
+          "$ref": "#/definitions/v1ChatMessage"
+        },
+        "unread_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1ChatMessage": {
+      "type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1119,6 +1694,35 @@
       ],
       "default": "CONTENT_BLOCK_KIND_UNSPECIFIED"
     },
+    "v1CreateDonationPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "recipient_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
@@ -1143,6 +1747,29 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1CreateSubscriptionPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "client_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
         }
       }
     },
@@ -1177,6 +1804,32 @@
         }
       }
     },
+    "v1DonationRecord": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        }
+      }
+    },
     "v1DonationResponse": {
       "type": "object",
       "properties": {
@@ -1193,6 +1846,30 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1PostSummary"
+          }
+        }
+      }
+    },
+    "v1ListChatConversationsResponse": {
+      "type": "object",
+      "properties": {
+        "conversations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatConversation"
+          }
+        }
+      }
+    },
+    "v1ListChatMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatMessage"
           }
         }
       }
@@ -1221,6 +1898,46 @@
         }
       }
     },
+    "v1ListNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        }
+      }
+    },
+    "v1ListPostLikesResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostLike"
+          }
+        }
+      }
+    },
+    "v1ListReceivedDonationsResponse": {
+      "type": "object",
+      "properties": {
+        "donations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1DonationRecord"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1ListSubscriptionTiersResponse": {
       "type": "object",
       "properties": {
@@ -1230,6 +1947,144 @@
             "type": "object",
             "$ref": "#/definitions/v1SubscriptionTier"
           }
+        }
+      }
+    },
+    "v1ListTrainerSubscribersResponse": {
+      "type": "object",
+      "properties": {
+        "subscribers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Subscription"
+          }
+        }
+      }
+    },
+    "v1Notification": {
+      "type": "object",
+      "properties": {
+        "notification_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actor_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "read_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "comment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1NotificationResponse": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/v1Notification"
+        }
+      }
+    },
+    "v1Payment": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "provider_payment_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "recipient_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "confirmation_token": {
+          "type": "string"
+        },
+        "confirmation_url": {
+          "type": "string"
+        },
+        "donation": {
+          "$ref": "#/definitions/v1Donation"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "subscription": {
+          "$ref": "#/definitions/v1Subscription"
+        }
+      }
+    },
+    "v1PaymentResponse": {
+      "type": "object",
+      "properties": {
+        "payment": {
+          "$ref": "#/definitions/v1Payment"
         }
       }
     },
@@ -1319,6 +2174,23 @@
         },
         "file_url": {
           "type": "string"
+        }
+      }
+    },
+    "v1PostLike": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1474,6 +2346,9 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "sort": {
+          "type": "string"
         }
       }
     },
@@ -1486,6 +2361,22 @@
             "type": "object",
             "$ref": "#/definitions/v1PostSummary"
           }
+        }
+      }
+    },
+    "v1SendChatMessageRequest": {
+      "type": "object",
+      "properties": {
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
         }
       }
     },
@@ -1560,6 +2451,12 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },

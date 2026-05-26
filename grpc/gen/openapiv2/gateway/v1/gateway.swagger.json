@@ -27,7 +27,19 @@
       "name": "DonationService"
     },
     {
+      "name": "PaymentService"
+    },
+    {
       "name": "StatisticsService"
+    },
+    {
+      "name": "NotificationService"
+    },
+    {
+      "name": "ChatService"
+    },
+    {
+      "name": "MeetingService"
     }
   ],
   "consumes": [
@@ -219,6 +231,734 @@
         },
         "tags": [
           "DonationService"
+        ]
+      }
+    },
+    "/v1/chat/conversations": {
+      "get": {
+        "operationId": "ChatService_ListConversations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListConversationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/v1/chat/messages": {
+      "post": {
+        "operationId": "ChatService_SendMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ChatMessage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SendMessageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/v1/chat/messages/{message_id}/read": {
+      "patch": {
+        "operationId": "ChatService_MarkMessageRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChatServiceMarkMessageReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/v1/chat/messages/{other_user_id}": {
+      "get": {
+        "operationId": "ChatService_ListMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "other_user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/v1/donations/received": {
+      "get": {
+        "operationId": "DonationService_ListMyReceivedDonations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListDonationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "DonationService"
+        ]
+      }
+    },
+    "/v1/measurements": {
+      "post": {
+        "operationId": "ProfileService_CreateMyMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateMeasurementRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/measurements/sharing": {
+      "get": {
+        "operationId": "ProfileService_GetMyMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeasurementSharingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileService_SetMyMeasurementSharing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SetMeasurementSharingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/measurements/{measurement_id}": {
+      "delete": {
+        "operationId": "ProfileService_DeleteMyMeasurement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/meetings/assign": {
+      "post": {
+        "operationId": "MeetingService_AssignMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingBooking"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AssignMeetingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/rules": {
+      "get": {
+        "operationId": "MeetingService_ListMyAvailabilityRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityRulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      },
+      "post": {
+        "operationId": "MeetingService_CreateAvailabilityRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAvailabilityRuleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/rules/{rule_id}": {
+      "delete": {
+        "operationId": "MeetingService_DeleteAvailabilityRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/slots": {
+      "get": {
+        "operationId": "MeetingService_ListMyAvailabilitySlots",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingSlotsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      },
+      "post": {
+        "operationId": "MeetingService_CreateAvailabilitySlot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingSlot"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAvailabilitySlotRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/availability/slots/{slot_id}": {
+      "delete": {
+        "operationId": "MeetingService_DeleteAvailabilitySlot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/me": {
+      "get": {
+        "operationId": "MeetingService_ListMyMeetings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/meetings/{booking_id}": {
+      "delete": {
+        "operationId": "MeetingService_CancelMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "operationId": "NotificationService_ListMyNotifications",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListNotificationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "NotificationService"
+        ]
+      }
+    },
+    "/v1/notifications/{notification_id}/read": {
+      "patch": {
+        "operationId": "NotificationService_MarkNotificationRead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NotificationServiceMarkNotificationReadBody"
+            }
+          }
+        ],
+        "tags": [
+          "NotificationService"
+        ]
+      }
+    },
+    "/v1/payments/donations": {
+      "post": {
+        "operationId": "PaymentService_CreateDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateDonationPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
+        ]
+      }
+    },
+    "/v1/payments/subscriptions": {
+      "post": {
+        "operationId": "PaymentService_CreateSubscriptionPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateSubscriptionPaymentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
+        ]
+      }
+    },
+    "/v1/payments/{payment_id}/confirm": {
+      "post": {
+        "operationId": "PaymentService_ConfirmDonationPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceConfirmDonationPaymentBody"
+            }
+          }
+        ],
+        "tags": [
+          "PaymentService"
         ]
       }
     },
@@ -467,6 +1207,49 @@
       }
     },
     "/v1/posts/{post_id}/likes": {
+      "get": {
+        "operationId": "PostService_ListPostLikes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListPostLikesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      },
       "delete": {
         "operationId": "PostService_UnlikePost",
         "responses": {
@@ -555,6 +1338,36 @@
         ],
         "tags": [
           "PostService"
+        ]
+      }
+    },
+    "/v1/profiles/by-username/{username}": {
+      "get": {
+        "operationId": "ProfileService_GetProfileByUsername",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ProfileService"
         ]
       }
     },
@@ -713,6 +1526,51 @@
         ]
       }
     },
+    "/v1/profiles/{user_id}/measurements": {
+      "get": {
+        "operationId": "ProfileService_ListMeasurements",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMeasurementsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/profiles/{user_id}/posts": {
       "get": {
         "operationId": "ProfileService_ListProfilePosts",
@@ -785,6 +1643,44 @@
         },
         "tags": [
           "StatisticsService"
+        ]
+      }
+    },
+    "/v1/subscribers/me": {
+      "get": {
+        "operationId": "SubscriptionService_ListMySubscribers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubscribersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "SubscriptionService"
         ]
       }
     },
@@ -1075,6 +1971,88 @@
         ]
       }
     },
+    "/v1/trainers/{trainer_id}/meetings/availability": {
+      "get": {
+        "operationId": "MeetingService_GetTrainerAvailability",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingAvailabilityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
+    "/v1/trainers/{trainer_id}/meetings/book": {
+      "post": {
+        "operationId": "MeetingService_BookMeeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MeetingBooking"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "trainer_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MeetingServiceBookMeetingBody"
+            }
+          }
+        ],
+        "tags": [
+          "MeetingService"
+        ]
+      }
+    },
     "/v1/trainers/{trainer_id}/subscribe": {
       "post": {
         "operationId": "SubscriptionService_SubscribeToTrainer",
@@ -1179,6 +2157,9 @@
     }
   },
   "definitions": {
+    "ChatServiceMarkMessageReadBody": {
+      "type": "object"
+    },
     "DonationServiceDonateToProfileBody": {
       "type": "object",
       "properties": {
@@ -1190,6 +2171,26 @@
           "type": "string"
         },
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "MeetingServiceBookMeetingBody": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "NotificationServiceMarkNotificationReadBody": {
+      "type": "object"
+    },
+    "PaymentServiceConfirmDonationPaymentBody": {
+      "type": "object",
+      "properties": {
+        "confirmation_token": {
           "type": "string"
         }
       }
@@ -1267,6 +2268,12 @@
         },
         "clear_description": {
           "type": "boolean"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -1295,6 +2302,26 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1AssignMeetingRequest": {
+      "type": "object",
+      "properties": {
+        "client_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_hours": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "note": {
+          "type": "string"
         }
       }
     },
@@ -1335,6 +2362,49 @@
       "properties": {
         "csrf_token": {
           "type": "string"
+        }
+      }
+    },
+    "v1ChatConversation": {
+      "type": "object",
+      "properties": {
+        "other_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "last_message": {
+          "$ref": "#/definitions/v1ChatMessage"
+        },
+        "unread_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1ChatMessage": {
+      "type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1397,6 +2467,84 @@
         }
       }
     },
+    "v1CreateAvailabilityRuleRequest": {
+      "type": "object",
+      "properties": {
+        "weekday": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start_hour": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1CreateAvailabilitySlotRequest": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1CreateDonationPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateMeasurementRequest": {
+      "type": "object",
+      "properties": {
+        "measured_at": {
+          "type": "string"
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreatePostRequest": {
       "type": "object",
       "properties": {
@@ -1420,6 +2568,25 @@
         }
       }
     },
+    "v1CreateSubscriptionPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "trainer_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "cancel_url": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreateTierRequest": {
       "type": "object",
       "properties": {
@@ -1431,6 +2598,38 @@
           "format": "int32"
         },
         "description": {
+          "type": "string"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DonationItem": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sender_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
           "type": "string"
         }
       }
@@ -1490,6 +2689,82 @@
         }
       }
     },
+    "v1ListConversationsResponse": {
+      "type": "object",
+      "properties": {
+        "conversations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatConversation"
+          }
+        }
+      }
+    },
+    "v1ListDonationsResponse": {
+      "type": "object",
+      "properties": {
+        "donations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1DonationItem"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1ListMeasurementsResponse": {
+      "type": "object",
+      "properties": {
+        "measurements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Measurement"
+          }
+        }
+      }
+    },
+    "v1ListMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ChatMessage"
+          }
+        }
+      }
+    },
+    "v1ListNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        }
+      }
+    },
+    "v1ListPostLikesResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostLike"
+          }
+        }
+      }
+    },
     "v1ListTrainersRequest": {
       "type": "object",
       "properties": {
@@ -1535,6 +2810,368 @@
         }
       }
     },
+    "v1Measurement": {
+      "type": "object",
+      "properties": {
+        "measurement_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "measured_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weight_kg": {
+          "type": "number",
+          "format": "double"
+        },
+        "body_fat_pct": {
+          "type": "number",
+          "format": "double"
+        },
+        "chest_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "waist_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hips_cm": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeasurementResponse": {
+      "type": "object",
+      "properties": {
+        "measurement": {
+          "$ref": "#/definitions/v1Measurement"
+        }
+      }
+    },
+    "v1MeasurementSharingResponse": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilityResponse": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingAvailabilitySlot"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilityRule": {
+      "type": "object",
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "weekday": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start_hour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingAvailabilityRulesResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingAvailabilityRule"
+          }
+        }
+      }
+    },
+    "v1MeetingAvailabilitySlot": {
+      "type": "object",
+      "properties": {
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingBooking": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trainer_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "client_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "created_by_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "role": {
+          "type": "string"
+        },
+        "other_user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1MeetingSlot": {
+      "type": "object",
+      "properties": {
+        "slot_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MeetingSlotsResponse": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingSlot"
+          }
+        }
+      }
+    },
+    "v1MeetingsResponse": {
+      "type": "object",
+      "properties": {
+        "bookings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MeetingBooking"
+          }
+        }
+      }
+    },
+    "v1Notification": {
+      "type": "object",
+      "properties": {
+        "notification_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actor_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "read_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "post_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "comment_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "donation_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "subscription_id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1NotificationResponse": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/v1Notification"
+        }
+      }
+    },
+    "v1PaymentDonation": {
+      "type": "object",
+      "properties": {
+        "donation_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sender_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recipient_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1PaymentResponse": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "provider_payment_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "sender_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recipient_user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "amount_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "confirmation_token": {
+          "type": "string"
+        },
+        "confirmation_url": {
+          "type": "string"
+        },
+        "donation": {
+          "$ref": "#/definitions/v1PaymentDonation"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "subscription": {
+          "$ref": "#/definitions/v1Subscription"
+        }
+      }
+    },
     "v1PostBlock": {
       "type": "object",
       "properties": {
@@ -1568,6 +3205,19 @@
         },
         "file_url": {
           "type": "string"
+        }
+      }
+    },
+    "v1PostLike": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1793,6 +3443,9 @@
             "type": "integer",
             "format": "int32"
           }
+        },
+        "sort": {
+          "type": "string"
         }
       }
     },
@@ -1804,6 +3457,30 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1PostListItem"
+          }
+        }
+      }
+    },
+    "v1SendMessageRequest": {
+      "type": "object",
+      "properties": {
+        "receiver_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "v1SetMeasurementSharingRequest": {
+      "type": "object",
+      "properties": {
+        "trainer_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
           }
         }
       }
@@ -1857,6 +3534,57 @@
         },
         "currency": {
           "type": "string"
+        }
+      }
+    },
+    "v1Subscriber": {
+      "type": "object",
+      "properties": {
+        "subscription_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "client_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tier_name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1SubscribersResponse": {
+      "type": "object",
+      "properties": {
+        "subscribers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Subscriber"
+          }
         }
       }
     },
@@ -1935,6 +3663,12 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "chat_enabled": {
+          "type": "boolean"
+        },
+        "calendar_enabled": {
+          "type": "boolean"
         }
       }
     },

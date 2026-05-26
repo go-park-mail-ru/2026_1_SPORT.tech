@@ -46,7 +46,7 @@ type StorageConfig struct {
 	Host          string `yaml:"host" env:"PROFILE_STORAGE_HOST" env-default:"localhost" validate:"required"`
 	Port          string `yaml:"port" env:"PROFILE_STORAGE_PORT" env-default:"8000" validate:"required"`
 	Bucket        string `yaml:"bucket" env:"PROFILE_STORAGE_BUCKET" env-default:"avatars" validate:"required"`
-	PublicBaseURL string `yaml:"public_base_url" env:"PROFILE_STORAGE_PUBLIC_BASE_URL" env-default:"http://localhost:8000/avatars" validate:"required"`
+	PublicBaseURL string `yaml:"public_base_url" env:"PROFILE_STORAGE_PUBLIC_BASE_URL" env-default:"/avatars" validate:"required"`
 	UseSSL        bool   `yaml:"use_ssl" env:"PROFILE_STORAGE_USE_SSL" env-default:"false"`
 	AccessKey     string `yaml:"access_key" env:"MINIO_ACCESS_KEY" validate:"required"`
 	SecretKey     string `yaml:"secret_key" env:"MINIO_SECRET_KEY" validate:"required"`

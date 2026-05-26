@@ -20,28 +20,51 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ContentService_ListAuthorPosts_FullMethodName        = "/sporttech.content.v1.ContentService/ListAuthorPosts"
-	ContentService_SearchPosts_FullMethodName            = "/sporttech.content.v1.ContentService/SearchPosts"
-	ContentService_CreatePost_FullMethodName             = "/sporttech.content.v1.ContentService/CreatePost"
-	ContentService_UploadPostMedia_FullMethodName        = "/sporttech.content.v1.ContentService/UploadPostMedia"
-	ContentService_GetPost_FullMethodName                = "/sporttech.content.v1.ContentService/GetPost"
-	ContentService_UpdatePost_FullMethodName             = "/sporttech.content.v1.ContentService/UpdatePost"
-	ContentService_DeletePost_FullMethodName             = "/sporttech.content.v1.ContentService/DeletePost"
-	ContentService_ListSubscriptionTiers_FullMethodName  = "/sporttech.content.v1.ContentService/ListSubscriptionTiers"
-	ContentService_CreateSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/CreateSubscriptionTier"
-	ContentService_UpdateSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/UpdateSubscriptionTier"
-	ContentService_DeleteSubscriptionTier_FullMethodName = "/sporttech.content.v1.ContentService/DeleteSubscriptionTier"
-	ContentService_SubscribeToTrainer_FullMethodName     = "/sporttech.content.v1.ContentService/SubscribeToTrainer"
-	ContentService_ListMySubscriptions_FullMethodName    = "/sporttech.content.v1.ContentService/ListMySubscriptions"
-	ContentService_UpdateSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/UpdateSubscription"
-	ContentService_CancelSubscription_FullMethodName     = "/sporttech.content.v1.ContentService/CancelSubscription"
-	ContentService_DonateToProfile_FullMethodName        = "/sporttech.content.v1.ContentService/DonateToProfile"
-	ContentService_GetBalance_FullMethodName             = "/sporttech.content.v1.ContentService/GetBalance"
-	ContentService_GetTrainerStatistics_FullMethodName   = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
-	ContentService_LikePost_FullMethodName               = "/sporttech.content.v1.ContentService/LikePost"
-	ContentService_UnlikePost_FullMethodName             = "/sporttech.content.v1.ContentService/UnlikePost"
-	ContentService_CreateComment_FullMethodName          = "/sporttech.content.v1.ContentService/CreateComment"
-	ContentService_ListComments_FullMethodName           = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_ListAuthorPosts_FullMethodName                = "/sporttech.content.v1.ContentService/ListAuthorPosts"
+	ContentService_SearchPosts_FullMethodName                    = "/sporttech.content.v1.ContentService/SearchPosts"
+	ContentService_CreatePost_FullMethodName                     = "/sporttech.content.v1.ContentService/CreatePost"
+	ContentService_UploadPostMedia_FullMethodName                = "/sporttech.content.v1.ContentService/UploadPostMedia"
+	ContentService_GetPost_FullMethodName                        = "/sporttech.content.v1.ContentService/GetPost"
+	ContentService_UpdatePost_FullMethodName                     = "/sporttech.content.v1.ContentService/UpdatePost"
+	ContentService_DeletePost_FullMethodName                     = "/sporttech.content.v1.ContentService/DeletePost"
+	ContentService_ListSubscriptionTiers_FullMethodName          = "/sporttech.content.v1.ContentService/ListSubscriptionTiers"
+	ContentService_CreateSubscriptionTier_FullMethodName         = "/sporttech.content.v1.ContentService/CreateSubscriptionTier"
+	ContentService_UpdateSubscriptionTier_FullMethodName         = "/sporttech.content.v1.ContentService/UpdateSubscriptionTier"
+	ContentService_DeleteSubscriptionTier_FullMethodName         = "/sporttech.content.v1.ContentService/DeleteSubscriptionTier"
+	ContentService_SubscribeToTrainer_FullMethodName             = "/sporttech.content.v1.ContentService/SubscribeToTrainer"
+	ContentService_ListMySubscriptions_FullMethodName            = "/sporttech.content.v1.ContentService/ListMySubscriptions"
+	ContentService_ListTrainerSubscribers_FullMethodName         = "/sporttech.content.v1.ContentService/ListTrainerSubscribers"
+	ContentService_UpdateSubscription_FullMethodName             = "/sporttech.content.v1.ContentService/UpdateSubscription"
+	ContentService_CancelSubscription_FullMethodName             = "/sporttech.content.v1.ContentService/CancelSubscription"
+	ContentService_DonateToProfile_FullMethodName                = "/sporttech.content.v1.ContentService/DonateToProfile"
+	ContentService_CreateDonationPayment_FullMethodName          = "/sporttech.content.v1.ContentService/CreateDonationPayment"
+	ContentService_CreateSubscriptionPayment_FullMethodName      = "/sporttech.content.v1.ContentService/CreateSubscriptionPayment"
+	ContentService_ConfirmDonationPayment_FullMethodName         = "/sporttech.content.v1.ContentService/ConfirmDonationPayment"
+	ContentService_GetBalance_FullMethodName                     = "/sporttech.content.v1.ContentService/GetBalance"
+	ContentService_GetTrainerStatistics_FullMethodName           = "/sporttech.content.v1.ContentService/GetTrainerStatistics"
+	ContentService_ListReceivedDonations_FullMethodName          = "/sporttech.content.v1.ContentService/ListReceivedDonations"
+	ContentService_LikePost_FullMethodName                       = "/sporttech.content.v1.ContentService/LikePost"
+	ContentService_UnlikePost_FullMethodName                     = "/sporttech.content.v1.ContentService/UnlikePost"
+	ContentService_CreateComment_FullMethodName                  = "/sporttech.content.v1.ContentService/CreateComment"
+	ContentService_ListComments_FullMethodName                   = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_ListPostLikes_FullMethodName                  = "/sporttech.content.v1.ContentService/ListPostLikes"
+	ContentService_ListNotifications_FullMethodName              = "/sporttech.content.v1.ContentService/ListNotifications"
+	ContentService_MarkNotificationRead_FullMethodName           = "/sporttech.content.v1.ContentService/MarkNotificationRead"
+	ContentService_SendChatMessage_FullMethodName                = "/sporttech.content.v1.ContentService/SendChatMessage"
+	ContentService_ListChatMessages_FullMethodName               = "/sporttech.content.v1.ContentService/ListChatMessages"
+	ContentService_ListChatConversations_FullMethodName          = "/sporttech.content.v1.ContentService/ListChatConversations"
+	ContentService_MarkChatMessageRead_FullMethodName            = "/sporttech.content.v1.ContentService/MarkChatMessageRead"
+	ContentService_CreateMeetingAvailabilityRule_FullMethodName  = "/sporttech.content.v1.ContentService/CreateMeetingAvailabilityRule"
+	ContentService_ListMeetingAvailabilityRules_FullMethodName   = "/sporttech.content.v1.ContentService/ListMeetingAvailabilityRules"
+	ContentService_DeleteMeetingAvailabilityRule_FullMethodName  = "/sporttech.content.v1.ContentService/DeleteMeetingAvailabilityRule"
+	ContentService_CreateMeetingSlot_FullMethodName              = "/sporttech.content.v1.ContentService/CreateMeetingSlot"
+	ContentService_DeleteMeetingSlot_FullMethodName              = "/sporttech.content.v1.ContentService/DeleteMeetingSlot"
+	ContentService_ListMeetingSlots_FullMethodName               = "/sporttech.content.v1.ContentService/ListMeetingSlots"
+	ContentService_ListTrainerMeetingAvailability_FullMethodName = "/sporttech.content.v1.ContentService/ListTrainerMeetingAvailability"
+	ContentService_BookMeeting_FullMethodName                    = "/sporttech.content.v1.ContentService/BookMeeting"
+	ContentService_AssignMeeting_FullMethodName                  = "/sporttech.content.v1.ContentService/AssignMeeting"
+	ContentService_CancelMeeting_FullMethodName                  = "/sporttech.content.v1.ContentService/CancelMeeting"
+	ContentService_ListMeetings_FullMethodName                   = "/sporttech.content.v1.ContentService/ListMeetings"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -61,15 +84,38 @@ type ContentServiceClient interface {
 	DeleteSubscriptionTier(ctx context.Context, in *DeleteSubscriptionTierRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SubscribeToTrainer(ctx context.Context, in *SubscribeToTrainerRequest, opts ...grpc.CallOption) (*Subscription, error)
 	ListMySubscriptions(ctx context.Context, in *ListMySubscriptionsRequest, opts ...grpc.CallOption) (*ListMySubscriptionsResponse, error)
+	ListTrainerSubscribers(ctx context.Context, in *ListTrainerSubscribersRequest, opts ...grpc.CallOption) (*ListTrainerSubscribersResponse, error)
 	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
+	CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	GetTrainerStatistics(ctx context.Context, in *GetTrainerStatisticsRequest, opts ...grpc.CallOption) (*TrainerStatisticsResponse, error)
+	ListReceivedDonations(ctx context.Context, in *ListReceivedDonationsRequest, opts ...grpc.CallOption) (*ListReceivedDonationsResponse, error)
 	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
+	ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
+	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
+	SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error)
+	ListChatMessages(ctx context.Context, in *ListChatMessagesRequest, opts ...grpc.CallOption) (*ListChatMessagesResponse, error)
+	ListChatConversations(ctx context.Context, in *ListChatConversationsRequest, opts ...grpc.CallOption) (*ListChatConversationsResponse, error)
+	MarkChatMessageRead(ctx context.Context, in *MarkChatMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateMeetingAvailabilityRule(ctx context.Context, in *CreateMeetingAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error)
+	ListMeetingAvailabilityRules(ctx context.Context, in *ListMeetingAvailabilityRulesRequest, opts ...grpc.CallOption) (*ListMeetingAvailabilityRulesResponse, error)
+	DeleteMeetingAvailabilityRule(ctx context.Context, in *DeleteMeetingAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateMeetingSlot(ctx context.Context, in *CreateMeetingSlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error)
+	DeleteMeetingSlot(ctx context.Context, in *DeleteMeetingSlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListMeetingSlots(ctx context.Context, in *ListMeetingSlotsRequest, opts ...grpc.CallOption) (*ListMeetingSlotsResponse, error)
+	ListTrainerMeetingAvailability(ctx context.Context, in *ListTrainerMeetingAvailabilityRequest, opts ...grpc.CallOption) (*ListTrainerMeetingAvailabilityResponse, error)
+	BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListMeetings(ctx context.Context, in *ListMeetingsRequest, opts ...grpc.CallOption) (*ListMeetingsResponse, error)
 }
 
 type contentServiceClient struct {
@@ -210,6 +256,16 @@ func (c *contentServiceClient) ListMySubscriptions(ctx context.Context, in *List
 	return out, nil
 }
 
+func (c *contentServiceClient) ListTrainerSubscribers(ctx context.Context, in *ListTrainerSubscribersRequest, opts ...grpc.CallOption) (*ListTrainerSubscribersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTrainerSubscribersResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListTrainerSubscribers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Subscription)
@@ -240,6 +296,36 @@ func (c *contentServiceClient) DonateToProfile(ctx context.Context, in *DonateTo
 	return out, nil
 }
 
+func (c *contentServiceClient) CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_CreateDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_CreateSubscriptionPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, ContentService_ConfirmDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BalanceResponse)
@@ -254,6 +340,16 @@ func (c *contentServiceClient) GetTrainerStatistics(ctx context.Context, in *Get
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TrainerStatisticsResponse)
 	err := c.cc.Invoke(ctx, ContentService_GetTrainerStatistics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListReceivedDonations(ctx context.Context, in *ListReceivedDonationsRequest, opts ...grpc.CallOption) (*ListReceivedDonationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListReceivedDonationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListReceivedDonations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -300,6 +396,186 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 	return out, nil
 }
 
+func (c *contentServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPostLikesResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListPostLikes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListNotificationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListNotifications_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationResponse)
+	err := c.cc.Invoke(ctx, ContentService_MarkNotificationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatMessage)
+	err := c.cc.Invoke(ctx, ContentService_SendChatMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListChatMessages(ctx context.Context, in *ListChatMessagesRequest, opts ...grpc.CallOption) (*ListChatMessagesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListChatMessagesResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListChatMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListChatConversations(ctx context.Context, in *ListChatConversationsRequest, opts ...grpc.CallOption) (*ListChatConversationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListChatConversationsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListChatConversations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) MarkChatMessageRead(ctx context.Context, in *MarkChatMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_MarkChatMessageRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) CreateMeetingAvailabilityRule(ctx context.Context, in *CreateMeetingAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityRule)
+	err := c.cc.Invoke(ctx, ContentService_CreateMeetingAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListMeetingAvailabilityRules(ctx context.Context, in *ListMeetingAvailabilityRulesRequest, opts ...grpc.CallOption) (*ListMeetingAvailabilityRulesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeetingAvailabilityRulesResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListMeetingAvailabilityRules_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeleteMeetingAvailabilityRule(ctx context.Context, in *DeleteMeetingAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_DeleteMeetingAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) CreateMeetingSlot(ctx context.Context, in *CreateMeetingSlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingSlot)
+	err := c.cc.Invoke(ctx, ContentService_CreateMeetingSlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeleteMeetingSlot(ctx context.Context, in *DeleteMeetingSlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_DeleteMeetingSlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListMeetingSlots(ctx context.Context, in *ListMeetingSlotsRequest, opts ...grpc.CallOption) (*ListMeetingSlotsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeetingSlotsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListMeetingSlots_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListTrainerMeetingAvailability(ctx context.Context, in *ListTrainerMeetingAvailabilityRequest, opts ...grpc.CallOption) (*ListTrainerMeetingAvailabilityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTrainerMeetingAvailabilityResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListTrainerMeetingAvailability_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, ContentService_BookMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, ContentService_AssignMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_CancelMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) ListMeetings(ctx context.Context, in *ListMeetingsRequest, opts ...grpc.CallOption) (*ListMeetingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeetingsResponse)
+	err := c.cc.Invoke(ctx, ContentService_ListMeetings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContentServiceServer is the server API for ContentService service.
 // All implementations should embed UnimplementedContentServiceServer
 // for forward compatibility.
@@ -317,15 +593,38 @@ type ContentServiceServer interface {
 	DeleteSubscriptionTier(context.Context, *DeleteSubscriptionTierRequest) (*emptypb.Empty, error)
 	SubscribeToTrainer(context.Context, *SubscribeToTrainerRequest) (*Subscription, error)
 	ListMySubscriptions(context.Context, *ListMySubscriptionsRequest) (*ListMySubscriptionsResponse, error)
+	ListTrainerSubscribers(context.Context, *ListTrainerSubscribersRequest) (*ListTrainerSubscribersResponse, error)
 	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error)
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
+	CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error)
+	CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error)
+	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
 	GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error)
 	GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error)
+	ListReceivedDonations(context.Context, *ListReceivedDonationsRequest) (*ListReceivedDonationsResponse, error)
 	LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error)
 	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
+	ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
+	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
+	SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error)
+	ListChatMessages(context.Context, *ListChatMessagesRequest) (*ListChatMessagesResponse, error)
+	ListChatConversations(context.Context, *ListChatConversationsRequest) (*ListChatConversationsResponse, error)
+	MarkChatMessageRead(context.Context, *MarkChatMessageReadRequest) (*emptypb.Empty, error)
+	CreateMeetingAvailabilityRule(context.Context, *CreateMeetingAvailabilityRuleRequest) (*MeetingAvailabilityRule, error)
+	ListMeetingAvailabilityRules(context.Context, *ListMeetingAvailabilityRulesRequest) (*ListMeetingAvailabilityRulesResponse, error)
+	DeleteMeetingAvailabilityRule(context.Context, *DeleteMeetingAvailabilityRuleRequest) (*emptypb.Empty, error)
+	CreateMeetingSlot(context.Context, *CreateMeetingSlotRequest) (*MeetingSlot, error)
+	DeleteMeetingSlot(context.Context, *DeleteMeetingSlotRequest) (*emptypb.Empty, error)
+	ListMeetingSlots(context.Context, *ListMeetingSlotsRequest) (*ListMeetingSlotsResponse, error)
+	ListTrainerMeetingAvailability(context.Context, *ListTrainerMeetingAvailabilityRequest) (*ListTrainerMeetingAvailabilityResponse, error)
+	BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error)
+	AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error)
+	CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error)
+	ListMeetings(context.Context, *ListMeetingsRequest) (*ListMeetingsResponse, error)
 }
 
 // UnimplementedContentServiceServer should be embedded to have
@@ -374,6 +673,9 @@ func (UnimplementedContentServiceServer) SubscribeToTrainer(context.Context, *Su
 func (UnimplementedContentServiceServer) ListMySubscriptions(context.Context, *ListMySubscriptionsRequest) (*ListMySubscriptionsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMySubscriptions not implemented")
 }
+func (UnimplementedContentServiceServer) ListTrainerSubscribers(context.Context, *ListTrainerSubscribersRequest) (*ListTrainerSubscribersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTrainerSubscribers not implemented")
+}
 func (UnimplementedContentServiceServer) UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateSubscription not implemented")
 }
@@ -383,11 +685,23 @@ func (UnimplementedContentServiceServer) CancelSubscription(context.Context, *Ca
 func (UnimplementedContentServiceServer) DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DonateToProfile not implemented")
 }
+func (UnimplementedContentServiceServer) CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateDonationPayment not implemented")
+}
+func (UnimplementedContentServiceServer) CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSubscriptionPayment not implemented")
+}
+func (UnimplementedContentServiceServer) ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmDonationPayment not implemented")
+}
 func (UnimplementedContentServiceServer) GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetBalance not implemented")
 }
 func (UnimplementedContentServiceServer) GetTrainerStatistics(context.Context, *GetTrainerStatisticsRequest) (*TrainerStatisticsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTrainerStatistics not implemented")
+}
+func (UnimplementedContentServiceServer) ListReceivedDonations(context.Context, *ListReceivedDonationsRequest) (*ListReceivedDonationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListReceivedDonations not implemented")
 }
 func (UnimplementedContentServiceServer) LikePost(context.Context, *LikePostRequest) (*PostLikeStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LikePost not implemented")
@@ -400,6 +714,60 @@ func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateC
 }
 func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedContentServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
+}
+func (UnimplementedContentServiceServer) ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListNotifications not implemented")
+}
+func (UnimplementedContentServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedContentServiceServer) SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendChatMessage not implemented")
+}
+func (UnimplementedContentServiceServer) ListChatMessages(context.Context, *ListChatMessagesRequest) (*ListChatMessagesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListChatMessages not implemented")
+}
+func (UnimplementedContentServiceServer) ListChatConversations(context.Context, *ListChatConversationsRequest) (*ListChatConversationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListChatConversations not implemented")
+}
+func (UnimplementedContentServiceServer) MarkChatMessageRead(context.Context, *MarkChatMessageReadRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkChatMessageRead not implemented")
+}
+func (UnimplementedContentServiceServer) CreateMeetingAvailabilityRule(context.Context, *CreateMeetingAvailabilityRuleRequest) (*MeetingAvailabilityRule, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateMeetingAvailabilityRule not implemented")
+}
+func (UnimplementedContentServiceServer) ListMeetingAvailabilityRules(context.Context, *ListMeetingAvailabilityRulesRequest) (*ListMeetingAvailabilityRulesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeetingAvailabilityRules not implemented")
+}
+func (UnimplementedContentServiceServer) DeleteMeetingAvailabilityRule(context.Context, *DeleteMeetingAvailabilityRuleRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMeetingAvailabilityRule not implemented")
+}
+func (UnimplementedContentServiceServer) CreateMeetingSlot(context.Context, *CreateMeetingSlotRequest) (*MeetingSlot, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateMeetingSlot not implemented")
+}
+func (UnimplementedContentServiceServer) DeleteMeetingSlot(context.Context, *DeleteMeetingSlotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMeetingSlot not implemented")
+}
+func (UnimplementedContentServiceServer) ListMeetingSlots(context.Context, *ListMeetingSlotsRequest) (*ListMeetingSlotsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeetingSlots not implemented")
+}
+func (UnimplementedContentServiceServer) ListTrainerMeetingAvailability(context.Context, *ListTrainerMeetingAvailabilityRequest) (*ListTrainerMeetingAvailabilityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTrainerMeetingAvailability not implemented")
+}
+func (UnimplementedContentServiceServer) BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method BookMeeting not implemented")
+}
+func (UnimplementedContentServiceServer) AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method AssignMeeting not implemented")
+}
+func (UnimplementedContentServiceServer) CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelMeeting not implemented")
+}
+func (UnimplementedContentServiceServer) ListMeetings(context.Context, *ListMeetingsRequest) (*ListMeetingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeetings not implemented")
 }
 func (UnimplementedContentServiceServer) testEmbeddedByValue() {}
 
@@ -655,6 +1023,24 @@ func _ContentService_ListMySubscriptions_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListTrainerSubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTrainerSubscribersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListTrainerSubscribers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListTrainerSubscribers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListTrainerSubscribers(ctx, req.(*ListTrainerSubscribersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_UpdateSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateSubscriptionRequest)
 	if err := dec(in); err != nil {
@@ -709,6 +1095,60 @@ func _ContentService_DonateToProfile_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_CreateDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateDonationPayment(ctx, req.(*CreateDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_CreateSubscriptionPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSubscriptionPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateSubscriptionPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateSubscriptionPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateSubscriptionPayment(ctx, req.(*CreateSubscriptionPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ConfirmDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ConfirmDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ConfirmDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ConfirmDonationPayment(ctx, req.(*ConfirmDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_GetBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetBalanceRequest)
 	if err := dec(in); err != nil {
@@ -741,6 +1181,24 @@ func _ContentService_GetTrainerStatistics_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContentServiceServer).GetTrainerStatistics(ctx, req.(*GetTrainerStatisticsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListReceivedDonations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListReceivedDonationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListReceivedDonations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListReceivedDonations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListReceivedDonations(ctx, req.(*ListReceivedDonationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -817,6 +1275,330 @@ func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPostLikesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListPostLikes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListPostLikes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListPostLikes(ctx, req.(*ListPostLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListNotifications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListNotifications(ctx, req.(*ListNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_MarkNotificationRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkNotificationReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).MarkNotificationRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_MarkNotificationRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).MarkNotificationRead(ctx, req.(*MarkNotificationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_SendChatMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendChatMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SendChatMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_SendChatMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SendChatMessage(ctx, req.(*SendChatMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListChatMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListChatMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListChatMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListChatMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListChatMessages(ctx, req.(*ListChatMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListChatConversations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListChatConversationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListChatConversations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListChatConversations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListChatConversations(ctx, req.(*ListChatConversationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_MarkChatMessageRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkChatMessageReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).MarkChatMessageRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_MarkChatMessageRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).MarkChatMessageRead(ctx, req.(*MarkChatMessageReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_CreateMeetingAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMeetingAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateMeetingAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateMeetingAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateMeetingAvailabilityRule(ctx, req.(*CreateMeetingAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListMeetingAvailabilityRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeetingAvailabilityRulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListMeetingAvailabilityRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListMeetingAvailabilityRules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListMeetingAvailabilityRules(ctx, req.(*ListMeetingAvailabilityRulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeleteMeetingAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMeetingAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeleteMeetingAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_DeleteMeetingAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeleteMeetingAvailabilityRule(ctx, req.(*DeleteMeetingAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_CreateMeetingSlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMeetingSlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CreateMeetingSlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CreateMeetingSlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CreateMeetingSlot(ctx, req.(*CreateMeetingSlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeleteMeetingSlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMeetingSlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeleteMeetingSlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_DeleteMeetingSlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeleteMeetingSlot(ctx, req.(*DeleteMeetingSlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListMeetingSlots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeetingSlotsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListMeetingSlots(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListMeetingSlots_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListMeetingSlots(ctx, req.(*ListMeetingSlotsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListTrainerMeetingAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTrainerMeetingAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListTrainerMeetingAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListTrainerMeetingAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListTrainerMeetingAvailability(ctx, req.(*ListTrainerMeetingAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_BookMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).BookMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_BookMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).BookMeeting(ctx, req.(*BookMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_AssignMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).AssignMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_AssignMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).AssignMeeting(ctx, req.(*AssignMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_CancelMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).CancelMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_CancelMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).CancelMeeting(ctx, req.(*CancelMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_ListMeetings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeetingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).ListMeetings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_ListMeetings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).ListMeetings(ctx, req.(*ListMeetingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -877,6 +1659,10 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ContentService_ListMySubscriptions_Handler,
 		},
 		{
+			MethodName: "ListTrainerSubscribers",
+			Handler:    _ContentService_ListTrainerSubscribers_Handler,
+		},
+		{
 			MethodName: "UpdateSubscription",
 			Handler:    _ContentService_UpdateSubscription_Handler,
 		},
@@ -889,12 +1675,28 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ContentService_DonateToProfile_Handler,
 		},
 		{
+			MethodName: "CreateDonationPayment",
+			Handler:    _ContentService_CreateDonationPayment_Handler,
+		},
+		{
+			MethodName: "CreateSubscriptionPayment",
+			Handler:    _ContentService_CreateSubscriptionPayment_Handler,
+		},
+		{
+			MethodName: "ConfirmDonationPayment",
+			Handler:    _ContentService_ConfirmDonationPayment_Handler,
+		},
+		{
 			MethodName: "GetBalance",
 			Handler:    _ContentService_GetBalance_Handler,
 		},
 		{
 			MethodName: "GetTrainerStatistics",
 			Handler:    _ContentService_GetTrainerStatistics_Handler,
+		},
+		{
+			MethodName: "ListReceivedDonations",
+			Handler:    _ContentService_ListReceivedDonations_Handler,
 		},
 		{
 			MethodName: "LikePost",
@@ -911,6 +1713,78 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _ContentService_ListComments_Handler,
+		},
+		{
+			MethodName: "ListPostLikes",
+			Handler:    _ContentService_ListPostLikes_Handler,
+		},
+		{
+			MethodName: "ListNotifications",
+			Handler:    _ContentService_ListNotifications_Handler,
+		},
+		{
+			MethodName: "MarkNotificationRead",
+			Handler:    _ContentService_MarkNotificationRead_Handler,
+		},
+		{
+			MethodName: "SendChatMessage",
+			Handler:    _ContentService_SendChatMessage_Handler,
+		},
+		{
+			MethodName: "ListChatMessages",
+			Handler:    _ContentService_ListChatMessages_Handler,
+		},
+		{
+			MethodName: "ListChatConversations",
+			Handler:    _ContentService_ListChatConversations_Handler,
+		},
+		{
+			MethodName: "MarkChatMessageRead",
+			Handler:    _ContentService_MarkChatMessageRead_Handler,
+		},
+		{
+			MethodName: "CreateMeetingAvailabilityRule",
+			Handler:    _ContentService_CreateMeetingAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "ListMeetingAvailabilityRules",
+			Handler:    _ContentService_ListMeetingAvailabilityRules_Handler,
+		},
+		{
+			MethodName: "DeleteMeetingAvailabilityRule",
+			Handler:    _ContentService_DeleteMeetingAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "CreateMeetingSlot",
+			Handler:    _ContentService_CreateMeetingSlot_Handler,
+		},
+		{
+			MethodName: "DeleteMeetingSlot",
+			Handler:    _ContentService_DeleteMeetingSlot_Handler,
+		},
+		{
+			MethodName: "ListMeetingSlots",
+			Handler:    _ContentService_ListMeetingSlots_Handler,
+		},
+		{
+			MethodName: "ListTrainerMeetingAvailability",
+			Handler:    _ContentService_ListTrainerMeetingAvailability_Handler,
+		},
+		{
+			MethodName: "BookMeeting",
+			Handler:    _ContentService_BookMeeting_Handler,
+		},
+		{
+			MethodName: "AssignMeeting",
+			Handler:    _ContentService_AssignMeeting_Handler,
+		},
+		{
+			MethodName: "CancelMeeting",
+			Handler:    _ContentService_CancelMeeting_Handler,
+		},
+		{
+			MethodName: "ListMeetings",
+			Handler:    _ContentService_ListMeetings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

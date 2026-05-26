@@ -164,6 +164,102 @@ func (server contentServer) GetTrainerStatistics(ctx context.Context, request *c
 	}, nil
 }
 
+func (server contentServer) CreateDonationPayment(ctx context.Context, request *contentv1.CreateDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 12, 45, 0, 0, time.UTC))
+	message := request.Message
+
+	return &contentv1.PaymentResponse{
+		Payment: &contentv1.Payment{
+			PaymentId:         81,
+			ProviderPaymentId: "mock-pay_abc",
+			Status:            "pending",
+			SenderUserId:      request.GetSenderUserId(),
+			RecipientUserId:   request.GetRecipientUserId(),
+			AmountValue:       request.GetAmountValue(),
+			Currency:          request.GetCurrency(),
+			Message:           message,
+			ConfirmationToken: "confirm_abc",
+			ConfirmationUrl:   "/api/v1/payments/confirm/mock/confirm_abc",
+			CreatedAt:         now,
+			UpdatedAt:         now,
+		},
+	}, nil
+}
+
+func (server contentServer) ConfirmDonationPayment(ctx context.Context, request *contentv1.ConfirmDonationPaymentRequest) (*contentv1.PaymentResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 12, 50, 0, 0, time.UTC))
+	message := "Thanks"
+
+	return &contentv1.PaymentResponse{
+		Payment: &contentv1.Payment{
+			PaymentId:         request.GetPaymentId(),
+			ProviderPaymentId: "mock-pay_abc",
+			Status:            "confirmed",
+			SenderUserId:      request.GetSenderUserId(),
+			RecipientUserId:   1001,
+			AmountValue:       1500,
+			Currency:          "RUB",
+			Message:           &message,
+			ConfirmationToken: request.GetConfirmationToken(),
+			ConfirmationUrl:   "/api/v1/payments/confirm/mock/" + request.GetConfirmationToken(),
+			Donation: &contentv1.Donation{
+				DonationId:      77,
+				SenderUserId:    request.GetSenderUserId(),
+				RecipientUserId: 1001,
+				AmountValue:     1500,
+				Currency:        "RUB",
+				Message:         &message,
+				CreatedAt:       now,
+			},
+			CreatedAt:   now,
+			UpdatedAt:   now,
+			ConfirmedAt: now,
+		},
+	}, nil
+}
+
+func (server contentServer) ListNotifications(ctx context.Context, request *contentv1.ListNotificationsRequest) (*contentv1.ListNotificationsResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 13, 0, 0, 0, time.UTC))
+	postID := int64(11)
+	commentID := int64(50)
+
+	return &contentv1.ListNotificationsResponse{
+		Notifications: []*contentv1.Notification{
+			{
+				NotificationId: 91,
+				UserId:         request.GetUserId(),
+				Type:           "comment",
+				ActorUserId:    8,
+				Title:          "New comment",
+				Body:           "Someone commented on your post",
+				IsRead:         false,
+				CreatedAt:      now,
+				PostId:         &postID,
+				CommentId:      &commentID,
+			},
+		},
+	}, nil
+}
+
+func (server contentServer) MarkNotificationRead(ctx context.Context, request *contentv1.MarkNotificationReadRequest) (*contentv1.NotificationResponse, error) {
+	now := timestamppb.New(time.Date(2026, time.April, 18, 13, 0, 0, 0, time.UTC))
+	readAt := timestamppb.New(time.Date(2026, time.April, 18, 13, 5, 0, 0, time.UTC))
+
+	return &contentv1.NotificationResponse{
+		Notification: &contentv1.Notification{
+			NotificationId: request.GetNotificationId(),
+			UserId:         request.GetUserId(),
+			Type:           "comment",
+			ActorUserId:    8,
+			Title:          "New comment",
+			Body:           "Someone commented on your post",
+			IsRead:         true,
+			CreatedAt:      now,
+			ReadAt:         readAt,
+		},
+	}, nil
+}
+
 func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 	authEndpoint := startGRPCServer(t, func(server *grpc.Server) {
 		authv1.RegisterAuthServiceServer(server, authServer{})
@@ -199,7 +295,7 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		contentv1.NewContentServiceClient(contentConn),
 	)
 
-	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
+	handler, err := httpgateway.NewMux(context.Background(), gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer, gatewayServer)
 	if err != nil {
 		t.Fatalf("new mux: %v", err)
 	}
@@ -399,6 +495,82 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		t.Fatalf("unexpected create comment payload: %+v", commentPayload)
 	}
 
+	createPaymentRequest, err := http.NewRequest(
+		http.MethodPost,
+		server.URL+"/api/v1/payments/donations",
+		bytes.NewBufferString(`{"user_id":1001,"amount_value":1500,"currency":"RUB","message":"Thanks"}`),
+	)
+	if err != nil {
+		t.Fatalf("create payment request: %v", err)
+	}
+	createPaymentRequest.Header.Set("Content-Type", "application/json")
+	createPaymentRequest.Header.Set("X-CSRF-Token", csrfPayload.CSRFToken)
+	createPaymentRequest.Header.Set("Cookie", "sid=token-123; csrf_token="+csrfPayload.CSRFToken)
+
+	createPaymentResponse, err := http.DefaultClient.Do(createPaymentRequest)
+	if err != nil {
+		t.Fatalf("create payment: %v", err)
+	}
+	defer createPaymentResponse.Body.Close()
+
+	if createPaymentResponse.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(createPaymentResponse.Body)
+		t.Fatalf("unexpected create payment status: %d body=%s", createPaymentResponse.StatusCode, string(body))
+	}
+
+	var createPaymentPayload struct {
+		PaymentID         int32  `json:"payment_id"`
+		Status            string `json:"status"`
+		ConfirmationToken string `json:"confirmation_token"`
+	}
+	if err := json.NewDecoder(createPaymentResponse.Body).Decode(&createPaymentPayload); err != nil {
+		t.Fatalf("decode create payment response: %v", err)
+	}
+	if createPaymentPayload.PaymentID != 81 ||
+		createPaymentPayload.Status != "pending" ||
+		createPaymentPayload.ConfirmationToken != "confirm_abc" {
+		t.Fatalf("unexpected create payment payload: %+v", createPaymentPayload)
+	}
+
+	confirmPaymentRequest, err := http.NewRequest(
+		http.MethodPost,
+		server.URL+"/api/v1/payments/81/confirm",
+		bytes.NewBufferString(`{"confirmation_token":"confirm_abc"}`),
+	)
+	if err != nil {
+		t.Fatalf("confirm payment request: %v", err)
+	}
+	confirmPaymentRequest.Header.Set("Content-Type", "application/json")
+	confirmPaymentRequest.Header.Set("X-CSRF-Token", csrfPayload.CSRFToken)
+	confirmPaymentRequest.Header.Set("Cookie", "sid=token-123; csrf_token="+csrfPayload.CSRFToken)
+
+	confirmPaymentResponse, err := http.DefaultClient.Do(confirmPaymentRequest)
+	if err != nil {
+		t.Fatalf("confirm payment: %v", err)
+	}
+	defer confirmPaymentResponse.Body.Close()
+
+	if confirmPaymentResponse.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(confirmPaymentResponse.Body)
+		t.Fatalf("unexpected confirm payment status: %d body=%s", confirmPaymentResponse.StatusCode, string(body))
+	}
+
+	var confirmPaymentPayload struct {
+		PaymentID int32  `json:"payment_id"`
+		Status    string `json:"status"`
+		Donation  struct {
+			DonationID int32 `json:"donation_id"`
+		} `json:"donation"`
+	}
+	if err := json.NewDecoder(confirmPaymentResponse.Body).Decode(&confirmPaymentPayload); err != nil {
+		t.Fatalf("decode confirm payment response: %v", err)
+	}
+	if confirmPaymentPayload.PaymentID != 81 ||
+		confirmPaymentPayload.Status != "confirmed" ||
+		confirmPaymentPayload.Donation.DonationID != 77 {
+		t.Fatalf("unexpected confirm payment payload: %+v", confirmPaymentPayload)
+	}
+
 	statisticsRequest, err := http.NewRequest(http.MethodGet, server.URL+"/api/v1/statistics/me", nil)
 	if err != nil {
 		t.Fatalf("statistics request: %v", err)
@@ -434,6 +606,76 @@ func TestNewMuxRoutesRequestsThroughGatewayFacade(t *testing.T) {
 		statisticsPayload.MonthlyRevenue != 2500 ||
 		statisticsPayload.Currency != "RUB" {
 		t.Fatalf("unexpected statistics payload: %+v", statisticsPayload)
+	}
+
+	notificationsRequest, err := http.NewRequest(http.MethodGet, server.URL+"/api/v1/notifications?limit=20", nil)
+	if err != nil {
+		t.Fatalf("notifications request: %v", err)
+	}
+	notificationsRequest.Header.Set("Cookie", "sid=token-123")
+
+	notificationsResponse, err := http.DefaultClient.Do(notificationsRequest)
+	if err != nil {
+		t.Fatalf("list notifications: %v", err)
+	}
+	defer notificationsResponse.Body.Close()
+
+	if notificationsResponse.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(notificationsResponse.Body)
+		t.Fatalf("unexpected notifications status: %d body=%s", notificationsResponse.StatusCode, string(body))
+	}
+
+	var notificationsPayload struct {
+		Notifications []struct {
+			NotificationID int32  `json:"notification_id"`
+			Type           string `json:"type"`
+			IsRead         bool   `json:"is_read"`
+			PostID         int32  `json:"post_id"`
+			CommentID      int32  `json:"comment_id"`
+		} `json:"notifications"`
+	}
+	if err := json.NewDecoder(notificationsResponse.Body).Decode(&notificationsPayload); err != nil {
+		t.Fatalf("decode notifications response: %v", err)
+	}
+	if len(notificationsPayload.Notifications) != 1 ||
+		notificationsPayload.Notifications[0].NotificationID != 91 ||
+		notificationsPayload.Notifications[0].Type != "comment" ||
+		notificationsPayload.Notifications[0].IsRead ||
+		notificationsPayload.Notifications[0].PostID != 11 ||
+		notificationsPayload.Notifications[0].CommentID != 50 {
+		t.Fatalf("unexpected notifications payload: %+v", notificationsPayload)
+	}
+
+	markReadRequest, err := http.NewRequest(http.MethodPatch, server.URL+"/api/v1/notifications/91/read", nil)
+	if err != nil {
+		t.Fatalf("mark notification read request: %v", err)
+	}
+	markReadRequest.Header.Set("Cookie", "sid=token-123")
+	markReadRequest.Header.Set("X-CSRF-Token", csrfPayload.CSRFToken)
+	markReadRequest.Header.Set("Cookie", "sid=token-123; csrf_token="+csrfPayload.CSRFToken)
+
+	markReadResponse, err := http.DefaultClient.Do(markReadRequest)
+	if err != nil {
+		t.Fatalf("mark notification read: %v", err)
+	}
+	defer markReadResponse.Body.Close()
+
+	if markReadResponse.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(markReadResponse.Body)
+		t.Fatalf("unexpected mark notification read status: %d body=%s", markReadResponse.StatusCode, string(body))
+	}
+
+	var markReadPayload struct {
+		Notification struct {
+			NotificationID int32 `json:"notification_id"`
+			IsRead         bool  `json:"is_read"`
+		} `json:"notification"`
+	}
+	if err := json.NewDecoder(markReadResponse.Body).Decode(&markReadPayload); err != nil {
+		t.Fatalf("decode mark notification read response: %v", err)
+	}
+	if markReadPayload.Notification.NotificationID != 91 || !markReadPayload.Notification.IsRead {
+		t.Fatalf("unexpected mark notification read payload: %+v", markReadPayload)
 	}
 
 	sportTypesResponse, err := http.Get(server.URL + "/api/v1/sport-types")

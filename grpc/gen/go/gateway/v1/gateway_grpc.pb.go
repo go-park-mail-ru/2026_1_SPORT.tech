@@ -310,13 +310,19 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ProfileService_GetProfile_FullMethodName       = "/sporttech.gateway.v1.ProfileService/GetProfile"
-	ProfileService_ListTrainers_FullMethodName     = "/sporttech.gateway.v1.ProfileService/ListTrainers"
-	ProfileService_SearchTrainers_FullMethodName   = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
-	ProfileService_UpdateMyProfile_FullMethodName  = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
-	ProfileService_UploadMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
-	ProfileService_DeleteMyAvatar_FullMethodName   = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
-	ProfileService_ListProfilePosts_FullMethodName = "/sporttech.gateway.v1.ProfileService/ListProfilePosts"
+	ProfileService_GetProfile_FullMethodName              = "/sporttech.gateway.v1.ProfileService/GetProfile"
+	ProfileService_GetProfileByUsername_FullMethodName    = "/sporttech.gateway.v1.ProfileService/GetProfileByUsername"
+	ProfileService_ListTrainers_FullMethodName            = "/sporttech.gateway.v1.ProfileService/ListTrainers"
+	ProfileService_SearchTrainers_FullMethodName          = "/sporttech.gateway.v1.ProfileService/SearchTrainers"
+	ProfileService_UpdateMyProfile_FullMethodName         = "/sporttech.gateway.v1.ProfileService/UpdateMyProfile"
+	ProfileService_UploadMyAvatar_FullMethodName          = "/sporttech.gateway.v1.ProfileService/UploadMyAvatar"
+	ProfileService_DeleteMyAvatar_FullMethodName          = "/sporttech.gateway.v1.ProfileService/DeleteMyAvatar"
+	ProfileService_ListProfilePosts_FullMethodName        = "/sporttech.gateway.v1.ProfileService/ListProfilePosts"
+	ProfileService_CreateMyMeasurement_FullMethodName     = "/sporttech.gateway.v1.ProfileService/CreateMyMeasurement"
+	ProfileService_ListMeasurements_FullMethodName        = "/sporttech.gateway.v1.ProfileService/ListMeasurements"
+	ProfileService_DeleteMyMeasurement_FullMethodName     = "/sporttech.gateway.v1.ProfileService/DeleteMyMeasurement"
+	ProfileService_SetMyMeasurementSharing_FullMethodName = "/sporttech.gateway.v1.ProfileService/SetMyMeasurementSharing"
+	ProfileService_GetMyMeasurementSharing_FullMethodName = "/sporttech.gateway.v1.ProfileService/GetMyMeasurementSharing"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
@@ -324,12 +330,18 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	GetProfileByUsername(ctx context.Context, in *GetProfileByUsernameRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	ListTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	SearchTrainers(ctx context.Context, in *ListTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	UpdateMyProfile(ctx context.Context, in *UpdateMyProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	UploadMyAvatar(ctx context.Context, in *UploadMyAvatarRequest, opts ...grpc.CallOption) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListProfilePosts(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfilePostsResponse, error)
+	CreateMyMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
+	ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error)
+	DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SetMyMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetMyMeasurementSharing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeasurementSharingResponse, error)
 }
 
 type profileServiceClient struct {
@@ -344,6 +356,16 @@ func (c *profileServiceClient) GetProfile(ctx context.Context, in *GetProfileReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProfileResponse)
 	err := c.cc.Invoke(ctx, ProfileService_GetProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetProfileByUsername(ctx context.Context, in *GetProfileByUsernameRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetProfileByUsername_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -410,17 +432,73 @@ func (c *profileServiceClient) ListProfilePosts(ctx context.Context, in *GetProf
 	return out, nil
 }
 
+func (c *profileServiceClient) CreateMyMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeasurementResponse)
+	err := c.cc.Invoke(ctx, ProfileService_CreateMyMeasurement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) ListMeasurements(ctx context.Context, in *ListMeasurementsRequest, opts ...grpc.CallOption) (*ListMeasurementsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMeasurementsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_ListMeasurements_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteMyMeasurement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) SetMyMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_SetMyMeasurementSharing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetMyMeasurementSharing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeasurementSharingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeasurementSharingResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetMyMeasurementSharing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations should embed UnimplementedProfileServiceServer
 // for forward compatibility.
 type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
+	GetProfileByUsername(context.Context, *GetProfileByUsernameRequest) (*ProfileResponse, error)
 	ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
 	SearchTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error)
 	UpdateMyProfile(context.Context, *UpdateMyProfileRequest) (*ProfileResponse, error)
 	UploadMyAvatar(context.Context, *UploadMyAvatarRequest) (*AvatarUploadResponse, error)
 	DeleteMyAvatar(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error)
+	CreateMyMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
+	ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error)
+	DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
+	SetMyMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error)
+	GetMyMeasurementSharing(context.Context, *emptypb.Empty) (*MeasurementSharingResponse, error)
 }
 
 // UnimplementedProfileServiceServer should be embedded to have
@@ -432,6 +510,9 @@ type UnimplementedProfileServiceServer struct{}
 
 func (UnimplementedProfileServiceServer) GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) GetProfileByUsername(context.Context, *GetProfileByUsernameRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProfileByUsername not implemented")
 }
 func (UnimplementedProfileServiceServer) ListTrainers(context.Context, *ListTrainersRequest) (*GetTrainersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTrainers not implemented")
@@ -450,6 +531,21 @@ func (UnimplementedProfileServiceServer) DeleteMyAvatar(context.Context, *emptyp
 }
 func (UnimplementedProfileServiceServer) ListProfilePosts(context.Context, *GetProfileRequest) (*ProfilePostsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListProfilePosts not implemented")
+}
+func (UnimplementedProfileServiceServer) CreateMyMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateMyMeasurement not implemented")
+}
+func (UnimplementedProfileServiceServer) ListMeasurements(context.Context, *ListMeasurementsRequest) (*ListMeasurementsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMeasurements not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMyMeasurement not implemented")
+}
+func (UnimplementedProfileServiceServer) SetMyMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetMyMeasurementSharing not implemented")
+}
+func (UnimplementedProfileServiceServer) GetMyMeasurementSharing(context.Context, *emptypb.Empty) (*MeasurementSharingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyMeasurementSharing not implemented")
 }
 func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
 
@@ -485,6 +581,24 @@ func _ProfileService_GetProfile_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProfileServiceServer).GetProfile(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetProfileByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetProfileByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetProfileByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetProfileByUsername(ctx, req.(*GetProfileByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -597,6 +711,96 @@ func _ProfileService_ListProfilePosts_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_CreateMyMeasurement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMeasurementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).CreateMyMeasurement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_CreateMyMeasurement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).CreateMyMeasurement(ctx, req.(*CreateMeasurementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_ListMeasurements_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMeasurementsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).ListMeasurements(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_ListMeasurements_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).ListMeasurements(ctx, req.(*ListMeasurementsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteMyMeasurement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMeasurementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteMyMeasurement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteMyMeasurement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteMyMeasurement(ctx, req.(*DeleteMeasurementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_SetMyMeasurementSharing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetMeasurementSharingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).SetMyMeasurementSharing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_SetMyMeasurementSharing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).SetMyMeasurementSharing(ctx, req.(*SetMeasurementSharingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetMyMeasurementSharing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetMyMeasurementSharing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetMyMeasurementSharing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetMyMeasurementSharing(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -607,6 +811,10 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfile",
 			Handler:    _ProfileService_GetProfile_Handler,
+		},
+		{
+			MethodName: "GetProfileByUsername",
+			Handler:    _ProfileService_GetProfileByUsername_Handler,
 		},
 		{
 			MethodName: "ListTrainers",
@@ -632,6 +840,26 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ListProfilePosts",
 			Handler:    _ProfileService_ListProfilePosts_Handler,
 		},
+		{
+			MethodName: "CreateMyMeasurement",
+			Handler:    _ProfileService_CreateMyMeasurement_Handler,
+		},
+		{
+			MethodName: "ListMeasurements",
+			Handler:    _ProfileService_ListMeasurements_Handler,
+		},
+		{
+			MethodName: "DeleteMyMeasurement",
+			Handler:    _ProfileService_DeleteMyMeasurement_Handler,
+		},
+		{
+			MethodName: "SetMyMeasurementSharing",
+			Handler:    _ProfileService_SetMyMeasurementSharing_Handler,
+		},
+		{
+			MethodName: "GetMyMeasurementSharing",
+			Handler:    _ProfileService_GetMyMeasurementSharing_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "gateway/v1/gateway.proto",
@@ -648,6 +876,7 @@ const (
 	PostService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.PostService/UnlikePost"
 	PostService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.PostService/CreateComment"
 	PostService_ListComments_FullMethodName    = "/sporttech.gateway.v1.PostService/ListComments"
+	PostService_ListPostLikes_FullMethodName   = "/sporttech.gateway.v1.PostService/ListPostLikes"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -664,6 +893,7 @@ type PostServiceClient interface {
 	UnlikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
 }
 
 type postServiceClient struct {
@@ -774,6 +1004,16 @@ func (c *postServiceClient) ListComments(ctx context.Context, in *ListCommentsRe
 	return out, nil
 }
 
+func (c *postServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPostLikesResponse)
+	err := c.cc.Invoke(ctx, PostService_ListPostLikes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations should embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -788,6 +1028,7 @@ type PostServiceServer interface {
 	UnlikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
 }
 
 // UnimplementedPostServiceServer should be embedded to have
@@ -826,6 +1067,9 @@ func (UnimplementedPostServiceServer) CreateComment(context.Context, *CreateComm
 }
 func (UnimplementedPostServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedPostServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
 }
 func (UnimplementedPostServiceServer) testEmbeddedByValue() {}
 
@@ -1027,6 +1271,24 @@ func _PostService_ListComments_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPostLikesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).ListPostLikes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_ListPostLikes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).ListPostLikes(ctx, req.(*ListPostLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1073,6 +1335,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _PostService_ListComments_Handler,
+		},
+		{
+			MethodName: "ListPostLikes",
+			Handler:    _PostService_ListPostLikes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1334,6 +1600,7 @@ var TierService_ServiceDesc = grpc.ServiceDesc{
 const (
 	SubscriptionService_SubscribeToTrainer_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/SubscribeToTrainer"
 	SubscriptionService_ListMySubscriptions_FullMethodName = "/sporttech.gateway.v1.SubscriptionService/ListMySubscriptions"
+	SubscriptionService_ListMySubscribers_FullMethodName   = "/sporttech.gateway.v1.SubscriptionService/ListMySubscribers"
 	SubscriptionService_UpdateSubscription_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/UpdateSubscription"
 	SubscriptionService_CancelSubscription_FullMethodName  = "/sporttech.gateway.v1.SubscriptionService/CancelSubscription"
 )
@@ -1344,6 +1611,7 @@ const (
 type SubscriptionServiceClient interface {
 	SubscribeToTrainer(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*Subscription, error)
 	ListMySubscriptions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SubscriptionsResponse, error)
+	ListMySubscribers(ctx context.Context, in *ListSubscribersRequest, opts ...grpc.CallOption) (*SubscribersResponse, error)
 	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -1376,6 +1644,16 @@ func (c *subscriptionServiceClient) ListMySubscriptions(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *subscriptionServiceClient) ListMySubscribers(ctx context.Context, in *ListSubscribersRequest, opts ...grpc.CallOption) (*SubscribersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubscribersResponse)
+	err := c.cc.Invoke(ctx, SubscriptionService_ListMySubscribers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *subscriptionServiceClient) UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Subscription)
@@ -1402,6 +1680,7 @@ func (c *subscriptionServiceClient) CancelSubscription(ctx context.Context, in *
 type SubscriptionServiceServer interface {
 	SubscribeToTrainer(context.Context, *SubscribeRequest) (*Subscription, error)
 	ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error)
+	ListMySubscribers(context.Context, *ListSubscribersRequest) (*SubscribersResponse, error)
 	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error)
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*emptypb.Empty, error)
 }
@@ -1418,6 +1697,9 @@ func (UnimplementedSubscriptionServiceServer) SubscribeToTrainer(context.Context
 }
 func (UnimplementedSubscriptionServiceServer) ListMySubscriptions(context.Context, *emptypb.Empty) (*SubscriptionsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMySubscriptions not implemented")
+}
+func (UnimplementedSubscriptionServiceServer) ListMySubscribers(context.Context, *ListSubscribersRequest) (*SubscribersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMySubscribers not implemented")
 }
 func (UnimplementedSubscriptionServiceServer) UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*Subscription, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateSubscription not implemented")
@@ -1481,6 +1763,24 @@ func _SubscriptionService_ListMySubscriptions_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SubscriptionService_ListMySubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSubscribersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubscriptionServiceServer).ListMySubscribers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubscriptionService_ListMySubscribers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubscriptionServiceServer).ListMySubscribers(ctx, req.(*ListSubscribersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SubscriptionService_UpdateSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateSubscriptionRequest)
 	if err := dec(in); err != nil {
@@ -1531,6 +1831,10 @@ var SubscriptionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMySubscriptions",
 			Handler:    _SubscriptionService_ListMySubscriptions_Handler,
+		},
+		{
+			MethodName: "ListMySubscribers",
+			Handler:    _SubscriptionService_ListMySubscribers_Handler,
 		},
 		{
 			MethodName: "UpdateSubscription",
@@ -1646,8 +1950,9 @@ var SportService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	DonationService_DonateToProfile_FullMethodName = "/sporttech.gateway.v1.DonationService/DonateToProfile"
-	DonationService_GetMyBalance_FullMethodName    = "/sporttech.gateway.v1.DonationService/GetMyBalance"
+	DonationService_DonateToProfile_FullMethodName         = "/sporttech.gateway.v1.DonationService/DonateToProfile"
+	DonationService_GetMyBalance_FullMethodName            = "/sporttech.gateway.v1.DonationService/GetMyBalance"
+	DonationService_ListMyReceivedDonations_FullMethodName = "/sporttech.gateway.v1.DonationService/ListMyReceivedDonations"
 )
 
 // DonationServiceClient is the client API for DonationService service.
@@ -1656,6 +1961,7 @@ const (
 type DonationServiceClient interface {
 	DonateToProfile(ctx context.Context, in *DonateToProfileRequest, opts ...grpc.CallOption) (*DonationResponse, error)
 	GetMyBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BalanceResponse, error)
+	ListMyReceivedDonations(ctx context.Context, in *ListDonationsRequest, opts ...grpc.CallOption) (*ListDonationsResponse, error)
 }
 
 type donationServiceClient struct {
@@ -1686,12 +1992,23 @@ func (c *donationServiceClient) GetMyBalance(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
+func (c *donationServiceClient) ListMyReceivedDonations(ctx context.Context, in *ListDonationsRequest, opts ...grpc.CallOption) (*ListDonationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListDonationsResponse)
+	err := c.cc.Invoke(ctx, DonationService_ListMyReceivedDonations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DonationServiceServer is the server API for DonationService service.
 // All implementations should embed UnimplementedDonationServiceServer
 // for forward compatibility.
 type DonationServiceServer interface {
 	DonateToProfile(context.Context, *DonateToProfileRequest) (*DonationResponse, error)
 	GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error)
+	ListMyReceivedDonations(context.Context, *ListDonationsRequest) (*ListDonationsResponse, error)
 }
 
 // UnimplementedDonationServiceServer should be embedded to have
@@ -1706,6 +2023,9 @@ func (UnimplementedDonationServiceServer) DonateToProfile(context.Context, *Dona
 }
 func (UnimplementedDonationServiceServer) GetMyBalance(context.Context, *emptypb.Empty) (*BalanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyBalance not implemented")
+}
+func (UnimplementedDonationServiceServer) ListMyReceivedDonations(context.Context, *ListDonationsRequest) (*ListDonationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyReceivedDonations not implemented")
 }
 func (UnimplementedDonationServiceServer) testEmbeddedByValue() {}
 
@@ -1763,6 +2083,24 @@ func _DonationService_GetMyBalance_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DonationService_ListMyReceivedDonations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDonationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DonationServiceServer).ListMyReceivedDonations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DonationService_ListMyReceivedDonations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DonationServiceServer).ListMyReceivedDonations(ctx, req.(*ListDonationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DonationService_ServiceDesc is the grpc.ServiceDesc for DonationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1777,6 +2115,186 @@ var DonationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMyBalance",
 			Handler:    _DonationService_GetMyBalance_Handler,
+		},
+		{
+			MethodName: "ListMyReceivedDonations",
+			Handler:    _DonationService_ListMyReceivedDonations_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	PaymentService_CreateDonationPayment_FullMethodName     = "/sporttech.gateway.v1.PaymentService/CreateDonationPayment"
+	PaymentService_CreateSubscriptionPayment_FullMethodName = "/sporttech.gateway.v1.PaymentService/CreateSubscriptionPayment"
+	PaymentService_ConfirmDonationPayment_FullMethodName    = "/sporttech.gateway.v1.PaymentService/ConfirmDonationPayment"
+)
+
+// PaymentServiceClient is the client API for PaymentService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PaymentServiceClient interface {
+	CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+}
+
+type paymentServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPaymentServiceClient(cc grpc.ClientConnInterface) PaymentServiceClient {
+	return &paymentServiceClient{cc}
+}
+
+func (c *paymentServiceClient) CreateDonationPayment(ctx context.Context, in *CreateDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, PaymentService_CreateDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) CreateSubscriptionPayment(ctx context.Context, in *CreateSubscriptionPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, PaymentService_CreateSubscriptionPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) ConfirmDonationPayment(ctx context.Context, in *ConfirmDonationPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, PaymentService_ConfirmDonationPayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PaymentServiceServer is the server API for PaymentService service.
+// All implementations should embed UnimplementedPaymentServiceServer
+// for forward compatibility.
+type PaymentServiceServer interface {
+	CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error)
+	CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error)
+	ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error)
+}
+
+// UnimplementedPaymentServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPaymentServiceServer struct{}
+
+func (UnimplementedPaymentServiceServer) CreateDonationPayment(context.Context, *CreateDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateDonationPayment not implemented")
+}
+func (UnimplementedPaymentServiceServer) CreateSubscriptionPayment(context.Context, *CreateSubscriptionPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSubscriptionPayment not implemented")
+}
+func (UnimplementedPaymentServiceServer) ConfirmDonationPayment(context.Context, *ConfirmDonationPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmDonationPayment not implemented")
+}
+func (UnimplementedPaymentServiceServer) testEmbeddedByValue() {}
+
+// UnsafePaymentServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PaymentServiceServer will
+// result in compilation errors.
+type UnsafePaymentServiceServer interface {
+	mustEmbedUnimplementedPaymentServiceServer()
+}
+
+func RegisterPaymentServiceServer(s grpc.ServiceRegistrar, srv PaymentServiceServer) {
+	// If the following call panics, it indicates UnimplementedPaymentServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&PaymentService_ServiceDesc, srv)
+}
+
+func _PaymentService_CreateDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).CreateDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_CreateDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).CreateDonationPayment(ctx, req.(*CreateDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_CreateSubscriptionPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSubscriptionPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).CreateSubscriptionPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_CreateSubscriptionPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).CreateSubscriptionPayment(ctx, req.(*CreateSubscriptionPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_ConfirmDonationPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmDonationPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).ConfirmDonationPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_ConfirmDonationPayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).ConfirmDonationPayment(ctx, req.(*ConfirmDonationPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PaymentService_ServiceDesc is the grpc.ServiceDesc for PaymentService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PaymentService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.PaymentService",
+	HandlerType: (*PaymentServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateDonationPayment",
+			Handler:    _PaymentService_CreateDonationPayment_Handler,
+		},
+		{
+			MethodName: "CreateSubscriptionPayment",
+			Handler:    _PaymentService_CreateSubscriptionPayment_Handler,
+		},
+		{
+			MethodName: "ConfirmDonationPayment",
+			Handler:    _PaymentService_ConfirmDonationPayment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1877,6 +2395,838 @@ var StatisticsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMyStatistics",
 			Handler:    _StatisticsService_GetMyStatistics_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	NotificationService_ListMyNotifications_FullMethodName  = "/sporttech.gateway.v1.NotificationService/ListMyNotifications"
+	NotificationService_MarkNotificationRead_FullMethodName = "/sporttech.gateway.v1.NotificationService/MarkNotificationRead"
+)
+
+// NotificationServiceClient is the client API for NotificationService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type NotificationServiceClient interface {
+	ListMyNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
+	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
+}
+
+type notificationServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewNotificationServiceClient(cc grpc.ClientConnInterface) NotificationServiceClient {
+	return &notificationServiceClient{cc}
+}
+
+func (c *notificationServiceClient) ListMyNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListNotificationsResponse)
+	err := c.cc.Invoke(ctx, NotificationService_ListMyNotifications_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notificationServiceClient) MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationResponse)
+	err := c.cc.Invoke(ctx, NotificationService_MarkNotificationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// NotificationServiceServer is the server API for NotificationService service.
+// All implementations should embed UnimplementedNotificationServiceServer
+// for forward compatibility.
+type NotificationServiceServer interface {
+	ListMyNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
+	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
+}
+
+// UnimplementedNotificationServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedNotificationServiceServer struct{}
+
+func (UnimplementedNotificationServiceServer) ListMyNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyNotifications not implemented")
+}
+func (UnimplementedNotificationServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedNotificationServiceServer) testEmbeddedByValue() {}
+
+// UnsafeNotificationServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to NotificationServiceServer will
+// result in compilation errors.
+type UnsafeNotificationServiceServer interface {
+	mustEmbedUnimplementedNotificationServiceServer()
+}
+
+func RegisterNotificationServiceServer(s grpc.ServiceRegistrar, srv NotificationServiceServer) {
+	// If the following call panics, it indicates UnimplementedNotificationServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&NotificationService_ServiceDesc, srv)
+}
+
+func _NotificationService_ListMyNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).ListMyNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_ListMyNotifications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).ListMyNotifications(ctx, req.(*ListNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NotificationService_MarkNotificationRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkNotificationReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).MarkNotificationRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_MarkNotificationRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).MarkNotificationRead(ctx, req.(*MarkNotificationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var NotificationService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.NotificationService",
+	HandlerType: (*NotificationServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListMyNotifications",
+			Handler:    _NotificationService_ListMyNotifications_Handler,
+		},
+		{
+			MethodName: "MarkNotificationRead",
+			Handler:    _NotificationService_MarkNotificationRead_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	ChatService_SendMessage_FullMethodName       = "/sporttech.gateway.v1.ChatService/SendMessage"
+	ChatService_ListMessages_FullMethodName      = "/sporttech.gateway.v1.ChatService/ListMessages"
+	ChatService_ListConversations_FullMethodName = "/sporttech.gateway.v1.ChatService/ListConversations"
+	ChatService_MarkMessageRead_FullMethodName   = "/sporttech.gateway.v1.ChatService/MarkMessageRead"
+)
+
+// ChatServiceClient is the client API for ChatService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ChatServiceClient interface {
+	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error)
+	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error)
+	ListConversations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListConversationsResponse, error)
+	MarkMessageRead(ctx context.Context, in *MarkMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type chatServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
+	return &chatServiceClient{cc}
+}
+
+func (c *chatServiceClient) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatMessage)
+	err := c.cc.Invoke(ctx, ChatService_SendMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMessagesResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListConversations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListConversationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListConversationsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListConversations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MarkMessageRead(ctx context.Context, in *MarkMessageReadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ChatService_MarkMessageRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ChatServiceServer is the server API for ChatService service.
+// All implementations should embed UnimplementedChatServiceServer
+// for forward compatibility.
+type ChatServiceServer interface {
+	SendMessage(context.Context, *SendMessageRequest) (*ChatMessage, error)
+	ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error)
+	ListConversations(context.Context, *emptypb.Empty) (*ListConversationsResponse, error)
+	MarkMessageRead(context.Context, *MarkMessageReadRequest) (*emptypb.Empty, error)
+}
+
+// UnimplementedChatServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedChatServiceServer struct{}
+
+func (UnimplementedChatServiceServer) SendMessage(context.Context, *SendMessageRequest) (*ChatMessage, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedChatServiceServer) ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMessages not implemented")
+}
+func (UnimplementedChatServiceServer) ListConversations(context.Context, *emptypb.Empty) (*ListConversationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListConversations not implemented")
+}
+func (UnimplementedChatServiceServer) MarkMessageRead(context.Context, *MarkMessageReadRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkMessageRead not implemented")
+}
+func (UnimplementedChatServiceServer) testEmbeddedByValue() {}
+
+// UnsafeChatServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ChatServiceServer will
+// result in compilation errors.
+type UnsafeChatServiceServer interface {
+	mustEmbedUnimplementedChatServiceServer()
+}
+
+func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
+	// If the following call panics, it indicates UnimplementedChatServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ChatService_ServiceDesc, srv)
+}
+
+func _ChatService_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).SendMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_SendMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).SendMessage(ctx, req.(*SendMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_ListMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListMessages(ctx, req.(*ListMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_ListConversations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListConversations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListConversations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListConversations(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MarkMessageRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkMessageReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MarkMessageRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_MarkMessageRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MarkMessageRead(ctx, req.(*MarkMessageReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ChatService_ServiceDesc is the grpc.ServiceDesc for ChatService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ChatService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.ChatService",
+	HandlerType: (*ChatServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendMessage",
+			Handler:    _ChatService_SendMessage_Handler,
+		},
+		{
+			MethodName: "ListMessages",
+			Handler:    _ChatService_ListMessages_Handler,
+		},
+		{
+			MethodName: "ListConversations",
+			Handler:    _ChatService_ListConversations_Handler,
+		},
+		{
+			MethodName: "MarkMessageRead",
+			Handler:    _ChatService_MarkMessageRead_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gateway/v1/gateway.proto",
+}
+
+const (
+	MeetingService_ListMyAvailabilityRules_FullMethodName = "/sporttech.gateway.v1.MeetingService/ListMyAvailabilityRules"
+	MeetingService_CreateAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilityRule"
+	MeetingService_DeleteAvailabilityRule_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilityRule"
+	MeetingService_CreateAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/CreateAvailabilitySlot"
+	MeetingService_ListMyAvailabilitySlots_FullMethodName = "/sporttech.gateway.v1.MeetingService/ListMyAvailabilitySlots"
+	MeetingService_DeleteAvailabilitySlot_FullMethodName  = "/sporttech.gateway.v1.MeetingService/DeleteAvailabilitySlot"
+	MeetingService_GetTrainerAvailability_FullMethodName  = "/sporttech.gateway.v1.MeetingService/GetTrainerAvailability"
+	MeetingService_BookMeeting_FullMethodName             = "/sporttech.gateway.v1.MeetingService/BookMeeting"
+	MeetingService_AssignMeeting_FullMethodName           = "/sporttech.gateway.v1.MeetingService/AssignMeeting"
+	MeetingService_ListMyMeetings_FullMethodName          = "/sporttech.gateway.v1.MeetingService/ListMyMeetings"
+	MeetingService_CancelMeeting_FullMethodName           = "/sporttech.gateway.v1.MeetingService/CancelMeeting"
+)
+
+// MeetingServiceClient is the client API for MeetingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MeetingServiceClient interface {
+	ListMyAvailabilityRules(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingAvailabilityRulesResponse, error)
+	CreateAvailabilityRule(ctx context.Context, in *CreateAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error)
+	DeleteAvailabilityRule(ctx context.Context, in *DeleteAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateAvailabilitySlot(ctx context.Context, in *CreateAvailabilitySlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error)
+	ListMyAvailabilitySlots(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingSlotsResponse, error)
+	DeleteAvailabilitySlot(ctx context.Context, in *DeleteAvailabilitySlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetTrainerAvailability(ctx context.Context, in *GetTrainerAvailabilityRequest, opts ...grpc.CallOption) (*MeetingAvailabilityResponse, error)
+	BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error)
+	ListMyMeetings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingsResponse, error)
+	CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type meetingServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMeetingServiceClient(cc grpc.ClientConnInterface) MeetingServiceClient {
+	return &meetingServiceClient{cc}
+}
+
+func (c *meetingServiceClient) ListMyAvailabilityRules(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingAvailabilityRulesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityRulesResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyAvailabilityRules_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CreateAvailabilityRule(ctx context.Context, in *CreateAvailabilityRuleRequest, opts ...grpc.CallOption) (*MeetingAvailabilityRule, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityRule)
+	err := c.cc.Invoke(ctx, MeetingService_CreateAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) DeleteAvailabilityRule(ctx context.Context, in *DeleteAvailabilityRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_DeleteAvailabilityRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CreateAvailabilitySlot(ctx context.Context, in *CreateAvailabilitySlotRequest, opts ...grpc.CallOption) (*MeetingSlot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingSlot)
+	err := c.cc.Invoke(ctx, MeetingService_CreateAvailabilitySlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) ListMyAvailabilitySlots(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingSlotsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingSlotsResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyAvailabilitySlots_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) DeleteAvailabilitySlot(ctx context.Context, in *DeleteAvailabilitySlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_DeleteAvailabilitySlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) GetTrainerAvailability(ctx context.Context, in *GetTrainerAvailabilityRequest, opts ...grpc.CallOption) (*MeetingAvailabilityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingAvailabilityResponse)
+	err := c.cc.Invoke(ctx, MeetingService_GetTrainerAvailability_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) BookMeeting(ctx context.Context, in *BookMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, MeetingService_BookMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) AssignMeeting(ctx context.Context, in *AssignMeetingRequest, opts ...grpc.CallOption) (*MeetingBooking, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingBooking)
+	err := c.cc.Invoke(ctx, MeetingService_AssignMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) ListMyMeetings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeetingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeetingsResponse)
+	err := c.cc.Invoke(ctx, MeetingService_ListMyMeetings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingServiceClient) CancelMeeting(ctx context.Context, in *CancelMeetingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MeetingService_CancelMeeting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MeetingServiceServer is the server API for MeetingService service.
+// All implementations should embed UnimplementedMeetingServiceServer
+// for forward compatibility.
+type MeetingServiceServer interface {
+	ListMyAvailabilityRules(context.Context, *emptypb.Empty) (*MeetingAvailabilityRulesResponse, error)
+	CreateAvailabilityRule(context.Context, *CreateAvailabilityRuleRequest) (*MeetingAvailabilityRule, error)
+	DeleteAvailabilityRule(context.Context, *DeleteAvailabilityRuleRequest) (*emptypb.Empty, error)
+	CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error)
+	ListMyAvailabilitySlots(context.Context, *emptypb.Empty) (*MeetingSlotsResponse, error)
+	DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error)
+	GetTrainerAvailability(context.Context, *GetTrainerAvailabilityRequest) (*MeetingAvailabilityResponse, error)
+	BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error)
+	AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error)
+	ListMyMeetings(context.Context, *emptypb.Empty) (*MeetingsResponse, error)
+	CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error)
+}
+
+// UnimplementedMeetingServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedMeetingServiceServer struct{}
+
+func (UnimplementedMeetingServiceServer) ListMyAvailabilityRules(context.Context, *emptypb.Empty) (*MeetingAvailabilityRulesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyAvailabilityRules not implemented")
+}
+func (UnimplementedMeetingServiceServer) CreateAvailabilityRule(context.Context, *CreateAvailabilityRuleRequest) (*MeetingAvailabilityRule, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateAvailabilityRule not implemented")
+}
+func (UnimplementedMeetingServiceServer) DeleteAvailabilityRule(context.Context, *DeleteAvailabilityRuleRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAvailabilityRule not implemented")
+}
+func (UnimplementedMeetingServiceServer) CreateAvailabilitySlot(context.Context, *CreateAvailabilitySlotRequest) (*MeetingSlot, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateAvailabilitySlot not implemented")
+}
+func (UnimplementedMeetingServiceServer) ListMyAvailabilitySlots(context.Context, *emptypb.Empty) (*MeetingSlotsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyAvailabilitySlots not implemented")
+}
+func (UnimplementedMeetingServiceServer) DeleteAvailabilitySlot(context.Context, *DeleteAvailabilitySlotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAvailabilitySlot not implemented")
+}
+func (UnimplementedMeetingServiceServer) GetTrainerAvailability(context.Context, *GetTrainerAvailabilityRequest) (*MeetingAvailabilityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetTrainerAvailability not implemented")
+}
+func (UnimplementedMeetingServiceServer) BookMeeting(context.Context, *BookMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method BookMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) AssignMeeting(context.Context, *AssignMeetingRequest) (*MeetingBooking, error) {
+	return nil, status.Error(codes.Unimplemented, "method AssignMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) ListMyMeetings(context.Context, *emptypb.Empty) (*MeetingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyMeetings not implemented")
+}
+func (UnimplementedMeetingServiceServer) CancelMeeting(context.Context, *CancelMeetingRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelMeeting not implemented")
+}
+func (UnimplementedMeetingServiceServer) testEmbeddedByValue() {}
+
+// UnsafeMeetingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MeetingServiceServer will
+// result in compilation errors.
+type UnsafeMeetingServiceServer interface {
+	mustEmbedUnimplementedMeetingServiceServer()
+}
+
+func RegisterMeetingServiceServer(s grpc.ServiceRegistrar, srv MeetingServiceServer) {
+	// If the following call panics, it indicates UnimplementedMeetingServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&MeetingService_ServiceDesc, srv)
+}
+
+func _MeetingService_ListMyAvailabilityRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyAvailabilityRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyAvailabilityRules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyAvailabilityRules(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CreateAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CreateAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CreateAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CreateAvailabilityRule(ctx, req.(*CreateAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_DeleteAvailabilityRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAvailabilityRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).DeleteAvailabilityRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_DeleteAvailabilityRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).DeleteAvailabilityRule(ctx, req.(*DeleteAvailabilityRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CreateAvailabilitySlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAvailabilitySlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CreateAvailabilitySlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CreateAvailabilitySlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CreateAvailabilitySlot(ctx, req.(*CreateAvailabilitySlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_ListMyAvailabilitySlots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyAvailabilitySlots(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyAvailabilitySlots_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyAvailabilitySlots(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_DeleteAvailabilitySlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAvailabilitySlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).DeleteAvailabilitySlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_DeleteAvailabilitySlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).DeleteAvailabilitySlot(ctx, req.(*DeleteAvailabilitySlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_GetTrainerAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTrainerAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).GetTrainerAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_GetTrainerAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).GetTrainerAvailability(ctx, req.(*GetTrainerAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_BookMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).BookMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_BookMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).BookMeeting(ctx, req.(*BookMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_AssignMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).AssignMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_AssignMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).AssignMeeting(ctx, req.(*AssignMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_ListMyMeetings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).ListMyMeetings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_ListMyMeetings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).ListMyMeetings(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingService_CancelMeeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelMeetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingServiceServer).CancelMeeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MeetingService_CancelMeeting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingServiceServer).CancelMeeting(ctx, req.(*CancelMeetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// MeetingService_ServiceDesc is the grpc.ServiceDesc for MeetingService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var MeetingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sporttech.gateway.v1.MeetingService",
+	HandlerType: (*MeetingServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListMyAvailabilityRules",
+			Handler:    _MeetingService_ListMyAvailabilityRules_Handler,
+		},
+		{
+			MethodName: "CreateAvailabilityRule",
+			Handler:    _MeetingService_CreateAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "DeleteAvailabilityRule",
+			Handler:    _MeetingService_DeleteAvailabilityRule_Handler,
+		},
+		{
+			MethodName: "CreateAvailabilitySlot",
+			Handler:    _MeetingService_CreateAvailabilitySlot_Handler,
+		},
+		{
+			MethodName: "ListMyAvailabilitySlots",
+			Handler:    _MeetingService_ListMyAvailabilitySlots_Handler,
+		},
+		{
+			MethodName: "DeleteAvailabilitySlot",
+			Handler:    _MeetingService_DeleteAvailabilitySlot_Handler,
+		},
+		{
+			MethodName: "GetTrainerAvailability",
+			Handler:    _MeetingService_GetTrainerAvailability_Handler,
+		},
+		{
+			MethodName: "BookMeeting",
+			Handler:    _MeetingService_BookMeeting_Handler,
+		},
+		{
+			MethodName: "AssignMeeting",
+			Handler:    _MeetingService_AssignMeeting_Handler,
+		},
+		{
+			MethodName: "ListMyMeetings",
+			Handler:    _MeetingService_ListMyMeetings_Handler,
+		},
+		{
+			MethodName: "CancelMeeting",
+			Handler:    _MeetingService_CancelMeeting_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
