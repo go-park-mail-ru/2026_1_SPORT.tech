@@ -1,16 +1,20 @@
 package health
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/mailru/easyjson"
 )
 
 type Pinger interface {
 	PingContext(ctx context.Context) error
 }
 
+//easyjson:json
 type response struct {
 	Status  string `json:"status"`
 	Service string `json:"service"`
@@ -34,6 +38,6 @@ func NewHandler(serviceName string, pinger Pinger) http.Handler {
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(statusCode)
-		_ = json.NewEncoder(writer).Encode(payload)
+		_, _ = easyjson.MarshalToWriter(payload, writer)
 	})
 }
