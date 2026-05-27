@@ -2,7 +2,6 @@ package grpc_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/mocks"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/usecase"
+	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -18,8 +18,11 @@ import (
 func TestServerRegister(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 
-	authUseCase := mocks.AuthUseCase{
-		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
+	ctrl := gomock.NewController(t)
+	authUseCase := mocks.NewMockAuthUseCase(ctrl)
+	authUseCase.EXPECT().
+		Register(gomock.Any(), gomock.Any()).
+		DoAndReturn(func(_ context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
 			if command.Email != "john@example.com" {
 				t.Fatalf("unexpected email: %s", command.Email)
 			}
@@ -38,15 +41,8 @@ func TestServerRegister(t *testing.T) {
 				SessionToken:     "session-token",
 				SessionExpiresAt: now.Add(24 * time.Hour),
 			}, nil
-		},
-		LoginFunc: func(ctx context.Context, command usecase.LoginCommand) (usecase.AuthResult, error) {
-			return usecase.AuthResult{}, errors.New("not implemented")
-		},
-		LogoutFunc: func(ctx context.Context, command usecase.LogoutCommand) error { return errors.New("not implemented") },
-		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
-			return usecase.SessionResult{}, errors.New("not implemented")
-		},
-	}
+		})
+
 	server := grpcadapter.NewServer(grpcadapter.UseCases{
 		Registration: authUseCase,
 		Login:        authUseCase,
@@ -71,18 +67,9 @@ func TestServerRegister(t *testing.T) {
 }
 
 func TestServerRegisterInvalidRole(t *testing.T) {
-	authUseCase := mocks.AuthUseCase{
-		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
-			return usecase.AuthResult{}, nil
-		},
-		LoginFunc: func(ctx context.Context, command usecase.LoginCommand) (usecase.AuthResult, error) {
-			return usecase.AuthResult{}, nil
-		},
-		LogoutFunc: func(ctx context.Context, command usecase.LogoutCommand) error { return nil },
-		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
-			return usecase.SessionResult{}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	authUseCase := mocks.NewMockAuthUseCase(ctrl)
+
 	server := grpcadapter.NewServer(grpcadapter.UseCases{
 		Registration: authUseCase,
 		Login:        authUseCase,

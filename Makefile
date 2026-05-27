@@ -8,7 +8,11 @@ GO_BIN := $(HOME)/go/bin
 COVERAGE_MIN ?= 60
 
 .PHONY: generate
-generate: proto easyjson
+generate: proto easyjson mocks
+
+.PHONY: mocks
+mocks:
+	PATH="$(GO_BIN):$$PATH" go generate ./services/auth/internal/mocks/... ./services/content/internal/mocks/... ./services/profile/internal/mocks/...
 
 .PHONY: proto
 proto:

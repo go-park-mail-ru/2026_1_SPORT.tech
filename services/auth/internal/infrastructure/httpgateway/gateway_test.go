@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,17 +14,18 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/infrastructure/httpgateway"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/mocks"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/usecase"
+	"go.uber.org/mock/gomock"
 )
 
 func TestNewLocalMuxExposesGeneratedLoginEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
 	var capturedCommand usecase.LoginCommand
 
-	authUseCase := mocks.AuthUseCase{
-		RegisterFunc: func(ctx context.Context, command usecase.RegisterCommand) (usecase.AuthResult, error) {
-			return usecase.AuthResult{}, errors.New("not implemented")
-		},
-		LoginFunc: func(ctx context.Context, command usecase.LoginCommand) (usecase.AuthResult, error) {
+	ctrl := gomock.NewController(t)
+	authUseCase := mocks.NewMockAuthUseCase(ctrl)
+	authUseCase.EXPECT().
+		Login(gomock.Any(), gomock.Any()).
+		DoAndReturn(func(_ context.Context, command usecase.LoginCommand) (usecase.AuthResult, error) {
 			capturedCommand = command
 			return usecase.AuthResult{
 				Account: domain.Account{
@@ -38,14 +38,8 @@ func TestNewLocalMuxExposesGeneratedLoginEndpoint(t *testing.T) {
 				SessionToken:     "session-token",
 				SessionExpiresAt: now.Add(24 * time.Hour),
 			}, nil
-		},
-		LogoutFunc: func(ctx context.Context, command usecase.LogoutCommand) error {
-			return errors.New("not implemented")
-		},
-		GetSessionFunc: func(ctx context.Context, query usecase.GetSessionQuery) (usecase.SessionResult, error) {
-			return usecase.SessionResult{}, errors.New("not implemented")
-		},
-	}
+		})
+
 	handler := grpcadapter.NewServer(grpcadapter.UseCases{
 		Registration: authUseCase,
 		Login:        authUseCase,
