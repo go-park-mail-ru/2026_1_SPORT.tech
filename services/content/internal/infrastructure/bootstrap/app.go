@@ -89,10 +89,13 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, fmt.Errorf("new local gateway: %w", err)
 	}
 
+	stripeWebhook := stripeadapter.NewWebhookHandler(cfg.Payment.StripeWebhookSecret, contentUseCase, logger)
+
 	httpMux := http.NewServeMux()
 	httpMux.Handle("/metrics", metricsSet.Handler())
 	httpMux.Handle("/healthz", health.NewHandler(cfg.ServiceName, database))
 	httpMux.Handle("/openapi/content.swagger.json", httpgateway.OpenAPIHandler(cfg.OpenAPI.FilePath))
+	httpMux.Handle("/webhooks/stripe", stripeWebhook)
 	httpMux.Handle("/", gatewayHandler)
 
 	httpServer := &http.Server{

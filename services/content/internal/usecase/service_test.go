@@ -37,7 +37,8 @@ type stubContentRepository struct {
 	listPostLikesFunc      func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	createPaymentFunc      func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
-	confirmPaymentFunc     func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error)
+	confirmPaymentFunc     func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error)
+	confirmByProviderFunc  func(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error)
 	getBalanceFunc         func(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	getStatisticsFunc      func(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 	createNotificationFunc func(ctx context.Context, notification domain.Notification) (domain.Notification, error)
@@ -209,11 +210,18 @@ func (repository stubContentRepository) GetDonationPayment(ctx context.Context, 
 	}, nil
 }
 
-func (repository stubContentRepository) ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+func (repository stubContentRepository) ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error) {
 	if repository.confirmPaymentFunc == nil {
-		return domain.DonationPayment{PaymentID: paymentID, SenderUserID: senderUserID, ConfirmationToken: confirmationToken}, nil
+		return domain.DonationPayment{PaymentID: paymentID, SenderUserID: senderUserID, ConfirmationToken: confirmationToken}, true, nil
 	}
 	return repository.confirmPaymentFunc(ctx, senderUserID, paymentID, confirmationToken)
+}
+
+func (repository stubContentRepository) ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error) {
+	if repository.confirmByProviderFunc == nil {
+		return domain.DonationPayment{ProviderPaymentID: providerPaymentID, Status: domain.PaymentStatusConfirmed}, true, nil
+	}
+	return repository.confirmByProviderFunc(ctx, providerPaymentID)
 }
 
 func (repository stubContentRepository) GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error) {
@@ -843,7 +851,7 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 				payment.PaymentID = 81
 				return payment, nil
 			},
-			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error) {
 				if senderUserID != 1002 || paymentID != 81 || confirmationToken != "confirm_abc" {
 					t.Fatalf("unexpected confirm args: sender=%d payment=%d token=%s", senderUserID, paymentID, confirmationToken)
 				}
@@ -851,7 +859,7 @@ func TestServiceDonationPaymentFlow(t *testing.T) {
 					PaymentID: paymentID,
 					Status:    domain.PaymentStatusConfirmed,
 					Donation:  &domain.Donation{DonationID: 77, SenderUserID: 1002, RecipientUserID: 1001},
-				}, nil
+				}, true, nil
 			},
 		}),
 		nil,
@@ -917,7 +925,7 @@ func TestServiceSubscriptionPaymentFlow(t *testing.T) {
 				payment.PaymentID = 82
 				return payment, nil
 			},
-			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+			confirmPaymentFunc: func(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error) {
 				if senderUserID != 1002 || paymentID != 82 || confirmationToken != "confirm_abc" {
 					t.Fatalf("unexpected confirm args: sender=%d payment=%d token=%s", senderUserID, paymentID, confirmationToken)
 				}
@@ -931,7 +939,7 @@ func TestServiceSubscriptionPaymentFlow(t *testing.T) {
 						TierID:         2,
 						Active:         true,
 					},
-				}, nil
+				}, true, nil
 			},
 			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
 				notifications = append(notifications, notification)
