@@ -183,77 +183,75 @@ func (repository *Repository) GetDonationPayment(ctx context.Context, senderUser
 	return payment, nil
 }
 
-func (repository *Repository) ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, error) {
+func (repository *Repository) ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error) {
+	return repository.confirmPayment(ctx, func(ctx context.Context, tx *sql.Tx) (domain.DonationPayment, error) {
+		payment, err := scanPayment(tx.QueryRowContext(ctx, selectPaymentForUpdateByIDQuery, paymentID))
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return domain.DonationPayment{}, domain.ErrPaymentNotFound
+			}
+			return domain.DonationPayment{}, err
+		}
+		if payment.SenderUserID != senderUserID {
+			return domain.DonationPayment{}, domain.ErrPaymentForbidden
+		}
+		if payment.ConfirmationToken != confirmationToken {
+			return domain.DonationPayment{}, domain.ErrPaymentTokenMismatch
+		}
+		return payment, nil
+	})
+}
+
+func (repository *Repository) ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error) {
+	return repository.confirmPayment(ctx, func(ctx context.Context, tx *sql.Tx) (domain.DonationPayment, error) {
+		payment, err := scanPayment(tx.QueryRowContext(ctx, selectPaymentForUpdateByProviderIDQuery, providerPaymentID))
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return domain.DonationPayment{}, domain.ErrPaymentNotFound
+			}
+			return domain.DonationPayment{}, err
+		}
+		return payment, nil
+	})
+}
+
+func (repository *Repository) confirmPayment(
+	ctx context.Context,
+	lockPayment func(ctx context.Context, tx *sql.Tx) (domain.DonationPayment, error),
+) (domain.DonationPayment, bool, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
-		return domain.DonationPayment{}, err
+		return domain.DonationPayment{}, false, err
 	}
 	defer tx.Rollback()
 
-	payment, err := scanPayment(tx.QueryRowContext(
-		ctx,
-		`
-			SELECT
-				payment_id,
-				provider,
-				provider_payment_id,
-				status,
-				sender_user_id,
-				recipient_user_id,
-				amount_value,
-				currency,
-				message,
-				confirmation_token,
-				confirmation_url,
-				tier_id,
-				donation_id,
-				subscription_id,
-				created_at,
-				updated_at,
-				confirmed_at
-			FROM content_payment
-			WHERE payment_id = $1::bigint
-			FOR UPDATE
-		`,
-		paymentID,
-	))
+	payment, err := lockPayment(ctx, tx)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return domain.DonationPayment{}, domain.ErrPaymentNotFound
-		}
-		return domain.DonationPayment{}, err
-	}
-	if payment.SenderUserID != senderUserID {
-		return domain.DonationPayment{}, domain.ErrPaymentForbidden
-	}
-	if payment.ConfirmationToken != confirmationToken {
-		return domain.DonationPayment{}, domain.ErrPaymentTokenMismatch
+		return domain.DonationPayment{}, false, err
 	}
 
 	if payment.Status == domain.PaymentStatusConfirmed {
 		if payment.Donation != nil {
-			if donation, err := repository.getDonationTx(ctx, tx, payment.Donation.DonationID); err == nil {
-				payment.Donation = &donation
-			} else {
-				return domain.DonationPayment{}, err
+			donation, err := repository.getDonationTx(ctx, tx, payment.Donation.DonationID)
+			if err != nil {
+				return domain.DonationPayment{}, false, err
 			}
+			payment.Donation = &donation
 		}
 		if payment.Subscription != nil {
-			if subscription, err := repository.getSubscriptionTx(ctx, tx, payment.Subscription.SubscriptionID); err == nil {
-				payment.Subscription = &subscription
-			} else {
-				return domain.DonationPayment{}, err
+			subscription, err := repository.getSubscriptionTx(ctx, tx, payment.Subscription.SubscriptionID)
+			if err != nil {
+				return domain.DonationPayment{}, false, err
 			}
+			payment.Subscription = &subscription
 		}
 		if err := tx.Commit(); err != nil {
-			return domain.DonationPayment{}, err
+			return domain.DonationPayment{}, false, err
 		}
-		return payment, nil
+		return payment, false, nil
 	}
 
 	now := time.Now().UTC()
-	var donation *domain.Donation
-	var subscription *domain.Subscription
 	if payment.TierID == nil {
 		createdDonation, err := createDonationTx(ctx, tx, domain.Donation{
 			SenderUserID:    payment.SenderUserID,
@@ -263,28 +261,26 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			Message:         payment.Message,
 		}, now)
 		if err != nil {
-			return domain.DonationPayment{}, err
+			return domain.DonationPayment{}, false, err
 		}
-		donation = &createdDonation
 		if _, err := tx.ExecContext(
 			ctx,
 			`
 				UPDATE content_payment
-				SET status = $3::text,
-					donation_id = $4::bigint,
-					confirmed_at = $5::timestamptz,
-					updated_at = $5::timestamptz
+				SET status = $2::text,
+					donation_id = $3::bigint,
+					confirmed_at = $4::timestamptz,
+					updated_at = $4::timestamptz
 				WHERE payment_id = $1::bigint
-					AND sender_user_id = $2::bigint
 			`,
 			payment.PaymentID,
-			senderUserID,
 			string(domain.PaymentStatusConfirmed),
 			createdDonation.DonationID,
 			now,
 		); err != nil {
-			return domain.DonationPayment{}, err
+			return domain.DonationPayment{}, false, err
 		}
+		payment.Donation = &createdDonation
 	} else {
 		createdSubscription, err := subscribeToTrainerTx(ctx, tx, domain.Subscription{
 			ClientUserID:  payment.SenderUserID,
@@ -293,42 +289,86 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			ExpiresAt:     now.AddDate(0, 1, 0),
 		}, now)
 		if err != nil {
-			return domain.DonationPayment{}, err
+			return domain.DonationPayment{}, false, err
 		}
-		subscription = &createdSubscription
 		if _, err := tx.ExecContext(
 			ctx,
 			`
 				UPDATE content_payment
-				SET status = $3::text,
-					subscription_id = $4::bigint,
-					confirmed_at = $5::timestamptz,
-					updated_at = $5::timestamptz
+				SET status = $2::text,
+					subscription_id = $3::bigint,
+					confirmed_at = $4::timestamptz,
+					updated_at = $4::timestamptz
 				WHERE payment_id = $1::bigint
-					AND sender_user_id = $2::bigint
 			`,
 			payment.PaymentID,
-			senderUserID,
 			string(domain.PaymentStatusConfirmed),
 			createdSubscription.SubscriptionID,
 			now,
 		); err != nil {
-			return domain.DonationPayment{}, err
+			return domain.DonationPayment{}, false, err
 		}
+		payment.Subscription = &createdSubscription
 	}
 
 	payment.Status = domain.PaymentStatusConfirmed
-	payment.Donation = donation
-	payment.Subscription = subscription
 	payment.ConfirmedAt = &now
 	payment.UpdatedAt = now
 
 	if err := tx.Commit(); err != nil {
-		return domain.DonationPayment{}, err
+		return domain.DonationPayment{}, false, err
 	}
 
-	return payment, nil
+	return payment, true, nil
 }
+
+const selectPaymentForUpdateByIDQuery = `
+	SELECT
+		payment_id,
+		provider,
+		provider_payment_id,
+		status,
+		sender_user_id,
+		recipient_user_id,
+		amount_value,
+		currency,
+		message,
+		confirmation_token,
+		confirmation_url,
+		tier_id,
+		donation_id,
+		subscription_id,
+		created_at,
+		updated_at,
+		confirmed_at
+	FROM content_payment
+	WHERE payment_id = $1::bigint
+	FOR UPDATE
+`
+
+const selectPaymentForUpdateByProviderIDQuery = `
+	SELECT
+		payment_id,
+		provider,
+		provider_payment_id,
+		status,
+		sender_user_id,
+		recipient_user_id,
+		amount_value,
+		currency,
+		message,
+		confirmation_token,
+		confirmation_url,
+		tier_id,
+		donation_id,
+		subscription_id,
+		created_at,
+		updated_at,
+		confirmed_at
+	FROM content_payment
+	WHERE provider_payment_id = $1::text
+	FOR UPDATE
+`
 
 func (repository *Repository) GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error) {
 	const query = `

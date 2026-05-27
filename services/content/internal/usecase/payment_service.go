@@ -177,7 +177,8 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 	if command.PaymentID <= 0 {
 		return domain.DonationPayment{}, ErrInvalidPaymentID
 	}
-	if normalizeRequiredText(command.ConfirmationToken) == "" {
+	confirmationToken := normalizeRequiredText(command.ConfirmationToken)
+	if confirmationToken == "" {
 		return domain.DonationPayment{}, ErrInvalidPaymentConfirmationToken
 	}
 
@@ -185,10 +186,9 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 	if err != nil {
 		return domain.DonationPayment{}, err
 	}
-	if payment.ConfirmationToken != normalizeRequiredText(command.ConfirmationToken) {
+	if payment.ConfirmationToken != confirmationToken {
 		return domain.DonationPayment{}, domain.ErrPaymentTokenMismatch
 	}
-	wasPending := payment.Status != domain.PaymentStatusConfirmed
 	if payment.Status != domain.PaymentStatusConfirmed {
 		if service.paymentProvider == nil {
 			return domain.DonationPayment{}, ErrPaymentProviderUnavailable
@@ -205,11 +205,38 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 		}
 	}
 
-	payment, err = service.money.ConfirmDonationPayment(ctx, command.SenderUserID, command.PaymentID, normalizeRequiredText(command.ConfirmationToken))
+	payment, justConfirmed, err := service.money.ConfirmDonationPayment(ctx, command.SenderUserID, command.PaymentID, confirmationToken)
 	if err != nil {
 		return domain.DonationPayment{}, err
 	}
-	if wasPending && payment.Donation != nil {
+	if err := service.notifyPaymentConfirmed(ctx, payment, justConfirmed); err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	return payment, nil
+}
+
+func (service *Service) ConfirmPaymentFromProvider(ctx context.Context, providerPaymentID string) (domain.DonationPayment, error) {
+	if normalizeRequiredText(providerPaymentID) == "" {
+		return domain.DonationPayment{}, ErrInvalidProviderPaymentID
+	}
+
+	payment, justConfirmed, err := service.money.ConfirmPaymentByProviderID(ctx, providerPaymentID)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	if err := service.notifyPaymentConfirmed(ctx, payment, justConfirmed); err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	return payment, nil
+}
+
+func (service *Service) notifyPaymentConfirmed(ctx context.Context, payment domain.DonationPayment, justConfirmed bool) error {
+	if !justConfirmed {
+		return nil
+	}
+	if payment.Donation != nil {
 		if err := service.createNotification(ctx, domain.Notification{
 			UserID:      payment.Donation.RecipientUserID,
 			Type:        domain.NotificationTypeDonation,
@@ -218,16 +245,15 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 			Body:        fmt.Sprintf("Пользователь отправил вам донат на %d ₽", payment.Donation.AmountValue),
 			DonationID:  &payment.Donation.DonationID,
 		}); err != nil {
-			return domain.DonationPayment{}, err
+			return err
 		}
 	}
-	if wasPending && payment.Subscription != nil {
+	if payment.Subscription != nil {
 		if err := service.createSubscriptionNotifications(ctx, *payment.Subscription); err != nil {
-			return domain.DonationPayment{}, err
+			return err
 		}
 	}
-
-	return payment, nil
+	return nil
 }
 
 func (service *Service) ListReceivedDonations(ctx context.Context, query ListReceivedDonationsQuery) ([]domain.Donation, int32, error) {

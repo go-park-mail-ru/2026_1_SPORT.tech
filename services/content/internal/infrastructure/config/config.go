@@ -54,12 +54,13 @@ type StorageConfig struct {
 }
 
 type PaymentConfig struct {
-	Provider         string `yaml:"provider" env:"CONTENT_PAYMENT_PROVIDER" env-default:"stripe" validate:"required,oneof=stripe"`
-	StripeSecretKey  string `yaml:"stripe_secret_key" env:"STRIPE_SECRET_KEY"`
-	StripeReturnURL  string `yaml:"stripe_return_url" env:"STRIPE_RETURN_URL" env-default:"https://sporteon.ru/payment/success"`
-	StripeCancelURL  string `yaml:"stripe_cancel_url" env:"STRIPE_CANCEL_URL" env-default:"https://sporteon.ru/payment/cancel"`
-	StripeAPIBaseURL string `yaml:"stripe_api_base_url" env:"STRIPE_API_BASE_URL" env-default:"https://api.stripe.com/v1"`
-	HTTPTimeout      string `yaml:"http_timeout" env:"CONTENT_PAYMENT_HTTP_TIMEOUT" env-default:"5s" validate:"required"`
+	Provider            string `yaml:"provider" env:"CONTENT_PAYMENT_PROVIDER" env-default:"stripe" validate:"required,oneof=stripe"`
+	StripeSecretKey     string `yaml:"stripe_secret_key" env:"STRIPE_SECRET_KEY"`
+	StripeWebhookSecret string `yaml:"stripe_webhook_secret" env:"STRIPE_WEBHOOK_SECRET"`
+	StripeReturnURL     string `yaml:"stripe_return_url" env:"STRIPE_RETURN_URL" env-default:"https://sporteon.ru/payment/success"`
+	StripeCancelURL     string `yaml:"stripe_cancel_url" env:"STRIPE_CANCEL_URL" env-default:"https://sporteon.ru/payment/cancel"`
+	StripeAPIBaseURL    string `yaml:"stripe_api_base_url" env:"STRIPE_API_BASE_URL" env-default:"https://api.stripe.com/v1"`
+	HTTPTimeout         string `yaml:"http_timeout" env:"CONTENT_PAYMENT_HTTP_TIMEOUT" env-default:"5s" validate:"required"`
 }
 
 type OpenAPIConfig struct {
@@ -104,6 +105,9 @@ func (cfg PaymentConfig) Validate() error {
 		}
 		if cfg.StripeAPIBaseURL == "" {
 			return fmt.Errorf("stripe_api_base_url is required")
+		}
+		if cfg.StripeWebhookSecret == "" {
+			return fmt.Errorf("stripe_webhook_secret is required")
 		}
 	}
 	if _, err := parsePositiveDuration("payment_http_timeout", cfg.HTTPTimeout); err != nil {
