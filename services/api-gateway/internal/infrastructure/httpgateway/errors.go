@@ -1,18 +1,30 @@
 package httpgateway
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
-	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/mailru/easyjson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
+
+//easyjson:json
+type errorBody struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+//easyjson:json
+type errorEnvelope struct {
+	Error errorBody `json:"error"`
+}
 
 const (
 	httpMetadataStatusCodeKey  = "x-http-status-code"
@@ -122,10 +134,10 @@ func writePublicError(writer http.ResponseWriter, httpStatusCode int, code strin
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(httpStatusCode)
 
-	_ = json.NewEncoder(writer).Encode(&gatewayv1.ErrorResponse{
-		Error: &gatewayv1.Error{
+	_, _ = easyjson.MarshalToWriter(errorEnvelope{
+		Error: errorBody{
 			Code:    code,
 			Message: message,
 		},
-	})
+	}, writer)
 }

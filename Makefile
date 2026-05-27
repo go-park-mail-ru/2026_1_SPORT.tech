@@ -3,7 +3,6 @@ PROTO_GEN_GO_DIR := grpc/gen/go
 PROTO_GEN_OPENAPI_DIR := grpc/gen/openapiv2
 PROTO_SERVICE_DIRS := $(PROTO_DIR)/auth $(PROTO_DIR)/profile $(PROTO_DIR)/content $(PROTO_DIR)/gateway
 PROTO_FILES := $(shell find $(PROTO_SERVICE_DIRS) -name '*.proto' | sort)
-EASYJSON_FILES := services/content/internal/adapters/client/stripe/payment_provider.go
 COVER_PACKAGES := $(shell go list ./... | grep -E '/internal/(domain|usecase|adapters/mappers|infrastructure/httpgateway)$$' | grep -v '/grpc/gen/' | grep -v '/internal/mocks')
 GO_BIN := $(HOME)/go/bin
 COVERAGE_MIN ?= 60
@@ -26,7 +25,7 @@ proto:
 
 .PHONY: easyjson
 easyjson:
-	go run github.com/mailru/easyjson/easyjson $(EASYJSON_FILES)
+	go generate ./...
 
 .PHONY: test
 test:

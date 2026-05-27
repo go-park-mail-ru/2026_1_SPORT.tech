@@ -1,7 +1,8 @@
 package httpgateway
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
 	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
+	"github.com/mailru/easyjson"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -20,6 +22,7 @@ type SSEChatDeps struct {
 	ContentClient contentv1.ContentServiceClient
 }
 
+//easyjson:json
 type sseChatMessagePayload struct {
 	MessageID      int64  `json:"message_id"`
 	SenderUserID   int64  `json:"sender_user_id"`
@@ -29,6 +32,7 @@ type sseChatMessagePayload struct {
 	CreatedAt      string `json:"created_at"`
 }
 
+//easyjson:json
 type sseChatReadPayload struct {
 	MessageIDs []int64 `json:"message_ids"`
 }
@@ -140,7 +144,7 @@ func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 					}
 
 					if msg.GetMessageId() > lastMessageID {
-						data, err := json.Marshal(payload)
+						data, err := easyjson.Marshal(payload)
 						if err != nil {
 							continue
 						}
@@ -157,7 +161,7 @@ func SSEChatHandler(fallback http.Handler, deps SSEChatDeps) http.Handler {
 				}
 
 				if len(readMessageIDs) > 0 {
-					data, err := json.Marshal(sseChatReadPayload{MessageIDs: readMessageIDs})
+					data, err := easyjson.Marshal(sseChatReadPayload{MessageIDs: readMessageIDs})
 					if err == nil {
 						fmt.Fprintf(w, "event: read\ndata: %s\n\n", data)
 					}

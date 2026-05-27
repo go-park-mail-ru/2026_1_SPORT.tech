@@ -1,11 +1,13 @@
 package health
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"time"
 
+	"github.com/mailru/easyjson"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	grpcHealth "google.golang.org/grpc/health/grpc_health_v1"
@@ -16,6 +18,7 @@ type Dependency struct {
 	Endpoint string `json:"endpoint"`
 }
 
+//easyjson:json
 type dependencyStatus struct {
 	Name     string `json:"name"`
 	Endpoint string `json:"endpoint"`
@@ -23,6 +26,7 @@ type dependencyStatus struct {
 	Error    string `json:"error,omitempty"`
 }
 
+//easyjson:json
 type response struct {
 	Status       string             `json:"status"`
 	Service      string             `json:"service"`
@@ -103,6 +107,6 @@ func NewHandler(serviceName string, checker *GRPCChecker) http.Handler {
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(statusCode)
-		_ = json.NewEncoder(writer).Encode(payload)
+		_, _ = easyjson.MarshalToWriter(payload, writer)
 	})
 }

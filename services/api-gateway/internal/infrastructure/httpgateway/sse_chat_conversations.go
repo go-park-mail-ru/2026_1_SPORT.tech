@@ -1,8 +1,9 @@
 package httpgateway
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,15 +11,18 @@ import (
 
 	authv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1"
 	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
+	"github.com/mailru/easyjson"
 	"google.golang.org/grpc/metadata"
 )
 
+//easyjson:json
 type sseConversationPayload struct {
 	OtherUserID int64                  `json:"other_user_id"`
 	LastMessage *sseChatMessagePayload `json:"last_message"`
 	UnreadCount int32                  `json:"unread_count"`
 }
 
+//easyjson:json
 type sseConversationsSnapshot struct {
 	Conversations []sseConversationPayload `json:"conversations"`
 	UnreadTotal   int32                    `json:"unread_total"`
@@ -78,7 +82,7 @@ func SSEChatConversationsHandler(fallback http.Handler, deps SSEChatDeps) http.H
 			}
 			lastSignature = signature
 
-			data, err := json.Marshal(snapshot)
+			data, err := easyjson.Marshal(snapshot)
 			if err != nil {
 				return true
 			}

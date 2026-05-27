@@ -1,5 +1,7 @@
 package stripe
 
+//go:generate go run github.com/mailru/easyjson/easyjson $GOFILE
+
 import (
 	"bytes"
 	"context"

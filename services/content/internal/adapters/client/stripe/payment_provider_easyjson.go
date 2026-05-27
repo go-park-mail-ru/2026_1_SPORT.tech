@@ -9,6 +9,7 @@ import (
 	jwriter "github.com/mailru/easyjson/jwriter"
 )
 
+// suppress unused package warning
 var (
 	_ *json.RawMessage
 	_ *jlexer.Lexer
@@ -91,22 +92,26 @@ func easyjson8b11588aEncodeGithubComGoParkMailRu20261SPORTTechServicesContentInt
 	out.RawByte('}')
 }
 
+// MarshalJSON supports json.Marshaler interface
 func (v checkoutSessionResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjson8b11588aEncodeGithubComGoParkMailRu20261SPORTTechServicesContentInternalAdaptersClientStripe(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
+// MarshalEasyJSON supports easyjson.Marshaler interface
 func (v checkoutSessionResponse) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjson8b11588aEncodeGithubComGoParkMailRu20261SPORTTechServicesContentInternalAdaptersClientStripe(w, v)
 }
 
+// UnmarshalJSON supports json.Unmarshaler interface
 func (v *checkoutSessionResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjson8b11588aDecodeGithubComGoParkMailRu20261SPORTTechServicesContentInternalAdaptersClientStripe(&r, v)
 	return r.Error()
 }
 
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *checkoutSessionResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson8b11588aDecodeGithubComGoParkMailRu20261SPORTTechServicesContentInternalAdaptersClientStripe(l, v)
 }
