@@ -159,6 +159,17 @@ service ContentService {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
 
+  rpc UpdateComment(UpdateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      patch: "/v1/comments/{comment_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/comments/{comment_id}";
+  }
+
   rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/likes";
   }
@@ -170,6 +181,17 @@ service ContentService {
   rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
     option (google.api.http) = {
       patch: "/v1/users/{user_id}/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+
+  rpc GetNotificationPreferences(GetNotificationPreferencesRequest) returns (NotificationPreferencesResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/notification-preferences";
+  }
+
+  rpc UpdateNotificationPreferences(UpdateNotificationPreferencesRequest) returns (NotificationPreferencesResponse) {
+    option (google.api.http) = {
+      put: "/v1/users/{user_id}/notification-preferences"
       body: "*"
     };
   }
@@ -601,6 +623,17 @@ message CreateCommentRequest {
   string body = 4;
 }
 
+message UpdateCommentRequest {
+  int64 comment_id = 1;
+  int64 author_user_id = 2;
+  string body = 3;
+}
+
+message DeleteCommentRequest {
+  int64 comment_id = 1;
+  int64 author_user_id = 2;
+}
+
 message CommentResponse {
   Comment comment = 1;
 }
@@ -626,6 +659,29 @@ message ListNotificationsRequest {
 message MarkNotificationReadRequest {
   int64 user_id = 1;
   int64 notification_id = 2;
+}
+
+message NotificationPreferences {
+  bool comments = 1;
+  bool likes = 2;
+  bool donations = 3;
+  bool posts = 4;
+  bool subscriptions = 5;
+  bool meetings = 6;
+  bool email_digest = 7;
+}
+
+message GetNotificationPreferencesRequest {
+  int64 user_id = 1;
+}
+
+message UpdateNotificationPreferencesRequest {
+  int64 user_id = 1;
+  NotificationPreferences preferences = 2;
+}
+
+message NotificationPreferencesResponse {
+  NotificationPreferences preferences = 1;
 }
 
 message NotificationResponse {

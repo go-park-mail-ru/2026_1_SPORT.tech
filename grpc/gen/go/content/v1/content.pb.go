@@ -3775,6 +3775,118 @@ func (x *CreateCommentRequest) GetBody() string {
 	return ""
 }
 
+type UpdateCommentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CommentId     int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	AuthorUserId  int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	Body          string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCommentRequest) Reset() {
+	*x = UpdateCommentRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCommentRequest) ProtoMessage() {}
+
+func (x *UpdateCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCommentRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCommentRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *UpdateCommentRequest) GetCommentId() int64 {
+	if x != nil {
+		return x.CommentId
+	}
+	return 0
+}
+
+func (x *UpdateCommentRequest) GetAuthorUserId() int64 {
+	if x != nil {
+		return x.AuthorUserId
+	}
+	return 0
+}
+
+func (x *UpdateCommentRequest) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+type DeleteCommentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CommentId     int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	AuthorUserId  int64                  `protobuf:"varint,2,opt,name=author_user_id,json=authorUserId,proto3" json:"author_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCommentRequest) Reset() {
+	*x = DeleteCommentRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCommentRequest) ProtoMessage() {}
+
+func (x *DeleteCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCommentRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCommentRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *DeleteCommentRequest) GetCommentId() int64 {
+	if x != nil {
+		return x.CommentId
+	}
+	return 0
+}
+
+func (x *DeleteCommentRequest) GetAuthorUserId() int64 {
+	if x != nil {
+		return x.AuthorUserId
+	}
+	return 0
+}
+
 type CommentResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Comment       *Comment               `protobuf:"bytes,1,opt,name=comment,proto3" json:"comment,omitempty"`
@@ -3784,7 +3896,7 @@ type CommentResponse struct {
 
 func (x *CommentResponse) Reset() {
 	*x = CommentResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[52]
+	mi := &file_content_v1_content_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3796,7 +3908,7 @@ func (x *CommentResponse) String() string {
 func (*CommentResponse) ProtoMessage() {}
 
 func (x *CommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[52]
+	mi := &file_content_v1_content_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3809,7 +3921,7 @@ func (x *CommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommentResponse.ProtoReflect.Descriptor instead.
 func (*CommentResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{52}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *CommentResponse) GetComment() *Comment {
@@ -3832,7 +3944,7 @@ type ListCommentsRequest struct {
 
 func (x *ListCommentsRequest) Reset() {
 	*x = ListCommentsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[53]
+	mi := &file_content_v1_content_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3844,7 +3956,7 @@ func (x *ListCommentsRequest) String() string {
 func (*ListCommentsRequest) ProtoMessage() {}
 
 func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[53]
+	mi := &file_content_v1_content_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3857,7 +3969,7 @@ func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{53}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *ListCommentsRequest) GetPostId() int64 {
@@ -3904,7 +4016,7 @@ type ListCommentsResponse struct {
 
 func (x *ListCommentsResponse) Reset() {
 	*x = ListCommentsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[54]
+	mi := &file_content_v1_content_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3916,7 +4028,7 @@ func (x *ListCommentsResponse) String() string {
 func (*ListCommentsResponse) ProtoMessage() {}
 
 func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[54]
+	mi := &file_content_v1_content_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3929,7 +4041,7 @@ func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{54}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *ListCommentsResponse) GetComments() []*Comment {
@@ -3950,7 +4062,7 @@ type ListNotificationsRequest struct {
 
 func (x *ListNotificationsRequest) Reset() {
 	*x = ListNotificationsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[55]
+	mi := &file_content_v1_content_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3962,7 +4074,7 @@ func (x *ListNotificationsRequest) String() string {
 func (*ListNotificationsRequest) ProtoMessage() {}
 
 func (x *ListNotificationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[55]
+	mi := &file_content_v1_content_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3975,7 +4087,7 @@ func (x *ListNotificationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNotificationsRequest.ProtoReflect.Descriptor instead.
 func (*ListNotificationsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{55}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListNotificationsRequest) GetUserId() int64 {
@@ -4009,7 +4121,7 @@ type MarkNotificationReadRequest struct {
 
 func (x *MarkNotificationReadRequest) Reset() {
 	*x = MarkNotificationReadRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[56]
+	mi := &file_content_v1_content_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4021,7 +4133,7 @@ func (x *MarkNotificationReadRequest) String() string {
 func (*MarkNotificationReadRequest) ProtoMessage() {}
 
 func (x *MarkNotificationReadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[56]
+	mi := &file_content_v1_content_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4034,7 +4146,7 @@ func (x *MarkNotificationReadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkNotificationReadRequest.ProtoReflect.Descriptor instead.
 func (*MarkNotificationReadRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{56}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *MarkNotificationReadRequest) GetUserId() int64 {
@@ -4051,6 +4163,238 @@ func (x *MarkNotificationReadRequest) GetNotificationId() int64 {
 	return 0
 }
 
+type NotificationPreferences struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Comments      bool                   `protobuf:"varint,1,opt,name=comments,proto3" json:"comments,omitempty"`
+	Likes         bool                   `protobuf:"varint,2,opt,name=likes,proto3" json:"likes,omitempty"`
+	Donations     bool                   `protobuf:"varint,3,opt,name=donations,proto3" json:"donations,omitempty"`
+	Posts         bool                   `protobuf:"varint,4,opt,name=posts,proto3" json:"posts,omitempty"`
+	Subscriptions bool                   `protobuf:"varint,5,opt,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	Meetings      bool                   `protobuf:"varint,6,opt,name=meetings,proto3" json:"meetings,omitempty"`
+	EmailDigest   bool                   `protobuf:"varint,7,opt,name=email_digest,json=emailDigest,proto3" json:"email_digest,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NotificationPreferences) Reset() {
+	*x = NotificationPreferences{}
+	mi := &file_content_v1_content_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationPreferences) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationPreferences) ProtoMessage() {}
+
+func (x *NotificationPreferences) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotificationPreferences.ProtoReflect.Descriptor instead.
+func (*NotificationPreferences) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *NotificationPreferences) GetComments() bool {
+	if x != nil {
+		return x.Comments
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetLikes() bool {
+	if x != nil {
+		return x.Likes
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetDonations() bool {
+	if x != nil {
+		return x.Donations
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetPosts() bool {
+	if x != nil {
+		return x.Posts
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetSubscriptions() bool {
+	if x != nil {
+		return x.Subscriptions
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetMeetings() bool {
+	if x != nil {
+		return x.Meetings
+	}
+	return false
+}
+
+func (x *NotificationPreferences) GetEmailDigest() bool {
+	if x != nil {
+		return x.EmailDigest
+	}
+	return false
+}
+
+type GetNotificationPreferencesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetNotificationPreferencesRequest) Reset() {
+	*x = GetNotificationPreferencesRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetNotificationPreferencesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetNotificationPreferencesRequest) ProtoMessage() {}
+
+func (x *GetNotificationPreferencesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetNotificationPreferencesRequest.ProtoReflect.Descriptor instead.
+func (*GetNotificationPreferencesRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *GetNotificationPreferencesRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type UpdateNotificationPreferencesRequest struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	UserId        int64                    `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Preferences   *NotificationPreferences `protobuf:"bytes,2,opt,name=preferences,proto3" json:"preferences,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateNotificationPreferencesRequest) Reset() {
+	*x = UpdateNotificationPreferencesRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateNotificationPreferencesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateNotificationPreferencesRequest) ProtoMessage() {}
+
+func (x *UpdateNotificationPreferencesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateNotificationPreferencesRequest.ProtoReflect.Descriptor instead.
+func (*UpdateNotificationPreferencesRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *UpdateNotificationPreferencesRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UpdateNotificationPreferencesRequest) GetPreferences() *NotificationPreferences {
+	if x != nil {
+		return x.Preferences
+	}
+	return nil
+}
+
+type NotificationPreferencesResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Preferences   *NotificationPreferences `protobuf:"bytes,1,opt,name=preferences,proto3" json:"preferences,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NotificationPreferencesResponse) Reset() {
+	*x = NotificationPreferencesResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationPreferencesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationPreferencesResponse) ProtoMessage() {}
+
+func (x *NotificationPreferencesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotificationPreferencesResponse.ProtoReflect.Descriptor instead.
+func (*NotificationPreferencesResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *NotificationPreferencesResponse) GetPreferences() *NotificationPreferences {
+	if x != nil {
+		return x.Preferences
+	}
+	return nil
+}
+
 type NotificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Notification  *Notification          `protobuf:"bytes,1,opt,name=notification,proto3" json:"notification,omitempty"`
@@ -4060,7 +4404,7 @@ type NotificationResponse struct {
 
 func (x *NotificationResponse) Reset() {
 	*x = NotificationResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[57]
+	mi := &file_content_v1_content_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4072,7 +4416,7 @@ func (x *NotificationResponse) String() string {
 func (*NotificationResponse) ProtoMessage() {}
 
 func (x *NotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[57]
+	mi := &file_content_v1_content_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4085,7 +4429,7 @@ func (x *NotificationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationResponse.ProtoReflect.Descriptor instead.
 func (*NotificationResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{57}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *NotificationResponse) GetNotification() *Notification {
@@ -4104,7 +4448,7 @@ type ListNotificationsResponse struct {
 
 func (x *ListNotificationsResponse) Reset() {
 	*x = ListNotificationsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[58]
+	mi := &file_content_v1_content_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4116,7 +4460,7 @@ func (x *ListNotificationsResponse) String() string {
 func (*ListNotificationsResponse) ProtoMessage() {}
 
 func (x *ListNotificationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[58]
+	mi := &file_content_v1_content_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4129,7 +4473,7 @@ func (x *ListNotificationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNotificationsResponse.ProtoReflect.Descriptor instead.
 func (*ListNotificationsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{58}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListNotificationsResponse) GetNotifications() []*Notification {
@@ -4153,7 +4497,7 @@ type ChatMessage struct {
 
 func (x *ChatMessage) Reset() {
 	*x = ChatMessage{}
-	mi := &file_content_v1_content_proto_msgTypes[59]
+	mi := &file_content_v1_content_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4165,7 +4509,7 @@ func (x *ChatMessage) String() string {
 func (*ChatMessage) ProtoMessage() {}
 
 func (x *ChatMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[59]
+	mi := &file_content_v1_content_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4178,7 +4522,7 @@ func (x *ChatMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChatMessage.ProtoReflect.Descriptor instead.
 func (*ChatMessage) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{59}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ChatMessage) GetMessageId() int64 {
@@ -4234,7 +4578,7 @@ type ChatConversation struct {
 
 func (x *ChatConversation) Reset() {
 	*x = ChatConversation{}
-	mi := &file_content_v1_content_proto_msgTypes[60]
+	mi := &file_content_v1_content_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4246,7 +4590,7 @@ func (x *ChatConversation) String() string {
 func (*ChatConversation) ProtoMessage() {}
 
 func (x *ChatConversation) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[60]
+	mi := &file_content_v1_content_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4259,7 +4603,7 @@ func (x *ChatConversation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChatConversation.ProtoReflect.Descriptor instead.
 func (*ChatConversation) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{60}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *ChatConversation) GetOtherUserId() int64 {
@@ -4294,7 +4638,7 @@ type SendChatMessageRequest struct {
 
 func (x *SendChatMessageRequest) Reset() {
 	*x = SendChatMessageRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[61]
+	mi := &file_content_v1_content_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4306,7 +4650,7 @@ func (x *SendChatMessageRequest) String() string {
 func (*SendChatMessageRequest) ProtoMessage() {}
 
 func (x *SendChatMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[61]
+	mi := &file_content_v1_content_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4319,7 +4663,7 @@ func (x *SendChatMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendChatMessageRequest.ProtoReflect.Descriptor instead.
 func (*SendChatMessageRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{61}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *SendChatMessageRequest) GetSenderUserId() int64 {
@@ -4355,7 +4699,7 @@ type ListChatMessagesRequest struct {
 
 func (x *ListChatMessagesRequest) Reset() {
 	*x = ListChatMessagesRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[62]
+	mi := &file_content_v1_content_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4367,7 +4711,7 @@ func (x *ListChatMessagesRequest) String() string {
 func (*ListChatMessagesRequest) ProtoMessage() {}
 
 func (x *ListChatMessagesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[62]
+	mi := &file_content_v1_content_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4380,7 +4724,7 @@ func (x *ListChatMessagesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChatMessagesRequest.ProtoReflect.Descriptor instead.
 func (*ListChatMessagesRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{62}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ListChatMessagesRequest) GetUserId() int64 {
@@ -4420,7 +4764,7 @@ type ListChatMessagesResponse struct {
 
 func (x *ListChatMessagesResponse) Reset() {
 	*x = ListChatMessagesResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[63]
+	mi := &file_content_v1_content_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4432,7 +4776,7 @@ func (x *ListChatMessagesResponse) String() string {
 func (*ListChatMessagesResponse) ProtoMessage() {}
 
 func (x *ListChatMessagesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[63]
+	mi := &file_content_v1_content_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4445,7 +4789,7 @@ func (x *ListChatMessagesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChatMessagesResponse.ProtoReflect.Descriptor instead.
 func (*ListChatMessagesResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{63}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *ListChatMessagesResponse) GetMessages() []*ChatMessage {
@@ -4464,7 +4808,7 @@ type ListChatConversationsRequest struct {
 
 func (x *ListChatConversationsRequest) Reset() {
 	*x = ListChatConversationsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[64]
+	mi := &file_content_v1_content_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4476,7 +4820,7 @@ func (x *ListChatConversationsRequest) String() string {
 func (*ListChatConversationsRequest) ProtoMessage() {}
 
 func (x *ListChatConversationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[64]
+	mi := &file_content_v1_content_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4489,7 +4833,7 @@ func (x *ListChatConversationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChatConversationsRequest.ProtoReflect.Descriptor instead.
 func (*ListChatConversationsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{64}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *ListChatConversationsRequest) GetUserId() int64 {
@@ -4508,7 +4852,7 @@ type ListChatConversationsResponse struct {
 
 func (x *ListChatConversationsResponse) Reset() {
 	*x = ListChatConversationsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[65]
+	mi := &file_content_v1_content_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4520,7 +4864,7 @@ func (x *ListChatConversationsResponse) String() string {
 func (*ListChatConversationsResponse) ProtoMessage() {}
 
 func (x *ListChatConversationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[65]
+	mi := &file_content_v1_content_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4533,7 +4877,7 @@ func (x *ListChatConversationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChatConversationsResponse.ProtoReflect.Descriptor instead.
 func (*ListChatConversationsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{65}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *ListChatConversationsResponse) GetConversations() []*ChatConversation {
@@ -4553,7 +4897,7 @@ type MarkChatMessageReadRequest struct {
 
 func (x *MarkChatMessageReadRequest) Reset() {
 	*x = MarkChatMessageReadRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[66]
+	mi := &file_content_v1_content_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4565,7 +4909,7 @@ func (x *MarkChatMessageReadRequest) String() string {
 func (*MarkChatMessageReadRequest) ProtoMessage() {}
 
 func (x *MarkChatMessageReadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[66]
+	mi := &file_content_v1_content_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4578,7 +4922,7 @@ func (x *MarkChatMessageReadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkChatMessageReadRequest.ProtoReflect.Descriptor instead.
 func (*MarkChatMessageReadRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{66}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *MarkChatMessageReadRequest) GetUserId() int64 {
@@ -4608,7 +4952,7 @@ type MeetingAvailabilityRule struct {
 
 func (x *MeetingAvailabilityRule) Reset() {
 	*x = MeetingAvailabilityRule{}
-	mi := &file_content_v1_content_proto_msgTypes[67]
+	mi := &file_content_v1_content_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4620,7 +4964,7 @@ func (x *MeetingAvailabilityRule) String() string {
 func (*MeetingAvailabilityRule) ProtoMessage() {}
 
 func (x *MeetingAvailabilityRule) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[67]
+	mi := &file_content_v1_content_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4633,7 +4977,7 @@ func (x *MeetingAvailabilityRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeetingAvailabilityRule.ProtoReflect.Descriptor instead.
 func (*MeetingAvailabilityRule) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{67}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *MeetingAvailabilityRule) GetRuleId() int64 {
@@ -4683,7 +5027,7 @@ type MeetingSlot struct {
 
 func (x *MeetingSlot) Reset() {
 	*x = MeetingSlot{}
-	mi := &file_content_v1_content_proto_msgTypes[68]
+	mi := &file_content_v1_content_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4695,7 +5039,7 @@ func (x *MeetingSlot) String() string {
 func (*MeetingSlot) ProtoMessage() {}
 
 func (x *MeetingSlot) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[68]
+	mi := &file_content_v1_content_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4708,7 +5052,7 @@ func (x *MeetingSlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeetingSlot.ProtoReflect.Descriptor instead.
 func (*MeetingSlot) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{68}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *MeetingSlot) GetSlotId() int64 {
@@ -4749,7 +5093,7 @@ type MeetingAvailabilitySlot struct {
 
 func (x *MeetingAvailabilitySlot) Reset() {
 	*x = MeetingAvailabilitySlot{}
-	mi := &file_content_v1_content_proto_msgTypes[69]
+	mi := &file_content_v1_content_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4761,7 +5105,7 @@ func (x *MeetingAvailabilitySlot) String() string {
 func (*MeetingAvailabilitySlot) ProtoMessage() {}
 
 func (x *MeetingAvailabilitySlot) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[69]
+	mi := &file_content_v1_content_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4774,7 +5118,7 @@ func (x *MeetingAvailabilitySlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeetingAvailabilitySlot.ProtoReflect.Descriptor instead.
 func (*MeetingAvailabilitySlot) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{69}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *MeetingAvailabilitySlot) GetStartsAt() *timestamppb.Timestamp {
@@ -4808,7 +5152,7 @@ type MeetingBooking struct {
 
 func (x *MeetingBooking) Reset() {
 	*x = MeetingBooking{}
-	mi := &file_content_v1_content_proto_msgTypes[70]
+	mi := &file_content_v1_content_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4820,7 +5164,7 @@ func (x *MeetingBooking) String() string {
 func (*MeetingBooking) ProtoMessage() {}
 
 func (x *MeetingBooking) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[70]
+	mi := &file_content_v1_content_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4833,7 +5177,7 @@ func (x *MeetingBooking) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeetingBooking.ProtoReflect.Descriptor instead.
 func (*MeetingBooking) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{70}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *MeetingBooking) GetBookingId() int64 {
@@ -4910,7 +5254,7 @@ type CreateMeetingAvailabilityRuleRequest struct {
 
 func (x *CreateMeetingAvailabilityRuleRequest) Reset() {
 	*x = CreateMeetingAvailabilityRuleRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[71]
+	mi := &file_content_v1_content_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4922,7 +5266,7 @@ func (x *CreateMeetingAvailabilityRuleRequest) String() string {
 func (*CreateMeetingAvailabilityRuleRequest) ProtoMessage() {}
 
 func (x *CreateMeetingAvailabilityRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[71]
+	mi := &file_content_v1_content_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4935,7 +5279,7 @@ func (x *CreateMeetingAvailabilityRuleRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use CreateMeetingAvailabilityRuleRequest.ProtoReflect.Descriptor instead.
 func (*CreateMeetingAvailabilityRuleRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{71}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *CreateMeetingAvailabilityRuleRequest) GetTrainerUserId() int64 {
@@ -4968,7 +5312,7 @@ type ListMeetingAvailabilityRulesRequest struct {
 
 func (x *ListMeetingAvailabilityRulesRequest) Reset() {
 	*x = ListMeetingAvailabilityRulesRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[72]
+	mi := &file_content_v1_content_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4980,7 +5324,7 @@ func (x *ListMeetingAvailabilityRulesRequest) String() string {
 func (*ListMeetingAvailabilityRulesRequest) ProtoMessage() {}
 
 func (x *ListMeetingAvailabilityRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[72]
+	mi := &file_content_v1_content_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4993,7 +5337,7 @@ func (x *ListMeetingAvailabilityRulesRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ListMeetingAvailabilityRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListMeetingAvailabilityRulesRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{72}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *ListMeetingAvailabilityRulesRequest) GetTrainerUserId() int64 {
@@ -5012,7 +5356,7 @@ type ListMeetingAvailabilityRulesResponse struct {
 
 func (x *ListMeetingAvailabilityRulesResponse) Reset() {
 	*x = ListMeetingAvailabilityRulesResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[73]
+	mi := &file_content_v1_content_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5024,7 +5368,7 @@ func (x *ListMeetingAvailabilityRulesResponse) String() string {
 func (*ListMeetingAvailabilityRulesResponse) ProtoMessage() {}
 
 func (x *ListMeetingAvailabilityRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[73]
+	mi := &file_content_v1_content_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5037,7 +5381,7 @@ func (x *ListMeetingAvailabilityRulesResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ListMeetingAvailabilityRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListMeetingAvailabilityRulesResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{73}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *ListMeetingAvailabilityRulesResponse) GetRules() []*MeetingAvailabilityRule {
@@ -5057,7 +5401,7 @@ type DeleteMeetingAvailabilityRuleRequest struct {
 
 func (x *DeleteMeetingAvailabilityRuleRequest) Reset() {
 	*x = DeleteMeetingAvailabilityRuleRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[74]
+	mi := &file_content_v1_content_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5069,7 +5413,7 @@ func (x *DeleteMeetingAvailabilityRuleRequest) String() string {
 func (*DeleteMeetingAvailabilityRuleRequest) ProtoMessage() {}
 
 func (x *DeleteMeetingAvailabilityRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[74]
+	mi := &file_content_v1_content_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5082,7 +5426,7 @@ func (x *DeleteMeetingAvailabilityRuleRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DeleteMeetingAvailabilityRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMeetingAvailabilityRuleRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{74}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *DeleteMeetingAvailabilityRuleRequest) GetTrainerUserId() int64 {
@@ -5109,7 +5453,7 @@ type CreateMeetingSlotRequest struct {
 
 func (x *CreateMeetingSlotRequest) Reset() {
 	*x = CreateMeetingSlotRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[75]
+	mi := &file_content_v1_content_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5121,7 +5465,7 @@ func (x *CreateMeetingSlotRequest) String() string {
 func (*CreateMeetingSlotRequest) ProtoMessage() {}
 
 func (x *CreateMeetingSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[75]
+	mi := &file_content_v1_content_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5134,7 +5478,7 @@ func (x *CreateMeetingSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMeetingSlotRequest.ProtoReflect.Descriptor instead.
 func (*CreateMeetingSlotRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{75}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *CreateMeetingSlotRequest) GetTrainerUserId() int64 {
@@ -5161,7 +5505,7 @@ type DeleteMeetingSlotRequest struct {
 
 func (x *DeleteMeetingSlotRequest) Reset() {
 	*x = DeleteMeetingSlotRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[76]
+	mi := &file_content_v1_content_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5173,7 +5517,7 @@ func (x *DeleteMeetingSlotRequest) String() string {
 func (*DeleteMeetingSlotRequest) ProtoMessage() {}
 
 func (x *DeleteMeetingSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[76]
+	mi := &file_content_v1_content_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5186,7 +5530,7 @@ func (x *DeleteMeetingSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMeetingSlotRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMeetingSlotRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{76}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *DeleteMeetingSlotRequest) GetTrainerUserId() int64 {
@@ -5212,7 +5556,7 @@ type ListMeetingSlotsRequest struct {
 
 func (x *ListMeetingSlotsRequest) Reset() {
 	*x = ListMeetingSlotsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[77]
+	mi := &file_content_v1_content_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5224,7 +5568,7 @@ func (x *ListMeetingSlotsRequest) String() string {
 func (*ListMeetingSlotsRequest) ProtoMessage() {}
 
 func (x *ListMeetingSlotsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[77]
+	mi := &file_content_v1_content_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5237,7 +5581,7 @@ func (x *ListMeetingSlotsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeetingSlotsRequest.ProtoReflect.Descriptor instead.
 func (*ListMeetingSlotsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{77}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *ListMeetingSlotsRequest) GetTrainerUserId() int64 {
@@ -5256,7 +5600,7 @@ type ListMeetingSlotsResponse struct {
 
 func (x *ListMeetingSlotsResponse) Reset() {
 	*x = ListMeetingSlotsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[78]
+	mi := &file_content_v1_content_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5268,7 +5612,7 @@ func (x *ListMeetingSlotsResponse) String() string {
 func (*ListMeetingSlotsResponse) ProtoMessage() {}
 
 func (x *ListMeetingSlotsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[78]
+	mi := &file_content_v1_content_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5281,7 +5625,7 @@ func (x *ListMeetingSlotsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeetingSlotsResponse.ProtoReflect.Descriptor instead.
 func (*ListMeetingSlotsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{78}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *ListMeetingSlotsResponse) GetSlots() []*MeetingSlot {
@@ -5303,7 +5647,7 @@ type ListTrainerMeetingAvailabilityRequest struct {
 
 func (x *ListTrainerMeetingAvailabilityRequest) Reset() {
 	*x = ListTrainerMeetingAvailabilityRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[79]
+	mi := &file_content_v1_content_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5315,7 +5659,7 @@ func (x *ListTrainerMeetingAvailabilityRequest) String() string {
 func (*ListTrainerMeetingAvailabilityRequest) ProtoMessage() {}
 
 func (x *ListTrainerMeetingAvailabilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[79]
+	mi := &file_content_v1_content_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5328,7 +5672,7 @@ func (x *ListTrainerMeetingAvailabilityRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use ListTrainerMeetingAvailabilityRequest.ProtoReflect.Descriptor instead.
 func (*ListTrainerMeetingAvailabilityRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{79}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *ListTrainerMeetingAvailabilityRequest) GetTrainerUserId() int64 {
@@ -5368,7 +5712,7 @@ type ListTrainerMeetingAvailabilityResponse struct {
 
 func (x *ListTrainerMeetingAvailabilityResponse) Reset() {
 	*x = ListTrainerMeetingAvailabilityResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[80]
+	mi := &file_content_v1_content_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5380,7 +5724,7 @@ func (x *ListTrainerMeetingAvailabilityResponse) String() string {
 func (*ListTrainerMeetingAvailabilityResponse) ProtoMessage() {}
 
 func (x *ListTrainerMeetingAvailabilityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[80]
+	mi := &file_content_v1_content_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5393,7 +5737,7 @@ func (x *ListTrainerMeetingAvailabilityResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use ListTrainerMeetingAvailabilityResponse.ProtoReflect.Descriptor instead.
 func (*ListTrainerMeetingAvailabilityResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{80}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *ListTrainerMeetingAvailabilityResponse) GetSlots() []*MeetingAvailabilitySlot {
@@ -5414,7 +5758,7 @@ type BookMeetingRequest struct {
 
 func (x *BookMeetingRequest) Reset() {
 	*x = BookMeetingRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[81]
+	mi := &file_content_v1_content_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5426,7 +5770,7 @@ func (x *BookMeetingRequest) String() string {
 func (*BookMeetingRequest) ProtoMessage() {}
 
 func (x *BookMeetingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[81]
+	mi := &file_content_v1_content_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5439,7 +5783,7 @@ func (x *BookMeetingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BookMeetingRequest.ProtoReflect.Descriptor instead.
 func (*BookMeetingRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{81}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *BookMeetingRequest) GetClientUserId() int64 {
@@ -5476,7 +5820,7 @@ type AssignMeetingRequest struct {
 
 func (x *AssignMeetingRequest) Reset() {
 	*x = AssignMeetingRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[82]
+	mi := &file_content_v1_content_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5488,7 +5832,7 @@ func (x *AssignMeetingRequest) String() string {
 func (*AssignMeetingRequest) ProtoMessage() {}
 
 func (x *AssignMeetingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[82]
+	mi := &file_content_v1_content_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5501,7 +5845,7 @@ func (x *AssignMeetingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignMeetingRequest.ProtoReflect.Descriptor instead.
 func (*AssignMeetingRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{82}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *AssignMeetingRequest) GetTrainerUserId() int64 {
@@ -5549,7 +5893,7 @@ type CancelMeetingRequest struct {
 
 func (x *CancelMeetingRequest) Reset() {
 	*x = CancelMeetingRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[83]
+	mi := &file_content_v1_content_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5561,7 +5905,7 @@ func (x *CancelMeetingRequest) String() string {
 func (*CancelMeetingRequest) ProtoMessage() {}
 
 func (x *CancelMeetingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[83]
+	mi := &file_content_v1_content_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5574,7 +5918,7 @@ func (x *CancelMeetingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelMeetingRequest.ProtoReflect.Descriptor instead.
 func (*CancelMeetingRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{83}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *CancelMeetingRequest) GetUserId() int64 {
@@ -5600,7 +5944,7 @@ type ListMeetingsRequest struct {
 
 func (x *ListMeetingsRequest) Reset() {
 	*x = ListMeetingsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[84]
+	mi := &file_content_v1_content_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5612,7 +5956,7 @@ func (x *ListMeetingsRequest) String() string {
 func (*ListMeetingsRequest) ProtoMessage() {}
 
 func (x *ListMeetingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[84]
+	mi := &file_content_v1_content_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5625,7 +5969,7 @@ func (x *ListMeetingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeetingsRequest.ProtoReflect.Descriptor instead.
 func (*ListMeetingsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{84}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *ListMeetingsRequest) GetUserId() int64 {
@@ -5644,7 +5988,7 @@ type ListMeetingsResponse struct {
 
 func (x *ListMeetingsResponse) Reset() {
 	*x = ListMeetingsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[85]
+	mi := &file_content_v1_content_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5656,7 +6000,7 @@ func (x *ListMeetingsResponse) String() string {
 func (*ListMeetingsResponse) ProtoMessage() {}
 
 func (x *ListMeetingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[85]
+	mi := &file_content_v1_content_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5669,7 +6013,7 @@ func (x *ListMeetingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMeetingsResponse.ProtoReflect.Descriptor instead.
 func (*ListMeetingsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{85}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *ListMeetingsResponse) GetBookings() []*MeetingBooking {
@@ -5693,7 +6037,7 @@ type DonationRecord struct {
 
 func (x *DonationRecord) Reset() {
 	*x = DonationRecord{}
-	mi := &file_content_v1_content_proto_msgTypes[86]
+	mi := &file_content_v1_content_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5705,7 +6049,7 @@ func (x *DonationRecord) String() string {
 func (*DonationRecord) ProtoMessage() {}
 
 func (x *DonationRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[86]
+	mi := &file_content_v1_content_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5718,7 +6062,7 @@ func (x *DonationRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DonationRecord.ProtoReflect.Descriptor instead.
 func (*DonationRecord) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{86}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *DonationRecord) GetDonationId() int64 {
@@ -5774,7 +6118,7 @@ type ListReceivedDonationsRequest struct {
 
 func (x *ListReceivedDonationsRequest) Reset() {
 	*x = ListReceivedDonationsRequest{}
-	mi := &file_content_v1_content_proto_msgTypes[87]
+	mi := &file_content_v1_content_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5786,7 +6130,7 @@ func (x *ListReceivedDonationsRequest) String() string {
 func (*ListReceivedDonationsRequest) ProtoMessage() {}
 
 func (x *ListReceivedDonationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[87]
+	mi := &file_content_v1_content_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5799,7 +6143,7 @@ func (x *ListReceivedDonationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReceivedDonationsRequest.ProtoReflect.Descriptor instead.
 func (*ListReceivedDonationsRequest) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{87}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *ListReceivedDonationsRequest) GetTrainerUserId() int64 {
@@ -5833,7 +6177,7 @@ type ListReceivedDonationsResponse struct {
 
 func (x *ListReceivedDonationsResponse) Reset() {
 	*x = ListReceivedDonationsResponse{}
-	mi := &file_content_v1_content_proto_msgTypes[88]
+	mi := &file_content_v1_content_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5845,7 +6189,7 @@ func (x *ListReceivedDonationsResponse) String() string {
 func (*ListReceivedDonationsResponse) ProtoMessage() {}
 
 func (x *ListReceivedDonationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_content_v1_content_proto_msgTypes[88]
+	mi := &file_content_v1_content_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5858,7 +6202,7 @@ func (x *ListReceivedDonationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReceivedDonationsResponse.ProtoReflect.Descriptor instead.
 func (*ListReceivedDonationsResponse) Descriptor() ([]byte, []int) {
-	return file_content_v1_content_proto_rawDescGZIP(), []int{88}
+	return file_content_v1_content_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *ListReceivedDonationsResponse) GetDonations() []*DonationRecord {
@@ -6247,7 +6591,16 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01\x12\x12\n" +
 	"\x04body\x18\x04 \x01(\tR\x04bodyB\x1c\n" +
-	"\x1a_viewer_subscription_level\"J\n" +
+	"\x1a_viewer_subscription_level\"o\n" +
+	"\x14UpdateCommentRequest\x12\x1d\n" +
+	"\n" +
+	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x12\n" +
+	"\x04body\x18\x03 \x01(\tR\x04body\"[\n" +
+	"\x14DeleteCommentRequest\x12\x1d\n" +
+	"\n" +
+	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12$\n" +
+	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\"J\n" +
 	"\x0fCommentResponse\x127\n" +
 	"\acomment\x18\x01 \x01(\v2\x1d.sporttech.content.v1.CommentR\acomment\"\xe1\x01\n" +
 	"\x13ListCommentsRequest\x12\x17\n" +
@@ -6265,7 +6618,22 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x06offset\x18\x03 \x01(\x05R\x06offset\"_\n" +
 	"\x1bMarkNotificationReadRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12'\n" +
-	"\x0fnotification_id\x18\x02 \x01(\x03R\x0enotificationId\"^\n" +
+	"\x0fnotification_id\x18\x02 \x01(\x03R\x0enotificationId\"\xe4\x01\n" +
+	"\x17NotificationPreferences\x12\x1a\n" +
+	"\bcomments\x18\x01 \x01(\bR\bcomments\x12\x14\n" +
+	"\x05likes\x18\x02 \x01(\bR\x05likes\x12\x1c\n" +
+	"\tdonations\x18\x03 \x01(\bR\tdonations\x12\x14\n" +
+	"\x05posts\x18\x04 \x01(\bR\x05posts\x12$\n" +
+	"\rsubscriptions\x18\x05 \x01(\bR\rsubscriptions\x12\x1a\n" +
+	"\bmeetings\x18\x06 \x01(\bR\bmeetings\x12!\n" +
+	"\femail_digest\x18\a \x01(\bR\vemailDigest\"<\n" +
+	"!GetNotificationPreferencesRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\x90\x01\n" +
+	"$UpdateNotificationPreferencesRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12O\n" +
+	"\vpreferences\x18\x02 \x01(\v2-.sporttech.content.v1.NotificationPreferencesR\vpreferences\"r\n" +
+	"\x1fNotificationPreferencesResponse\x12O\n" +
+	"\vpreferences\x18\x01 \x01(\v2-.sporttech.content.v1.NotificationPreferencesR\vpreferences\"^\n" +
 	"\x14NotificationResponse\x12F\n" +
 	"\fnotification\x18\x01 \x01(\v2\".sporttech.content.v1.NotificationR\fnotification\"e\n" +
 	"\x19ListNotificationsResponse\x12H\n" +
@@ -6403,7 +6771,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x17CONTENT_BLOCK_KIND_TEXT\x10\x01\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_IMAGE\x10\x02\x12\x1c\n" +
 	"\x18CONTENT_BLOCK_KIND_VIDEO\x10\x03\x12\x1f\n" +
-	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\x873\n" +
+	"\x1bCONTENT_BLOCK_KIND_DOCUMENT\x10\x042\x9d8\n" +
 	"\x0eContentService\x12\x9a\x01\n" +
 	"\x0fListAuthorPosts\x12,.sporttech.content.v1.ListAuthorPostsRequest\x1a-.sporttech.content.v1.ListAuthorPostsResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/authors/{author_user_id}/posts\x12\x7f\n" +
 	"\vSearchPosts\x12(.sporttech.content.v1.SearchPostsRequest\x1a).sporttech.content.v1.SearchPostsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/posts:search\x12o\n" +
@@ -6436,10 +6804,14 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\n" +
 	"UnlikePost\x12'.sporttech.content.v1.UnlikePostRequest\x1a+.sporttech.content.v1.PostLikeStateResponse\"+\x82\xd3\xe4\x93\x02%*#/v1/posts/{post_id}/likes/{user_id}\x12\x8b\x01\n" +
 	"\rCreateComment\x12*.sporttech.content.v1.CreateCommentRequest\x1a%.sporttech.content.v1.CommentResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/v1/posts/{post_id}/comments\x12\x8b\x01\n" +
-	"\fListComments\x12).sporttech.content.v1.ListCommentsRequest\x1a*.sporttech.content.v1.ListCommentsResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/posts/{post_id}/comments\x12\x8b\x01\n" +
+	"\fListComments\x12).sporttech.content.v1.ListCommentsRequest\x1a*.sporttech.content.v1.ListCommentsResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/posts/{post_id}/comments\x12\x88\x01\n" +
+	"\rUpdateComment\x12*.sporttech.content.v1.UpdateCommentRequest\x1a%.sporttech.content.v1.CommentResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*2\x19/v1/comments/{comment_id}\x12v\n" +
+	"\rDeleteComment\x12*.sporttech.content.v1.DeleteCommentRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/comments/{comment_id}\x12\x8b\x01\n" +
 	"\rListPostLikes\x12*.sporttech.content.v1.ListPostLikesRequest\x1a+.sporttech.content.v1.ListPostLikesResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/v1/posts/{post_id}/likes\x12\x9f\x01\n" +
 	"\x11ListNotifications\x12..sporttech.content.v1.ListNotificationsRequest\x1a/.sporttech.content.v1.ListNotificationsResponse\")\x82\xd3\xe4\x93\x02#\x12!/v1/users/{user_id}/notifications\x12\xba\x01\n" +
-	"\x14MarkNotificationRead\x121.sporttech.content.v1.MarkNotificationReadRequest\x1a*.sporttech.content.v1.NotificationResponse\"C\x82\xd3\xe4\x93\x02=:\x01*28/v1/users/{user_id}/notifications/{notification_id}/read\x12\x80\x01\n" +
+	"\x14MarkNotificationRead\x121.sporttech.content.v1.MarkNotificationReadRequest\x1a*.sporttech.content.v1.NotificationResponse\"C\x82\xd3\xe4\x93\x02=:\x01*28/v1/users/{user_id}/notifications/{notification_id}/read\x12\xc2\x01\n" +
+	"\x1aGetNotificationPreferences\x127.sporttech.content.v1.GetNotificationPreferencesRequest\x1a5.sporttech.content.v1.NotificationPreferencesResponse\"4\x82\xd3\xe4\x93\x02.\x12,/v1/users/{user_id}/notification-preferences\x12\xcb\x01\n" +
+	"\x1dUpdateNotificationPreferences\x12:.sporttech.content.v1.UpdateNotificationPreferencesRequest\x1a5.sporttech.content.v1.NotificationPreferencesResponse\"7\x82\xd3\xe4\x93\x021:\x01*\x1a,/v1/users/{user_id}/notification-preferences\x12\x80\x01\n" +
 	"\x0fSendChatMessage\x12,.sporttech.content.v1.SendChatMessageRequest\x1a!.sporttech.content.v1.ChatMessage\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/chat/messages\x12\xac\x01\n" +
 	"\x10ListChatMessages\x12-.sporttech.content.v1.ListChatMessagesRequest\x1a..sporttech.content.v1.ListChatMessagesResponse\"9\x82\xd3\xe4\x93\x023\x121/v1/users/{user_id}/chat/messages/{other_user_id}\x12\xb0\x01\n" +
 	"\x15ListChatConversations\x122.sporttech.content.v1.ListChatConversationsRequest\x1a3.sporttech.content.v1.ListChatConversationsResponse\".\x82\xd3\xe4\x93\x02(\x12&/v1/users/{user_id}/chat/conversations\x12\x8f\x01\n" +
@@ -6469,7 +6841,7 @@ func file_content_v1_content_proto_rawDescGZIP() []byte {
 }
 
 var file_content_v1_content_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 89)
+var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 95)
 var file_content_v1_content_proto_goTypes = []any{
 	(ContentBlockKind)(0),                          // 0: sporttech.content.v1.ContentBlockKind
 	(*PostBlockInput)(nil),                         // 1: sporttech.content.v1.PostBlockInput
@@ -6524,58 +6896,64 @@ var file_content_v1_content_proto_goTypes = []any{
 	(*ListPostLikesRequest)(nil),                   // 50: sporttech.content.v1.ListPostLikesRequest
 	(*ListPostLikesResponse)(nil),                  // 51: sporttech.content.v1.ListPostLikesResponse
 	(*CreateCommentRequest)(nil),                   // 52: sporttech.content.v1.CreateCommentRequest
-	(*CommentResponse)(nil),                        // 53: sporttech.content.v1.CommentResponse
-	(*ListCommentsRequest)(nil),                    // 54: sporttech.content.v1.ListCommentsRequest
-	(*ListCommentsResponse)(nil),                   // 55: sporttech.content.v1.ListCommentsResponse
-	(*ListNotificationsRequest)(nil),               // 56: sporttech.content.v1.ListNotificationsRequest
-	(*MarkNotificationReadRequest)(nil),            // 57: sporttech.content.v1.MarkNotificationReadRequest
-	(*NotificationResponse)(nil),                   // 58: sporttech.content.v1.NotificationResponse
-	(*ListNotificationsResponse)(nil),              // 59: sporttech.content.v1.ListNotificationsResponse
-	(*ChatMessage)(nil),                            // 60: sporttech.content.v1.ChatMessage
-	(*ChatConversation)(nil),                       // 61: sporttech.content.v1.ChatConversation
-	(*SendChatMessageRequest)(nil),                 // 62: sporttech.content.v1.SendChatMessageRequest
-	(*ListChatMessagesRequest)(nil),                // 63: sporttech.content.v1.ListChatMessagesRequest
-	(*ListChatMessagesResponse)(nil),               // 64: sporttech.content.v1.ListChatMessagesResponse
-	(*ListChatConversationsRequest)(nil),           // 65: sporttech.content.v1.ListChatConversationsRequest
-	(*ListChatConversationsResponse)(nil),          // 66: sporttech.content.v1.ListChatConversationsResponse
-	(*MarkChatMessageReadRequest)(nil),             // 67: sporttech.content.v1.MarkChatMessageReadRequest
-	(*MeetingAvailabilityRule)(nil),                // 68: sporttech.content.v1.MeetingAvailabilityRule
-	(*MeetingSlot)(nil),                            // 69: sporttech.content.v1.MeetingSlot
-	(*MeetingAvailabilitySlot)(nil),                // 70: sporttech.content.v1.MeetingAvailabilitySlot
-	(*MeetingBooking)(nil),                         // 71: sporttech.content.v1.MeetingBooking
-	(*CreateMeetingAvailabilityRuleRequest)(nil),   // 72: sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
-	(*ListMeetingAvailabilityRulesRequest)(nil),    // 73: sporttech.content.v1.ListMeetingAvailabilityRulesRequest
-	(*ListMeetingAvailabilityRulesResponse)(nil),   // 74: sporttech.content.v1.ListMeetingAvailabilityRulesResponse
-	(*DeleteMeetingAvailabilityRuleRequest)(nil),   // 75: sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
-	(*CreateMeetingSlotRequest)(nil),               // 76: sporttech.content.v1.CreateMeetingSlotRequest
-	(*DeleteMeetingSlotRequest)(nil),               // 77: sporttech.content.v1.DeleteMeetingSlotRequest
-	(*ListMeetingSlotsRequest)(nil),                // 78: sporttech.content.v1.ListMeetingSlotsRequest
-	(*ListMeetingSlotsResponse)(nil),               // 79: sporttech.content.v1.ListMeetingSlotsResponse
-	(*ListTrainerMeetingAvailabilityRequest)(nil),  // 80: sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
-	(*ListTrainerMeetingAvailabilityResponse)(nil), // 81: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
-	(*BookMeetingRequest)(nil),                     // 82: sporttech.content.v1.BookMeetingRequest
-	(*AssignMeetingRequest)(nil),                   // 83: sporttech.content.v1.AssignMeetingRequest
-	(*CancelMeetingRequest)(nil),                   // 84: sporttech.content.v1.CancelMeetingRequest
-	(*ListMeetingsRequest)(nil),                    // 85: sporttech.content.v1.ListMeetingsRequest
-	(*ListMeetingsResponse)(nil),                   // 86: sporttech.content.v1.ListMeetingsResponse
-	(*DonationRecord)(nil),                         // 87: sporttech.content.v1.DonationRecord
-	(*ListReceivedDonationsRequest)(nil),           // 88: sporttech.content.v1.ListReceivedDonationsRequest
-	(*ListReceivedDonationsResponse)(nil),          // 89: sporttech.content.v1.ListReceivedDonationsResponse
-	(*timestamppb.Timestamp)(nil),                  // 90: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                          // 91: google.protobuf.Empty
+	(*UpdateCommentRequest)(nil),                   // 53: sporttech.content.v1.UpdateCommentRequest
+	(*DeleteCommentRequest)(nil),                   // 54: sporttech.content.v1.DeleteCommentRequest
+	(*CommentResponse)(nil),                        // 55: sporttech.content.v1.CommentResponse
+	(*ListCommentsRequest)(nil),                    // 56: sporttech.content.v1.ListCommentsRequest
+	(*ListCommentsResponse)(nil),                   // 57: sporttech.content.v1.ListCommentsResponse
+	(*ListNotificationsRequest)(nil),               // 58: sporttech.content.v1.ListNotificationsRequest
+	(*MarkNotificationReadRequest)(nil),            // 59: sporttech.content.v1.MarkNotificationReadRequest
+	(*NotificationPreferences)(nil),                // 60: sporttech.content.v1.NotificationPreferences
+	(*GetNotificationPreferencesRequest)(nil),      // 61: sporttech.content.v1.GetNotificationPreferencesRequest
+	(*UpdateNotificationPreferencesRequest)(nil),   // 62: sporttech.content.v1.UpdateNotificationPreferencesRequest
+	(*NotificationPreferencesResponse)(nil),        // 63: sporttech.content.v1.NotificationPreferencesResponse
+	(*NotificationResponse)(nil),                   // 64: sporttech.content.v1.NotificationResponse
+	(*ListNotificationsResponse)(nil),              // 65: sporttech.content.v1.ListNotificationsResponse
+	(*ChatMessage)(nil),                            // 66: sporttech.content.v1.ChatMessage
+	(*ChatConversation)(nil),                       // 67: sporttech.content.v1.ChatConversation
+	(*SendChatMessageRequest)(nil),                 // 68: sporttech.content.v1.SendChatMessageRequest
+	(*ListChatMessagesRequest)(nil),                // 69: sporttech.content.v1.ListChatMessagesRequest
+	(*ListChatMessagesResponse)(nil),               // 70: sporttech.content.v1.ListChatMessagesResponse
+	(*ListChatConversationsRequest)(nil),           // 71: sporttech.content.v1.ListChatConversationsRequest
+	(*ListChatConversationsResponse)(nil),          // 72: sporttech.content.v1.ListChatConversationsResponse
+	(*MarkChatMessageReadRequest)(nil),             // 73: sporttech.content.v1.MarkChatMessageReadRequest
+	(*MeetingAvailabilityRule)(nil),                // 74: sporttech.content.v1.MeetingAvailabilityRule
+	(*MeetingSlot)(nil),                            // 75: sporttech.content.v1.MeetingSlot
+	(*MeetingAvailabilitySlot)(nil),                // 76: sporttech.content.v1.MeetingAvailabilitySlot
+	(*MeetingBooking)(nil),                         // 77: sporttech.content.v1.MeetingBooking
+	(*CreateMeetingAvailabilityRuleRequest)(nil),   // 78: sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
+	(*ListMeetingAvailabilityRulesRequest)(nil),    // 79: sporttech.content.v1.ListMeetingAvailabilityRulesRequest
+	(*ListMeetingAvailabilityRulesResponse)(nil),   // 80: sporttech.content.v1.ListMeetingAvailabilityRulesResponse
+	(*DeleteMeetingAvailabilityRuleRequest)(nil),   // 81: sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
+	(*CreateMeetingSlotRequest)(nil),               // 82: sporttech.content.v1.CreateMeetingSlotRequest
+	(*DeleteMeetingSlotRequest)(nil),               // 83: sporttech.content.v1.DeleteMeetingSlotRequest
+	(*ListMeetingSlotsRequest)(nil),                // 84: sporttech.content.v1.ListMeetingSlotsRequest
+	(*ListMeetingSlotsResponse)(nil),               // 85: sporttech.content.v1.ListMeetingSlotsResponse
+	(*ListTrainerMeetingAvailabilityRequest)(nil),  // 86: sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
+	(*ListTrainerMeetingAvailabilityResponse)(nil), // 87: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
+	(*BookMeetingRequest)(nil),                     // 88: sporttech.content.v1.BookMeetingRequest
+	(*AssignMeetingRequest)(nil),                   // 89: sporttech.content.v1.AssignMeetingRequest
+	(*CancelMeetingRequest)(nil),                   // 90: sporttech.content.v1.CancelMeetingRequest
+	(*ListMeetingsRequest)(nil),                    // 91: sporttech.content.v1.ListMeetingsRequest
+	(*ListMeetingsResponse)(nil),                   // 92: sporttech.content.v1.ListMeetingsResponse
+	(*DonationRecord)(nil),                         // 93: sporttech.content.v1.DonationRecord
+	(*ListReceivedDonationsRequest)(nil),           // 94: sporttech.content.v1.ListReceivedDonationsRequest
+	(*ListReceivedDonationsResponse)(nil),          // 95: sporttech.content.v1.ListReceivedDonationsResponse
+	(*timestamppb.Timestamp)(nil),                  // 96: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                          // 97: google.protobuf.Empty
 }
 var file_content_v1_content_proto_depIdxs = []int32{
 	0,   // 0: sporttech.content.v1.PostBlockInput.kind:type_name -> sporttech.content.v1.ContentBlockKind
 	0,   // 1: sporttech.content.v1.PostBlock.kind:type_name -> sporttech.content.v1.ContentBlockKind
 	0,   // 2: sporttech.content.v1.PostMedia.kind:type_name -> sporttech.content.v1.ContentBlockKind
-	90,  // 3: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 4: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 3: sporttech.content.v1.Post.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 4: sporttech.content.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
 	2,   // 5: sporttech.content.v1.Post.blocks:type_name -> sporttech.content.v1.PostBlock
-	90,  // 6: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 7: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 8: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
-	90,  // 9: sporttech.content.v1.Notification.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 10: sporttech.content.v1.Notification.read_at:type_name -> google.protobuf.Timestamp
+	96,  // 6: sporttech.content.v1.PostSummary.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 7: sporttech.content.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 8: sporttech.content.v1.Comment.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 9: sporttech.content.v1.Notification.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 10: sporttech.content.v1.Notification.read_at:type_name -> google.protobuf.Timestamp
 	4,   // 11: sporttech.content.v1.PostResponse.post:type_name -> sporttech.content.v1.Post
 	5,   // 12: sporttech.content.v1.ListAuthorPostsResponse.posts:type_name -> sporttech.content.v1.PostSummary
 	0,   // 13: sporttech.content.v1.SearchPostsRequest.block_kinds:type_name -> sporttech.content.v1.ContentBlockKind
@@ -6583,144 +6961,154 @@ var file_content_v1_content_proto_depIdxs = []int32{
 	1,   // 15: sporttech.content.v1.CreatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
 	3,   // 16: sporttech.content.v1.PostMediaResponse.media:type_name -> sporttech.content.v1.PostMedia
 	1,   // 17: sporttech.content.v1.UpdatePostRequest.blocks:type_name -> sporttech.content.v1.PostBlockInput
-	90,  // 18: sporttech.content.v1.SubscriptionTier.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 19: sporttech.content.v1.SubscriptionTier.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 18: sporttech.content.v1.SubscriptionTier.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 19: sporttech.content.v1.SubscriptionTier.updated_at:type_name -> google.protobuf.Timestamp
 	18,  // 20: sporttech.content.v1.ListSubscriptionTiersResponse.tiers:type_name -> sporttech.content.v1.SubscriptionTier
-	90,  // 21: sporttech.content.v1.Subscription.expires_at:type_name -> google.protobuf.Timestamp
-	90,  // 22: sporttech.content.v1.Subscription.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 23: sporttech.content.v1.Subscription.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 21: sporttech.content.v1.Subscription.expires_at:type_name -> google.protobuf.Timestamp
+	96,  // 22: sporttech.content.v1.Subscription.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 23: sporttech.content.v1.Subscription.updated_at:type_name -> google.protobuf.Timestamp
 	24,  // 24: sporttech.content.v1.ListMySubscriptionsResponse.subscriptions:type_name -> sporttech.content.v1.Subscription
 	24,  // 25: sporttech.content.v1.ListTrainerSubscribersResponse.subscribers:type_name -> sporttech.content.v1.Subscription
-	90,  // 26: sporttech.content.v1.Donation.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 26: sporttech.content.v1.Donation.created_at:type_name -> google.protobuf.Timestamp
 	32,  // 27: sporttech.content.v1.DonationResponse.donation:type_name -> sporttech.content.v1.Donation
 	32,  // 28: sporttech.content.v1.Payment.donation:type_name -> sporttech.content.v1.Donation
-	90,  // 29: sporttech.content.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 30: sporttech.content.v1.Payment.updated_at:type_name -> google.protobuf.Timestamp
-	90,  // 31: sporttech.content.v1.Payment.confirmed_at:type_name -> google.protobuf.Timestamp
+	96,  // 29: sporttech.content.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 30: sporttech.content.v1.Payment.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 31: sporttech.content.v1.Payment.confirmed_at:type_name -> google.protobuf.Timestamp
 	24,  // 32: sporttech.content.v1.Payment.subscription:type_name -> sporttech.content.v1.Subscription
 	35,  // 33: sporttech.content.v1.PaymentResponse.payment:type_name -> sporttech.content.v1.Payment
 	47,  // 34: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
-	90,  // 35: sporttech.content.v1.PostLike.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 35: sporttech.content.v1.PostLike.created_at:type_name -> google.protobuf.Timestamp
 	49,  // 36: sporttech.content.v1.ListPostLikesResponse.likes:type_name -> sporttech.content.v1.PostLike
 	6,   // 37: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
 	6,   // 38: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
-	7,   // 39: sporttech.content.v1.NotificationResponse.notification:type_name -> sporttech.content.v1.Notification
-	7,   // 40: sporttech.content.v1.ListNotificationsResponse.notifications:type_name -> sporttech.content.v1.Notification
-	90,  // 41: sporttech.content.v1.ChatMessage.created_at:type_name -> google.protobuf.Timestamp
-	60,  // 42: sporttech.content.v1.ChatConversation.last_message:type_name -> sporttech.content.v1.ChatMessage
-	60,  // 43: sporttech.content.v1.ListChatMessagesResponse.messages:type_name -> sporttech.content.v1.ChatMessage
-	61,  // 44: sporttech.content.v1.ListChatConversationsResponse.conversations:type_name -> sporttech.content.v1.ChatConversation
-	90,  // 45: sporttech.content.v1.MeetingAvailabilityRule.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 46: sporttech.content.v1.MeetingSlot.starts_at:type_name -> google.protobuf.Timestamp
-	90,  // 47: sporttech.content.v1.MeetingSlot.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 48: sporttech.content.v1.MeetingAvailabilitySlot.starts_at:type_name -> google.protobuf.Timestamp
-	90,  // 49: sporttech.content.v1.MeetingAvailabilitySlot.ends_at:type_name -> google.protobuf.Timestamp
-	90,  // 50: sporttech.content.v1.MeetingBooking.starts_at:type_name -> google.protobuf.Timestamp
-	90,  // 51: sporttech.content.v1.MeetingBooking.ends_at:type_name -> google.protobuf.Timestamp
-	90,  // 52: sporttech.content.v1.MeetingBooking.created_at:type_name -> google.protobuf.Timestamp
-	68,  // 53: sporttech.content.v1.ListMeetingAvailabilityRulesResponse.rules:type_name -> sporttech.content.v1.MeetingAvailabilityRule
-	90,  // 54: sporttech.content.v1.CreateMeetingSlotRequest.starts_at:type_name -> google.protobuf.Timestamp
-	69,  // 55: sporttech.content.v1.ListMeetingSlotsResponse.slots:type_name -> sporttech.content.v1.MeetingSlot
-	70,  // 56: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse.slots:type_name -> sporttech.content.v1.MeetingAvailabilitySlot
-	90,  // 57: sporttech.content.v1.BookMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
-	90,  // 58: sporttech.content.v1.AssignMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
-	71,  // 59: sporttech.content.v1.ListMeetingsResponse.bookings:type_name -> sporttech.content.v1.MeetingBooking
-	87,  // 60: sporttech.content.v1.ListReceivedDonationsResponse.donations:type_name -> sporttech.content.v1.DonationRecord
-	9,   // 61: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
-	11,  // 62: sporttech.content.v1.ContentService.SearchPosts:input_type -> sporttech.content.v1.SearchPostsRequest
-	13,  // 63: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
-	14,  // 64: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
-	16,  // 65: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
-	17,  // 66: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
-	44,  // 67: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
-	19,  // 68: sporttech.content.v1.ContentService.ListSubscriptionTiers:input_type -> sporttech.content.v1.ListSubscriptionTiersRequest
-	21,  // 69: sporttech.content.v1.ContentService.CreateSubscriptionTier:input_type -> sporttech.content.v1.CreateSubscriptionTierRequest
-	22,  // 70: sporttech.content.v1.ContentService.UpdateSubscriptionTier:input_type -> sporttech.content.v1.UpdateSubscriptionTierRequest
-	23,  // 71: sporttech.content.v1.ContentService.DeleteSubscriptionTier:input_type -> sporttech.content.v1.DeleteSubscriptionTierRequest
-	25,  // 72: sporttech.content.v1.ContentService.SubscribeToTrainer:input_type -> sporttech.content.v1.SubscribeToTrainerRequest
-	26,  // 73: sporttech.content.v1.ContentService.ListMySubscriptions:input_type -> sporttech.content.v1.ListMySubscriptionsRequest
-	28,  // 74: sporttech.content.v1.ContentService.ListTrainerSubscribers:input_type -> sporttech.content.v1.ListTrainerSubscribersRequest
-	30,  // 75: sporttech.content.v1.ContentService.UpdateSubscription:input_type -> sporttech.content.v1.UpdateSubscriptionRequest
-	31,  // 76: sporttech.content.v1.ContentService.CancelSubscription:input_type -> sporttech.content.v1.CancelSubscriptionRequest
-	33,  // 77: sporttech.content.v1.ContentService.DonateToProfile:input_type -> sporttech.content.v1.DonateToProfileRequest
-	36,  // 78: sporttech.content.v1.ContentService.CreateDonationPayment:input_type -> sporttech.content.v1.CreateDonationPaymentRequest
-	37,  // 79: sporttech.content.v1.ContentService.CreateSubscriptionPayment:input_type -> sporttech.content.v1.CreateSubscriptionPaymentRequest
-	38,  // 80: sporttech.content.v1.ContentService.ConfirmDonationPayment:input_type -> sporttech.content.v1.ConfirmDonationPaymentRequest
-	40,  // 81: sporttech.content.v1.ContentService.GetBalance:input_type -> sporttech.content.v1.GetBalanceRequest
-	42,  // 82: sporttech.content.v1.ContentService.GetTrainerStatistics:input_type -> sporttech.content.v1.GetTrainerStatisticsRequest
-	88,  // 83: sporttech.content.v1.ContentService.ListReceivedDonations:input_type -> sporttech.content.v1.ListReceivedDonationsRequest
-	45,  // 84: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
-	46,  // 85: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
-	52,  // 86: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
-	54,  // 87: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
-	50,  // 88: sporttech.content.v1.ContentService.ListPostLikes:input_type -> sporttech.content.v1.ListPostLikesRequest
-	56,  // 89: sporttech.content.v1.ContentService.ListNotifications:input_type -> sporttech.content.v1.ListNotificationsRequest
-	57,  // 90: sporttech.content.v1.ContentService.MarkNotificationRead:input_type -> sporttech.content.v1.MarkNotificationReadRequest
-	62,  // 91: sporttech.content.v1.ContentService.SendChatMessage:input_type -> sporttech.content.v1.SendChatMessageRequest
-	63,  // 92: sporttech.content.v1.ContentService.ListChatMessages:input_type -> sporttech.content.v1.ListChatMessagesRequest
-	65,  // 93: sporttech.content.v1.ContentService.ListChatConversations:input_type -> sporttech.content.v1.ListChatConversationsRequest
-	67,  // 94: sporttech.content.v1.ContentService.MarkChatMessageRead:input_type -> sporttech.content.v1.MarkChatMessageReadRequest
-	72,  // 95: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:input_type -> sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
-	73,  // 96: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:input_type -> sporttech.content.v1.ListMeetingAvailabilityRulesRequest
-	75,  // 97: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:input_type -> sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
-	76,  // 98: sporttech.content.v1.ContentService.CreateMeetingSlot:input_type -> sporttech.content.v1.CreateMeetingSlotRequest
-	77,  // 99: sporttech.content.v1.ContentService.DeleteMeetingSlot:input_type -> sporttech.content.v1.DeleteMeetingSlotRequest
-	78,  // 100: sporttech.content.v1.ContentService.ListMeetingSlots:input_type -> sporttech.content.v1.ListMeetingSlotsRequest
-	80,  // 101: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:input_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
-	82,  // 102: sporttech.content.v1.ContentService.BookMeeting:input_type -> sporttech.content.v1.BookMeetingRequest
-	83,  // 103: sporttech.content.v1.ContentService.AssignMeeting:input_type -> sporttech.content.v1.AssignMeetingRequest
-	84,  // 104: sporttech.content.v1.ContentService.CancelMeeting:input_type -> sporttech.content.v1.CancelMeetingRequest
-	85,  // 105: sporttech.content.v1.ContentService.ListMeetings:input_type -> sporttech.content.v1.ListMeetingsRequest
-	10,  // 106: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
-	12,  // 107: sporttech.content.v1.ContentService.SearchPosts:output_type -> sporttech.content.v1.SearchPostsResponse
-	8,   // 108: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
-	15,  // 109: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
-	8,   // 110: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
-	8,   // 111: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
-	91,  // 112: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
-	20,  // 113: sporttech.content.v1.ContentService.ListSubscriptionTiers:output_type -> sporttech.content.v1.ListSubscriptionTiersResponse
-	18,  // 114: sporttech.content.v1.ContentService.CreateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
-	18,  // 115: sporttech.content.v1.ContentService.UpdateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
-	91,  // 116: sporttech.content.v1.ContentService.DeleteSubscriptionTier:output_type -> google.protobuf.Empty
-	24,  // 117: sporttech.content.v1.ContentService.SubscribeToTrainer:output_type -> sporttech.content.v1.Subscription
-	27,  // 118: sporttech.content.v1.ContentService.ListMySubscriptions:output_type -> sporttech.content.v1.ListMySubscriptionsResponse
-	29,  // 119: sporttech.content.v1.ContentService.ListTrainerSubscribers:output_type -> sporttech.content.v1.ListTrainerSubscribersResponse
-	24,  // 120: sporttech.content.v1.ContentService.UpdateSubscription:output_type -> sporttech.content.v1.Subscription
-	91,  // 121: sporttech.content.v1.ContentService.CancelSubscription:output_type -> google.protobuf.Empty
-	34,  // 122: sporttech.content.v1.ContentService.DonateToProfile:output_type -> sporttech.content.v1.DonationResponse
-	39,  // 123: sporttech.content.v1.ContentService.CreateDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
-	39,  // 124: sporttech.content.v1.ContentService.CreateSubscriptionPayment:output_type -> sporttech.content.v1.PaymentResponse
-	39,  // 125: sporttech.content.v1.ContentService.ConfirmDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
-	41,  // 126: sporttech.content.v1.ContentService.GetBalance:output_type -> sporttech.content.v1.BalanceResponse
-	43,  // 127: sporttech.content.v1.ContentService.GetTrainerStatistics:output_type -> sporttech.content.v1.TrainerStatisticsResponse
-	89,  // 128: sporttech.content.v1.ContentService.ListReceivedDonations:output_type -> sporttech.content.v1.ListReceivedDonationsResponse
-	48,  // 129: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	48,  // 130: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	53,  // 131: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
-	55,  // 132: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
-	51,  // 133: sporttech.content.v1.ContentService.ListPostLikes:output_type -> sporttech.content.v1.ListPostLikesResponse
-	59,  // 134: sporttech.content.v1.ContentService.ListNotifications:output_type -> sporttech.content.v1.ListNotificationsResponse
-	58,  // 135: sporttech.content.v1.ContentService.MarkNotificationRead:output_type -> sporttech.content.v1.NotificationResponse
-	60,  // 136: sporttech.content.v1.ContentService.SendChatMessage:output_type -> sporttech.content.v1.ChatMessage
-	64,  // 137: sporttech.content.v1.ContentService.ListChatMessages:output_type -> sporttech.content.v1.ListChatMessagesResponse
-	66,  // 138: sporttech.content.v1.ContentService.ListChatConversations:output_type -> sporttech.content.v1.ListChatConversationsResponse
-	91,  // 139: sporttech.content.v1.ContentService.MarkChatMessageRead:output_type -> google.protobuf.Empty
-	68,  // 140: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:output_type -> sporttech.content.v1.MeetingAvailabilityRule
-	74,  // 141: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:output_type -> sporttech.content.v1.ListMeetingAvailabilityRulesResponse
-	91,  // 142: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:output_type -> google.protobuf.Empty
-	69,  // 143: sporttech.content.v1.ContentService.CreateMeetingSlot:output_type -> sporttech.content.v1.MeetingSlot
-	91,  // 144: sporttech.content.v1.ContentService.DeleteMeetingSlot:output_type -> google.protobuf.Empty
-	79,  // 145: sporttech.content.v1.ContentService.ListMeetingSlots:output_type -> sporttech.content.v1.ListMeetingSlotsResponse
-	81,  // 146: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:output_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
-	71,  // 147: sporttech.content.v1.ContentService.BookMeeting:output_type -> sporttech.content.v1.MeetingBooking
-	71,  // 148: sporttech.content.v1.ContentService.AssignMeeting:output_type -> sporttech.content.v1.MeetingBooking
-	91,  // 149: sporttech.content.v1.ContentService.CancelMeeting:output_type -> google.protobuf.Empty
-	86,  // 150: sporttech.content.v1.ContentService.ListMeetings:output_type -> sporttech.content.v1.ListMeetingsResponse
-	106, // [106:151] is the sub-list for method output_type
-	61,  // [61:106] is the sub-list for method input_type
-	61,  // [61:61] is the sub-list for extension type_name
-	61,  // [61:61] is the sub-list for extension extendee
-	0,   // [0:61] is the sub-list for field type_name
+	60,  // 39: sporttech.content.v1.UpdateNotificationPreferencesRequest.preferences:type_name -> sporttech.content.v1.NotificationPreferences
+	60,  // 40: sporttech.content.v1.NotificationPreferencesResponse.preferences:type_name -> sporttech.content.v1.NotificationPreferences
+	7,   // 41: sporttech.content.v1.NotificationResponse.notification:type_name -> sporttech.content.v1.Notification
+	7,   // 42: sporttech.content.v1.ListNotificationsResponse.notifications:type_name -> sporttech.content.v1.Notification
+	96,  // 43: sporttech.content.v1.ChatMessage.created_at:type_name -> google.protobuf.Timestamp
+	66,  // 44: sporttech.content.v1.ChatConversation.last_message:type_name -> sporttech.content.v1.ChatMessage
+	66,  // 45: sporttech.content.v1.ListChatMessagesResponse.messages:type_name -> sporttech.content.v1.ChatMessage
+	67,  // 46: sporttech.content.v1.ListChatConversationsResponse.conversations:type_name -> sporttech.content.v1.ChatConversation
+	96,  // 47: sporttech.content.v1.MeetingAvailabilityRule.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 48: sporttech.content.v1.MeetingSlot.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 49: sporttech.content.v1.MeetingSlot.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 50: sporttech.content.v1.MeetingAvailabilitySlot.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 51: sporttech.content.v1.MeetingAvailabilitySlot.ends_at:type_name -> google.protobuf.Timestamp
+	96,  // 52: sporttech.content.v1.MeetingBooking.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 53: sporttech.content.v1.MeetingBooking.ends_at:type_name -> google.protobuf.Timestamp
+	96,  // 54: sporttech.content.v1.MeetingBooking.created_at:type_name -> google.protobuf.Timestamp
+	74,  // 55: sporttech.content.v1.ListMeetingAvailabilityRulesResponse.rules:type_name -> sporttech.content.v1.MeetingAvailabilityRule
+	96,  // 56: sporttech.content.v1.CreateMeetingSlotRequest.starts_at:type_name -> google.protobuf.Timestamp
+	75,  // 57: sporttech.content.v1.ListMeetingSlotsResponse.slots:type_name -> sporttech.content.v1.MeetingSlot
+	76,  // 58: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse.slots:type_name -> sporttech.content.v1.MeetingAvailabilitySlot
+	96,  // 59: sporttech.content.v1.BookMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 60: sporttech.content.v1.AssignMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
+	77,  // 61: sporttech.content.v1.ListMeetingsResponse.bookings:type_name -> sporttech.content.v1.MeetingBooking
+	93,  // 62: sporttech.content.v1.ListReceivedDonationsResponse.donations:type_name -> sporttech.content.v1.DonationRecord
+	9,   // 63: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
+	11,  // 64: sporttech.content.v1.ContentService.SearchPosts:input_type -> sporttech.content.v1.SearchPostsRequest
+	13,  // 65: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
+	14,  // 66: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
+	16,  // 67: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
+	17,  // 68: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
+	44,  // 69: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
+	19,  // 70: sporttech.content.v1.ContentService.ListSubscriptionTiers:input_type -> sporttech.content.v1.ListSubscriptionTiersRequest
+	21,  // 71: sporttech.content.v1.ContentService.CreateSubscriptionTier:input_type -> sporttech.content.v1.CreateSubscriptionTierRequest
+	22,  // 72: sporttech.content.v1.ContentService.UpdateSubscriptionTier:input_type -> sporttech.content.v1.UpdateSubscriptionTierRequest
+	23,  // 73: sporttech.content.v1.ContentService.DeleteSubscriptionTier:input_type -> sporttech.content.v1.DeleteSubscriptionTierRequest
+	25,  // 74: sporttech.content.v1.ContentService.SubscribeToTrainer:input_type -> sporttech.content.v1.SubscribeToTrainerRequest
+	26,  // 75: sporttech.content.v1.ContentService.ListMySubscriptions:input_type -> sporttech.content.v1.ListMySubscriptionsRequest
+	28,  // 76: sporttech.content.v1.ContentService.ListTrainerSubscribers:input_type -> sporttech.content.v1.ListTrainerSubscribersRequest
+	30,  // 77: sporttech.content.v1.ContentService.UpdateSubscription:input_type -> sporttech.content.v1.UpdateSubscriptionRequest
+	31,  // 78: sporttech.content.v1.ContentService.CancelSubscription:input_type -> sporttech.content.v1.CancelSubscriptionRequest
+	33,  // 79: sporttech.content.v1.ContentService.DonateToProfile:input_type -> sporttech.content.v1.DonateToProfileRequest
+	36,  // 80: sporttech.content.v1.ContentService.CreateDonationPayment:input_type -> sporttech.content.v1.CreateDonationPaymentRequest
+	37,  // 81: sporttech.content.v1.ContentService.CreateSubscriptionPayment:input_type -> sporttech.content.v1.CreateSubscriptionPaymentRequest
+	38,  // 82: sporttech.content.v1.ContentService.ConfirmDonationPayment:input_type -> sporttech.content.v1.ConfirmDonationPaymentRequest
+	40,  // 83: sporttech.content.v1.ContentService.GetBalance:input_type -> sporttech.content.v1.GetBalanceRequest
+	42,  // 84: sporttech.content.v1.ContentService.GetTrainerStatistics:input_type -> sporttech.content.v1.GetTrainerStatisticsRequest
+	94,  // 85: sporttech.content.v1.ContentService.ListReceivedDonations:input_type -> sporttech.content.v1.ListReceivedDonationsRequest
+	45,  // 86: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
+	46,  // 87: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
+	52,  // 88: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
+	56,  // 89: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
+	53,  // 90: sporttech.content.v1.ContentService.UpdateComment:input_type -> sporttech.content.v1.UpdateCommentRequest
+	54,  // 91: sporttech.content.v1.ContentService.DeleteComment:input_type -> sporttech.content.v1.DeleteCommentRequest
+	50,  // 92: sporttech.content.v1.ContentService.ListPostLikes:input_type -> sporttech.content.v1.ListPostLikesRequest
+	58,  // 93: sporttech.content.v1.ContentService.ListNotifications:input_type -> sporttech.content.v1.ListNotificationsRequest
+	59,  // 94: sporttech.content.v1.ContentService.MarkNotificationRead:input_type -> sporttech.content.v1.MarkNotificationReadRequest
+	61,  // 95: sporttech.content.v1.ContentService.GetNotificationPreferences:input_type -> sporttech.content.v1.GetNotificationPreferencesRequest
+	62,  // 96: sporttech.content.v1.ContentService.UpdateNotificationPreferences:input_type -> sporttech.content.v1.UpdateNotificationPreferencesRequest
+	68,  // 97: sporttech.content.v1.ContentService.SendChatMessage:input_type -> sporttech.content.v1.SendChatMessageRequest
+	69,  // 98: sporttech.content.v1.ContentService.ListChatMessages:input_type -> sporttech.content.v1.ListChatMessagesRequest
+	71,  // 99: sporttech.content.v1.ContentService.ListChatConversations:input_type -> sporttech.content.v1.ListChatConversationsRequest
+	73,  // 100: sporttech.content.v1.ContentService.MarkChatMessageRead:input_type -> sporttech.content.v1.MarkChatMessageReadRequest
+	78,  // 101: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:input_type -> sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
+	79,  // 102: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:input_type -> sporttech.content.v1.ListMeetingAvailabilityRulesRequest
+	81,  // 103: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:input_type -> sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
+	82,  // 104: sporttech.content.v1.ContentService.CreateMeetingSlot:input_type -> sporttech.content.v1.CreateMeetingSlotRequest
+	83,  // 105: sporttech.content.v1.ContentService.DeleteMeetingSlot:input_type -> sporttech.content.v1.DeleteMeetingSlotRequest
+	84,  // 106: sporttech.content.v1.ContentService.ListMeetingSlots:input_type -> sporttech.content.v1.ListMeetingSlotsRequest
+	86,  // 107: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:input_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
+	88,  // 108: sporttech.content.v1.ContentService.BookMeeting:input_type -> sporttech.content.v1.BookMeetingRequest
+	89,  // 109: sporttech.content.v1.ContentService.AssignMeeting:input_type -> sporttech.content.v1.AssignMeetingRequest
+	90,  // 110: sporttech.content.v1.ContentService.CancelMeeting:input_type -> sporttech.content.v1.CancelMeetingRequest
+	91,  // 111: sporttech.content.v1.ContentService.ListMeetings:input_type -> sporttech.content.v1.ListMeetingsRequest
+	10,  // 112: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
+	12,  // 113: sporttech.content.v1.ContentService.SearchPosts:output_type -> sporttech.content.v1.SearchPostsResponse
+	8,   // 114: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
+	15,  // 115: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
+	8,   // 116: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
+	8,   // 117: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
+	97,  // 118: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
+	20,  // 119: sporttech.content.v1.ContentService.ListSubscriptionTiers:output_type -> sporttech.content.v1.ListSubscriptionTiersResponse
+	18,  // 120: sporttech.content.v1.ContentService.CreateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	18,  // 121: sporttech.content.v1.ContentService.UpdateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	97,  // 122: sporttech.content.v1.ContentService.DeleteSubscriptionTier:output_type -> google.protobuf.Empty
+	24,  // 123: sporttech.content.v1.ContentService.SubscribeToTrainer:output_type -> sporttech.content.v1.Subscription
+	27,  // 124: sporttech.content.v1.ContentService.ListMySubscriptions:output_type -> sporttech.content.v1.ListMySubscriptionsResponse
+	29,  // 125: sporttech.content.v1.ContentService.ListTrainerSubscribers:output_type -> sporttech.content.v1.ListTrainerSubscribersResponse
+	24,  // 126: sporttech.content.v1.ContentService.UpdateSubscription:output_type -> sporttech.content.v1.Subscription
+	97,  // 127: sporttech.content.v1.ContentService.CancelSubscription:output_type -> google.protobuf.Empty
+	34,  // 128: sporttech.content.v1.ContentService.DonateToProfile:output_type -> sporttech.content.v1.DonationResponse
+	39,  // 129: sporttech.content.v1.ContentService.CreateDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
+	39,  // 130: sporttech.content.v1.ContentService.CreateSubscriptionPayment:output_type -> sporttech.content.v1.PaymentResponse
+	39,  // 131: sporttech.content.v1.ContentService.ConfirmDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
+	41,  // 132: sporttech.content.v1.ContentService.GetBalance:output_type -> sporttech.content.v1.BalanceResponse
+	43,  // 133: sporttech.content.v1.ContentService.GetTrainerStatistics:output_type -> sporttech.content.v1.TrainerStatisticsResponse
+	95,  // 134: sporttech.content.v1.ContentService.ListReceivedDonations:output_type -> sporttech.content.v1.ListReceivedDonationsResponse
+	48,  // 135: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	48,  // 136: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	55,  // 137: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
+	57,  // 138: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
+	55,  // 139: sporttech.content.v1.ContentService.UpdateComment:output_type -> sporttech.content.v1.CommentResponse
+	97,  // 140: sporttech.content.v1.ContentService.DeleteComment:output_type -> google.protobuf.Empty
+	51,  // 141: sporttech.content.v1.ContentService.ListPostLikes:output_type -> sporttech.content.v1.ListPostLikesResponse
+	65,  // 142: sporttech.content.v1.ContentService.ListNotifications:output_type -> sporttech.content.v1.ListNotificationsResponse
+	64,  // 143: sporttech.content.v1.ContentService.MarkNotificationRead:output_type -> sporttech.content.v1.NotificationResponse
+	63,  // 144: sporttech.content.v1.ContentService.GetNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
+	63,  // 145: sporttech.content.v1.ContentService.UpdateNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
+	66,  // 146: sporttech.content.v1.ContentService.SendChatMessage:output_type -> sporttech.content.v1.ChatMessage
+	70,  // 147: sporttech.content.v1.ContentService.ListChatMessages:output_type -> sporttech.content.v1.ListChatMessagesResponse
+	72,  // 148: sporttech.content.v1.ContentService.ListChatConversations:output_type -> sporttech.content.v1.ListChatConversationsResponse
+	97,  // 149: sporttech.content.v1.ContentService.MarkChatMessageRead:output_type -> google.protobuf.Empty
+	74,  // 150: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:output_type -> sporttech.content.v1.MeetingAvailabilityRule
+	80,  // 151: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:output_type -> sporttech.content.v1.ListMeetingAvailabilityRulesResponse
+	97,  // 152: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:output_type -> google.protobuf.Empty
+	75,  // 153: sporttech.content.v1.ContentService.CreateMeetingSlot:output_type -> sporttech.content.v1.MeetingSlot
+	97,  // 154: sporttech.content.v1.ContentService.DeleteMeetingSlot:output_type -> google.protobuf.Empty
+	85,  // 155: sporttech.content.v1.ContentService.ListMeetingSlots:output_type -> sporttech.content.v1.ListMeetingSlotsResponse
+	87,  // 156: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:output_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
+	77,  // 157: sporttech.content.v1.ContentService.BookMeeting:output_type -> sporttech.content.v1.MeetingBooking
+	77,  // 158: sporttech.content.v1.ContentService.AssignMeeting:output_type -> sporttech.content.v1.MeetingBooking
+	97,  // 159: sporttech.content.v1.ContentService.CancelMeeting:output_type -> google.protobuf.Empty
+	92,  // 160: sporttech.content.v1.ContentService.ListMeetings:output_type -> sporttech.content.v1.ListMeetingsResponse
+	112, // [112:161] is the sub-list for method output_type
+	63,  // [63:112] is the sub-list for method input_type
+	63,  // [63:63] is the sub-list for extension type_name
+	63,  // [63:63] is the sub-list for extension extendee
+	0,   // [0:63] is the sub-list for field type_name
 }
 
 func init() { file_content_v1_content_proto_init() }
@@ -6750,17 +7138,17 @@ func file_content_v1_content_proto_init() {
 	file_content_v1_content_proto_msgTypes[45].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[49].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[51].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[53].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[70].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[82].OneofWrappers = []any{}
-	file_content_v1_content_proto_msgTypes[86].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[55].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[76].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[88].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[92].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_content_v1_content_proto_rawDesc), len(file_content_v1_content_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   89,
+			NumMessages:   95,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

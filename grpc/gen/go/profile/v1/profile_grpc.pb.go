@@ -24,6 +24,9 @@ const (
 	ProfileService_GetProfile_FullMethodName            = "/sporttech.profile.v1.ProfileService/GetProfile"
 	ProfileService_GetProfileByUsername_FullMethodName  = "/sporttech.profile.v1.ProfileService/GetProfileByUsername"
 	ProfileService_UpdateProfile_FullMethodName         = "/sporttech.profile.v1.ProfileService/UpdateProfile"
+	ProfileService_SetTrainer_FullMethodName            = "/sporttech.profile.v1.ProfileService/SetTrainer"
+	ProfileService_GetPrivacySettings_FullMethodName    = "/sporttech.profile.v1.ProfileService/GetPrivacySettings"
+	ProfileService_UpdatePrivacySettings_FullMethodName = "/sporttech.profile.v1.ProfileService/UpdatePrivacySettings"
 	ProfileService_SearchAuthors_FullMethodName         = "/sporttech.profile.v1.ProfileService/SearchAuthors"
 	ProfileService_UploadAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/UploadAvatar"
 	ProfileService_DeleteAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/DeleteAvatar"
@@ -43,6 +46,9 @@ type ProfileServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	GetProfileByUsername(ctx context.Context, in *GetProfileByUsernameRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	SetTrainer(ctx context.Context, in *SetTrainerRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	GetPrivacySettings(ctx context.Context, in *GetPrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error)
+	UpdatePrivacySettings(ctx context.Context, in *UpdatePrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error)
 	SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error)
 	UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
 	DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -96,6 +102,36 @@ func (c *profileServiceClient) UpdateProfile(ctx context.Context, in *UpdateProf
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProfileResponse)
 	err := c.cc.Invoke(ctx, ProfileService_UpdateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) SetTrainer(ctx context.Context, in *SetTrainerRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, ProfileService_SetTrainer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetPrivacySettings(ctx context.Context, in *GetPrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PrivacySettingsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetPrivacySettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) UpdatePrivacySettings(ctx context.Context, in *UpdatePrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PrivacySettingsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_UpdatePrivacySettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -200,6 +236,9 @@ type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileRequest) (*ProfileResponse, error)
 	GetProfileByUsername(context.Context, *GetProfileByUsernameRequest) (*ProfileResponse, error)
 	UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error)
+	SetTrainer(context.Context, *SetTrainerRequest) (*ProfileResponse, error)
+	GetPrivacySettings(context.Context, *GetPrivacySettingsRequest) (*PrivacySettingsResponse, error)
+	UpdatePrivacySettings(context.Context, *UpdatePrivacySettingsRequest) (*PrivacySettingsResponse, error)
 	SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error)
 	UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error)
 	DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error)
@@ -229,6 +268,15 @@ func (UnimplementedProfileServiceServer) GetProfileByUsername(context.Context, *
 }
 func (UnimplementedProfileServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) SetTrainer(context.Context, *SetTrainerRequest) (*ProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetTrainer not implemented")
+}
+func (UnimplementedProfileServiceServer) GetPrivacySettings(context.Context, *GetPrivacySettingsRequest) (*PrivacySettingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetPrivacySettings not implemented")
+}
+func (UnimplementedProfileServiceServer) UpdatePrivacySettings(context.Context, *UpdatePrivacySettingsRequest) (*PrivacySettingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdatePrivacySettings not implemented")
 }
 func (UnimplementedProfileServiceServer) SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SearchAuthors not implemented")
@@ -345,6 +393,60 @@ func _ProfileService_UpdateProfile_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProfileServiceServer).UpdateProfile(ctx, req.(*UpdateProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_SetTrainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTrainerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).SetTrainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_SetTrainer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).SetTrainer(ctx, req.(*SetTrainerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetPrivacySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPrivacySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetPrivacySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetPrivacySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetPrivacySettings(ctx, req.(*GetPrivacySettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UpdatePrivacySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePrivacySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UpdatePrivacySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UpdatePrivacySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UpdatePrivacySettings(ctx, req.(*UpdatePrivacySettingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -533,6 +635,18 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProfile",
 			Handler:    _ProfileService_UpdateProfile_Handler,
+		},
+		{
+			MethodName: "SetTrainer",
+			Handler:    _ProfileService_SetTrainer_Handler,
+		},
+		{
+			MethodName: "GetPrivacySettings",
+			Handler:    _ProfileService_GetPrivacySettings_Handler,
+		},
+		{
+			MethodName: "UpdatePrivacySettings",
+			Handler:    _ProfileService_UpdatePrivacySettings_Handler,
 		},
 		{
 			MethodName: "SearchAuthors",

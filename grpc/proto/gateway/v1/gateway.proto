@@ -41,6 +41,38 @@ service AuthService {
   rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http).post = "/v1/auth/logout";
   }
+
+  rpc ChangePassword(ChangePasswordRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/password"
+      body: "*"
+    };
+  }
+
+  rpc ChangeEmail(ChangeEmailRequest) returns (AuthResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/email"
+      body: "*"
+    };
+  }
+
+  rpc BecomeTrainer(BecomeTrainerRequest) returns (AuthResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/become-trainer"
+      body: "*"
+    };
+  }
+
+  rpc LogoutAll(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http).post = "/v1/auth/logout-all";
+  }
+
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/account/delete"
+      body: "*"
+    };
+  }
 }
 
 service ProfileService {
@@ -110,6 +142,17 @@ service ProfileService {
   rpc GetMyMeasurementSharing(google.protobuf.Empty) returns (MeasurementSharingResponse) {
     option (google.api.http).get = "/v1/measurements/sharing";
   }
+
+  rpc GetMyPrivacySettings(google.protobuf.Empty) returns (PrivacySettingsResponse) {
+    option (google.api.http).get = "/v1/privacy-settings";
+  }
+
+  rpc UpdateMyPrivacySettings(UpdatePrivacySettingsRequest) returns (PrivacySettingsResponse) {
+    option (google.api.http) = {
+      put: "/v1/privacy-settings"
+      body: "*"
+    };
+  }
 }
 
 service PostService {
@@ -166,6 +209,17 @@ service PostService {
 
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
+  }
+
+  rpc UpdateComment(UpdateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      patch: "/v1/comments/{comment_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/comments/{comment_id}";
   }
 
   rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
@@ -289,6 +343,17 @@ service NotificationService {
   rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
     option (google.api.http) = {
       patch: "/v1/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+
+  rpc GetMyNotificationPreferences(google.protobuf.Empty) returns (NotificationPreferencesResponse) {
+    option (google.api.http).get = "/v1/notification-preferences";
+  }
+
+  rpc UpdateMyNotificationPreferences(UpdateNotificationPreferencesRequest) returns (NotificationPreferencesResponse) {
+    option (google.api.http) = {
+      put: "/v1/notification-preferences"
       body: "*"
     };
   }
@@ -443,6 +508,25 @@ message LoginRequest {
 
 message AuthResponse {
   User user = 1;
+}
+
+message ChangePasswordRequest {
+  string current_password = 1;
+  string new_password = 2;
+  string new_password_repeat = 3;
+}
+
+message ChangeEmailRequest {
+  string new_email = 1;
+  string current_password = 2;
+}
+
+message BecomeTrainerRequest {
+  TrainerDetails trainer_details = 1;
+}
+
+message DeleteAccountRequest {
+  string current_password = 1;
 }
 
 message CSRFTokenResponse {
@@ -652,6 +736,15 @@ message Comment {
   string body = 4;
   google.protobuf.Timestamp created_at = 5;
   google.protobuf.Timestamp updated_at = 6;
+}
+
+message UpdateCommentRequest {
+  int32 comment_id = 1;
+  string body = 2;
+}
+
+message DeleteCommentRequest {
+  int32 comment_id = 1;
 }
 
 message CommentResponse {
@@ -883,6 +976,24 @@ message ListNotificationsResponse {
   repeated Notification notifications = 1;
 }
 
+message NotificationPreferences {
+  bool comments = 1;
+  bool likes = 2;
+  bool donations = 3;
+  bool posts = 4;
+  bool subscriptions = 5;
+  bool meetings = 6;
+  bool email_digest = 7;
+}
+
+message UpdateNotificationPreferencesRequest {
+  NotificationPreferences preferences = 1;
+}
+
+message NotificationPreferencesResponse {
+  NotificationPreferences preferences = 1;
+}
+
 message Measurement {
   int64 measurement_id = 1;
   int64 user_id = 2;
@@ -931,6 +1042,20 @@ message SetMeasurementSharingRequest {
 
 message MeasurementSharingResponse {
   repeated int64 trainer_user_ids = 1;
+}
+
+message PrivacySettings {
+  bool show_profile_in_search = 1;
+  bool allow_measurement_sharing = 2;
+  bool show_activity_status = 3;
+}
+
+message UpdatePrivacySettingsRequest {
+  PrivacySettings settings = 1;
+}
+
+message PrivacySettingsResponse {
+  PrivacySettings settings = 1;
 }
 
 message DonationItem {

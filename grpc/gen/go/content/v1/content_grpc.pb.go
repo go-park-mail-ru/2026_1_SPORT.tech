@@ -47,9 +47,13 @@ const (
 	ContentService_UnlikePost_FullMethodName                     = "/sporttech.content.v1.ContentService/UnlikePost"
 	ContentService_CreateComment_FullMethodName                  = "/sporttech.content.v1.ContentService/CreateComment"
 	ContentService_ListComments_FullMethodName                   = "/sporttech.content.v1.ContentService/ListComments"
+	ContentService_UpdateComment_FullMethodName                  = "/sporttech.content.v1.ContentService/UpdateComment"
+	ContentService_DeleteComment_FullMethodName                  = "/sporttech.content.v1.ContentService/DeleteComment"
 	ContentService_ListPostLikes_FullMethodName                  = "/sporttech.content.v1.ContentService/ListPostLikes"
 	ContentService_ListNotifications_FullMethodName              = "/sporttech.content.v1.ContentService/ListNotifications"
 	ContentService_MarkNotificationRead_FullMethodName           = "/sporttech.content.v1.ContentService/MarkNotificationRead"
+	ContentService_GetNotificationPreferences_FullMethodName     = "/sporttech.content.v1.ContentService/GetNotificationPreferences"
+	ContentService_UpdateNotificationPreferences_FullMethodName  = "/sporttech.content.v1.ContentService/UpdateNotificationPreferences"
 	ContentService_SendChatMessage_FullMethodName                = "/sporttech.content.v1.ContentService/SendChatMessage"
 	ContentService_ListChatMessages_FullMethodName               = "/sporttech.content.v1.ContentService/ListChatMessages"
 	ContentService_ListChatConversations_FullMethodName          = "/sporttech.content.v1.ContentService/ListChatConversations"
@@ -98,9 +102,13 @@ type ContentServiceClient interface {
 	UnlikePost(ctx context.Context, in *UnlikePostRequest, opts ...grpc.CallOption) (*PostLikeStateResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	UpdateComment(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
+	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
 	ListNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
 	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
+	GetNotificationPreferences(ctx context.Context, in *GetNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error)
+	UpdateNotificationPreferences(ctx context.Context, in *UpdateNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error)
 	SendChatMessage(ctx context.Context, in *SendChatMessageRequest, opts ...grpc.CallOption) (*ChatMessage, error)
 	ListChatMessages(ctx context.Context, in *ListChatMessagesRequest, opts ...grpc.CallOption) (*ListChatMessagesResponse, error)
 	ListChatConversations(ctx context.Context, in *ListChatConversationsRequest, opts ...grpc.CallOption) (*ListChatConversationsResponse, error)
@@ -396,6 +404,26 @@ func (c *contentServiceClient) ListComments(ctx context.Context, in *ListComment
 	return out, nil
 }
 
+func (c *contentServiceClient) UpdateComment(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommentResponse)
+	err := c.cc.Invoke(ctx, ContentService_UpdateComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ContentService_DeleteComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListPostLikesResponse)
@@ -420,6 +448,26 @@ func (c *contentServiceClient) MarkNotificationRead(ctx context.Context, in *Mar
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(NotificationResponse)
 	err := c.cc.Invoke(ctx, ContentService_MarkNotificationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) GetNotificationPreferences(ctx context.Context, in *GetNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationPreferencesResponse)
+	err := c.cc.Invoke(ctx, ContentService_GetNotificationPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) UpdateNotificationPreferences(ctx context.Context, in *UpdateNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationPreferencesResponse)
+	err := c.cc.Invoke(ctx, ContentService_UpdateNotificationPreferences_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -607,9 +655,13 @@ type ContentServiceServer interface {
 	UnlikePost(context.Context, *UnlikePostRequest) (*PostLikeStateResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	UpdateComment(context.Context, *UpdateCommentRequest) (*CommentResponse, error)
+	DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error)
 	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
 	ListNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
 	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
+	GetNotificationPreferences(context.Context, *GetNotificationPreferencesRequest) (*NotificationPreferencesResponse, error)
+	UpdateNotificationPreferences(context.Context, *UpdateNotificationPreferencesRequest) (*NotificationPreferencesResponse, error)
 	SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error)
 	ListChatMessages(context.Context, *ListChatMessagesRequest) (*ListChatMessagesResponse, error)
 	ListChatConversations(context.Context, *ListChatConversationsRequest) (*ListChatConversationsResponse, error)
@@ -715,6 +767,12 @@ func (UnimplementedContentServiceServer) CreateComment(context.Context, *CreateC
 func (UnimplementedContentServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
 }
+func (UnimplementedContentServiceServer) UpdateComment(context.Context, *UpdateCommentRequest) (*CommentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateComment not implemented")
+}
+func (UnimplementedContentServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteComment not implemented")
+}
 func (UnimplementedContentServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
 }
@@ -723,6 +781,12 @@ func (UnimplementedContentServiceServer) ListNotifications(context.Context, *Lis
 }
 func (UnimplementedContentServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedContentServiceServer) GetNotificationPreferences(context.Context, *GetNotificationPreferencesRequest) (*NotificationPreferencesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetNotificationPreferences not implemented")
+}
+func (UnimplementedContentServiceServer) UpdateNotificationPreferences(context.Context, *UpdateNotificationPreferencesRequest) (*NotificationPreferencesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateNotificationPreferences not implemented")
 }
 func (UnimplementedContentServiceServer) SendChatMessage(context.Context, *SendChatMessageRequest) (*ChatMessage, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendChatMessage not implemented")
@@ -1275,6 +1339,42 @@ func _ContentService_ListComments_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_UpdateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).UpdateComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_UpdateComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).UpdateComment(ctx, req.(*UpdateCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeleteComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeleteComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_DeleteComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeleteComment(ctx, req.(*DeleteCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListPostLikesRequest)
 	if err := dec(in); err != nil {
@@ -1325,6 +1425,42 @@ func _ContentService_MarkNotificationRead_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContentServiceServer).MarkNotificationRead(ctx, req.(*MarkNotificationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_GetNotificationPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNotificationPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).GetNotificationPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_GetNotificationPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).GetNotificationPreferences(ctx, req.(*GetNotificationPreferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_UpdateNotificationPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNotificationPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).UpdateNotificationPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_UpdateNotificationPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).UpdateNotificationPreferences(ctx, req.(*UpdateNotificationPreferencesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1715,6 +1851,14 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ContentService_ListComments_Handler,
 		},
 		{
+			MethodName: "UpdateComment",
+			Handler:    _ContentService_UpdateComment_Handler,
+		},
+		{
+			MethodName: "DeleteComment",
+			Handler:    _ContentService_DeleteComment_Handler,
+		},
+		{
 			MethodName: "ListPostLikes",
 			Handler:    _ContentService_ListPostLikes_Handler,
 		},
@@ -1725,6 +1869,14 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarkNotificationRead",
 			Handler:    _ContentService_MarkNotificationRead_Handler,
+		},
+		{
+			MethodName: "GetNotificationPreferences",
+			Handler:    _ContentService_GetNotificationPreferences_Handler,
+		},
+		{
+			MethodName: "UpdateNotificationPreferences",
+			Handler:    _ContentService_UpdateNotificationPreferences_Handler,
 		},
 		{
 			MethodName: "SendChatMessage",

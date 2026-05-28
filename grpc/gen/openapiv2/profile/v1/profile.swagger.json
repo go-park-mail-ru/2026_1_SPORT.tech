@@ -444,6 +444,113 @@
         ]
       }
     },
+    "/v1/profiles/{user_id}/privacy": {
+      "get": {
+        "operationId": "ProfileService_GetPrivacySettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PrivacySettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileService_UpdatePrivacySettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PrivacySettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileServiceUpdatePrivacySettingsBody"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
+    "/v1/profiles/{user_id}/trainer": {
+      "post": {
+        "operationId": "ProfileService_SetTrainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileServiceSetTrainerBody"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
+        ]
+      }
+    },
     "/v1/sport-types": {
       "get": {
         "operationId": "ProfileService_ListSportTypes",
@@ -508,6 +615,22 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "ProfileServiceSetTrainerBody": {
+      "type": "object",
+      "properties": {
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
+    "ProfileServiceUpdatePrivacySettingsBody": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v1PrivacySettings"
         }
       }
     },
@@ -717,6 +840,28 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "v1PrivacySettings": {
+      "type": "object",
+      "properties": {
+        "show_profile_in_search": {
+          "type": "boolean"
+        },
+        "allow_measurement_sharing": {
+          "type": "boolean"
+        },
+        "show_activity_status": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1PrivacySettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v1PrivacySettings"
         }
       }
     },

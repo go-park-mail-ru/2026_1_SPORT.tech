@@ -31,6 +31,24 @@ service ProfileService {
     };
   }
 
+  rpc SetTrainer(SetTrainerRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      post: "/v1/profiles/{user_id}/trainer"
+      body: "*"
+    };
+  }
+
+  rpc GetPrivacySettings(GetPrivacySettingsRequest) returns (PrivacySettingsResponse) {
+    option (google.api.http).get = "/v1/profiles/{user_id}/privacy";
+  }
+
+  rpc UpdatePrivacySettings(UpdatePrivacySettingsRequest) returns (PrivacySettingsResponse) {
+    option (google.api.http) = {
+      put: "/v1/profiles/{user_id}/privacy"
+      body: "*"
+    };
+  }
+
   rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse) {
     option (google.api.http) = {
       post: "/v1/authors:search"
@@ -132,6 +150,30 @@ message CreateProfileRequest {
   optional string bio = 5;
   bool is_trainer = 6;
   optional TrainerDetails trainer_details = 7;
+}
+
+message SetTrainerRequest {
+  int64 user_id = 1;
+  optional TrainerDetails trainer_details = 2;
+}
+
+message PrivacySettings {
+  bool show_profile_in_search = 1;
+  bool allow_measurement_sharing = 2;
+  bool show_activity_status = 3;
+}
+
+message GetPrivacySettingsRequest {
+  int64 user_id = 1;
+}
+
+message UpdatePrivacySettingsRequest {
+  int64 user_id = 1;
+  PrivacySettings settings = 2;
+}
+
+message PrivacySettingsResponse {
+  PrivacySettings settings = 1;
 }
 
 message GetProfileRequest {

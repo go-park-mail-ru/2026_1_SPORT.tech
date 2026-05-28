@@ -1288,6 +1288,104 @@ func local_request_ContentService_ListComments_0(ctx context.Context, marshaler 
 	return msg, metadata, err
 }
 
+func request_ContentService_UpdateComment_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq UpdateCommentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["comment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
+	}
+	protoReq.CommentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
+	}
+	msg, err := client.UpdateComment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_UpdateComment_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq UpdateCommentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["comment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
+	}
+	protoReq.CommentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
+	}
+	msg, err := server.UpdateComment(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_ContentService_DeleteComment_0 = &utilities.DoubleArray{Encoding: map[string]int{"comment_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
+func request_ContentService_DeleteComment_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq DeleteCommentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["comment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
+	}
+	protoReq.CommentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_DeleteComment_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.DeleteComment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_DeleteComment_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq DeleteCommentRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["comment_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
+	}
+	protoReq.CommentId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ContentService_DeleteComment_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.DeleteComment(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 var filter_ContentService_ListPostLikes_0 = &utilities.DoubleArray{Encoding: map[string]int{"post_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 
 func request_ContentService_ListPostLikes_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -1452,6 +1550,90 @@ func local_request_ContentService_MarkNotificationRead_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "notification_id", err)
 	}
 	msg, err := server.MarkNotificationRead(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_GetNotificationPreferences_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetNotificationPreferencesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := client.GetNotificationPreferences(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_GetNotificationPreferences_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetNotificationPreferencesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := server.GetNotificationPreferences(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_ContentService_UpdateNotificationPreferences_0(ctx context.Context, marshaler runtime.Marshaler, client ContentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq UpdateNotificationPreferencesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := client.UpdateNotificationPreferences(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ContentService_UpdateNotificationPreferences_0(ctx context.Context, marshaler runtime.Marshaler, server ContentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq UpdateNotificationPreferencesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["user_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
+	}
+	protoReq.UserId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
+	}
+	msg, err := server.UpdateNotificationPreferences(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -2181,6 +2363,46 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_ListComments_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_UpdateComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/comments/{comment_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_UpdateComment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_UpdateComment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodDelete, pattern_ContentService_DeleteComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/comments/{comment_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_DeleteComment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_DeleteComment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_ContentService_ListPostLikes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -2240,6 +2462,46 @@ func RegisterContentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_ContentService_MarkNotificationRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_GetNotificationPreferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/GetNotificationPreferences", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notification-preferences"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_GetNotificationPreferences_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_GetNotificationPreferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPut, pattern_ContentService_UpdateNotificationPreferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sporttech.content.v1.ContentService/UpdateNotificationPreferences", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notification-preferences"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ContentService_UpdateNotificationPreferences_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_UpdateNotificationPreferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodPost, pattern_ContentService_SendChatMessage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -2820,6 +3082,40 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_ContentService_ListComments_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPatch, pattern_ContentService_UpdateComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/comments/{comment_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_UpdateComment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_UpdateComment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodDelete, pattern_ContentService_DeleteComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/comments/{comment_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_DeleteComment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_DeleteComment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_ContentService_ListPostLikes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -2870,6 +3166,40 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			return
 		}
 		forward_ContentService_MarkNotificationRead_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_ContentService_GetNotificationPreferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/GetNotificationPreferences", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notification-preferences"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_GetNotificationPreferences_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_GetNotificationPreferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPut, pattern_ContentService_UpdateNotificationPreferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/sporttech.content.v1.ContentService/UpdateNotificationPreferences", runtime.WithHTTPPathPattern("/v1/users/{user_id}/notification-preferences"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ContentService_UpdateNotificationPreferences_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ContentService_UpdateNotificationPreferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodPost, pattern_ContentService_SendChatMessage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -2943,75 +3273,83 @@ func RegisterContentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
-	pattern_ContentService_ListAuthorPosts_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "authors", "author_user_id", "posts"}, ""))
-	pattern_ContentService_SearchPosts_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, "search"))
-	pattern_ContentService_CreatePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, ""))
-	pattern_ContentService_UploadPostMedia_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "posts", "media"}, ""))
-	pattern_ContentService_GetPost_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_UpdatePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_DeletePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
-	pattern_ContentService_ListSubscriptionTiers_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
-	pattern_ContentService_CreateSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
-	pattern_ContentService_UpdateSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
-	pattern_ContentService_DeleteSubscriptionTier_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
-	pattern_ContentService_SubscribeToTrainer_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribe"}, ""))
-	pattern_ContentService_ListMySubscriptions_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "client_user_id", "subscriptions"}, ""))
-	pattern_ContentService_ListTrainerSubscribers_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribers"}, ""))
-	pattern_ContentService_UpdateSubscription_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
-	pattern_ContentService_CancelSubscription_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
-	pattern_ContentService_DonateToProfile_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "recipient_user_id", "donations"}, ""))
-	pattern_ContentService_CreateDonationPayment_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "donations"}, ""))
-	pattern_ContentService_CreateSubscriptionPayment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "subscriptions"}, ""))
-	pattern_ContentService_ConfirmDonationPayment_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "payments", "payment_id", "confirm"}, ""))
-	pattern_ContentService_GetBalance_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "balance"}, ""))
-	pattern_ContentService_GetTrainerStatistics_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "statistics"}, ""))
-	pattern_ContentService_ListReceivedDonations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "trainer_user_id", "donations", "received"}, ""))
-	pattern_ContentService_LikePost_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
-	pattern_ContentService_UnlikePost_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "posts", "post_id", "likes", "user_id"}, ""))
-	pattern_ContentService_CreateComment_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
-	pattern_ContentService_ListComments_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
-	pattern_ContentService_ListPostLikes_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
-	pattern_ContentService_ListNotifications_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "notifications"}, ""))
-	pattern_ContentService_MarkNotificationRead_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"v1", "users", "user_id", "notifications", "notification_id", "read"}, ""))
-	pattern_ContentService_SendChatMessage_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "chat", "messages"}, ""))
-	pattern_ContentService_ListChatMessages_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "users", "user_id", "chat", "messages", "other_user_id"}, ""))
-	pattern_ContentService_ListChatConversations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "user_id", "chat", "conversations"}, ""))
-	pattern_ContentService_MarkChatMessageRead_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "chat", "messages", "message_id", "read"}, ""))
+	pattern_ContentService_ListAuthorPosts_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "authors", "author_user_id", "posts"}, ""))
+	pattern_ContentService_SearchPosts_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, "search"))
+	pattern_ContentService_CreatePost_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, ""))
+	pattern_ContentService_UploadPostMedia_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "posts", "media"}, ""))
+	pattern_ContentService_GetPost_0                       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_UpdatePost_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_DeletePost_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post_id"}, ""))
+	pattern_ContentService_ListSubscriptionTiers_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
+	pattern_ContentService_CreateSubscriptionTier_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "tiers"}, ""))
+	pattern_ContentService_UpdateSubscriptionTier_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
+	pattern_ContentService_DeleteSubscriptionTier_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "trainers", "trainer_user_id", "tiers", "tier_id"}, ""))
+	pattern_ContentService_SubscribeToTrainer_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribe"}, ""))
+	pattern_ContentService_ListMySubscriptions_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "client_user_id", "subscriptions"}, ""))
+	pattern_ContentService_ListTrainerSubscribers_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "trainers", "trainer_user_id", "subscribers"}, ""))
+	pattern_ContentService_UpdateSubscription_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
+	pattern_ContentService_CancelSubscription_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "users", "client_user_id", "subscriptions", "subscription_id"}, ""))
+	pattern_ContentService_DonateToProfile_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "recipient_user_id", "donations"}, ""))
+	pattern_ContentService_CreateDonationPayment_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "donations"}, ""))
+	pattern_ContentService_CreateSubscriptionPayment_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payments", "subscriptions"}, ""))
+	pattern_ContentService_ConfirmDonationPayment_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "payments", "payment_id", "confirm"}, ""))
+	pattern_ContentService_GetBalance_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "balance"}, ""))
+	pattern_ContentService_GetTrainerStatistics_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "trainer_user_id", "statistics"}, ""))
+	pattern_ContentService_ListReceivedDonations_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "trainer_user_id", "donations", "received"}, ""))
+	pattern_ContentService_LikePost_0                      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
+	pattern_ContentService_UnlikePost_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "posts", "post_id", "likes", "user_id"}, ""))
+	pattern_ContentService_CreateComment_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
+	pattern_ContentService_ListComments_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "comments"}, ""))
+	pattern_ContentService_UpdateComment_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "comments", "comment_id"}, ""))
+	pattern_ContentService_DeleteComment_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "comments", "comment_id"}, ""))
+	pattern_ContentService_ListPostLikes_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "posts", "post_id", "likes"}, ""))
+	pattern_ContentService_ListNotifications_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "notifications"}, ""))
+	pattern_ContentService_MarkNotificationRead_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"v1", "users", "user_id", "notifications", "notification_id", "read"}, ""))
+	pattern_ContentService_GetNotificationPreferences_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "notification-preferences"}, ""))
+	pattern_ContentService_UpdateNotificationPreferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "notification-preferences"}, ""))
+	pattern_ContentService_SendChatMessage_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "chat", "messages"}, ""))
+	pattern_ContentService_ListChatMessages_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "users", "user_id", "chat", "messages", "other_user_id"}, ""))
+	pattern_ContentService_ListChatConversations_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "users", "user_id", "chat", "conversations"}, ""))
+	pattern_ContentService_MarkChatMessageRead_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "chat", "messages", "message_id", "read"}, ""))
 )
 
 var (
-	forward_ContentService_ListAuthorPosts_0           = runtime.ForwardResponseMessage
-	forward_ContentService_SearchPosts_0               = runtime.ForwardResponseMessage
-	forward_ContentService_CreatePost_0                = runtime.ForwardResponseMessage
-	forward_ContentService_UploadPostMedia_0           = runtime.ForwardResponseMessage
-	forward_ContentService_GetPost_0                   = runtime.ForwardResponseMessage
-	forward_ContentService_UpdatePost_0                = runtime.ForwardResponseMessage
-	forward_ContentService_DeletePost_0                = runtime.ForwardResponseMessage
-	forward_ContentService_ListSubscriptionTiers_0     = runtime.ForwardResponseMessage
-	forward_ContentService_CreateSubscriptionTier_0    = runtime.ForwardResponseMessage
-	forward_ContentService_UpdateSubscriptionTier_0    = runtime.ForwardResponseMessage
-	forward_ContentService_DeleteSubscriptionTier_0    = runtime.ForwardResponseMessage
-	forward_ContentService_SubscribeToTrainer_0        = runtime.ForwardResponseMessage
-	forward_ContentService_ListMySubscriptions_0       = runtime.ForwardResponseMessage
-	forward_ContentService_ListTrainerSubscribers_0    = runtime.ForwardResponseMessage
-	forward_ContentService_UpdateSubscription_0        = runtime.ForwardResponseMessage
-	forward_ContentService_CancelSubscription_0        = runtime.ForwardResponseMessage
-	forward_ContentService_DonateToProfile_0           = runtime.ForwardResponseMessage
-	forward_ContentService_CreateDonationPayment_0     = runtime.ForwardResponseMessage
-	forward_ContentService_CreateSubscriptionPayment_0 = runtime.ForwardResponseMessage
-	forward_ContentService_ConfirmDonationPayment_0    = runtime.ForwardResponseMessage
-	forward_ContentService_GetBalance_0                = runtime.ForwardResponseMessage
-	forward_ContentService_GetTrainerStatistics_0      = runtime.ForwardResponseMessage
-	forward_ContentService_ListReceivedDonations_0     = runtime.ForwardResponseMessage
-	forward_ContentService_LikePost_0                  = runtime.ForwardResponseMessage
-	forward_ContentService_UnlikePost_0                = runtime.ForwardResponseMessage
-	forward_ContentService_CreateComment_0             = runtime.ForwardResponseMessage
-	forward_ContentService_ListComments_0              = runtime.ForwardResponseMessage
-	forward_ContentService_ListPostLikes_0             = runtime.ForwardResponseMessage
-	forward_ContentService_ListNotifications_0         = runtime.ForwardResponseMessage
-	forward_ContentService_MarkNotificationRead_0      = runtime.ForwardResponseMessage
-	forward_ContentService_SendChatMessage_0           = runtime.ForwardResponseMessage
-	forward_ContentService_ListChatMessages_0          = runtime.ForwardResponseMessage
-	forward_ContentService_ListChatConversations_0     = runtime.ForwardResponseMessage
-	forward_ContentService_MarkChatMessageRead_0       = runtime.ForwardResponseMessage
+	forward_ContentService_ListAuthorPosts_0               = runtime.ForwardResponseMessage
+	forward_ContentService_SearchPosts_0                   = runtime.ForwardResponseMessage
+	forward_ContentService_CreatePost_0                    = runtime.ForwardResponseMessage
+	forward_ContentService_UploadPostMedia_0               = runtime.ForwardResponseMessage
+	forward_ContentService_GetPost_0                       = runtime.ForwardResponseMessage
+	forward_ContentService_UpdatePost_0                    = runtime.ForwardResponseMessage
+	forward_ContentService_DeletePost_0                    = runtime.ForwardResponseMessage
+	forward_ContentService_ListSubscriptionTiers_0         = runtime.ForwardResponseMessage
+	forward_ContentService_CreateSubscriptionTier_0        = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateSubscriptionTier_0        = runtime.ForwardResponseMessage
+	forward_ContentService_DeleteSubscriptionTier_0        = runtime.ForwardResponseMessage
+	forward_ContentService_SubscribeToTrainer_0            = runtime.ForwardResponseMessage
+	forward_ContentService_ListMySubscriptions_0           = runtime.ForwardResponseMessage
+	forward_ContentService_ListTrainerSubscribers_0        = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateSubscription_0            = runtime.ForwardResponseMessage
+	forward_ContentService_CancelSubscription_0            = runtime.ForwardResponseMessage
+	forward_ContentService_DonateToProfile_0               = runtime.ForwardResponseMessage
+	forward_ContentService_CreateDonationPayment_0         = runtime.ForwardResponseMessage
+	forward_ContentService_CreateSubscriptionPayment_0     = runtime.ForwardResponseMessage
+	forward_ContentService_ConfirmDonationPayment_0        = runtime.ForwardResponseMessage
+	forward_ContentService_GetBalance_0                    = runtime.ForwardResponseMessage
+	forward_ContentService_GetTrainerStatistics_0          = runtime.ForwardResponseMessage
+	forward_ContentService_ListReceivedDonations_0         = runtime.ForwardResponseMessage
+	forward_ContentService_LikePost_0                      = runtime.ForwardResponseMessage
+	forward_ContentService_UnlikePost_0                    = runtime.ForwardResponseMessage
+	forward_ContentService_CreateComment_0                 = runtime.ForwardResponseMessage
+	forward_ContentService_ListComments_0                  = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateComment_0                 = runtime.ForwardResponseMessage
+	forward_ContentService_DeleteComment_0                 = runtime.ForwardResponseMessage
+	forward_ContentService_ListPostLikes_0                 = runtime.ForwardResponseMessage
+	forward_ContentService_ListNotifications_0             = runtime.ForwardResponseMessage
+	forward_ContentService_MarkNotificationRead_0          = runtime.ForwardResponseMessage
+	forward_ContentService_GetNotificationPreferences_0    = runtime.ForwardResponseMessage
+	forward_ContentService_UpdateNotificationPreferences_0 = runtime.ForwardResponseMessage
+	forward_ContentService_SendChatMessage_0               = runtime.ForwardResponseMessage
+	forward_ContentService_ListChatMessages_0              = runtime.ForwardResponseMessage
+	forward_ContentService_ListChatConversations_0         = runtime.ForwardResponseMessage
+	forward_ContentService_MarkChatMessageRead_0           = runtime.ForwardResponseMessage
 )

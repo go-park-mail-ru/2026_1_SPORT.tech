@@ -49,6 +49,71 @@
     "application/json"
   ],
   "paths": {
+    "/v1/account/delete": {
+      "post": {
+        "operationId": "AuthService_DeleteAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1DeleteAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/auth/become-trainer": {
+      "post": {
+        "operationId": "AuthService_BecomeTrainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AuthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BecomeTrainerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/v1/auth/csrf": {
       "get": {
         "operationId": "AuthService_GetCSRFToken",
@@ -66,6 +131,38 @@
             }
           }
         },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/auth/email": {
+      "post": {
+        "operationId": "AuthService_ChangeEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AuthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ChangeEmailRequest"
+            }
+          }
+        ],
         "tags": [
           "AuthService"
         ]
@@ -126,6 +223,29 @@
         ]
       }
     },
+    "/v1/auth/logout-all": {
+      "post": {
+        "operationId": "AuthService_LogoutAll",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/v1/auth/me": {
       "get": {
         "operationId": "AuthService_GetMe",
@@ -143,6 +263,39 @@
             }
           }
         },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/auth/password": {
+      "post": {
+        "operationId": "AuthService_ChangePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ChangePasswordRequest"
+            }
+          }
+        ],
         "tags": [
           "AuthService"
         ]
@@ -370,6 +523,75 @@
         ],
         "tags": [
           "ChatService"
+        ]
+      }
+    },
+    "/v1/comments/{comment_id}": {
+      "delete": {
+        "operationId": "PostService_DeleteComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      },
+      "patch": {
+        "operationId": "PostService_UpdateComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CommentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostServiceUpdateCommentBody"
+            }
+          }
+        ],
+        "tags": [
+          "PostService"
         ]
       }
     },
@@ -779,6 +1001,58 @@
         ],
         "tags": [
           "MeetingService"
+        ]
+      }
+    },
+    "/v1/notification-preferences": {
+      "get": {
+        "operationId": "NotificationService_GetMyNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationPreferencesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NotificationService"
+        ]
+      },
+      "put": {
+        "operationId": "NotificationService_UpdateMyNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationPreferencesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateNotificationPreferencesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "NotificationService"
         ]
       }
     },
@@ -1338,6 +1612,58 @@
         ],
         "tags": [
           "PostService"
+        ]
+      }
+    },
+    "/v1/privacy-settings": {
+      "get": {
+        "operationId": "ProfileService_GetMyPrivacySettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PrivacySettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ProfileService"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileService_UpdateMyPrivacySettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PrivacySettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdatePrivacySettingsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProfileService"
         ]
       }
     },
@@ -2203,6 +2529,14 @@
         }
       }
     },
+    "PostServiceUpdateCommentBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "string"
+        }
+      }
+    },
     "PostServiceUpdatePostBody": {
       "type": "object",
       "properties": {
@@ -2357,10 +2691,43 @@
         }
       }
     },
+    "v1BecomeTrainerRequest": {
+      "type": "object",
+      "properties": {
+        "trainer_details": {
+          "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
     "v1CSRFTokenResponse": {
       "type": "object",
       "properties": {
         "csrf_token": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ChangeEmailRequest": {
+      "type": "object",
+      "properties": {
+        "new_email": {
+          "type": "string"
+        },
+        "current_password": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "new_password_repeat": {
           "type": "string"
         }
       }
@@ -2605,6 +2972,14 @@
         },
         "calendar_enabled": {
           "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteAccountRequest": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
         }
       }
     },
@@ -3076,6 +3451,40 @@
         }
       }
     },
+    "v1NotificationPreferences": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "boolean"
+        },
+        "likes": {
+          "type": "boolean"
+        },
+        "donations": {
+          "type": "boolean"
+        },
+        "posts": {
+          "type": "boolean"
+        },
+        "subscriptions": {
+          "type": "boolean"
+        },
+        "meetings": {
+          "type": "boolean"
+        },
+        "email_digest": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1NotificationPreferencesResponse": {
+      "type": "object",
+      "properties": {
+        "preferences": {
+          "$ref": "#/definitions/v1NotificationPreferences"
+        }
+      }
+    },
     "v1NotificationResponse": {
       "type": "object",
       "properties": {
@@ -3347,6 +3756,28 @@
         "sport_type_id": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "v1PrivacySettings": {
+      "type": "object",
+      "properties": {
+        "show_profile_in_search": {
+          "type": "boolean"
+        },
+        "allow_measurement_sharing": {
+          "type": "boolean"
+        },
+        "show_activity_status": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1PrivacySettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v1PrivacySettings"
         }
       }
     },
@@ -3791,6 +4222,22 @@
         },
         "trainer_details": {
           "$ref": "#/definitions/v1TrainerDetails"
+        }
+      }
+    },
+    "v1UpdateNotificationPreferencesRequest": {
+      "type": "object",
+      "properties": {
+        "preferences": {
+          "$ref": "#/definitions/v1NotificationPreferences"
+        }
+      }
+    },
+    "v1UpdatePrivacySettingsRequest": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v1PrivacySettings"
         }
       }
     },
