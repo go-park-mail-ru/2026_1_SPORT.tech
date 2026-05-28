@@ -9,12 +9,13 @@ import (
 )
 
 type Repositories struct {
-	Posts         PostRepository
-	Money         MonetizationRepository
-	Engagement    EngagementRepository
-	Notifications NotificationRepository
-	Chat          ChatRepository
-	Meeting       MeetingRepository
+	Posts                   PostRepository
+	Money                   MonetizationRepository
+	Engagement              EngagementRepository
+	Notifications           NotificationRepository
+	NotificationPreferences NotificationPreferencesRepository
+	Chat                    ChatRepository
+	Meeting                 MeetingRepository
 }
 
 type PostRepository interface {
@@ -56,6 +57,9 @@ type EngagementRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	GetComment(ctx context.Context, commentID int64) (domain.Comment, error)
+	UpdateComment(ctx context.Context, commentID int64, body string, now time.Time) (domain.Comment, error)
+	DeleteComment(ctx context.Context, commentID int64) error
 	ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 }
 
@@ -63,6 +67,11 @@ type NotificationRepository interface {
 	CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error)
 	ListNotifications(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error)
 	MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
+}
+
+type NotificationPreferencesRepository interface {
+	GetNotificationPreferences(ctx context.Context, userID int64) (domain.NotificationPreferences, error)
+	UpsertNotificationPreferences(ctx context.Context, userID int64, preferences domain.NotificationPreferences) error
 }
 
 type ChatRepository interface {

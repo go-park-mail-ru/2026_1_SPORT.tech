@@ -121,3 +121,23 @@ func (client stubAuthServiceClient) GetSession(ctx context.Context, request *aut
 
 	return client.getSessionFunc(ctx, request, opts...)
 }
+
+func (client stubAuthServiceClient) ChangePassword(context.Context, *authv1.ChangePasswordRequest, ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "change password is not implemented")
+}
+
+func (client stubAuthServiceClient) ChangeEmail(context.Context, *authv1.ChangeEmailRequest, ...grpc.CallOption) (*authv1.AuthUser, error) {
+	return nil, status.Error(codes.Unimplemented, "change email is not implemented")
+}
+
+func (client stubAuthServiceClient) PromoteToTrainer(context.Context, *authv1.PromoteToTrainerRequest, ...grpc.CallOption) (*authv1.AuthUser, error) {
+	return nil, status.Error(codes.Unimplemented, "promote to trainer is not implemented")
+}
+
+func (client stubAuthServiceClient) LogoutAll(context.Context, *authv1.LogoutAllRequest, ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "logout all is not implemented")
+}
+
+func (client stubAuthServiceClient) DeleteAccount(context.Context, *authv1.DeleteAccountRequest, ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "delete account is not implemented")
+}

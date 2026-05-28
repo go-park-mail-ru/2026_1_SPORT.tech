@@ -105,6 +105,32 @@ func (service *Service) createSubscriptionNotifications(ctx context.Context, sub
 	})
 }
 
+func (service *Service) GetNotificationPreferences(ctx context.Context, query GetNotificationPreferencesQuery) (domain.NotificationPreferences, error) {
+	if query.UserID <= 0 {
+		return domain.NotificationPreferences{}, ErrInvalidUserID
+	}
+	if service.notificationPreferences == nil {
+		return domain.DefaultNotificationPreferences(), nil
+	}
+
+	return service.notificationPreferences.GetNotificationPreferences(ctx, query.UserID)
+}
+
+func (service *Service) UpdateNotificationPreferences(ctx context.Context, command UpdateNotificationPreferencesCommand) (domain.NotificationPreferences, error) {
+	if command.UserID <= 0 {
+		return domain.NotificationPreferences{}, ErrInvalidUserID
+	}
+	if service.notificationPreferences == nil {
+		return domain.NotificationPreferences{}, ErrNotificationPreferencesUnavailable
+	}
+
+	if err := service.notificationPreferences.UpsertNotificationPreferences(ctx, command.UserID, command.Preferences); err != nil {
+		return domain.NotificationPreferences{}, err
+	}
+
+	return service.notificationPreferences.GetNotificationPreferences(ctx, command.UserID)
+}
+
 func (service *Service) createNotification(ctx context.Context, notification domain.Notification) error {
 	if service.notifications == nil {
 		return nil
@@ -114,6 +140,16 @@ func (service *Service) createNotification(ctx context.Context, notification dom
 	notification.Body = normalizeRequiredText(notification.Body)
 	if err := validateNotification(notification); err != nil {
 		return err
+	}
+
+	if service.notificationPreferences != nil {
+		preferences, err := service.notificationPreferences.GetNotificationPreferences(ctx, notification.UserID)
+		if err != nil {
+			return err
+		}
+		if !preferences.Allows(notification.Type) {
+			return nil
+		}
 	}
 
 	_, err := service.notifications.CreateNotification(ctx, notification)

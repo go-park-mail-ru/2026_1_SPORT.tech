@@ -81,12 +81,15 @@ func ErrorToStatus(err error) error {
 		errors.Is(err, domain.ErrMeetingBookingNotFound):
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrPostForbidden),
+		errors.Is(err, domain.ErrCommentForbidden),
 		errors.Is(err, domain.ErrPaymentForbidden),
 		errors.Is(err, domain.ErrPaymentTokenMismatch),
 		errors.Is(err, domain.ErrChatAccessForbidden),
 		errors.Is(err, domain.ErrMeetingAccessForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
 	case errors.Is(err, domain.ErrSubscriptionTierInUse),
+		errors.Is(err, domain.ErrCommentEditWindowExpired),
+		errors.Is(err, usecase.ErrNotificationPreferencesUnavailable),
 		errors.Is(err, domain.ErrPaymentAlreadyConfirmed),
 		errors.Is(err, usecase.ErrPaymentNotSucceeded),
 		errors.Is(err, usecase.ErrSubscriptionPaymentRequired),

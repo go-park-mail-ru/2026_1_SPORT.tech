@@ -8,4 +8,5 @@ var (
 	ErrUsernameTaken           = errors.New("username already taken")
 	ErrSportTypeNotFound       = errors.New("sport type not found")
 	ErrTrainerProfileForbidden = errors.New("trainer profile forbidden")
+	ErrAlreadyTrainer          = errors.New("profile is already a trainer")
 )

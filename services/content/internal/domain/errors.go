@@ -6,6 +6,8 @@ var (
 	ErrPostNotFound             = errors.New("post not found")
 	ErrPostForbidden            = errors.New("post forbidden")
 	ErrCommentNotFound          = errors.New("comment not found")
+	ErrCommentForbidden         = errors.New("comment can only be modified by its author")
+	ErrCommentEditWindowExpired = errors.New("comment edit window has expired")
 	ErrSubscriptionTierNotFound = errors.New("subscription tier not found")
 	ErrSubscriptionTierInUse    = errors.New("subscription tier is used by posts")
 	ErrSubscriptionNotFound     = errors.New("subscription not found")

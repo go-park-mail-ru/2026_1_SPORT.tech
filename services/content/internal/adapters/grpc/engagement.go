@@ -5,6 +5,8 @@ import (
 
 	contentv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/content/v1"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/adapters/mappers"
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (server *Server) CreateComment(ctx context.Context, request *contentv1.CreateCommentRequest) (*contentv1.CommentResponse, error) {
@@ -23,4 +25,28 @@ func (server *Server) ListComments(ctx context.Context, request *contentv1.ListC
 	}
 
 	return mappers.NewListCommentsResponse(comments), nil
+}
+
+func (server *Server) UpdateComment(ctx context.Context, request *contentv1.UpdateCommentRequest) (*contentv1.CommentResponse, error) {
+	comment, err := server.useCases.Comments.UpdateComment(ctx, usecase.UpdateCommentCommand{
+		CommentID:    request.GetCommentId(),
+		AuthorUserID: request.GetAuthorUserId(),
+		Body:         request.GetBody(),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewCommentResponse(comment), nil
+}
+
+func (server *Server) DeleteComment(ctx context.Context, request *contentv1.DeleteCommentRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Comments.DeleteComment(ctx, usecase.DeleteCommentCommand{
+		CommentID:    request.GetCommentId(),
+		AuthorUserID: request.GetAuthorUserId(),
+	}); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return &emptypb.Empty{}, nil
 }

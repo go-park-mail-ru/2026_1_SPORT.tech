@@ -172,7 +172,10 @@ func ErrorToStatus(err error) error {
 		return status.Error(codes.AlreadyExists, err.Error())
 	case errors.Is(err, domain.ErrTrainerProfileForbidden):
 		return status.Error(codes.FailedPrecondition, err.Error())
-	case errors.Is(err, usecase.ErrAvatarStorageUnavailable):
+	case errors.Is(err, domain.ErrAlreadyTrainer):
+		return status.Error(codes.FailedPrecondition, err.Error())
+	case errors.Is(err, usecase.ErrAvatarStorageUnavailable),
+		errors.Is(err, usecase.ErrPrivacySettingsUnavailable):
 		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, usecase.ErrMeasurementAccessDenied):
 		return status.Error(codes.PermissionDenied, err.Error())
@@ -218,6 +221,32 @@ func authorSummaryToProto(author domain.AuthorSummary) *profilev1.AuthorSummary 
 	}
 
 	return response
+}
+
+func TrainerDetailsFromProto(details *profilev1.TrainerDetails) *domain.TrainerDetails {
+	return trainerDetailsFromProto(details)
+}
+
+func PrivacySettingsFromProto(settings *profilev1.PrivacySettings) domain.PrivacySettings {
+	if settings == nil {
+		return domain.DefaultPrivacySettings()
+	}
+
+	return domain.PrivacySettings{
+		ShowProfileInSearch:     settings.GetShowProfileInSearch(),
+		AllowMeasurementSharing: settings.GetAllowMeasurementSharing(),
+		ShowActivityStatus:      settings.GetShowActivityStatus(),
+	}
+}
+
+func NewPrivacySettingsResponse(settings domain.PrivacySettings) *profilev1.PrivacySettingsResponse {
+	return &profilev1.PrivacySettingsResponse{
+		Settings: &profilev1.PrivacySettings{
+			ShowProfileInSearch:     settings.ShowProfileInSearch,
+			AllowMeasurementSharing: settings.AllowMeasurementSharing,
+			ShowActivityStatus:      settings.ShowActivityStatus,
+		},
+	}
 }
 
 func trainerDetailsFromProto(details *profilev1.TrainerDetails) *domain.TrainerDetails {

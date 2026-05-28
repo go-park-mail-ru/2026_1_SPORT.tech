@@ -38,12 +38,19 @@ type MeasurementUseCase interface {
 	GetMeasurementSharing(ctx context.Context, query usecase.GetMeasurementSharingQuery) ([]int64, error)
 }
 
+type SettingsUseCase interface {
+	SetTrainer(ctx context.Context, command usecase.SetTrainerCommand) (domain.Profile, error)
+	GetPrivacySettings(ctx context.Context, userID int64) (domain.PrivacySettings, error)
+	UpdatePrivacySettings(ctx context.Context, command usecase.UpdatePrivacySettingsCommand) (domain.PrivacySettings, error)
+}
+
 type UseCases struct {
 	Profiles     ProfileUseCase
 	Authors      AuthorUseCase
 	Avatars      AvatarUseCase
 	Sports       SportUseCase
 	Measurements MeasurementUseCase
+	Settings     SettingsUseCase
 }
 
 type Server struct {
@@ -89,6 +96,39 @@ func (server *Server) UpdateProfile(ctx context.Context, request *profilev1.Upda
 	}
 
 	return mappers.NewProfileResponse(profile), nil
+}
+
+func (server *Server) SetTrainer(ctx context.Context, request *profilev1.SetTrainerRequest) (*profilev1.ProfileResponse, error) {
+	profile, err := server.useCases.Settings.SetTrainer(ctx, usecase.SetTrainerCommand{
+		UserID:         request.GetUserId(),
+		TrainerDetails: mappers.TrainerDetailsFromProto(request.GetTrainerDetails()),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewProfileResponse(profile), nil
+}
+
+func (server *Server) GetPrivacySettings(ctx context.Context, request *profilev1.GetPrivacySettingsRequest) (*profilev1.PrivacySettingsResponse, error) {
+	settings, err := server.useCases.Settings.GetPrivacySettings(ctx, request.GetUserId())
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewPrivacySettingsResponse(settings), nil
+}
+
+func (server *Server) UpdatePrivacySettings(ctx context.Context, request *profilev1.UpdatePrivacySettingsRequest) (*profilev1.PrivacySettingsResponse, error) {
+	settings, err := server.useCases.Settings.UpdatePrivacySettings(ctx, usecase.UpdatePrivacySettingsCommand{
+		UserID:   request.GetUserId(),
+		Settings: mappers.PrivacySettingsFromProto(request.GetSettings()),
+	})
+	if err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+
+	return mappers.NewPrivacySettingsResponse(settings), nil
 }
 
 func (server *Server) SearchAuthors(ctx context.Context, request *profilev1.SearchAuthorsRequest) (*profilev1.SearchAuthorsResponse, error) {

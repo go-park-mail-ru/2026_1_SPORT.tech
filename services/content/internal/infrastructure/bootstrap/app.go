@@ -54,12 +54,13 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, fmt.Errorf("new payment provider: %w", err)
 	}
 	contentUseCase := usecase.NewService(usecase.Repositories{
-		Posts:         contentRepository,
-		Money:         contentRepository,
-		Engagement:    contentRepository,
-		Notifications: contentRepository,
-		Chat:          contentRepository,
-		Meeting:       contentRepository,
+		Posts:                   contentRepository,
+		Money:                   contentRepository,
+		Engagement:              contentRepository,
+		Notifications:           contentRepository,
+		NotificationPreferences: contentRepository,
+		Chat:                    contentRepository,
+		Meeting:                 contentRepository,
 	}, postMediaStorage, paymentProvider)
 
 	metricsSet := metrics.New(cfg.ServiceName)

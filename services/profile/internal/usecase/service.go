@@ -15,6 +15,7 @@ type Service struct {
 	sports             SportTypeRepository
 	measurements       MeasurementRepository
 	measurementSharing MeasurementSharingRepository
+	privacy            PrivacySettingsRepository
 	storage            AvatarStorage
 }
 
@@ -29,8 +30,62 @@ func NewService(
 		sports:             repositories.Sports,
 		measurements:       repositories.Measurements,
 		measurementSharing: repositories.MeasurementSharing,
+		privacy:            repositories.Privacy,
 		storage:            avatarStorage,
 	}
+}
+
+func (service *Service) SetTrainer(ctx context.Context, command SetTrainerCommand) (domain.Profile, error) {
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.Profile{}, err
+	}
+
+	profile, err := service.profiles.GetByID(ctx, command.UserID)
+	if err != nil {
+		return domain.Profile{}, err
+	}
+	if profile.IsTrainer {
+		return domain.Profile{}, domain.ErrAlreadyTrainer
+	}
+
+	details := normalizeTrainerDetails(command.TrainerDetails)
+	profile.IsTrainer = true
+	profile.TrainerDetails = details
+	if err := validateProfile(profile); err != nil {
+		return domain.Profile{}, err
+	}
+
+	if err := service.profiles.SetTrainer(ctx, command.UserID, details); err != nil {
+		return domain.Profile{}, err
+	}
+
+	return service.profiles.GetByID(ctx, command.UserID)
+}
+
+func (service *Service) GetPrivacySettings(ctx context.Context, userID int64) (domain.PrivacySettings, error) {
+	if err := validateUserID(userID); err != nil {
+		return domain.PrivacySettings{}, err
+	}
+	if service.privacy == nil {
+		return domain.DefaultPrivacySettings(), nil
+	}
+
+	return service.privacy.Get(ctx, userID)
+}
+
+func (service *Service) UpdatePrivacySettings(ctx context.Context, command UpdatePrivacySettingsCommand) (domain.PrivacySettings, error) {
+	if err := validateUserID(command.UserID); err != nil {
+		return domain.PrivacySettings{}, err
+	}
+	if service.privacy == nil {
+		return domain.PrivacySettings{}, ErrPrivacySettingsUnavailable
+	}
+
+	if err := service.privacy.Upsert(ctx, command.UserID, command.Settings); err != nil {
+		return domain.PrivacySettings{}, err
+	}
+
+	return service.privacy.Get(ctx, command.UserID)
 }
 
 func (service *Service) CreateProfile(ctx context.Context, command CreateProfileCommand) (domain.Profile, error) {

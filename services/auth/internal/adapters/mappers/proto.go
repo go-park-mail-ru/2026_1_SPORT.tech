@@ -83,9 +83,15 @@ func ErrorToStatus(err error) error {
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrAccountDisabled):
 		return status.Error(codes.PermissionDenied, err.Error())
+	case errors.Is(err, domain.ErrAlreadyTrainer):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	default:
 		return status.Error(codes.Internal, "internal error")
 	}
+}
+
+func NewAuthUser(account domain.Account) *authv1.AuthUser {
+	return buildAuthUser(account)
 }
 
 func buildAuthUser(account domain.Account) *authv1.AuthUser {

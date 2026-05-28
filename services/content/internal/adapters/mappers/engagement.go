@@ -115,6 +115,36 @@ func commentToProto(comment domain.Comment) *contentv1.Comment {
 	}
 }
 
+func NotificationPreferencesFromProto(preferences *contentv1.NotificationPreferences) domain.NotificationPreferences {
+	if preferences == nil {
+		return domain.DefaultNotificationPreferences()
+	}
+
+	return domain.NotificationPreferences{
+		Comments:      preferences.GetComments(),
+		Likes:         preferences.GetLikes(),
+		Donations:     preferences.GetDonations(),
+		Posts:         preferences.GetPosts(),
+		Subscriptions: preferences.GetSubscriptions(),
+		Meetings:      preferences.GetMeetings(),
+		EmailDigest:   preferences.GetEmailDigest(),
+	}
+}
+
+func NewNotificationPreferencesResponse(preferences domain.NotificationPreferences) *contentv1.NotificationPreferencesResponse {
+	return &contentv1.NotificationPreferencesResponse{
+		Preferences: &contentv1.NotificationPreferences{
+			Comments:      preferences.Comments,
+			Likes:         preferences.Likes,
+			Donations:     preferences.Donations,
+			Posts:         preferences.Posts,
+			Subscriptions: preferences.Subscriptions,
+			Meetings:      preferences.Meetings,
+			EmailDigest:   preferences.EmailDigest,
+		},
+	}
+}
+
 func notificationToProto(notification domain.Notification) *contentv1.Notification {
 	response := &contentv1.Notification{
 		NotificationId: notification.NotificationID,

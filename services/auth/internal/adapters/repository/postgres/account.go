@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/auth/internal/usecase"
@@ -67,6 +68,76 @@ func (repository *AccountRepository) GetByID(ctx context.Context, userID int64) 
 	`
 
 	return scanAccount(repository.db.QueryRowContext(ctx, query, userID))
+}
+
+func (repository *AccountRepository) UpdatePassword(ctx context.Context, userID int64, passwordHash string, now time.Time) error {
+	const query = `
+		UPDATE auth_user
+		SET password_hash = $2, updated_at = $3
+		WHERE user_id = $1
+	`
+
+	result, err := repository.db.ExecContext(ctx, query, userID, passwordHash, now)
+	if err != nil {
+		return err
+	}
+
+	return ensureAffected(result)
+}
+
+func (repository *AccountRepository) UpdateEmail(ctx context.Context, userID int64, email string, now time.Time) (domain.Account, error) {
+	const query = `
+		UPDATE auth_user
+		SET email = $2, updated_at = $3
+		WHERE user_id = $1
+		RETURNING user_id, email, username, password_hash, role, status, created_at, updated_at
+	`
+
+	account, err := scanAccount(repository.db.QueryRowContext(ctx, query, userID, email, now))
+	if err != nil {
+		return domain.Account{}, mapAccountError(err)
+	}
+
+	return account, nil
+}
+
+func (repository *AccountRepository) UpdateRole(ctx context.Context, userID int64, role domain.Role, now time.Time) (domain.Account, error) {
+	const query = `
+		UPDATE auth_user
+		SET role = $2, updated_at = $3
+		WHERE user_id = $1
+		RETURNING user_id, email, username, password_hash, role, status, created_at, updated_at
+	`
+
+	account, err := scanAccount(repository.db.QueryRowContext(ctx, query, userID, string(role), now))
+	if err != nil {
+		return domain.Account{}, mapAccountError(err)
+	}
+
+	return account, nil
+}
+
+func (repository *AccountRepository) Delete(ctx context.Context, userID int64) error {
+	const query = `DELETE FROM auth_user WHERE user_id = $1`
+
+	result, err := repository.db.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+
+	return ensureAffected(result)
+}
+
+func ensureAffected(result sql.Result) error {
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrAccountNotFound
+	}
+
+	return nil
 }
 
 func scanAccount(scanner interface {

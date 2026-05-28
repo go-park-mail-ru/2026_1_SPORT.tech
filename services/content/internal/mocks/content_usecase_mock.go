@@ -146,6 +146,20 @@ func (mr *MockContentUseCaseMockRecorder) CreateSubscriptionTier(ctx, command an
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubscriptionTier", reflect.TypeOf((*MockContentUseCase)(nil).CreateSubscriptionTier), ctx, command)
 }
 
+// DeleteComment mocks base method.
+func (m *MockContentUseCase) DeleteComment(ctx context.Context, command usecase.DeleteCommentCommand) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteComment", ctx, command)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteComment indicates an expected call of DeleteComment.
+func (mr *MockContentUseCaseMockRecorder) DeleteComment(ctx, command any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteComment", reflect.TypeOf((*MockContentUseCase)(nil).DeleteComment), ctx, command)
+}
+
 // DeletePost mocks base method.
 func (m *MockContentUseCase) DeletePost(ctx context.Context, command usecase.DeletePostCommand) error {
 	m.ctrl.T.Helper()
@@ -202,6 +216,21 @@ func (m *MockContentUseCase) GetBalance(ctx context.Context, query usecase.GetBa
 func (mr *MockContentUseCaseMockRecorder) GetBalance(ctx, query any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockContentUseCase)(nil).GetBalance), ctx, query)
+}
+
+// GetNotificationPreferences mocks base method.
+func (m *MockContentUseCase) GetNotificationPreferences(ctx context.Context, query usecase.GetNotificationPreferencesQuery) (domain.NotificationPreferences, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNotificationPreferences", ctx, query)
+	ret0, _ := ret[0].(domain.NotificationPreferences)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNotificationPreferences indicates an expected call of GetNotificationPreferences.
+func (mr *MockContentUseCaseMockRecorder) GetNotificationPreferences(ctx, query any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNotificationPreferences", reflect.TypeOf((*MockContentUseCase)(nil).GetNotificationPreferences), ctx, query)
 }
 
 // GetPost mocks base method.
@@ -428,6 +457,36 @@ func (m *MockContentUseCase) UnlikePost(ctx context.Context, command usecase.Lik
 func (mr *MockContentUseCaseMockRecorder) UnlikePost(ctx, command any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnlikePost", reflect.TypeOf((*MockContentUseCase)(nil).UnlikePost), ctx, command)
+}
+
+// UpdateComment mocks base method.
+func (m *MockContentUseCase) UpdateComment(ctx context.Context, command usecase.UpdateCommentCommand) (domain.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateComment", ctx, command)
+	ret0, _ := ret[0].(domain.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateComment indicates an expected call of UpdateComment.
+func (mr *MockContentUseCaseMockRecorder) UpdateComment(ctx, command any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateComment", reflect.TypeOf((*MockContentUseCase)(nil).UpdateComment), ctx, command)
+}
+
+// UpdateNotificationPreferences mocks base method.
+func (m *MockContentUseCase) UpdateNotificationPreferences(ctx context.Context, command usecase.UpdateNotificationPreferencesCommand) (domain.NotificationPreferences, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateNotificationPreferences", ctx, command)
+	ret0, _ := ret[0].(domain.NotificationPreferences)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateNotificationPreferences indicates an expected call of UpdateNotificationPreferences.
+func (mr *MockContentUseCaseMockRecorder) UpdateNotificationPreferences(ctx, command any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNotificationPreferences", reflect.TypeOf((*MockContentUseCase)(nil).UpdateNotificationPreferences), ctx, command)
 }
 
 // UpdatePost mocks base method.

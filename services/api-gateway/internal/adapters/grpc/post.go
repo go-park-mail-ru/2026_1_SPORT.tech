@@ -249,6 +249,54 @@ func (server *Server) CreateComment(ctx context.Context, request *gatewayv1.Crea
 	return mappers.CommentResponseFromContent(response)
 }
 
+func (server *Server) UpdateComment(ctx context.Context, request *gatewayv1.UpdateCommentRequest) (*gatewayv1.CommentResponse, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	response, err := server.contentClient.UpdateComment(forwardContext(ctx), &contentv1.UpdateCommentRequest{
+		CommentId:    int64(request.GetCommentId()),
+		AuthorUserId: userID,
+		Body:         request.GetBody(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.CommentResponseFromContent(response)
+}
+
+func (server *Server) DeleteComment(ctx context.Context, request *gatewayv1.DeleteCommentRequest) (*emptypb.Empty, error) {
+	principal, err := server.requireSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := userIDFromPrincipal(principal)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	if _, err := server.contentClient.DeleteComment(forwardContext(ctx), &contentv1.DeleteCommentRequest{
+		CommentId:    int64(request.GetCommentId()),
+		AuthorUserId: userID,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := setHTTPStatus(ctx, 204); err != nil {
+		return nil, status.Errorf(codes.Internal, "set response status: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 func (server *Server) ListComments(ctx context.Context, request *gatewayv1.ListCommentsRequest) (*gatewayv1.ListCommentsResponse, error) {
 	principal, err := server.optionalSession(ctx)
 	if err != nil {

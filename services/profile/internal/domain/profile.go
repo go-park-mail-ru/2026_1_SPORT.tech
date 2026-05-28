@@ -44,3 +44,17 @@ func (profile Profile) EnsureTrainer() error {
 
 	return nil
 }
+
+type PrivacySettings struct {
+	ShowProfileInSearch     bool
+	AllowMeasurementSharing bool
+	ShowActivityStatus      bool
+}
+
+func DefaultPrivacySettings() PrivacySettings {
+	return PrivacySettings{
+		ShowProfileInSearch:     true,
+		AllowMeasurementSharing: true,
+		ShowActivityStatus:      true,
+	}
+}

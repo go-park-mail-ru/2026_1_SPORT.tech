@@ -7,6 +7,38 @@ import (
 	gatewayv1 "github.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/gateway/v1"
 )
 
+func NotificationPreferencesToContent(preferences *gatewayv1.NotificationPreferences) *contentv1.NotificationPreferences {
+	if preferences == nil {
+		return nil
+	}
+
+	return &contentv1.NotificationPreferences{
+		Comments:      preferences.GetComments(),
+		Likes:         preferences.GetLikes(),
+		Donations:     preferences.GetDonations(),
+		Posts:         preferences.GetPosts(),
+		Subscriptions: preferences.GetSubscriptions(),
+		Meetings:      preferences.GetMeetings(),
+		EmailDigest:   preferences.GetEmailDigest(),
+	}
+}
+
+func NotificationPreferencesResponseFromContent(response *contentv1.NotificationPreferencesResponse) *gatewayv1.NotificationPreferencesResponse {
+	preferences := response.GetPreferences()
+
+	return &gatewayv1.NotificationPreferencesResponse{
+		Preferences: &gatewayv1.NotificationPreferences{
+			Comments:      preferences.GetComments(),
+			Likes:         preferences.GetLikes(),
+			Donations:     preferences.GetDonations(),
+			Posts:         preferences.GetPosts(),
+			Subscriptions: preferences.GetSubscriptions(),
+			Meetings:      preferences.GetMeetings(),
+			EmailDigest:   preferences.GetEmailDigest(),
+		},
+	}
+}
+
 func ListNotificationsRequestToContent(userID int64, request *gatewayv1.ListNotificationsRequest) *contentv1.ListNotificationsRequest {
 	return &contentv1.ListNotificationsRequest{
 		UserId: userID,

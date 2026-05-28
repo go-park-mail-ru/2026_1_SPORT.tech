@@ -100,6 +100,37 @@ func (server *Server) UpdateMyProfile(ctx context.Context, request *gatewayv1.Up
 	return mappers.ProfileResponseFromProfile(response.GetProfile(), userID)
 }
 
+func (server *Server) GetMyPrivacySettings(ctx context.Context, _ *emptypb.Empty) (*gatewayv1.PrivacySettingsResponse, error) {
+	userID, err := server.requireSubscriptionUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.profileClient.GetPrivacySettings(forwardContext(ctx), &profilev1.GetPrivacySettingsRequest{UserId: userID})
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.PrivacySettingsResponseFromProfile(response), nil
+}
+
+func (server *Server) UpdateMyPrivacySettings(ctx context.Context, request *gatewayv1.UpdatePrivacySettingsRequest) (*gatewayv1.PrivacySettingsResponse, error) {
+	userID, err := server.requireSubscriptionUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := server.profileClient.UpdatePrivacySettings(forwardContext(ctx), &profilev1.UpdatePrivacySettingsRequest{
+		UserId:   userID,
+		Settings: mappers.PrivacySettingsToProfile(request.GetSettings()),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.PrivacySettingsResponseFromProfile(response), nil
+}
+
 func (server *Server) UploadMyAvatar(ctx context.Context, request *gatewayv1.UploadMyAvatarRequest) (*gatewayv1.AvatarUploadResponse, error) {
 	principal, err := server.requireSession(ctx)
 	if err != nil {

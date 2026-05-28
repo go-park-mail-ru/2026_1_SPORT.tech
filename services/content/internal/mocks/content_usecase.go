@@ -37,7 +37,11 @@ type ContentUseCase interface {
 	UnlikePost(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error)
 	ListComments(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error)
+	UpdateComment(ctx context.Context, command usecase.UpdateCommentCommand) (domain.Comment, error)
+	DeleteComment(ctx context.Context, command usecase.DeleteCommentCommand) error
 	ListPostLikes(ctx context.Context, query usecase.ListPostLikesQuery) ([]domain.PostLike, error)
 	ListNotifications(ctx context.Context, query usecase.ListNotificationsQuery) ([]domain.Notification, error)
 	MarkNotificationRead(ctx context.Context, command usecase.MarkNotificationReadCommand) (domain.Notification, error)
+	GetNotificationPreferences(ctx context.Context, query usecase.GetNotificationPreferencesQuery) (domain.NotificationPreferences, error)
+	UpdateNotificationPreferences(ctx context.Context, command usecase.UpdateNotificationPreferencesCommand) (domain.NotificationPreferences, error)
 }

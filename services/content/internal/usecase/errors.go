@@ -44,6 +44,7 @@ var (
 	ErrInvalidNotificationType            = errors.New("invalid notification type")
 	ErrInvalidNotificationTitle           = errors.New("invalid notification title")
 	ErrInvalidNotificationBody            = errors.New("invalid notification body")
+	ErrNotificationPreferencesUnavailable = errors.New("notification preferences storage is unavailable")
 	ErrInvalidMeetingWeekday              = errors.New("invalid meeting weekday")
 	ErrInvalidMeetingHour                 = errors.New("invalid meeting hour")
 	ErrInvalidMeetingTime                 = errors.New("meeting time must be aligned to the start of an hour")

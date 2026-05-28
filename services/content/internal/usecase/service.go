@@ -15,14 +15,15 @@ const (
 )
 
 type Service struct {
-	posts           PostRepository
-	money           MonetizationRepository
-	engagement      EngagementRepository
-	notifications   NotificationRepository
-	chat            ChatRepository
-	meeting         MeetingRepository
-	postMedia       PostMediaStorage
-	paymentProvider PaymentProvider
+	posts                   PostRepository
+	money                   MonetizationRepository
+	engagement              EngagementRepository
+	notifications           NotificationRepository
+	notificationPreferences NotificationPreferencesRepository
+	chat                    ChatRepository
+	meeting                 MeetingRepository
+	postMedia               PostMediaStorage
+	paymentProvider         PaymentProvider
 }
 
 func NewService(repositories Repositories, postMediaStorage PostMediaStorage, paymentProviders ...PaymentProvider) *Service {
@@ -32,14 +33,15 @@ func NewService(repositories Repositories, postMediaStorage PostMediaStorage, pa
 	}
 
 	return &Service{
-		posts:           repositories.Posts,
-		money:           repositories.Money,
-		engagement:      repositories.Engagement,
-		notifications:   repositories.Notifications,
-		chat:            repositories.Chat,
-		meeting:         repositories.Meeting,
-		postMedia:       postMediaStorage,
-		paymentProvider: paymentProvider,
+		posts:                   repositories.Posts,
+		money:                   repositories.Money,
+		engagement:              repositories.Engagement,
+		notifications:           repositories.Notifications,
+		notificationPreferences: repositories.NotificationPreferences,
+		chat:                    repositories.Chat,
+		meeting:                 repositories.Meeting,
+		postMedia:               postMediaStorage,
+		paymentProvider:         paymentProvider,
 	}
 }
 

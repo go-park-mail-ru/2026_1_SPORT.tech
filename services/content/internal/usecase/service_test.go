@@ -34,6 +34,9 @@ type stubContentRepository struct {
 	getLikeStateFunc       func(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	createCommentFunc      func(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	listCommentsFunc       func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	getCommentFunc         func(ctx context.Context, commentID int64) (domain.Comment, error)
+	updateCommentFunc      func(ctx context.Context, commentID int64, body string, now time.Time) (domain.Comment, error)
+	deleteCommentFunc      func(ctx context.Context, commentID int64) error
 	listPostLikesFunc      func(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 	createDonationFunc     func(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	createPaymentFunc      func(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
@@ -168,6 +171,27 @@ func (repository stubContentRepository) CreateComment(ctx context.Context, comme
 
 func (repository stubContentRepository) ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error) {
 	return repository.listCommentsFunc(ctx, postID, limit, offset)
+}
+
+func (repository stubContentRepository) GetComment(ctx context.Context, commentID int64) (domain.Comment, error) {
+	if repository.getCommentFunc == nil {
+		return domain.Comment{}, nil
+	}
+	return repository.getCommentFunc(ctx, commentID)
+}
+
+func (repository stubContentRepository) UpdateComment(ctx context.Context, commentID int64, body string, now time.Time) (domain.Comment, error) {
+	if repository.updateCommentFunc == nil {
+		return domain.Comment{}, nil
+	}
+	return repository.updateCommentFunc(ctx, commentID, body, now)
+}
+
+func (repository stubContentRepository) DeleteComment(ctx context.Context, commentID int64) error {
+	if repository.deleteCommentFunc == nil {
+		return nil
+	}
+	return repository.deleteCommentFunc(ctx, commentID)
 }
 
 func (repository stubContentRepository) ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error) {
