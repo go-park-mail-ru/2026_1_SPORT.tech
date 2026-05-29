@@ -19,7 +19,7 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO :"profile_app_user";
 
-GRANT SELECT, INSERT, UPDATE ON TABLE profile TO :"profile_app_user";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE profile TO :"profile_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE trainer_profile TO :"profile_app_user";
 GRANT SELECT, INSERT, DELETE ON TABLE trainer_sport TO :"profile_app_user";
 GRANT SELECT ON TABLE sport_type TO :"profile_app_user";
