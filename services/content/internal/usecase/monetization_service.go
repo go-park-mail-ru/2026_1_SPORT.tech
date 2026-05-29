@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -230,10 +231,19 @@ func (service *Service) CancelSubscription(ctx context.Context, command CancelSu
 
 	subscription, err := service.money.GetSubscription(ctx, command.ClientUserID, command.SubscriptionID)
 	if err != nil {
+		if errors.Is(err, domain.ErrSubscriptionNotFound) {
+			return nil
+		}
 		return err
 	}
 
+	if !subscription.Active {
+		return nil
+	}
 	if subscription.StripeSubscriptionID != "" {
+		if !subscription.AutoRenew {
+			return nil
+		}
 		if service.paymentProvider == nil {
 			return ErrPaymentProviderUnavailable
 		}
@@ -241,8 +251,60 @@ func (service *Service) CancelSubscription(ctx context.Context, command CancelSu
 			return fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
 		}
 
-		return service.money.SetSubscriptionAutoRenew(ctx, command.ClientUserID, command.SubscriptionID, false)
+		if err := service.money.SetSubscriptionAutoRenew(ctx, command.ClientUserID, command.SubscriptionID, false); err != nil {
+			if errors.Is(err, domain.ErrSubscriptionNotFound) {
+				return nil
+			}
+			return err
+		}
+
+		_ = service.createSubscriptionCancellationNotifications(ctx, subscription)
+		return nil
 	}
 
-	return service.money.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID)
+	if err := service.money.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID); err != nil {
+		if errors.Is(err, domain.ErrSubscriptionNotFound) {
+			return nil
+		}
+		return err
+	}
+
+	_ = service.createSubscriptionCancellationNotifications(ctx, subscription)
+	return nil
+}
+
+func (service *Service) createSubscriptionCancellationNotifications(ctx context.Context, subscription domain.Subscription) error {
+	periodEnd := subscription.ExpiresAt
+	if subscription.CurrentPeriodEnd != nil {
+		periodEnd = *subscription.CurrentPeriodEnd
+	}
+
+	tierInfo := ""
+	if subscription.TierName != "" {
+		tierInfo = fmt.Sprintf(" «%s»", subscription.TierName)
+	}
+	periodInfo := ""
+	if !periodEnd.IsZero() {
+		periodInfo = fmt.Sprintf(" Доступ сохранится до %s.", periodEnd.Format("02.01.2006"))
+	}
+
+	if err := service.createNotification(ctx, domain.Notification{
+		UserID:         subscription.ClientUserID,
+		Type:           domain.NotificationTypeSubscription,
+		ActorUserID:    subscription.TrainerUserID,
+		Title:          "Вы отписались",
+		Body:           fmt.Sprintf("Вы отменили подписку%s.%s", tierInfo, periodInfo),
+		SubscriptionID: &subscription.SubscriptionID,
+	}); err != nil {
+		return err
+	}
+
+	return service.createNotification(ctx, domain.Notification{
+		UserID:         subscription.TrainerUserID,
+		Type:           domain.NotificationTypeSubscription,
+		ActorUserID:    subscription.ClientUserID,
+		Title:          "Подписчик отписался",
+		Body:           fmt.Sprintf("Клиент отменил подписку%s.%s", tierInfo, periodInfo),
+		SubscriptionID: &subscription.SubscriptionID,
+	})
 }

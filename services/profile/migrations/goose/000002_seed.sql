@@ -8,7 +8,7 @@ VALUES
 
 INSERT INTO profile (user_id, username, first_name, last_name, bio, avatar_url, is_trainer)
 VALUES
-  (1001, 'coach_anna', 'Anna', 'Petrova', 'Тренер по бегу и ОФП. Помогаю готовиться к забегам 10K и полумарафону.', 'https://images.pexels.com/photos/8455977/pexels-photo-8455977.jpeg?auto=compress&cs=tinysrgb&w=800', true),
+  (1001, 'coach_anna', 'Anna', 'Petrova', 'Тренер по бегу и ОФП. Помогаю готовиться к забегам 10K и полумарафону.', 'https://images.pexels.com/photos/8454926/pexels-photo-8454926.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces', true),
   (1002, 'runner_ivan', 'Ivan', 'Sidorov', 'Любитель бега. Ищу тренера и собираю программу подготовки к первому полумарафону.', NULL, false),
   (1003, 'swim_mike', 'Mikhail', 'Volkov', 'Тренер по плаванию. Работаю с техникой дыхания и выносливостью.', 'https://images.pexels.com/photos/18167936/pexels-photo-18167936.jpeg?auto=compress&cs=tinysrgb&w=800', true);
 

@@ -905,6 +905,8 @@ func TestServiceListAndDeleteSubscriptionTiers(t *testing.T) {
 }
 
 func TestServiceListAndCancelSubscriptions(t *testing.T) {
+	periodEnd := time.Date(2026, 6, 1, 10, 0, 0, 0, time.UTC)
+	notifications := make([]domain.Notification, 0, 2)
 	service := NewService(
 		stubRepositories(stubContentRepository{
 			listSubscriptionsFunc: func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error) {
@@ -924,6 +926,20 @@ func TestServiceListAndCancelSubscriptions(t *testing.T) {
 					t.Fatalf("unexpected cancel args: client=%d subscription=%d", clientUserID, subscriptionID)
 				}
 				return nil
+			},
+			getSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error) {
+				return domain.Subscription{
+					SubscriptionID: subscriptionID,
+					ClientUserID:   clientUserID,
+					TrainerUserID:  1001,
+					TierName:       "Продвинутый",
+					Active:         true,
+					ExpiresAt:      periodEnd,
+				}, nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
 			},
 		}),
 		nil,
@@ -949,19 +965,42 @@ func TestServiceListAndCancelSubscriptions(t *testing.T) {
 	if err := service.CancelSubscription(context.Background(), CancelSubscriptionCommand{ClientUserID: 1002, SubscriptionID: 1}); err != nil {
 		t.Fatalf("unexpected cancel error: %v", err)
 	}
+	if len(notifications) != 2 {
+		t.Fatalf("unexpected cancellation notifications: %+v", notifications)
+	}
+	if notifications[0].UserID != 1002 ||
+		notifications[0].ActorUserID != 1001 ||
+		notifications[0].Type != domain.NotificationTypeSubscription ||
+		notifications[0].Title != "Вы отписались" {
+		t.Fatalf("unexpected client cancellation notification: %+v", notifications[0])
+	}
+	if notifications[1].UserID != 1001 ||
+		notifications[1].ActorUserID != 1002 ||
+		notifications[1].Type != domain.NotificationTypeSubscription ||
+		notifications[1].Title != "Подписчик отписался" {
+		t.Fatalf("unexpected trainer cancellation notification: %+v", notifications[1])
+	}
 }
 
 func TestServiceCancelSubscriptionViaStripe(t *testing.T) {
 	var canceledAtPeriodEnd *bool
 	autoRenewSet := true
 	localCancelCalled := false
+	periodEnd := time.Date(2026, 6, 15, 10, 0, 0, 0, time.UTC)
+	notifications := make([]domain.Notification, 0, 2)
 	service := NewService(
 		stubRepositories(stubContentRepository{
 			getSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error) {
 				return domain.Subscription{
 					SubscriptionID:       subscriptionID,
 					ClientUserID:         clientUserID,
+					TrainerUserID:        1001,
+					TierName:             "Премиум",
+					Active:               true,
+					ExpiresAt:            periodEnd,
 					StripeSubscriptionID: "sub_123",
+					CurrentPeriodEnd:     &periodEnd,
+					AutoRenew:            true,
 				}, nil
 			},
 			setAutoRenewFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64, autoRenew bool) error {
@@ -971,6 +1010,10 @@ func TestServiceCancelSubscriptionViaStripe(t *testing.T) {
 			cancelSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) error {
 				localCancelCalled = true
 				return nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
 			},
 		}),
 		nil,
@@ -996,6 +1039,65 @@ func TestServiceCancelSubscriptionViaStripe(t *testing.T) {
 	}
 	if localCancelCalled {
 		t.Fatal("expected no immediate local cancel for stripe subscription")
+	}
+	if len(notifications) != 2 ||
+		notifications[0].Title != "Вы отписались" ||
+		notifications[1].Title != "Подписчик отписался" {
+		t.Fatalf("unexpected stripe cancellation notifications: %+v", notifications)
+	}
+}
+
+func TestServiceCancelSubscriptionAlreadyCancelled(t *testing.T) {
+	providerCalled := false
+	notificationCalled := false
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error) {
+				return domain.Subscription{
+					SubscriptionID:       subscriptionID,
+					ClientUserID:         clientUserID,
+					Active:               true,
+					StripeSubscriptionID: "sub_123",
+					AutoRenew:            false,
+				}, nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notificationCalled = true
+				return notification, nil
+			},
+		}),
+		nil,
+		stubPaymentProvider{
+			cancelFunc: func(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error {
+				providerCalled = true
+				return nil
+			},
+		},
+	)
+
+	if err := service.CancelSubscription(context.Background(), CancelSubscriptionCommand{ClientUserID: 1002, SubscriptionID: 7}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if providerCalled {
+		t.Fatal("expected already cancelled subscription to skip provider cancel")
+	}
+	if notificationCalled {
+		t.Fatal("expected already cancelled subscription to skip cancellation notifications")
+	}
+}
+
+func TestServiceCancelSubscriptionNotFoundIsIdempotent(t *testing.T) {
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getSubscriptionFunc: func(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error) {
+				return domain.Subscription{}, domain.ErrSubscriptionNotFound
+			},
+		}),
+		nil,
+	)
+
+	if err := service.CancelSubscription(context.Background(), CancelSubscriptionCommand{ClientUserID: 1002, SubscriptionID: 7}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }
 

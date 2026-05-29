@@ -149,10 +149,10 @@ SELECT setval(
 
 INSERT INTO profile (user_id, username, first_name, last_name, bio, avatar_url, is_trainer)
 VALUES
-  (1001, 'coach_anna',      'Анна',   'Петрова',   'Тренер по бегу и ОФП. Помогаю готовиться к забегам 10K, полумарафону и первому марафону без травм.',       'https://images.pexels.com/photos/8455977/pexels-photo-8455977.jpeg?auto=compress&cs=tinysrgb&w=800', true),
+  (1001, 'coach_anna',      'Анна',   'Петрова',   'Тренер по бегу и ОФП. Помогаю готовиться к забегам 10K, полумарафону и первому марафону без травм.',       'https://images.pexels.com/photos/8454926/pexels-photo-8454926.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces', true),
   (1002, 'runner_ivan',     'Иван',   'Сидоров',   'Любитель бега. Ищу тренера и собираю программу подготовки к первому полумарафону.',                        NULL, false),
   (1003, 'swim_mike',       'Михаил', 'Волков',    'Тренер по плаванию. Работаю с техникой дыхания, постановкой гребка и выносливостью.',                     'https://images.pexels.com/photos/18167936/pexels-photo-18167936.jpeg?auto=compress&cs=tinysrgb&w=800', true),
-  (1004, 'yoga_elena',      'Елена',  'Смирнова',  'Инструктор по йоге и мягкой растяжке. Подходит для новичков, восстановления и работы со спиной.',         'https://images.pexels.com/photos/4056441/pexels-photo-4056441.jpeg?auto=compress&cs=tinysrgb&w=800', true),
+  (1004, 'yoga_elena',      'Елена',  'Смирнова',  'Инструктор по йоге и мягкой растяжке. Подходит для новичков, восстановления и работы со спиной.',         'https://images.pexels.com/photos/6697367/pexels-photo-6697367.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces', true),
   (1005, 'box_sergey',      'Сергей', 'Орлов',     'Тренер по боксу. Ставлю технику ударов, работу ног, защиту и безопасные спарринги.',                      'https://images.pexels.com/photos/9944859/pexels-photo-9944859.jpeg?auto=compress&cs=tinysrgb&w=800', true),
   (1006, 'fit_olga',        'Ольга',  'Кузнецова', 'Тренер по силовым и функциональным тренировкам. Делаю программы для дома и зала.',                        'https://images.pexels.com/photos/6739931/pexels-photo-6739931.jpeg?auto=compress&cs=tinysrgb&w=800', true),
   (1007, 'cycle_dima',      'Дмитрий','Морозов',   'Тренер по велоспорту. Помогаю развивать выносливость, каденс и готовиться к длинным заездам.',             'https://images.pexels.com/photos/18021124/pexels-photo-18021124.jpeg?auto=compress&cs=tinysrgb&w=800', true),
