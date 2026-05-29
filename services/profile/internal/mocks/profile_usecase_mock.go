@@ -72,6 +72,20 @@ func (mr *MockProfileUseCaseMockRecorder) CreateProfile(ctx, command any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProfile", reflect.TypeOf((*MockProfileUseCase)(nil).CreateProfile), ctx, command)
 }
 
+// DeleteProfile mocks base method.
+func (m *MockProfileUseCase) DeleteProfile(ctx context.Context, userID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteProfile", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteProfile indicates an expected call of DeleteProfile.
+func (mr *MockProfileUseCaseMockRecorder) DeleteProfile(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProfile", reflect.TypeOf((*MockProfileUseCase)(nil).DeleteProfile), ctx, userID)
+}
+
 // DeleteAvatar mocks base method.
 func (m *MockProfileUseCase) DeleteAvatar(ctx context.Context, userID int64) error {
 	m.ctrl.T.Helper()

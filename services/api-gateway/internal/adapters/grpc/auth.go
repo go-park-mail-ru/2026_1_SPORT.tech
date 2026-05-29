@@ -238,6 +238,12 @@ func (server *Server) DeleteAccount(ctx context.Context, request *gatewayv1.Dele
 		return nil, err
 	}
 
+	if _, err := server.profileClient.DeleteProfile(forwardContext(ctx), &profilev1.DeleteProfileRequest{
+		UserId: principal.User.GetUserId(),
+	}); err != nil {
+		return nil, err
+	}
+
 	if err := clearSessionCookie(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "clear session cookie: %v", err)
 	}

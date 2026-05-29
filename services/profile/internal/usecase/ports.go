@@ -23,6 +23,7 @@ type ProfileRepository interface {
 	GetByUsername(ctx context.Context, username string) (domain.Profile, error)
 	Update(ctx context.Context, profile domain.Profile) error
 	SetTrainer(ctx context.Context, userID int64, details *domain.TrainerDetails) error
+	Delete(ctx context.Context, userID int64) error
 }
 
 type PrivacySettingsRepository interface {

@@ -15,6 +15,7 @@ type ProfileUseCase interface {
 	GetProfile(ctx context.Context, userID int64) (domain.Profile, error)
 	GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error)
 	UpdateProfile(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error)
+	DeleteProfile(ctx context.Context, userID int64) error
 }
 
 type AuthorUseCase interface {
@@ -87,6 +88,13 @@ func (server *Server) GetProfileByUsername(ctx context.Context, request *profile
 	}
 
 	return mappers.NewProfileResponse(profile), nil
+}
+
+func (server *Server) DeleteProfile(ctx context.Context, request *profilev1.DeleteProfileRequest) (*emptypb.Empty, error) {
+	if err := server.useCases.Profiles.DeleteProfile(ctx, request.GetUserId()); err != nil {
+		return nil, mappers.ErrorToStatus(err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (server *Server) UpdateProfile(ctx context.Context, request *profilev1.UpdateProfileRequest) (*profilev1.ProfileResponse, error) {

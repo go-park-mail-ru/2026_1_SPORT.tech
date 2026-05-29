@@ -29,6 +29,7 @@ const (
 	ProfileService_UpdatePrivacySettings_FullMethodName = "/sporttech.profile.v1.ProfileService/UpdatePrivacySettings"
 	ProfileService_SearchAuthors_FullMethodName         = "/sporttech.profile.v1.ProfileService/SearchAuthors"
 	ProfileService_UploadAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/UploadAvatar"
+	ProfileService_DeleteProfile_FullMethodName         = "/sporttech.profile.v1.ProfileService/DeleteProfile"
 	ProfileService_DeleteAvatar_FullMethodName          = "/sporttech.profile.v1.ProfileService/DeleteAvatar"
 	ProfileService_ListSportTypes_FullMethodName        = "/sporttech.profile.v1.ProfileService/ListSportTypes"
 	ProfileService_CreateMeasurement_FullMethodName     = "/sporttech.profile.v1.ProfileService/CreateMeasurement"
@@ -51,6 +52,7 @@ type ProfileServiceClient interface {
 	UpdatePrivacySettings(ctx context.Context, in *UpdatePrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error)
 	SearchAuthors(ctx context.Context, in *SearchAuthorsRequest, opts ...grpc.CallOption) (*SearchAuthorsResponse, error)
 	UploadAvatar(ctx context.Context, in *UploadAvatarRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	DeleteProfile(ctx context.Context, in *DeleteProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListSportTypes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSportTypesResponse, error)
 	CreateMeasurement(ctx context.Context, in *CreateMeasurementRequest, opts ...grpc.CallOption) (*MeasurementResponse, error)
@@ -158,6 +160,16 @@ func (c *profileServiceClient) UploadAvatar(ctx context.Context, in *UploadAvata
 	return out, nil
 }
 
+func (c *profileServiceClient) DeleteProfile(ctx context.Context, in *DeleteProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *profileServiceClient) DeleteAvatar(ctx context.Context, in *DeleteAvatarRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -241,6 +253,7 @@ type ProfileServiceServer interface {
 	UpdatePrivacySettings(context.Context, *UpdatePrivacySettingsRequest) (*PrivacySettingsResponse, error)
 	SearchAuthors(context.Context, *SearchAuthorsRequest) (*SearchAuthorsResponse, error)
 	UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error)
+	DeleteProfile(context.Context, *DeleteProfileRequest) (*emptypb.Empty, error)
 	DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error)
 	ListSportTypes(context.Context, *emptypb.Empty) (*ListSportTypesResponse, error)
 	CreateMeasurement(context.Context, *CreateMeasurementRequest) (*MeasurementResponse, error)
@@ -283,6 +296,9 @@ func (UnimplementedProfileServiceServer) SearchAuthors(context.Context, *SearchA
 }
 func (UnimplementedProfileServiceServer) UploadAvatar(context.Context, *UploadAvatarRequest) (*ProfileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UploadAvatar not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteProfile(context.Context, *DeleteProfileRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteProfile not implemented")
 }
 func (UnimplementedProfileServiceServer) DeleteAvatar(context.Context, *DeleteAvatarRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteAvatar not implemented")
@@ -487,6 +503,24 @@ func _ProfileService_UploadAvatar_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_DeleteProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteProfile(ctx, req.(*DeleteProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProfileService_DeleteAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteAvatarRequest)
 	if err := dec(in); err != nil {
@@ -655,6 +689,10 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadAvatar",
 			Handler:    _ProfileService_UploadAvatar_Handler,
+		},
+		{
+			MethodName: "DeleteProfile",
+			Handler:    _ProfileService_DeleteProfile_Handler,
 		},
 		{
 			MethodName: "DeleteAvatar",

@@ -63,6 +63,10 @@ service ProfileService {
     };
   }
 
+  rpc DeleteProfile(DeleteProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/profiles/{user_id}";
+  }
+
   rpc DeleteAvatar(DeleteAvatarRequest) returns (google.protobuf.Empty) {
     option (google.api.http).delete = "/v1/profiles/{user_id}/avatar";
   }
@@ -212,6 +216,10 @@ message UploadAvatarRequest {
   string file_name = 2;
   string content_type = 3;
   bytes content = 4;
+}
+
+message DeleteProfileRequest {
+  int64 user_id = 1;
 }
 
 message DeleteAvatarRequest {

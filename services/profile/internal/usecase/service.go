@@ -101,6 +101,10 @@ func (service *Service) CreateProfile(ctx context.Context, command CreateProfile
 	return service.profiles.GetByID(ctx, command.UserID)
 }
 
+func (service *Service) DeleteProfile(ctx context.Context, userID int64) error {
+	return service.profiles.Delete(ctx, userID)
+}
+
 func (service *Service) GetProfile(ctx context.Context, userID int64) (domain.Profile, error) {
 	if err := validateUserID(userID); err != nil {
 		return domain.Profile{}, err

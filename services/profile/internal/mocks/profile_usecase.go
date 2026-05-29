@@ -14,6 +14,7 @@ type ProfileUseCase interface {
 	GetProfile(ctx context.Context, userID int64) (domain.Profile, error)
 	GetProfileByUsername(ctx context.Context, username string) (domain.Profile, error)
 	UpdateProfile(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error)
+	DeleteProfile(ctx context.Context, userID int64) error
 	SearchAuthors(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error)
 	UploadAvatar(ctx context.Context, command usecase.UploadAvatarCommand) (domain.Profile, error)
 	DeleteAvatar(ctx context.Context, userID int64) error
