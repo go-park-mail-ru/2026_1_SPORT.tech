@@ -60,26 +60,11 @@ func (service *Service) CreateDonationPayment(ctx context.Context, command Creat
 		return domain.DonationPayment{}, ErrPaymentProviderUnavailable
 	}
 
-	payment := domain.DonationPayment{
-		Provider:          service.paymentProvider.ProviderName(),
-		Status:            domain.PaymentStatusPending,
-		SenderUserID:      donationCommand.SenderUserID,
-		RecipientUserID:   donationCommand.RecipientUserID,
-		AmountValue:       donationCommand.AmountValue,
-		Currency:          donationCommand.Currency,
-		Message:           donationCommand.Message,
-		ConfirmationToken: confirmationToken,
-	}
-	created, err := service.money.CreateDonationPayment(ctx, payment)
-	if err != nil {
-		return domain.DonationPayment{}, err
-	}
-
 	providerPayment, err := service.paymentProvider.CreatePayment(ctx, PaymentProviderCreateRequest{
 		AmountValue:    donationCommand.AmountValue,
 		Currency:       donationCommand.Currency,
-		Description:    fmt.Sprintf("Donation payment #%d", created.PaymentID),
-		IdempotenceKey: paymentIdempotenceKey("donation", created),
+		Description:    fmt.Sprintf("Donation to user %d", donationCommand.RecipientUserID),
+		IdempotenceKey: paymentIdempotenceKey("donation", confirmationToken),
 		ReturnURL:      normalizeOptionalURL(command.ReturnURL),
 		CancelURL:      normalizeOptionalURL(command.CancelURL),
 	})
@@ -87,7 +72,18 @@ func (service *Service) CreateDonationPayment(ctx context.Context, command Creat
 		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
 	}
 
-	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
+	return service.money.CreateDonationPayment(ctx, domain.DonationPayment{
+		Provider:          service.paymentProvider.ProviderName(),
+		ProviderPaymentID: providerPayment.ProviderPaymentID,
+		ConfirmationURL:   providerPayment.ConfirmationURL,
+		Status:            domain.PaymentStatusPending,
+		SenderUserID:      donationCommand.SenderUserID,
+		RecipientUserID:   donationCommand.RecipientUserID,
+		AmountValue:       donationCommand.AmountValue,
+		Currency:          donationCommand.Currency,
+		Message:           donationCommand.Message,
+		ConfirmationToken: confirmationToken,
+	})
 }
 
 func (service *Service) CreateSubscriptionPayment(ctx context.Context, command CreateSubscriptionPaymentCommand) (domain.DonationPayment, error) {
@@ -119,8 +115,24 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 		return domain.DonationPayment{}, err
 	}
 	tierID := tier.TierID
-	payment := domain.DonationPayment{
+
+	providerPayment, err := service.paymentProvider.CreatePayment(ctx, PaymentProviderCreateRequest{
+		AmountValue:    tier.Price,
+		Currency:       "RUB",
+		Description:    fmt.Sprintf("Subscription to trainer %d tier %d", command.TrainerUserID, tierID),
+		IdempotenceKey: paymentIdempotenceKey("subscription", confirmationToken),
+		ReturnURL:      normalizeOptionalURL(command.ReturnURL),
+		CancelURL:      normalizeOptionalURL(command.CancelURL),
+		Recurring:      true,
+	})
+	if err != nil {
+		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+	}
+
+	return service.money.CreateDonationPayment(ctx, domain.DonationPayment{
 		Provider:          service.paymentProvider.ProviderName(),
+		ProviderPaymentID: providerPayment.ProviderPaymentID,
+		ConfirmationURL:   providerPayment.ConfirmationURL,
 		Status:            domain.PaymentStatusPending,
 		SenderUserID:      command.ClientUserID,
 		RecipientUserID:   command.TrainerUserID,
@@ -128,25 +140,7 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 		Currency:          "RUB",
 		ConfirmationToken: confirmationToken,
 		TierID:            &tierID,
-	}
-	created, err := service.money.CreateDonationPayment(ctx, payment)
-	if err != nil {
-		return domain.DonationPayment{}, err
-	}
-
-	providerPayment, err := service.paymentProvider.CreatePayment(ctx, PaymentProviderCreateRequest{
-		AmountValue:    tier.Price,
-		Currency:       payment.Currency,
-		Description:    fmt.Sprintf("Subscription payment #%d", created.PaymentID),
-		IdempotenceKey: paymentIdempotenceKey("subscription", created),
-		ReturnURL:      normalizeOptionalURL(command.ReturnURL),
-		CancelURL:      normalizeOptionalURL(command.CancelURL),
 	})
-	if err != nil {
-		return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
-	}
-
-	return service.money.UpdateDonationPaymentProvider(ctx, created.PaymentID, providerPayment.ProviderPaymentID, providerPayment.ConfirmationURL)
 }
 
 func (service *Service) createFreeSubscription(ctx context.Context, command CreateSubscriptionPaymentCommand, tierID int64) (domain.DonationPayment, error) {
@@ -217,15 +211,67 @@ func (service *Service) ConfirmDonationPayment(ctx context.Context, command Conf
 }
 
 func (service *Service) ConfirmPaymentFromProvider(ctx context.Context, providerPaymentID string) (domain.DonationPayment, error) {
+	return service.confirmFromProvider(ctx, providerPaymentID, "")
+}
+
+func (service *Service) ConfirmSubscriptionPaymentFromProvider(ctx context.Context, providerPaymentID string, stripeSubscriptionID string) (domain.DonationPayment, error) {
+	if normalizeRequiredText(stripeSubscriptionID) == "" {
+		return domain.DonationPayment{}, ErrInvalidProviderSubscriptionID
+	}
+	return service.confirmFromProvider(ctx, providerPaymentID, stripeSubscriptionID)
+}
+
+func (service *Service) confirmFromProvider(ctx context.Context, providerPaymentID string, stripeSubscriptionID string) (domain.DonationPayment, error) {
 	if normalizeRequiredText(providerPaymentID) == "" {
 		return domain.DonationPayment{}, ErrInvalidProviderPaymentID
 	}
 
-	payment, justConfirmed, err := service.money.ConfirmPaymentByProviderID(ctx, providerPaymentID)
+	payment, justConfirmed, err := service.money.ConfirmPaymentByProviderID(ctx, providerPaymentID, stripeSubscriptionID)
 	if err != nil {
 		return domain.DonationPayment{}, err
 	}
 	if err := service.notifyPaymentConfirmed(ctx, payment, justConfirmed); err != nil {
+		return domain.DonationPayment{}, err
+	}
+
+	return payment, nil
+}
+
+func (service *Service) RenewSubscriptionFromProvider(ctx context.Context, stripeSubscriptionID string, currentPeriodEnd time.Time) error {
+	if normalizeRequiredText(stripeSubscriptionID) == "" {
+		return ErrInvalidProviderSubscriptionID
+	}
+	if _, err := service.money.RenewSubscriptionByStripeID(ctx, stripeSubscriptionID, currentPeriodEnd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *Service) DeactivateSubscriptionFromProvider(ctx context.Context, stripeSubscriptionID string) error {
+	if normalizeRequiredText(stripeSubscriptionID) == "" {
+		return ErrInvalidProviderSubscriptionID
+	}
+	if _, err := service.money.DeactivateSubscriptionByStripeID(ctx, stripeSubscriptionID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *Service) ExpirePaymentFromProvider(ctx context.Context, providerPaymentID string) (domain.DonationPayment, error) {
+	return service.setTerminalPaymentStatus(ctx, providerPaymentID, domain.PaymentStatusExpired)
+}
+
+func (service *Service) FailPaymentFromProvider(ctx context.Context, providerPaymentID string) (domain.DonationPayment, error) {
+	return service.setTerminalPaymentStatus(ctx, providerPaymentID, domain.PaymentStatusFailed)
+}
+
+func (service *Service) setTerminalPaymentStatus(ctx context.Context, providerPaymentID string, status domain.PaymentStatus) (domain.DonationPayment, error) {
+	if normalizeRequiredText(providerPaymentID) == "" {
+		return domain.DonationPayment{}, ErrInvalidProviderPaymentID
+	}
+
+	payment, _, err := service.money.SetPaymentStatusByProviderID(ctx, providerPaymentID, status)
+	if err != nil {
 		return domain.DonationPayment{}, err
 	}
 

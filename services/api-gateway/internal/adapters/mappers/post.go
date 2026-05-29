@@ -28,6 +28,7 @@ func UpdatePostRequestToContent(authorUserID int64, request *gatewayv1.UpdatePos
 		ClearSportTypeId:               request.GetClearSportTypeId(),
 		Blocks:                         postBlockInputsToContent(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
+		IsPinned:                       request.IsPinned,
 	}
 }
 
@@ -189,6 +190,7 @@ func postResponseFromContentPost(post *contentv1.Post) (*gatewayv1.PostResponse,
 		CanView:       post.GetCanView(),
 		CommentsCount: commentsCount,
 		SportTypeId:   sportTypeID,
+		IsPinned:      post.GetIsPinned(),
 	}, nil
 }
 
@@ -228,5 +230,6 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 		IsLiked:       post.GetIsLiked(),
 		CommentsCount: commentsCount,
 		SportTypeId:   sportTypeID,
+		IsPinned:      post.GetIsPinned(),
 	}, nil
 }

@@ -39,12 +39,18 @@ type MonetizationRepository interface {
 	ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
+	GetSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error)
+	SetSubscriptionAutoRenew(ctx context.Context, clientUserID int64, subscriptionID int64, autoRenew bool) error
+	RenewSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string, currentPeriodEnd time.Time) (bool, error)
+	DeactivateSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string) (bool, error)
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	CreateDonationPayment(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
-	UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error)
 	GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error)
 	ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error)
-	ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error)
+	ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string, stripeSubscriptionID string) (domain.DonationPayment, bool, error)
+	SetPaymentStatusByProviderID(ctx context.Context, providerPaymentID string, status domain.PaymentStatus) (domain.DonationPayment, bool, error)
+	ListStalePendingPayments(ctx context.Context, olderThan time.Time, limit int32) ([]domain.DonationPayment, error)
+	DeactivateExpiredSubscriptions(ctx context.Context, expiredBefore time.Time) (int64, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 	ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error)
@@ -107,6 +113,7 @@ type PaymentProvider interface {
 	ProviderName() string
 	CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
 	GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
+	CancelSubscription(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error
 }
 
 type PaymentProviderCreateRequest struct {
@@ -116,6 +123,7 @@ type PaymentProviderCreateRequest struct {
 	IdempotenceKey string
 	ReturnURL      string
 	CancelURL      string
+	Recurring      bool
 }
 
 type PaymentProviderPayment struct {

@@ -31,6 +31,7 @@ type Post struct {
 	LikesCount                int64
 	IsLiked                   bool
 	CommentsCount             int64
+	IsPinned                  bool
 	Blocks                    []PostBlock
 }
 
@@ -45,6 +46,7 @@ type PostSummary struct {
 	LikesCount                int64
 	IsLiked                   bool
 	CommentsCount             int64
+	IsPinned                  bool
 }
 
 type PostLikeState struct {

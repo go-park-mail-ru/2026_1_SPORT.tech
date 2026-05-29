@@ -31,6 +31,7 @@ type UpdatePostCommand struct {
 	ClearSportTypeID               bool
 	Blocks                         []PostBlockInput
 	ReplaceBlocks                  bool
+	IsPinned                       *bool
 }
 
 type DeletePostCommand struct {

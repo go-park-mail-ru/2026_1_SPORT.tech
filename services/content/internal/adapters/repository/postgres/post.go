@@ -74,7 +74,8 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $2
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -105,6 +106,7 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 		&post.LikesCount,
 		&post.IsLiked,
 		&post.CommentsCount,
+		&post.IsPinned,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -144,7 +146,8 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $2
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -185,6 +188,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			&post.LikesCount,
 			&post.IsLiked,
 			&post.CommentsCount,
+			&post.IsPinned,
 		); err != nil {
 			return nil, err
 		}
@@ -217,7 +221,8 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $1
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -325,6 +330,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			&post.LikesCount,
 			&post.IsLiked,
 			&post.CommentsCount,
+			&post.IsPinned,
 		); err != nil {
 			return nil, err
 		}
@@ -349,11 +355,24 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 	}
 	defer tx.Rollback()
 
+	if post.IsPinned {
+		if _, err := tx.ExecContext(
+			ctx,
+			`UPDATE content_post SET is_pinned = FALSE, updated_at = $3 WHERE author_user_id = $1 AND post_id <> $2 AND is_pinned`,
+			post.AuthorUserID,
+			post.PostID,
+			now,
+		); err != nil {
+			return err
+		}
+	}
+
 	const updatePostQuery = `
 		UPDATE content_post
 		SET title = $3,
 			required_subscription_level = $4,
 			sport_type_id = $5,
+			is_pinned = $7,
 			updated_at = $6
 		WHERE post_id = $1
 			AND author_user_id = $2
@@ -368,6 +387,7 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 		nullInt32(post.RequiredSubscriptionLevel),
 		nullInt64(post.SportTypeID),
 		now,
+		post.IsPinned,
 	)
 	if err != nil {
 		return err

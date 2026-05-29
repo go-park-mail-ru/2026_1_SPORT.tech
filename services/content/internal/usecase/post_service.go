@@ -190,6 +190,9 @@ func (service *Service) UpdatePost(ctx context.Context, command UpdatePostComman
 	if command.ReplaceBlocks {
 		post.Blocks = normalizeBlocks(command.Blocks)
 	}
+	if command.IsPinned != nil {
+		post.IsPinned = *command.IsPinned
+	}
 
 	if err := validatePost(post); err != nil {
 		return domain.Post{}, err

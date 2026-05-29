@@ -17,7 +17,19 @@ type PaymentStatus string
 const (
 	PaymentStatusPending   PaymentStatus = "pending"
 	PaymentStatusConfirmed PaymentStatus = "confirmed"
+	PaymentStatusCanceled  PaymentStatus = "canceled"
+	PaymentStatusFailed    PaymentStatus = "failed"
+	PaymentStatusExpired   PaymentStatus = "expired"
 )
+
+func (status PaymentStatus) IsTerminal() bool {
+	switch status {
+	case PaymentStatusConfirmed, PaymentStatusCanceled, PaymentStatusFailed, PaymentStatusExpired:
+		return true
+	default:
+		return false
+	}
+}
 
 type DonationPayment struct {
 	PaymentID         int64

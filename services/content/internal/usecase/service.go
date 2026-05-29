@@ -186,6 +186,6 @@ func randomToken(prefix string) (string, error) {
 	return prefix + "_" + base64.RawURLEncoding.EncodeToString(data[:]), nil
 }
 
-func paymentIdempotenceKey(kind string, payment domain.DonationPayment) string {
-	return fmt.Sprintf("content-%s-payment-%d-%s", kind, payment.PaymentID, payment.ConfirmationToken)
+func paymentIdempotenceKey(kind string, confirmationToken string) string {
+	return fmt.Sprintf("content-%s-payment-%s", kind, confirmationToken)
 }

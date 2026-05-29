@@ -77,7 +77,7 @@ func (repository *Repository) SubscribeToTrainer(ctx context.Context, subscripti
 						updated_at
 					)
 					VALUES ($1, $2, $3, TRUE, $4, $5, $5)
-					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew
 				)
 				SELECT
 					inserted.subscription_id,
@@ -89,7 +89,7 @@ func (repository *Repository) SubscribeToTrainer(ctx context.Context, subscripti
 					inserted.active,
 					inserted.expires_at,
 					inserted.created_at,
-					inserted.updated_at
+					inserted.updated_at, inserted.stripe_subscription_id, inserted.current_period_end, inserted.auto_renew
 				FROM inserted
 				JOIN content_subscription_tier tier
 					ON tier.trainer_user_id = inserted.trainer_user_id
@@ -112,7 +112,7 @@ func (repository *Repository) SubscribeToTrainer(ctx context.Context, subscripti
 						expires_at = $4,
 						updated_at = $5
 					WHERE subscription_id = $6
-					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew
 				)
 				SELECT
 					updated.subscription_id,
@@ -124,7 +124,7 @@ func (repository *Repository) SubscribeToTrainer(ctx context.Context, subscripti
 					updated.active,
 					updated.expires_at,
 					updated.created_at,
-					updated.updated_at
+					updated.updated_at, updated.stripe_subscription_id, updated.current_period_end, updated.auto_renew
 				FROM updated
 				JOIN content_subscription_tier tier
 					ON tier.trainer_user_id = updated.trainer_user_id
@@ -168,7 +168,7 @@ func (repository *Repository) ListSubscriptions(ctx context.Context, clientUserI
 				(subscription.active AND subscription.expires_at > now()) AS active,
 				subscription.expires_at,
 				subscription.created_at,
-				subscription.updated_at
+				subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew
 			FROM content_subscription subscription
 			JOIN content_subscription_tier tier
 				ON tier.trainer_user_id = subscription.trainer_user_id
@@ -209,7 +209,7 @@ func (repository *Repository) ListTrainerSubscribers(ctx context.Context, traine
 				(subscription.active AND subscription.expires_at > now()) AS active,
 				subscription.expires_at,
 				subscription.created_at,
-				subscription.updated_at
+				subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew
 			FROM content_subscription subscription
 			JOIN content_subscription_tier tier
 				ON tier.trainer_user_id = subscription.trainer_user_id
@@ -299,7 +299,7 @@ func (repository *Repository) UpdateSubscription(ctx context.Context, subscripti
 				WHERE client_user_id = $1
 					AND subscription_id = $2
 					AND active = TRUE
-				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
+				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew
 			)
 			SELECT
 				updated.subscription_id,
@@ -311,7 +311,7 @@ func (repository *Repository) UpdateSubscription(ctx context.Context, subscripti
 				updated.active,
 				updated.expires_at,
 				updated.created_at,
-				updated.updated_at
+				updated.updated_at, updated.stripe_subscription_id, updated.current_period_end, updated.auto_renew
 			FROM updated
 			JOIN content_subscription_tier tier
 				ON tier.trainer_user_id = updated.trainer_user_id
@@ -336,6 +336,141 @@ func (repository *Repository) UpdateSubscription(ctx context.Context, subscripti
 	}
 
 	return updated, nil
+}
+
+func (repository *Repository) RenewSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string, currentPeriodEnd time.Time) (bool, error) {
+	result, err := repository.db.ExecContext(
+		ctx,
+		`
+			UPDATE content_subscription
+			SET active = TRUE,
+				expires_at = $2::timestamptz,
+				current_period_end = $2::timestamptz,
+				updated_at = $3::timestamptz
+			WHERE stripe_subscription_id = $1::text
+		`,
+		stripeSubscriptionID,
+		currentPeriodEnd,
+		time.Now().UTC(),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
+
+func (repository *Repository) DeactivateSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string) (bool, error) {
+	result, err := repository.db.ExecContext(
+		ctx,
+		`
+			UPDATE content_subscription
+			SET active = FALSE,
+				auto_renew = FALSE,
+				updated_at = $2::timestamptz
+			WHERE stripe_subscription_id = $1::text
+				AND active = TRUE
+		`,
+		stripeSubscriptionID,
+		time.Now().UTC(),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
+
+func (repository *Repository) GetSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error) {
+	const query = `
+		SELECT
+			subscription.subscription_id,
+			subscription.client_user_id,
+			subscription.trainer_user_id,
+			subscription.tier_id,
+			tier.name,
+			tier.price,
+			subscription.active,
+			subscription.expires_at,
+			subscription.created_at,
+			subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew
+		FROM content_subscription subscription
+		JOIN content_subscription_tier tier
+			ON tier.trainer_user_id = subscription.trainer_user_id
+			AND tier.tier_id = subscription.tier_id
+		WHERE subscription.subscription_id = $1::bigint
+			AND subscription.client_user_id = $2::bigint
+	`
+
+	subscription, err := scanSubscription(repository.db.QueryRowContext(ctx, query, subscriptionID, clientUserID))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.Subscription{}, domain.ErrSubscriptionNotFound
+		}
+		return domain.Subscription{}, err
+	}
+
+	return subscription, nil
+}
+
+func (repository *Repository) SetSubscriptionAutoRenew(ctx context.Context, clientUserID int64, subscriptionID int64, autoRenew bool) error {
+	result, err := repository.db.ExecContext(
+		ctx,
+		`
+			UPDATE content_subscription
+			SET auto_renew = $3::boolean,
+				updated_at = $4::timestamptz
+			WHERE client_user_id = $1::bigint
+				AND subscription_id = $2::bigint
+		`,
+		clientUserID,
+		subscriptionID,
+		autoRenew,
+		time.Now().UTC(),
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrSubscriptionNotFound
+	}
+
+	return nil
+}
+
+func (repository *Repository) DeactivateExpiredSubscriptions(ctx context.Context, expiredBefore time.Time) (int64, error) {
+	result, err := repository.db.ExecContext(
+		ctx,
+		`
+			UPDATE content_subscription
+			SET active = FALSE,
+				updated_at = $2::timestamptz
+			WHERE active = TRUE
+				AND expires_at < $1::timestamptz
+		`,
+		expiredBefore,
+		time.Now().UTC(),
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	return result.RowsAffected()
 }
 
 func (repository *Repository) CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error {

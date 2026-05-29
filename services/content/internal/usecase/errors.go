@@ -37,6 +37,7 @@ var (
 	ErrInvalidPaymentID                   = errors.New("invalid payment id")
 	ErrInvalidPaymentConfirmationToken    = errors.New("invalid payment confirmation token")
 	ErrInvalidProviderPaymentID           = errors.New("invalid provider payment id")
+	ErrInvalidProviderSubscriptionID      = errors.New("invalid provider subscription id")
 	ErrPaymentProviderUnavailable         = errors.New("payment provider is unavailable")
 	ErrPaymentNotSucceeded                = errors.New("payment is not succeeded")
 	ErrSubscriptionPaymentRequired        = errors.New("subscription payment is required")

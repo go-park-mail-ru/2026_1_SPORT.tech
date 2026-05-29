@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
@@ -146,6 +147,22 @@ func (service *Service) updatePaidSubscription(ctx context.Context, command Upda
 func (service *Service) CancelSubscription(ctx context.Context, command CancelSubscriptionCommand) error {
 	if err := validateSubscriptionIDCommand(command.ClientUserID, command.SubscriptionID); err != nil {
 		return err
+	}
+
+	subscription, err := service.money.GetSubscription(ctx, command.ClientUserID, command.SubscriptionID)
+	if err != nil {
+		return err
+	}
+
+	if subscription.StripeSubscriptionID != "" {
+		if service.paymentProvider == nil {
+			return ErrPaymentProviderUnavailable
+		}
+		if err := service.paymentProvider.CancelSubscription(ctx, subscription.StripeSubscriptionID, true); err != nil {
+			return fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+		}
+
+		return service.money.SetSubscriptionAutoRenew(ctx, command.ClientUserID, command.SubscriptionID, false)
 	}
 
 	return service.money.CancelSubscription(ctx, command.ClientUserID, command.SubscriptionID)

@@ -25,13 +25,21 @@ import (
 	"google.golang.org/grpc"
 )
 
+type paymentSweeper interface {
+	SweepPayments(ctx context.Context, pendingTTL time.Duration, subscriptionGrace time.Duration) (usecase.SweepResult, error)
+}
+
 type App struct {
-	cfg          config.Config
-	logger       *slog.Logger
-	database     *sql.DB
-	grpcServer   *grpc.Server
-	httpServer   *http.Server
-	grpcListener net.Listener
+	cfg               config.Config
+	logger            *slog.Logger
+	database          *sql.DB
+	grpcServer        *grpc.Server
+	httpServer        *http.Server
+	grpcListener      net.Listener
+	sweeper           paymentSweeper
+	sweepInterval     time.Duration
+	pendingTTL        time.Duration
+	subscriptionGrace time.Duration
 }
 
 func New(ctx context.Context, cfg config.Config) (*App, error) {
@@ -90,6 +98,25 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, fmt.Errorf("new local gateway: %w", err)
 	}
 
+	sweepInterval, err := cfg.Payment.SweepIntervalDuration()
+	if err != nil {
+		_ = grpcListener.Close()
+		_ = database.Close()
+		return nil, fmt.Errorf("parse sweep interval: %w", err)
+	}
+	pendingTTL, err := cfg.Payment.PendingTTLDuration()
+	if err != nil {
+		_ = grpcListener.Close()
+		_ = database.Close()
+		return nil, fmt.Errorf("parse pending ttl: %w", err)
+	}
+	subscriptionGrace, err := cfg.Payment.SubscriptionGraceDuration()
+	if err != nil {
+		_ = grpcListener.Close()
+		_ = database.Close()
+		return nil, fmt.Errorf("parse subscription grace: %w", err)
+	}
+
 	stripeWebhook := stripeadapter.NewWebhookHandler(cfg.Payment.StripeWebhookSecret, contentUseCase, logger)
 
 	httpMux := http.NewServeMux()
@@ -109,17 +136,25 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 	}
 
 	return &App{
-		cfg:          cfg,
-		logger:       logger,
-		database:     database,
-		grpcServer:   grpcServer,
-		httpServer:   httpServer,
-		grpcListener: grpcListener,
+		cfg:               cfg,
+		logger:            logger,
+		database:          database,
+		grpcServer:        grpcServer,
+		httpServer:        httpServer,
+		grpcListener:      grpcListener,
+		sweeper:           contentUseCase,
+		sweepInterval:     sweepInterval,
+		pendingTTL:        pendingTTL,
+		subscriptionGrace: subscriptionGrace,
 	}, nil
 }
 
 func (app *App) Run(ctx context.Context) error {
 	errCh := make(chan error, 2)
+
+	sweepCtx, cancelSweep := context.WithCancel(ctx)
+	defer cancelSweep()
+	go app.runPaymentSweeper(sweepCtx)
 
 	go func() {
 		app.logger.Info("starting gRPC server", "addr", app.cfg.Server.GRPCAddress())
@@ -142,6 +177,34 @@ func (app *App) Run(ctx context.Context) error {
 	case err := <-errCh:
 		_ = app.Shutdown()
 		return err
+	}
+}
+
+func (app *App) runPaymentSweeper(ctx context.Context) {
+	ticker := time.NewTicker(app.sweepInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			result, err := app.sweeper.SweepPayments(ctx, app.pendingTTL, app.subscriptionGrace)
+			if err != nil {
+				app.logger.Error("payment sweep", "err", err)
+				continue
+			}
+			if result.Confirmed > 0 || result.Expired > 0 || result.Errors > 0 || result.SubscriptionsDeactivated > 0 {
+				app.logger.Info(
+					"payment sweep",
+					"pending_checked", result.PendingChecked,
+					"confirmed", result.Confirmed,
+					"expired", result.Expired,
+					"errors", result.Errors,
+					"subscriptions_deactivated", result.SubscriptionsDeactivated,
+				)
+			}
+		}
 	}
 }
 

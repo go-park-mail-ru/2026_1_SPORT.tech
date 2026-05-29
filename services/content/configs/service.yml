@@ -32,6 +32,9 @@ payment:
   stripe_cancel_url: https://sporteon.ru/payment/cancel
   stripe_api_base_url: https://api.stripe.com/v1
   http_timeout: 5s
+  sweep_interval: 5m
+  pending_ttl: 24h
+  subscription_grace: 72h
 
 openapi:
   file_path: grpc/gen/openapiv2/content/v1/content.swagger.json

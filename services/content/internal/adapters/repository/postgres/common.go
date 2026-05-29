@@ -62,7 +62,11 @@ func scanSubscriptionTier(scanner sqlScanner) (domain.SubscriptionTier, error) {
 }
 
 func scanSubscription(scanner sqlScanner) (domain.Subscription, error) {
-	var subscription domain.Subscription
+	var (
+		subscription         domain.Subscription
+		stripeSubscriptionID sql.NullString
+		currentPeriodEnd     sql.NullTime
+	)
 	if err := scanner.Scan(
 		&subscription.SubscriptionID,
 		&subscription.ClientUserID,
@@ -74,9 +78,16 @@ func scanSubscription(scanner sqlScanner) (domain.Subscription, error) {
 		&subscription.ExpiresAt,
 		&subscription.CreatedAt,
 		&subscription.UpdatedAt,
+		&stripeSubscriptionID,
+		&currentPeriodEnd,
+		&subscription.AutoRenew,
 	); err != nil {
 		return domain.Subscription{}, err
 	}
+	if stripeSubscriptionID.Valid {
+		subscription.StripeSubscriptionID = stripeSubscriptionID.String
+	}
+	subscription.CurrentPeriodEnd = timePtrFromNull(currentPeriodEnd)
 
 	return subscription, nil
 }

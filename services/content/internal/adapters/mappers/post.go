@@ -72,6 +72,7 @@ func UpdatePostRequestToCommand(request *contentv1.UpdatePostRequest) usecase.Up
 		ClearSportTypeID:               request.GetClearSportTypeId(),
 		Blocks:                         postBlockInputsFromProto(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
+		IsPinned:                       request.IsPinned,
 	}
 }
 
@@ -158,6 +159,7 @@ func postToProto(post domain.Post) *contentv1.Post {
 		LikesCount:    post.LikesCount,
 		IsLiked:       post.IsLiked,
 		CommentsCount: post.CommentsCount,
+		IsPinned:      post.IsPinned,
 		Blocks:        make([]*contentv1.PostBlock, 0, len(post.Blocks)),
 	}
 	if post.RequiredSubscriptionLevel != nil {
@@ -183,6 +185,7 @@ func postSummaryToProto(post domain.PostSummary) *contentv1.PostSummary {
 		LikesCount:    post.LikesCount,
 		IsLiked:       post.IsLiked,
 		CommentsCount: post.CommentsCount,
+		IsPinned:      post.IsPinned,
 	}
 	if post.RequiredSubscriptionLevel != nil {
 		response.RequiredSubscriptionLevel = post.RequiredSubscriptionLevel
