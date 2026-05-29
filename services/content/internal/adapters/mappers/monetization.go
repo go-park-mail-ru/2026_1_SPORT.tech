@@ -227,18 +227,19 @@ func subscriptionTierToProto(tier domain.SubscriptionTier) *contentv1.Subscripti
 
 func subscriptionToProto(subscription domain.Subscription) *contentv1.Subscription {
 	response := &contentv1.Subscription{
-		SubscriptionId:       subscription.SubscriptionID,
-		ClientUserId:         subscription.ClientUserID,
-		TrainerUserId:        subscription.TrainerUserID,
-		TierId:               subscription.TierID,
-		TierName:             subscription.TierName,
-		Price:                subscription.Price,
-		Active:               subscription.Active,
-		ExpiresAt:            timestamppb.New(subscription.ExpiresAt),
-		CreatedAt:            timestamppb.New(subscription.CreatedAt),
-		UpdatedAt:            timestamppb.New(subscription.UpdatedAt),
-		AutoRenew:            subscription.AutoRenew,
-		StripeSubscriptionId: subscription.StripeSubscriptionID,
+		SubscriptionId:                 subscription.SubscriptionID,
+		ClientUserId:                   subscription.ClientUserID,
+		TrainerUserId:                  subscription.TrainerUserID,
+		TierId:                         subscription.TierID,
+		TierName:                       subscription.TierName,
+		Price:                          subscription.Price,
+		Active:                         subscription.Active,
+		ExpiresAt:                      timestamppb.New(subscription.ExpiresAt),
+		CreatedAt:                      timestamppb.New(subscription.CreatedAt),
+		UpdatedAt:                      timestamppb.New(subscription.UpdatedAt),
+		AutoRenew:                      subscription.AutoRenew,
+		StripeSubscriptionId:           subscription.StripeSubscriptionID,
+		PriceChangeRequiresResubscribe: subscription.PriceChangeRequiresResubscribe,
 	}
 	if subscription.CurrentPeriodEnd != nil {
 		response.CurrentPeriodEnd = timestamppb.New(*subscription.CurrentPeriodEnd)

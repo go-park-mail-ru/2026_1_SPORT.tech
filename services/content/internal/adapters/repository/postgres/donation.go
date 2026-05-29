@@ -343,6 +343,7 @@ func (repository *Repository) confirmPayment(
 			ClientUserID:  payment.SenderUserID,
 			TrainerUserID: payment.RecipientUserID,
 			TierID:        *payment.TierID,
+			Price:         payment.AmountValue,
 			ExpiresAt:     now.AddDate(0, 1, 0),
 		}, now)
 		if err != nil {
@@ -354,10 +355,11 @@ func (repository *Repository) confirmPayment(
 				ctx,
 				`
 					UPDATE content_subscription
-					SET stripe_subscription_id = $2::text,
-						current_period_end = $3::timestamptz,
-						auto_renew = TRUE,
-						updated_at = $4::timestamptz
+						SET stripe_subscription_id = $2::text,
+							current_period_end = $3::timestamptz,
+							auto_renew = TRUE,
+							price_change_requires_resubscribe = FALSE,
+							updated_at = $4::timestamptz
 					WHERE subscription_id = $1::bigint
 				`,
 				createdSubscription.SubscriptionID,
@@ -552,83 +554,103 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 		return scanSubscription(tx.QueryRowContext(
 			ctx,
 			`
-				WITH inserted AS (
-					INSERT INTO content_subscription (
-						client_user_id,
-						trainer_user_id,
-						tier_id,
-						active,
-						expires_at,
-						created_at,
-						updated_at
+					WITH inserted AS (
+						INSERT INTO content_subscription (
+							client_user_id,
+							trainer_user_id,
+							tier_id,
+							active,
+							expires_at,
+							created_at,
+							updated_at,
+							tier_name_snapshot,
+							price_snapshot,
+							price_change_requires_resubscribe
+						)
+						SELECT
+							$1::bigint,
+							$2::bigint,
+							$3::integer,
+							TRUE,
+							$4::timestamptz,
+							$5::timestamptz,
+							$5::timestamptz,
+							COALESCE(NULLIF($6::text, ''), tier.name),
+							CASE WHEN $7::integer > 0 OR tier.price = 0 THEN $7::integer ELSE tier.price END,
+							FALSE
+						FROM content_subscription_tier tier
+						WHERE tier.trainer_user_id = $2::bigint
+							AND tier.tier_id = $3::integer
+						RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, tier_name_snapshot, price_snapshot, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew, price_change_requires_resubscribe
 					)
-					VALUES (
-						$1::bigint,
-						$2::bigint,
-						$3::integer,
-						TRUE,
-						$4::timestamptz,
-						$5::timestamptz,
-						$5::timestamptz
-					)
-					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew
-				)
-				SELECT
-					inserted.subscription_id,
-					inserted.client_user_id,
-					inserted.trainer_user_id,
-					inserted.tier_id,
-					tier.name,
-					tier.price,
-					inserted.active,
-					inserted.expires_at,
-					inserted.created_at,
-					inserted.updated_at, inserted.stripe_subscription_id, inserted.current_period_end, inserted.auto_renew
-				FROM inserted
-				JOIN content_subscription_tier tier
-					ON tier.trainer_user_id = inserted.trainer_user_id
-					AND tier.tier_id = inserted.tier_id
-			`,
+					SELECT
+						inserted.subscription_id,
+						inserted.client_user_id,
+						inserted.trainer_user_id,
+						inserted.tier_id,
+						inserted.tier_name_snapshot,
+						inserted.price_snapshot,
+						inserted.active,
+						inserted.expires_at,
+						inserted.created_at,
+						inserted.updated_at, inserted.stripe_subscription_id, inserted.current_period_end, inserted.auto_renew, inserted.price_change_requires_resubscribe
+					FROM inserted
+				`,
 			subscription.ClientUserID,
 			subscription.TrainerUserID,
 			subscription.TierID,
 			subscription.ExpiresAt,
 			now,
+			subscription.TierName,
+			subscription.Price,
 		))
 	}
 
 	return scanSubscription(tx.QueryRowContext(
 		ctx,
 		`
-			WITH updated AS (
-				UPDATE content_subscription
-				SET tier_id = $1::integer,
-					active = TRUE,
-					expires_at = $2::timestamptz,
-					updated_at = $3::timestamptz
-				WHERE subscription_id = $4::bigint
-				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew
-			)
-			SELECT
-				updated.subscription_id,
-				updated.client_user_id,
-				updated.trainer_user_id,
-				updated.tier_id,
-				tier.name,
-				tier.price,
-				updated.active,
-				updated.expires_at,
-				updated.created_at,
-				updated.updated_at, updated.stripe_subscription_id, updated.current_period_end, updated.auto_renew
-			FROM updated
-			JOIN content_subscription_tier tier
-				ON tier.trainer_user_id = updated.trainer_user_id
-				AND tier.tier_id = updated.tier_id
-			`,
+				WITH selected_tier AS (
+					SELECT name, price
+					FROM content_subscription_tier
+					WHERE trainer_user_id = $5::bigint
+						AND tier_id = $1::integer
+				),
+				updated AS (
+					UPDATE content_subscription
+					SET tier_id = $1::integer,
+						active = TRUE,
+						expires_at = $2::timestamptz,
+						updated_at = $3::timestamptz,
+						tier_name_snapshot = COALESCE(NULLIF($6::text, ''), selected_tier.name),
+						price_snapshot = CASE WHEN $7::integer > 0 OR selected_tier.price = 0 THEN $7::integer ELSE selected_tier.price END,
+						stripe_subscription_id = CASE WHEN selected_tier.price = 0 THEN NULL ELSE stripe_subscription_id END,
+						current_period_end = CASE WHEN selected_tier.price = 0 THEN NULL ELSE current_period_end END,
+						auto_renew = CASE WHEN selected_tier.price = 0 THEN FALSE ELSE auto_renew END,
+						price_change_requires_resubscribe = FALSE
+					FROM selected_tier
+					WHERE subscription_id = $4::bigint
+					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, tier_name_snapshot, price_snapshot, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew, price_change_requires_resubscribe
+				)
+				SELECT
+					updated.subscription_id,
+					updated.client_user_id,
+					updated.trainer_user_id,
+					updated.tier_id,
+					updated.tier_name_snapshot,
+					updated.price_snapshot,
+					updated.active,
+					updated.expires_at,
+					updated.created_at,
+					updated.updated_at, updated.stripe_subscription_id, updated.current_period_end, updated.auto_renew, updated.price_change_requires_resubscribe
+				FROM updated
+				`,
 		subscription.TierID,
 		subscription.ExpiresAt,
 		now,
 		subscriptionID,
+		subscription.TrainerUserID,
+		subscription.TierName,
+		subscription.Price,
 	))
 }
 
@@ -639,12 +661,12 @@ func (repository *Repository) getSubscriptionTx(ctx context.Context, tx *sql.Tx,
 			subscription.client_user_id,
 			subscription.trainer_user_id,
 			subscription.tier_id,
-			tier.name,
-			tier.price,
+			COALESCE(subscription.tier_name_snapshot, tier.name),
+			COALESCE(subscription.price_snapshot, tier.price),
 			(subscription.active AND subscription.expires_at > now()) AS active,
 			subscription.expires_at,
 			subscription.created_at,
-			subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew
+			subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew, subscription.price_change_requires_resubscribe
 		FROM content_subscription subscription
 		JOIN content_subscription_tier tier
 			ON tier.trainer_user_id = subscription.trainer_user_id

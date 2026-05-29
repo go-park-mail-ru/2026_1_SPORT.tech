@@ -144,6 +144,19 @@ func (service *Service) CreateSubscriptionPayment(ctx context.Context, command C
 }
 
 func (service *Service) createFreeSubscription(ctx context.Context, command CreateSubscriptionPaymentCommand, tierID int64) (domain.DonationPayment, error) {
+	existingSubscription, err := service.activeSubscriptionForTrainer(ctx, command.ClientUserID, command.TrainerUserID)
+	if err != nil {
+		return domain.DonationPayment{}, err
+	}
+	if existingSubscription != nil && existingSubscription.AutoRenew && existingSubscription.StripeSubscriptionID != "" {
+		if service.paymentProvider == nil {
+			return domain.DonationPayment{}, ErrPaymentProviderUnavailable
+		}
+		if err := service.paymentProvider.CancelSubscription(ctx, existingSubscription.StripeSubscriptionID, true); err != nil {
+			return domain.DonationPayment{}, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+		}
+	}
+
 	subscription, err := service.createPaidSubscription(ctx, SubscribeToTrainerCommand{
 		ClientUserID:  command.ClientUserID,
 		TrainerUserID: command.TrainerUserID,
@@ -153,6 +166,7 @@ func (service *Service) createFreeSubscription(ctx context.Context, command Crea
 		return domain.DonationPayment{}, err
 	}
 
+	now := time.Now().UTC()
 	return domain.DonationPayment{
 		Status:          domain.PaymentStatusConfirmed,
 		SenderUserID:    command.ClientUserID,
@@ -161,7 +175,25 @@ func (service *Service) createFreeSubscription(ctx context.Context, command Crea
 		Currency:        "RUB",
 		TierID:          &tierID,
 		Subscription:    &subscription,
+		CreatedAt:       now,
+		UpdatedAt:       now,
+		ConfirmedAt:     &now,
 	}, nil
+}
+
+func (service *Service) activeSubscriptionForTrainer(ctx context.Context, clientUserID int64, trainerUserID int64) (*domain.Subscription, error) {
+	subscriptions, err := service.money.ListSubscriptions(ctx, clientUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, subscription := range subscriptions {
+		if subscription.TrainerUserID == trainerUserID && subscription.Active {
+			return &subscription, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (service *Service) ConfirmDonationPayment(ctx context.Context, command ConfirmDonationPaymentCommand) (domain.DonationPayment, error) {

@@ -452,6 +452,7 @@ message Subscription {
   bool auto_renew = 11;
   string stripe_subscription_id = 12;
   optional google.protobuf.Timestamp current_period_end = 13;
+  bool price_change_requires_resubscribe = 14;
 }
 
 message SubscribeToTrainerRequest {

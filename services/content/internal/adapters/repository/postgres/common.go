@@ -81,6 +81,7 @@ func scanSubscription(scanner sqlScanner) (domain.Subscription, error) {
 		&stripeSubscriptionID,
 		&currentPeriodEnd,
 		&subscription.AutoRenew,
+		&subscription.PriceChangeRequiresResubscribe,
 	); err != nil {
 		return domain.Subscription{}, err
 	}

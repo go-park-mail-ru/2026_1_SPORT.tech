@@ -9,7 +9,7 @@ var (
 	ErrCommentForbidden         = errors.New("comment can only be modified by its author")
 	ErrCommentEditWindowExpired = errors.New("comment edit window has expired")
 	ErrSubscriptionTierNotFound = errors.New("subscription tier not found")
-	ErrSubscriptionTierInUse    = errors.New("subscription tier is used by posts")
+	ErrSubscriptionTierInUse    = errors.New("subscription tier is in use")
 	ErrSubscriptionNotFound     = errors.New("subscription not found")
 	ErrDonationNotFound         = errors.New("donation not found")
 	ErrPaymentNotFound          = errors.New("payment not found")

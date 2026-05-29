@@ -37,10 +37,11 @@ func (service *Service) UpdateSubscriptionTier(ctx context.Context, command Upda
 		return domain.SubscriptionTier{}, err
 	}
 
-	tier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
+	currentTier, err := service.money.GetSubscriptionTier(ctx, command.TrainerUserID, command.TierID)
 	if err != nil {
 		return domain.SubscriptionTier{}, err
 	}
+	tier := currentTier
 
 	if command.Name != nil {
 		tier.Name = normalizeRequiredText(*command.Name)
@@ -65,7 +66,26 @@ func (service *Service) UpdateSubscriptionTier(ctx context.Context, command Upda
 		return domain.SubscriptionTier{}, err
 	}
 
-	return service.money.UpdateSubscriptionTier(ctx, tier)
+	var affectedSubscriptions []domain.Subscription
+	if command.Price != nil && tier.Price > currentTier.Price {
+		affectedSubscriptions, err = service.cancelRenewalsForTierPriceIncrease(ctx, tier)
+		if err != nil {
+			return domain.SubscriptionTier{}, err
+		}
+	}
+
+	updated, err := service.money.UpdateSubscriptionTier(ctx, tier)
+	if err != nil {
+		return domain.SubscriptionTier{}, err
+	}
+
+	if len(affectedSubscriptions) > 0 {
+		if err := service.notifySubscribersAboutTierPriceIncrease(ctx, affectedSubscriptions, updated); err != nil {
+			return domain.SubscriptionTier{}, err
+		}
+	}
+
+	return updated, nil
 }
 
 func (service *Service) DeleteSubscriptionTier(ctx context.Context, command DeleteSubscriptionTierCommand) error {
@@ -94,6 +114,8 @@ func (service *Service) createPaidSubscription(ctx context.Context, command Subs
 		ClientUserID:  command.ClientUserID,
 		TrainerUserID: command.TrainerUserID,
 		TierID:        tier.TierID,
+		TierName:      tier.Name,
+		Price:         tier.Price,
 		ExpiresAt:     time.Now().UTC().AddDate(0, 1, 0),
 	})
 	if err != nil {
@@ -105,6 +127,63 @@ func (service *Service) createPaidSubscription(ctx context.Context, command Subs
 	}
 
 	return subscription, nil
+}
+
+func (service *Service) cancelRenewalsForTierPriceIncrease(ctx context.Context, tier domain.SubscriptionTier) ([]domain.Subscription, error) {
+	subscriptions, err := service.money.ListSubscriptionsAffectedByTierPriceIncrease(ctx, tier.TrainerUserID, tier.TierID, tier.Price)
+	if err != nil {
+		return nil, err
+	}
+	if len(subscriptions) == 0 {
+		return nil, nil
+	}
+
+	for _, subscription := range subscriptions {
+		if !subscription.AutoRenew || subscription.StripeSubscriptionID == "" {
+			continue
+		}
+		if service.paymentProvider == nil {
+			return nil, ErrPaymentProviderUnavailable
+		}
+		if err := service.paymentProvider.CancelSubscription(ctx, subscription.StripeSubscriptionID, true); err != nil {
+			return nil, fmt.Errorf("%w: %v", ErrPaymentProviderUnavailable, err)
+		}
+	}
+
+	for _, subscription := range subscriptions {
+		if err := service.money.BlockSubscriptionRenewalForPriceIncrease(ctx, subscription.SubscriptionID); err != nil {
+			return nil, err
+		}
+	}
+
+	return subscriptions, nil
+}
+
+func (service *Service) notifySubscribersAboutTierPriceIncrease(ctx context.Context, subscriptions []domain.Subscription, tier domain.SubscriptionTier) error {
+	for _, subscription := range subscriptions {
+		periodEnd := subscription.ExpiresAt
+		if subscription.CurrentPeriodEnd != nil {
+			periodEnd = *subscription.CurrentPeriodEnd
+		}
+		body := fmt.Sprintf(
+			"Цена тарифа «%s» повышена до %d ₽. Следующего списания не будет; доступ сохранится до %s. Чтобы продолжить, оформите подписку заново.",
+			tier.Name,
+			tier.Price,
+			periodEnd.Format("02.01.2006"),
+		)
+		if err := service.createNotification(ctx, domain.Notification{
+			UserID:         subscription.ClientUserID,
+			Type:           domain.NotificationTypeSubscription,
+			ActorUserID:    tier.TrainerUserID,
+			Title:          "Цена подписки изменилась",
+			Body:           body,
+			SubscriptionID: &subscription.SubscriptionID,
+		}); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (service *Service) ListMySubscriptions(ctx context.Context, query ListMySubscriptionsQuery) ([]domain.Subscription, error) {

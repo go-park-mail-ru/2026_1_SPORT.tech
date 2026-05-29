@@ -3785,21 +3785,22 @@ func (x *SubscribeRequest) GetTierId() int32 {
 }
 
 type Subscription struct {
-	state                protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId       int32                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	TrainerId            int32                  `protobuf:"varint,2,opt,name=trainer_id,json=trainerId,proto3" json:"trainer_id,omitempty"`
-	TierId               int32                  `protobuf:"varint,3,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
-	TierName             string                 `protobuf:"bytes,4,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
-	Price                int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
-	Active               bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
-	ExpiresAt            *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	CreatedAt            *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	AutoRenew            bool                   `protobuf:"varint,10,opt,name=auto_renew,json=autoRenew,proto3" json:"auto_renew,omitempty"`
-	StripeSubscriptionId string                 `protobuf:"bytes,11,opt,name=stripe_subscription_id,json=stripeSubscriptionId,proto3" json:"stripe_subscription_id,omitempty"`
-	CurrentPeriodEnd     *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=current_period_end,json=currentPeriodEnd,proto3,oneof" json:"current_period_end,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId                 int32                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	TrainerId                      int32                  `protobuf:"varint,2,opt,name=trainer_id,json=trainerId,proto3" json:"trainer_id,omitempty"`
+	TierId                         int32                  `protobuf:"varint,3,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	TierName                       string                 `protobuf:"bytes,4,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
+	Price                          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	Active                         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
+	ExpiresAt                      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	CreatedAt                      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt                      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	AutoRenew                      bool                   `protobuf:"varint,10,opt,name=auto_renew,json=autoRenew,proto3" json:"auto_renew,omitempty"`
+	StripeSubscriptionId           string                 `protobuf:"bytes,11,opt,name=stripe_subscription_id,json=stripeSubscriptionId,proto3" json:"stripe_subscription_id,omitempty"`
+	CurrentPeriodEnd               *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=current_period_end,json=currentPeriodEnd,proto3,oneof" json:"current_period_end,omitempty"`
+	PriceChangeRequiresResubscribe bool                   `protobuf:"varint,13,opt,name=price_change_requires_resubscribe,json=priceChangeRequiresResubscribe,proto3" json:"price_change_requires_resubscribe,omitempty"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *Subscription) Reset() {
@@ -3914,6 +3915,13 @@ func (x *Subscription) GetCurrentPeriodEnd() *timestamppb.Timestamp {
 		return x.CurrentPeriodEnd
 	}
 	return nil
+}
+
+func (x *Subscription) GetPriceChangeRequiresResubscribe() bool {
+	if x != nil {
+		return x.PriceChangeRequiresResubscribe
+	}
+	return false
 }
 
 type SubscriptionsResponse struct {
@@ -7986,7 +7994,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x10SubscribeRequest\x12\x1d\n" +
 	"\n" +
 	"trainer_id\x18\x01 \x01(\x05R\ttrainerId\x12\x17\n" +
-	"\atier_id\x18\x02 \x01(\x05R\x06tierId\"\xa6\x04\n" +
+	"\atier_id\x18\x02 \x01(\x05R\x06tierId\"\xf1\x04\n" +
 	"\fSubscription\x12'\n" +
 	"\x0fsubscription_id\x18\x01 \x01(\x05R\x0esubscriptionId\x12\x1d\n" +
 	"\n" +
@@ -8005,7 +8013,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"auto_renew\x18\n" +
 	" \x01(\bR\tautoRenew\x124\n" +
 	"\x16stripe_subscription_id\x18\v \x01(\tR\x14stripeSubscriptionId\x12M\n" +
-	"\x12current_period_end\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x10currentPeriodEnd\x88\x01\x01B\x15\n" +
+	"\x12current_period_end\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x10currentPeriodEnd\x88\x01\x01\x12I\n" +
+	"!price_change_requires_resubscribe\x18\r \x01(\bR\x1epriceChangeRequiresResubscribeB\x15\n" +
 	"\x13_current_period_end\"a\n" +
 	"\x15SubscriptionsResponse\x12H\n" +
 	"\rsubscriptions\x18\x01 \x03(\v2\".sporttech.gateway.v1.SubscriptionR\rsubscriptions\"\xe7\x02\n" +

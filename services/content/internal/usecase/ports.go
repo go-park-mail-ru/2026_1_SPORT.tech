@@ -33,6 +33,8 @@ type MonetizationRepository interface {
 	CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error
+	ListSubscriptionsAffectedByTierPriceIncrease(ctx context.Context, trainerUserID int64, tierID int64, newPrice int32) ([]domain.Subscription, error)
+	BlockSubscriptionRenewalForPriceIncrease(ctx context.Context, subscriptionID int64) error
 	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)

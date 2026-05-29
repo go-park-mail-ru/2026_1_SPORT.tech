@@ -23,6 +23,8 @@ type stubContentRepository struct {
 	createTierFunc         func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	updateTierFunc         func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	deleteTierFunc         func(ctx context.Context, trainerUserID int64, tierID int64) error
+	listPriceIncreaseFunc  func(ctx context.Context, trainerUserID int64, tierID int64, newPrice int32) ([]domain.Subscription, error)
+	blockRenewalFunc       func(ctx context.Context, subscriptionID int64) error
 	activeLevelFunc        func(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	subscribeFunc          func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	listSubscriptionsFunc  func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
@@ -113,6 +115,20 @@ func (repository stubContentRepository) DeleteSubscriptionTier(ctx context.Conte
 		return nil
 	}
 	return repository.deleteTierFunc(ctx, trainerUserID, tierID)
+}
+
+func (repository stubContentRepository) ListSubscriptionsAffectedByTierPriceIncrease(ctx context.Context, trainerUserID int64, tierID int64, newPrice int32) ([]domain.Subscription, error) {
+	if repository.listPriceIncreaseFunc == nil {
+		return nil, nil
+	}
+	return repository.listPriceIncreaseFunc(ctx, trainerUserID, tierID, newPrice)
+}
+
+func (repository stubContentRepository) BlockSubscriptionRenewalForPriceIncrease(ctx context.Context, subscriptionID int64) error {
+	if repository.blockRenewalFunc == nil {
+		return nil
+	}
+	return repository.blockRenewalFunc(ctx, subscriptionID)
 }
 
 func (repository stubContentRepository) GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error) {
@@ -774,6 +790,89 @@ func TestServiceUpdateSubscriptionTier(t *testing.T) {
 	}
 }
 
+func TestServiceUpdateSubscriptionTierPriceIncreaseCancelsRenewals(t *testing.T) {
+	price := int32(900)
+	periodEnd := time.Date(2026, 6, 29, 12, 0, 0, 0, time.UTC)
+	canceledProviderSubscriptions := make([]string, 0)
+	blockedSubscriptions := make([]int64, 0)
+	notifications := make([]domain.Notification, 0)
+
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+				return domain.SubscriptionTier{
+					TrainerUserID: trainerUserID,
+					TierID:        tierID,
+					Name:          "Базовый",
+					Price:         500,
+				}, nil
+			},
+			listPriceIncreaseFunc: func(ctx context.Context, trainerUserID int64, tierID int64, newPrice int32) ([]domain.Subscription, error) {
+				if trainerUserID != 7 || tierID != 2 || newPrice != 900 {
+					t.Fatalf("unexpected price increase lookup: trainer=%d tier=%d price=%d", trainerUserID, tierID, newPrice)
+				}
+				return []domain.Subscription{{
+					SubscriptionID:       11,
+					ClientUserID:         1002,
+					TrainerUserID:        trainerUserID,
+					TierID:               tierID,
+					TierName:             "Базовый",
+					Price:                500,
+					Active:               true,
+					ExpiresAt:            periodEnd,
+					StripeSubscriptionID: "sub_123",
+					CurrentPeriodEnd:     &periodEnd,
+					AutoRenew:            true,
+				}}, nil
+			},
+			blockRenewalFunc: func(ctx context.Context, subscriptionID int64) error {
+				blockedSubscriptions = append(blockedSubscriptions, subscriptionID)
+				return nil
+			},
+			updateTierFunc: func(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error) {
+				if tier.Price != 900 {
+					t.Fatalf("unexpected tier update: %+v", tier)
+				}
+				return tier, nil
+			},
+			createNotificationFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
+				notifications = append(notifications, notification)
+				return notification, nil
+			},
+		}),
+		nil,
+		stubPaymentProvider{
+			cancelFunc: func(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error {
+				if !atPeriodEnd {
+					t.Fatal("expected cancellation at period end")
+				}
+				canceledProviderSubscriptions = append(canceledProviderSubscriptions, providerSubscriptionID)
+				return nil
+			},
+		},
+	)
+
+	if _, err := service.UpdateSubscriptionTier(context.Background(), UpdateSubscriptionTierCommand{
+		TrainerUserID: 7,
+		TierID:        2,
+		Price:         &price,
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(canceledProviderSubscriptions) != 1 || canceledProviderSubscriptions[0] != "sub_123" {
+		t.Fatalf("unexpected provider cancellations: %+v", canceledProviderSubscriptions)
+	}
+	if len(blockedSubscriptions) != 1 || blockedSubscriptions[0] != 11 {
+		t.Fatalf("unexpected blocked subscriptions: %+v", blockedSubscriptions)
+	}
+	if len(notifications) != 1 ||
+		notifications[0].UserID != 1002 ||
+		notifications[0].ActorUserID != 7 ||
+		notifications[0].Type != domain.NotificationTypeSubscription {
+		t.Fatalf("unexpected notifications: %+v", notifications)
+	}
+}
+
 func TestServiceListAndDeleteSubscriptionTiers(t *testing.T) {
 	service := NewService(
 		stubRepositories(stubContentRepository{
@@ -1196,6 +1295,88 @@ func TestServiceCreateSubscriptionPaymentDoesNotPersistWhenProviderFails(t *test
 	}
 	if persisted {
 		t.Fatal("expected no payment row to be created when provider fails")
+	}
+}
+
+func TestServiceCreateFreeSubscriptionPaymentCancelsExistingPaidRenewal(t *testing.T) {
+	periodEnd := time.Date(2026, 6, 29, 12, 0, 0, 0, time.UTC)
+	canceledProviderSubscriptions := make([]string, 0)
+
+	service := NewService(
+		stubRepositories(stubContentRepository{
+			getTierFunc: func(ctx context.Context, trainerUserID int64, tierID int64) (domain.SubscriptionTier, error) {
+				if trainerUserID != 1001 || tierID != 1 {
+					t.Fatalf("unexpected tier lookup: trainer=%d tier=%d", trainerUserID, tierID)
+				}
+				return domain.SubscriptionTier{
+					TrainerUserID: trainerUserID,
+					TierID:        tierID,
+					Name:          "Бесплатный",
+					Price:         0,
+				}, nil
+			},
+			listSubscriptionsFunc: func(ctx context.Context, clientUserID int64) ([]domain.Subscription, error) {
+				if clientUserID != 1002 {
+					t.Fatalf("unexpected client id: %d", clientUserID)
+				}
+				return []domain.Subscription{{
+					SubscriptionID:       2401,
+					ClientUserID:         clientUserID,
+					TrainerUserID:        1001,
+					TierID:               2,
+					TierName:             "Платный",
+					Price:                1500,
+					Active:               true,
+					ExpiresAt:            periodEnd,
+					StripeSubscriptionID: "sub_paid",
+					CurrentPeriodEnd:     &periodEnd,
+					AutoRenew:            true,
+				}}, nil
+			},
+			subscribeFunc: func(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error) {
+				if subscription.ClientUserID != 1002 ||
+					subscription.TrainerUserID != 1001 ||
+					subscription.TierID != 1 ||
+					subscription.TierName != "Бесплатный" ||
+					subscription.Price != 0 {
+					t.Fatalf("unexpected subscription: %+v", subscription)
+				}
+				subscription.SubscriptionID = 2401
+				subscription.Active = true
+				return subscription, nil
+			},
+		}),
+		nil,
+		stubPaymentProvider{
+			cancelFunc: func(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error {
+				if !atPeriodEnd {
+					t.Fatal("expected cancellation at period end")
+				}
+				canceledProviderSubscriptions = append(canceledProviderSubscriptions, providerSubscriptionID)
+				return nil
+			},
+		},
+	)
+
+	payment, err := service.CreateSubscriptionPayment(context.Background(), CreateSubscriptionPaymentCommand{
+		ClientUserID:  1002,
+		TrainerUserID: 1001,
+		TierID:        1,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(canceledProviderSubscriptions) != 1 || canceledProviderSubscriptions[0] != "sub_paid" {
+		t.Fatalf("unexpected provider cancellations: %+v", canceledProviderSubscriptions)
+	}
+	if payment.Status != domain.PaymentStatusConfirmed ||
+		payment.Subscription == nil ||
+		payment.Subscription.TierID != 1 ||
+		payment.CreatedAt.IsZero() ||
+		payment.UpdatedAt.IsZero() ||
+		payment.ConfirmedAt == nil ||
+		payment.ConfirmedAt.IsZero() {
+		t.Fatalf("unexpected free subscription payment: %+v", payment)
 	}
 }
 

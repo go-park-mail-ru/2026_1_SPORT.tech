@@ -42,15 +42,19 @@ func SubscriptionFromContent(subscription *contentv1.Subscription) (*gatewayv1.S
 	}
 
 	return &gatewayv1.Subscription{
-		SubscriptionId: subscriptionID,
-		TrainerId:      trainerID,
-		TierId:         tierID,
-		TierName:       subscription.GetTierName(),
-		Price:          subscription.GetPrice(),
-		Active:         subscription.GetActive(),
-		ExpiresAt:      subscription.GetExpiresAt(),
-		CreatedAt:      subscription.GetCreatedAt(),
-		UpdatedAt:      subscription.GetUpdatedAt(),
+		SubscriptionId:                 subscriptionID,
+		TrainerId:                      trainerID,
+		TierId:                         tierID,
+		TierName:                       subscription.GetTierName(),
+		Price:                          subscription.GetPrice(),
+		Active:                         subscription.GetActive(),
+		ExpiresAt:                      subscription.GetExpiresAt(),
+		CreatedAt:                      subscription.GetCreatedAt(),
+		UpdatedAt:                      subscription.GetUpdatedAt(),
+		AutoRenew:                      subscription.GetAutoRenew(),
+		StripeSubscriptionId:           subscription.GetStripeSubscriptionId(),
+		CurrentPeriodEnd:               subscription.GetCurrentPeriodEnd(),
+		PriceChangeRequiresResubscribe: subscription.GetPriceChangeRequiresResubscribe(),
 	}, nil
 }
 

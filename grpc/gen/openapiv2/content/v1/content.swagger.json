@@ -2668,6 +2668,9 @@
         "current_period_end": {
           "type": "string",
           "format": "date-time"
+        },
+        "price_change_requires_resubscribe": {
+          "type": "boolean"
         }
       }
     },
