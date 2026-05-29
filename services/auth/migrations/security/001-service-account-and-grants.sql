@@ -19,8 +19,8 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO :"auth_app_user";
 
-GRANT SELECT, INSERT ON TABLE auth_user TO :"auth_app_user";
-GRANT SELECT, INSERT, UPDATE ON TABLE auth_session TO :"auth_app_user";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE auth_user TO :"auth_app_user";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE auth_session TO :"auth_app_user";
 GRANT USAGE, SELECT ON SEQUENCE auth_user_user_id_seq TO :"auth_app_user";
 
 ALTER ROLE :"auth_app_user" IN DATABASE sporttech_auth SET statement_timeout = '5s';
