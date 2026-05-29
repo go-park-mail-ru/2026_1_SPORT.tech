@@ -629,6 +629,7 @@ message CreatePostRequest {
   string title = 2;
   repeated PostBlockInput blocks = 3;
   optional int32 sport_type_id = 4;
+  repeated int32 sport_type_ids = 5;
 }
 
 message UpdatePostRequest {
@@ -641,6 +642,8 @@ message UpdatePostRequest {
   optional int32 sport_type_id = 7;
   bool clear_sport_type_id = 8;
   optional bool is_pinned = 9;
+  repeated int32 sport_type_ids = 10;
+  bool clear_sport_type_ids = 11;
 }
 
 message PostBlock {
@@ -663,6 +666,7 @@ message PostListItem {
   int32 comments_count = 9;
   optional int32 sport_type_id = 10;
   bool is_pinned = 11;
+  repeated int32 sport_type_ids = 12;
 }
 
 message ProfilePostsResponse {
@@ -701,6 +705,7 @@ message PostResponse {
   int32 comments_count = 11;
   optional int32 sport_type_id = 12;
   bool is_pinned = 13;
+  repeated int32 sport_type_ids = 14;
 }
 
 message GetPostRequest {

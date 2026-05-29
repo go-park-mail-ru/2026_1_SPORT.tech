@@ -11,6 +11,7 @@ type CreatePostCommand struct {
 	Title                     string
 	RequiredSubscriptionLevel *int32
 	SportTypeID               *int64
+	SportTypeIDs              []int64
 	Blocks                    []PostBlockInput
 }
 
@@ -29,6 +30,8 @@ type UpdatePostCommand struct {
 	ClearRequiredSubscriptionLevel bool
 	SportTypeID                    *int64
 	ClearSportTypeID               bool
+	SportTypeIDs                   []int64
+	ClearSportTypeIDs              bool
 	Blocks                         []PostBlockInput
 	ReplaceBlocks                  bool
 	IsPinned                       *bool

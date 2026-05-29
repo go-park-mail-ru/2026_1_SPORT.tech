@@ -182,10 +182,15 @@ func (service *Service) UpdatePost(ctx context.Context, command UpdatePostComman
 		post.RequiredSubscriptionLevel = normalizeSubscriptionLevel(command.RequiredSubscriptionLevel)
 	}
 	switch {
-	case command.ClearSportTypeID:
+	case command.ClearSportTypeID || command.ClearSportTypeIDs:
 		post.SportTypeID = nil
+		post.SportTypeIDs = nil
+	case len(command.SportTypeIDs) > 0:
+		post.SportTypeID = normalizePrimarySportTypeID(nil, command.SportTypeIDs)
+		post.SportTypeIDs = normalizeSportTypeIDs(nil, command.SportTypeIDs)
 	case command.SportTypeID != nil:
 		post.SportTypeID = normalizeSportTypeID(command.SportTypeID)
+		post.SportTypeIDs = normalizeSportTypeIDs(command.SportTypeID, nil)
 	}
 	if command.ReplaceBlocks {
 		post.Blocks = normalizeBlocks(command.Blocks)

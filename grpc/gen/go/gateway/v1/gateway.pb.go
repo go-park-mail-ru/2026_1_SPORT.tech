@@ -1842,6 +1842,7 @@ type CreatePostRequest struct {
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Blocks        []*PostBlockInput      `protobuf:"bytes,3,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	SportTypeId   *int32                 `protobuf:"varint,4,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	SportTypeIds  []int32                `protobuf:"varint,5,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1904,19 +1905,28 @@ func (x *CreatePostRequest) GetSportTypeId() int32 {
 	return 0
 }
 
+func (x *CreatePostRequest) GetSportTypeIds() []int32 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
+}
+
 type UpdatePostRequest struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	PostId           int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	MinTierId        *int32                 `protobuf:"varint,2,opt,name=min_tier_id,json=minTierId,proto3,oneof" json:"min_tier_id,omitempty"`
-	Title            *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	Blocks           []*PostBlockInput      `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
-	ReplaceBlocks    bool                   `protobuf:"varint,5,opt,name=replace_blocks,json=replaceBlocks,proto3" json:"replace_blocks,omitempty"`
-	ClearMinTierId   bool                   `protobuf:"varint,6,opt,name=clear_min_tier_id,json=clearMinTierId,proto3" json:"clear_min_tier_id,omitempty"`
-	SportTypeId      *int32                 `protobuf:"varint,7,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
-	ClearSportTypeId bool                   `protobuf:"varint,8,opt,name=clear_sport_type_id,json=clearSportTypeId,proto3" json:"clear_sport_type_id,omitempty"`
-	IsPinned         *bool                  `protobuf:"varint,9,opt,name=is_pinned,json=isPinned,proto3,oneof" json:"is_pinned,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	PostId            int32                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	MinTierId         *int32                 `protobuf:"varint,2,opt,name=min_tier_id,json=minTierId,proto3,oneof" json:"min_tier_id,omitempty"`
+	Title             *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Blocks            []*PostBlockInput      `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	ReplaceBlocks     bool                   `protobuf:"varint,5,opt,name=replace_blocks,json=replaceBlocks,proto3" json:"replace_blocks,omitempty"`
+	ClearMinTierId    bool                   `protobuf:"varint,6,opt,name=clear_min_tier_id,json=clearMinTierId,proto3" json:"clear_min_tier_id,omitempty"`
+	SportTypeId       *int32                 `protobuf:"varint,7,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	ClearSportTypeId  bool                   `protobuf:"varint,8,opt,name=clear_sport_type_id,json=clearSportTypeId,proto3" json:"clear_sport_type_id,omitempty"`
+	IsPinned          *bool                  `protobuf:"varint,9,opt,name=is_pinned,json=isPinned,proto3,oneof" json:"is_pinned,omitempty"`
+	SportTypeIds      []int32                `protobuf:"varint,10,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	ClearSportTypeIds bool                   `protobuf:"varint,11,opt,name=clear_sport_type_ids,json=clearSportTypeIds,proto3" json:"clear_sport_type_ids,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *UpdatePostRequest) Reset() {
@@ -2012,6 +2022,20 @@ func (x *UpdatePostRequest) GetIsPinned() bool {
 	return false
 }
 
+func (x *UpdatePostRequest) GetSportTypeIds() []int32 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
+}
+
+func (x *UpdatePostRequest) GetClearSportTypeIds() bool {
+	if x != nil {
+		return x.ClearSportTypeIds
+	}
+	return false
+}
+
 type PostBlock struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PostBlockId   int32                  `protobuf:"varint,1,opt,name=post_block_id,json=postBlockId,proto3" json:"post_block_id,omitempty"`
@@ -2101,6 +2125,7 @@ type PostListItem struct {
 	CommentsCount int32                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	SportTypeId   *int32                 `protobuf:"varint,10,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	IsPinned      bool                   `protobuf:"varint,11,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	SportTypeIds  []int32                `protobuf:"varint,12,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2210,6 +2235,13 @@ func (x *PostListItem) GetIsPinned() bool {
 		return x.IsPinned
 	}
 	return false
+}
+
+func (x *PostListItem) GetSportTypeIds() []int32 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
 }
 
 type ProfilePostsResponse struct {
@@ -2439,6 +2471,7 @@ type PostResponse struct {
 	CommentsCount int32                  `protobuf:"varint,11,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	SportTypeId   *int32                 `protobuf:"varint,12,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	IsPinned      bool                   `protobuf:"varint,13,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	SportTypeIds  []int32                `protobuf:"varint,14,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2562,6 +2595,13 @@ func (x *PostResponse) GetIsPinned() bool {
 		return x.IsPinned
 	}
 	return false
+}
+
+func (x *PostResponse) GetSportTypeIds() []int32 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
 }
 
 type GetPostRequest struct {
@@ -7758,14 +7798,15 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12!\n" +
 	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1d\n" +
 	"\n" +
-	"size_bytes\x18\x04 \x01(\x05R\tsizeBytes\"\xd7\x01\n" +
+	"size_bytes\x18\x04 \x01(\x05R\tsizeBytes\"\xfd\x01\n" +
 	"\x11CreatePostRequest\x12#\n" +
 	"\vmin_tier_id\x18\x01 \x01(\x05H\x00R\tminTierId\x88\x01\x01\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12<\n" +
 	"\x06blocks\x18\x03 \x03(\v2$.sporttech.gateway.v1.PostBlockInputR\x06blocks\x12'\n" +
-	"\rsport_type_id\x18\x04 \x01(\x05H\x01R\vsportTypeId\x88\x01\x01B\x0e\n" +
+	"\rsport_type_id\x18\x04 \x01(\x05H\x01R\vsportTypeId\x88\x01\x01\x12$\n" +
+	"\x0esport_type_ids\x18\x05 \x03(\x05R\fsportTypeIdsB\x0e\n" +
 	"\f_min_tier_idB\x10\n" +
-	"\x0e_sport_type_id\"\xb0\x03\n" +
+	"\x0e_sport_type_id\"\x87\x04\n" +
 	"\x11UpdatePostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12#\n" +
 	"\vmin_tier_id\x18\x02 \x01(\x05H\x00R\tminTierId\x88\x01\x01\x12\x19\n" +
@@ -7775,7 +7816,10 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x11clear_min_tier_id\x18\x06 \x01(\bR\x0eclearMinTierId\x12'\n" +
 	"\rsport_type_id\x18\a \x01(\x05H\x02R\vsportTypeId\x88\x01\x01\x12-\n" +
 	"\x13clear_sport_type_id\x18\b \x01(\bR\x10clearSportTypeId\x12 \n" +
-	"\tis_pinned\x18\t \x01(\bH\x03R\bisPinned\x88\x01\x01B\x0e\n" +
+	"\tis_pinned\x18\t \x01(\bH\x03R\bisPinned\x88\x01\x01\x12$\n" +
+	"\x0esport_type_ids\x18\n" +
+	" \x03(\x05R\fsportTypeIds\x12/\n" +
+	"\x14clear_sport_type_ids\x18\v \x01(\bR\x11clearSportTypeIdsB\x0e\n" +
 	"\f_min_tier_idB\b\n" +
 	"\x06_titleB\x10\n" +
 	"\x0e_sport_type_idB\f\n" +
@@ -7788,7 +7832,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\ftext_content\x18\x04 \x01(\tH\x00R\vtextContent\x88\x01\x01\x12\x1e\n" +
 	"\bfile_url\x18\x05 \x01(\tH\x01R\afileUrl\x88\x01\x01B\x0f\n" +
 	"\r_text_contentB\v\n" +
-	"\t_file_url\"\xa2\x03\n" +
+	"\t_file_url\"\xc8\x03\n" +
 	"\fPostListItem\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12\x1d\n" +
 	"\n" +
@@ -7804,7 +7848,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x0ecomments_count\x18\t \x01(\x05R\rcommentsCount\x12'\n" +
 	"\rsport_type_id\x18\n" +
 	" \x01(\x05H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
-	"\tis_pinned\x18\v \x01(\bR\bisPinnedB\x0e\n" +
+	"\tis_pinned\x18\v \x01(\bR\bisPinned\x12$\n" +
+	"\x0esport_type_ids\x18\f \x03(\x05R\fsportTypeIdsB\x0e\n" +
 	"\f_min_tier_idB\x10\n" +
 	"\x0e_sport_type_id\"i\n" +
 	"\x14ProfilePostsResponse\x12\x17\n" +
@@ -7827,7 +7872,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\f_min_tier_idB\x0e\n" +
 	"\f_max_tier_id\"O\n" +
 	"\x13SearchPostsResponse\x128\n" +
-	"\x05posts\x18\x01 \x03(\v2\".sporttech.gateway.v1.PostListItemR\x05posts\"\x96\x04\n" +
+	"\x05posts\x18\x01 \x03(\v2\".sporttech.gateway.v1.PostListItemR\x05posts\"\xbc\x04\n" +
 	"\fPostResponse\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x05R\x06postId\x12\x1d\n" +
 	"\n" +
@@ -7846,7 +7891,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	" \x01(\bR\acanView\x12%\n" +
 	"\x0ecomments_count\x18\v \x01(\x05R\rcommentsCount\x12'\n" +
 	"\rsport_type_id\x18\f \x01(\x05H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
-	"\tis_pinned\x18\r \x01(\bR\bisPinnedB\x0e\n" +
+	"\tis_pinned\x18\r \x01(\bR\bisPinned\x12$\n" +
+	"\x0esport_type_ids\x18\x0e \x03(\x05R\fsportTypeIdsB\x0e\n" +
 	"\f_min_tier_idB\x10\n" +
 	"\x0e_sport_type_id\")\n" +
 	"\x0eGetPostRequest\x12\x17\n" +

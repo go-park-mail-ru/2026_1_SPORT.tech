@@ -40,6 +40,7 @@ func CreatePostRequestToCommand(request *contentv1.CreatePostRequest) usecase.Cr
 		Title:                     request.GetTitle(),
 		RequiredSubscriptionLevel: request.RequiredSubscriptionLevel,
 		SportTypeID:               request.SportTypeId,
+		SportTypeIDs:              request.GetSportTypeIds(),
 		Blocks:                    postBlockInputsFromProto(request.GetBlocks()),
 	}
 }
@@ -70,6 +71,8 @@ func UpdatePostRequestToCommand(request *contentv1.UpdatePostRequest) usecase.Up
 		ClearRequiredSubscriptionLevel: request.GetClearRequiredSubscriptionLevel(),
 		SportTypeID:                    request.SportTypeId,
 		ClearSportTypeID:               request.GetClearSportTypeId(),
+		SportTypeIDs:                   request.GetSportTypeIds(),
+		ClearSportTypeIDs:              request.GetClearSportTypeIds(),
 		Blocks:                         postBlockInputsFromProto(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
 		IsPinned:                       request.IsPinned,
@@ -168,6 +171,7 @@ func postToProto(post domain.Post) *contentv1.Post {
 	if post.SportTypeID != nil {
 		response.SportTypeId = post.SportTypeID
 	}
+	response.SportTypeIds = post.SportTypeIDs
 	for _, block := range post.Blocks {
 		response.Blocks = append(response.Blocks, postBlockToProto(block))
 	}
@@ -193,6 +197,7 @@ func postSummaryToProto(post domain.PostSummary) *contentv1.PostSummary {
 	if post.SportTypeID != nil {
 		response.SportTypeId = post.SportTypeID
 	}
+	response.SportTypeIds = post.SportTypeIDs
 
 	return response
 }

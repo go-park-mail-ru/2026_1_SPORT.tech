@@ -298,6 +298,7 @@ type Post struct {
 	Blocks                    []*PostBlock           `protobuf:"bytes,11,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	SportTypeId               *int64                 `protobuf:"varint,12,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	IsPinned                  bool                   `protobuf:"varint,13,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	SportTypeIds              []int64                `protobuf:"varint,14,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -423,6 +424,13 @@ func (x *Post) GetIsPinned() bool {
 	return false
 }
 
+func (x *Post) GetSportTypeIds() []int64 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
+}
+
 type PostSummary struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
 	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -436,6 +444,7 @@ type PostSummary struct {
 	CommentsCount             int64                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	SportTypeId               *int64                 `protobuf:"varint,10,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	IsPinned                  bool                   `protobuf:"varint,11,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	SportTypeIds              []int64                `protobuf:"varint,12,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -545,6 +554,13 @@ func (x *PostSummary) GetIsPinned() bool {
 		return x.IsPinned
 	}
 	return false
+}
+
+func (x *PostSummary) GetSportTypeIds() []int64 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
 }
 
 type Comment struct {
@@ -1118,6 +1134,7 @@ type CreatePostRequest struct {
 	RequiredSubscriptionLevel *int32                 `protobuf:"varint,3,opt,name=required_subscription_level,json=requiredSubscriptionLevel,proto3,oneof" json:"required_subscription_level,omitempty"`
 	Blocks                    []*PostBlockInput      `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	SportTypeId               *int64                 `protobuf:"varint,5,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	SportTypeIds              []int64                `protobuf:"varint,6,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -1185,6 +1202,13 @@ func (x *CreatePostRequest) GetSportTypeId() int64 {
 		return *x.SportTypeId
 	}
 	return 0
+}
+
+func (x *CreatePostRequest) GetSportTypeIds() []int64 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
 }
 
 type UploadPostMediaRequest struct {
@@ -1371,6 +1395,8 @@ type UpdatePostRequest struct {
 	SportTypeId                    *int64                 `protobuf:"varint,8,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	ClearSportTypeId               bool                   `protobuf:"varint,9,opt,name=clear_sport_type_id,json=clearSportTypeId,proto3" json:"clear_sport_type_id,omitempty"`
 	IsPinned                       *bool                  `protobuf:"varint,10,opt,name=is_pinned,json=isPinned,proto3,oneof" json:"is_pinned,omitempty"`
+	SportTypeIds                   []int64                `protobuf:"varint,11,rep,packed,name=sport_type_ids,json=sportTypeIds,proto3" json:"sport_type_ids,omitempty"`
+	ClearSportTypeIds              bool                   `protobuf:"varint,12,opt,name=clear_sport_type_ids,json=clearSportTypeIds,proto3" json:"clear_sport_type_ids,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -1471,6 +1497,20 @@ func (x *UpdatePostRequest) GetClearSportTypeId() bool {
 func (x *UpdatePostRequest) GetIsPinned() bool {
 	if x != nil && x.IsPinned != nil {
 		return *x.IsPinned
+	}
+	return false
+}
+
+func (x *UpdatePostRequest) GetSportTypeIds() []int64 {
+	if x != nil {
+		return x.SportTypeIds
+	}
+	return nil
+}
+
+func (x *UpdatePostRequest) GetClearSportTypeIds() bool {
+	if x != nil {
+		return x.ClearSportTypeIds
 	}
 	return false
 }
@@ -6291,7 +6331,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x04kind\x18\x02 \x01(\x0e2&.sporttech.content.v1.ContentBlockKindR\x04kind\x12!\n" +
 	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1d\n" +
 	"\n" +
-	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xc5\x04\n" +
+	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xeb\x04\n" +
 	"\x04Post\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -6309,9 +6349,10 @@ const file_content_v1_content_proto_rawDesc = "" +
 	" \x01(\x03R\rcommentsCount\x127\n" +
 	"\x06blocks\x18\v \x03(\v2\x1f.sporttech.content.v1.PostBlockR\x06blocks\x12'\n" +
 	"\rsport_type_id\x18\f \x01(\x03H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
-	"\tis_pinned\x18\r \x01(\bR\bisPinnedB\x1e\n" +
+	"\tis_pinned\x18\r \x01(\bR\bisPinned\x12$\n" +
+	"\x0esport_type_ids\x18\x0e \x03(\x03R\fsportTypeIdsB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
-	"\x0e_sport_type_id\"\xd8\x03\n" +
+	"\x0e_sport_type_id\"\xfe\x03\n" +
 	"\vPostSummary\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -6326,7 +6367,8 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x0ecomments_count\x18\t \x01(\x03R\rcommentsCount\x12'\n" +
 	"\rsport_type_id\x18\n" +
 	" \x01(\x03H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
-	"\tis_pinned\x18\v \x01(\bR\bisPinnedB\x1e\n" +
+	"\tis_pinned\x18\v \x01(\bR\bisPinned\x12$\n" +
+	"\x0esport_type_ids\x18\f \x03(\x03R\fsportTypeIdsB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
 	"\x0e_sport_type_id\"\xf1\x01\n" +
 	"\aComment\x12\x1d\n" +
@@ -6394,13 +6436,14 @@ const file_content_v1_content_proto_rawDesc = "" +
 	" _max_required_subscription_levelB\x1c\n" +
 	"\x1a_viewer_subscription_level\"N\n" +
 	"\x13SearchPostsResponse\x127\n" +
-	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xad\x02\n" +
+	"\x05posts\x18\x01 \x03(\v2!.sporttech.content.v1.PostSummaryR\x05posts\"\xd3\x02\n" +
 	"\x11CreatePostRequest\x12$\n" +
 	"\x0eauthor_user_id\x18\x01 \x01(\x03R\fauthorUserId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12C\n" +
 	"\x1brequired_subscription_level\x18\x03 \x01(\x05H\x00R\x19requiredSubscriptionLevel\x88\x01\x01\x12<\n" +
 	"\x06blocks\x18\x04 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocks\x12'\n" +
-	"\rsport_type_id\x18\x05 \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	"\rsport_type_id\x18\x05 \x01(\x03H\x01R\vsportTypeId\x88\x01\x01\x12$\n" +
+	"\x0esport_type_ids\x18\x06 \x03(\x03R\fsportTypeIdsB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
 	"\x0e_sport_type_id\"\x92\x01\n" +
 	"\x16UploadPostMediaRequest\x12$\n" +
@@ -6414,7 +6457,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
-	"\x1a_viewer_subscription_level\"\xa6\x04\n" +
+	"\x1a_viewer_subscription_level\"\xfd\x04\n" +
 	"\x11UpdatePostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x19\n" +
@@ -6426,7 +6469,9 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\rsport_type_id\x18\b \x01(\x03H\x02R\vsportTypeId\x88\x01\x01\x12-\n" +
 	"\x13clear_sport_type_id\x18\t \x01(\bR\x10clearSportTypeId\x12 \n" +
 	"\tis_pinned\x18\n" +
-	" \x01(\bH\x03R\bisPinned\x88\x01\x01B\b\n" +
+	" \x01(\bH\x03R\bisPinned\x88\x01\x01\x12$\n" +
+	"\x0esport_type_ids\x18\v \x03(\x03R\fsportTypeIds\x12/\n" +
+	"\x14clear_sport_type_ids\x18\f \x01(\bR\x11clearSportTypeIdsB\b\n" +
 	"\x06_titleB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
 	"\x0e_sport_type_idB\f\n" +

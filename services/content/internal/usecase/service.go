@@ -83,7 +83,8 @@ func buildPost(command CreatePostCommand) (domain.Post, error) {
 		AuthorUserID:              command.AuthorUserID,
 		Title:                     normalizeRequiredText(command.Title),
 		RequiredSubscriptionLevel: normalizeSubscriptionLevel(command.RequiredSubscriptionLevel),
-		SportTypeID:               normalizeSportTypeID(command.SportTypeID),
+		SportTypeID:               normalizePrimarySportTypeID(command.SportTypeID, command.SportTypeIDs),
+		SportTypeIDs:              normalizeSportTypeIDs(command.SportTypeID, command.SportTypeIDs),
 		Blocks:                    normalizeBlocks(command.Blocks),
 	}
 
@@ -137,6 +138,34 @@ func normalizeSportTypeID(value *int64) *int64 {
 	sportTypeID := *value
 
 	return &sportTypeID
+}
+
+func normalizePrimarySportTypeID(value *int64, values []int64) *int64 {
+	if len(values) > 0 {
+		first := values[0]
+		return &first
+	}
+
+	return normalizeSportTypeID(value)
+}
+
+func normalizeSportTypeIDs(value *int64, values []int64) []int64 {
+	seen := make(map[int64]struct{}, len(values)+1)
+	normalized := make([]int64, 0, len(values)+1)
+
+	for _, sportTypeID := range values {
+		if _, exists := seen[sportTypeID]; exists {
+			continue
+		}
+		seen[sportTypeID] = struct{}{}
+		normalized = append(normalized, sportTypeID)
+	}
+
+	if len(normalized) == 0 && value != nil {
+		normalized = append(normalized, *value)
+	}
+
+	return normalized
 }
 
 func normalizeCurrency(value string) string {

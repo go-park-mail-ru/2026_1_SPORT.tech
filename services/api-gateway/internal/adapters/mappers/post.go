@@ -13,6 +13,7 @@ func CreatePostRequestToContent(authorUserID int64, request *gatewayv1.CreatePos
 		Title:                     request.GetTitle(),
 		RequiredSubscriptionLevel: request.MinTierId,
 		SportTypeId:               optionalInt32ToInt64(request.SportTypeId),
+		SportTypeIds:              int32SliceToInt64Slice(request.GetSportTypeIds()),
 		Blocks:                    postBlockInputsToContent(request.GetBlocks()),
 	}
 }
@@ -26,6 +27,8 @@ func UpdatePostRequestToContent(authorUserID int64, request *gatewayv1.UpdatePos
 		ClearRequiredSubscriptionLevel: request.GetClearMinTierId(),
 		SportTypeId:                    optionalInt32ToInt64(request.SportTypeId),
 		ClearSportTypeId:               request.GetClearSportTypeId(),
+		SportTypeIds:                   int32SliceToInt64Slice(request.GetSportTypeIds()),
+		ClearSportTypeIds:              request.GetClearSportTypeIds(),
 		Blocks:                         postBlockInputsToContent(request.GetBlocks()),
 		ReplaceBlocks:                  request.GetReplaceBlocks(),
 		IsPinned:                       request.IsPinned,
@@ -171,6 +174,10 @@ func postResponseFromContentPost(post *contentv1.Post) (*gatewayv1.PostResponse,
 	if err != nil {
 		return nil, err
 	}
+	sportTypeIDs, err := int64SliceToInt32Slice("content.post.sport_type_ids", post.GetSportTypeIds())
+	if err != nil {
+		return nil, err
+	}
 
 	blocks, err := postBlocksFromContent(post.GetBlocks())
 	if err != nil {
@@ -191,6 +198,7 @@ func postResponseFromContentPost(post *contentv1.Post) (*gatewayv1.PostResponse,
 		CommentsCount: commentsCount,
 		SportTypeId:   sportTypeID,
 		IsPinned:      post.GetIsPinned(),
+		SportTypeIds:  sportTypeIDs,
 	}, nil
 }
 
@@ -218,6 +226,10 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 	if err != nil {
 		return nil, err
 	}
+	sportTypeIDs, err := int64SliceToInt32Slice("content.post_summary.sport_type_ids", post.GetSportTypeIds())
+	if err != nil {
+		return nil, err
+	}
 
 	return &gatewayv1.PostListItem{
 		PostId:        postID,
@@ -231,5 +243,6 @@ func postListItemFromContent(post *contentv1.PostSummary) (*gatewayv1.PostListIt
 		CommentsCount: commentsCount,
 		SportTypeId:   sportTypeID,
 		IsPinned:      post.GetIsPinned(),
+		SportTypeIds:  sportTypeIDs,
 	}, nil
 }

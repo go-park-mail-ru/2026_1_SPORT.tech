@@ -1691,6 +1691,16 @@
         },
         "is_pinned": {
           "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "clear_sport_type_ids": {
+          "type": "boolean"
         }
       }
     },
@@ -1914,6 +1924,13 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2342,6 +2359,13 @@
         },
         "is_pinned": {
           "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2498,6 +2522,13 @@
         },
         "is_pinned": {
           "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
