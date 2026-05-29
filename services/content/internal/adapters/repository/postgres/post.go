@@ -49,6 +49,9 @@ func (repository *Repository) CreatePost(ctx context.Context, post domain.Post) 
 	if err := insertBlocks(ctx, tx, postID, post.Blocks, now); err != nil {
 		return 0, err
 	}
+	if err := replacePostSportTypes(ctx, tx, postID, postSportTypeIDs(post), now); err != nil {
+		return 0, err
+	}
 
 	if err := tx.Commit(); err != nil {
 		return 0, err
@@ -65,6 +68,7 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 			p.title,
 			p.required_subscription_level,
 			p.sport_type_id,
+			COALESCE(ps.sport_type_ids, ARRAY[]::BIGINT[]),
 			p.created_at,
 			p.updated_at,
 			COALESCE(l.likes_count, 0),
@@ -74,7 +78,8 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $2
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -86,6 +91,11 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 			FROM content_comment
 			GROUP BY post_id
 		) c ON c.post_id = p.post_id
+		LEFT JOIN LATERAL (
+			SELECT array_agg(pst.sport_type_id ORDER BY pst.sport_type_id) AS sport_type_ids
+			FROM content_post_sport_type pst
+			WHERE pst.post_id = p.post_id
+		) ps ON true
 		WHERE p.post_id = $1
 	`
 
@@ -93,6 +103,7 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 		post          domain.Post
 		requiredLevel sql.NullInt32
 		sportTypeID   sql.NullInt64
+		sportTypeIDs  pq.Int64Array
 	)
 	err := repository.db.QueryRowContext(ctx, postQuery, postID, viewerUserID).Scan(
 		&post.PostID,
@@ -100,11 +111,13 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 		&post.Title,
 		&requiredLevel,
 		&sportTypeID,
+		&sportTypeIDs,
 		&post.CreatedAt,
 		&post.UpdatedAt,
 		&post.LikesCount,
 		&post.IsLiked,
 		&post.CommentsCount,
+		&post.IsPinned,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -118,6 +131,7 @@ func (repository *Repository) GetPost(ctx context.Context, postID int64, viewerU
 	if sportTypeID.Valid {
 		post.SportTypeID = &sportTypeID.Int64
 	}
+	post.SportTypeIDs = sportTypeIDsFromScan(sportTypeID, sportTypeIDs)
 
 	blocks, err := repository.listBlocks(ctx, postID)
 	if err != nil {
@@ -136,6 +150,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			p.title,
 			p.required_subscription_level,
 			p.sport_type_id,
+			COALESCE(ps.sport_type_ids, ARRAY[]::BIGINT[]),
 			p.created_at,
 			COALESCE(l.likes_count, 0),
 			EXISTS (
@@ -144,7 +159,8 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $2
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -156,6 +172,11 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			FROM content_comment
 			GROUP BY post_id
 		) c ON c.post_id = p.post_id
+		LEFT JOIN LATERAL (
+			SELECT array_agg(pst.sport_type_id ORDER BY pst.sport_type_id) AS sport_type_ids
+			FROM content_post_sport_type pst
+			WHERE pst.post_id = p.post_id
+		) ps ON true
 		WHERE p.author_user_id = $1
 		ORDER BY p.created_at DESC, p.post_id DESC
 		LIMIT $3 OFFSET $4
@@ -173,6 +194,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			post          domain.PostSummary
 			requiredLevel sql.NullInt32
 			sportTypeID   sql.NullInt64
+			sportTypeIDs  pq.Int64Array
 		)
 
 		if err := rows.Scan(
@@ -181,10 +203,12 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 			&post.Title,
 			&requiredLevel,
 			&sportTypeID,
+			&sportTypeIDs,
 			&post.CreatedAt,
 			&post.LikesCount,
 			&post.IsLiked,
 			&post.CommentsCount,
+			&post.IsPinned,
 		); err != nil {
 			return nil, err
 		}
@@ -194,6 +218,7 @@ func (repository *Repository) ListAuthorPosts(ctx context.Context, authorUserID 
 		if sportTypeID.Valid {
 			post.SportTypeID = &sportTypeID.Int64
 		}
+		post.SportTypeIDs = sportTypeIDsFromScan(sportTypeID, sportTypeIDs)
 
 		posts = append(posts, post)
 	}
@@ -209,6 +234,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			p.title,
 			p.required_subscription_level,
 			p.sport_type_id,
+			COALESCE(ps.sport_type_ids, ARRAY[]::BIGINT[]),
 			p.created_at,
 			COALESCE(l.likes_count, 0),
 			EXISTS (
@@ -217,7 +243,8 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 				WHERE viewer_like.post_id = p.post_id
 					AND viewer_like.user_id = $1
 			),
-			COALESCE(c.comments_count, 0)
+			COALESCE(c.comments_count, 0),
+			p.is_pinned
 		FROM content_post p
 		LEFT JOIN (
 			SELECT post_id, COUNT(*) AS likes_count
@@ -229,6 +256,11 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			FROM content_comment
 			GROUP BY post_id
 		) c ON c.post_id = p.post_id
+		LEFT JOIN LATERAL (
+			SELECT array_agg(pst.sport_type_id ORDER BY pst.sport_type_id) AS sport_type_ids
+			FROM content_post_sport_type pst
+			WHERE pst.post_id = p.post_id
+		) ps ON true
 	`
 
 	args := []any{searchQuery.ViewerUserID}
@@ -251,7 +283,10 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 	if len(searchQuery.SportTypeIDs) > 0 {
 		args = append(args, pq.Array(searchQuery.SportTypeIDs))
 		placeholder := fmt.Sprintf("$%d", len(args))
-		conditions = append(conditions, "p.sport_type_id = ANY("+placeholder+")")
+		conditions = append(
+			conditions,
+			"(p.sport_type_id = ANY("+placeholder+") OR EXISTS (SELECT 1 FROM content_post_sport_type filter_sport WHERE filter_sport.post_id = p.post_id AND filter_sport.sport_type_id = ANY("+placeholder+")))",
+		)
 	}
 	if len(searchQuery.BlockKinds) > 0 {
 		args = append(args, pq.Array(blockKindStrings(searchQuery.BlockKinds)))
@@ -313,6 +348,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			post          domain.PostSummary
 			requiredLevel sql.NullInt32
 			sportTypeID   sql.NullInt64
+			sportTypeIDs  pq.Int64Array
 		)
 
 		if err := rows.Scan(
@@ -321,10 +357,12 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 			&post.Title,
 			&requiredLevel,
 			&sportTypeID,
+			&sportTypeIDs,
 			&post.CreatedAt,
 			&post.LikesCount,
 			&post.IsLiked,
 			&post.CommentsCount,
+			&post.IsPinned,
 		); err != nil {
 			return nil, err
 		}
@@ -334,6 +372,7 @@ func (repository *Repository) SearchPosts(ctx context.Context, searchQuery useca
 		if sportTypeID.Valid {
 			post.SportTypeID = &sportTypeID.Int64
 		}
+		post.SportTypeIDs = sportTypeIDsFromScan(sportTypeID, sportTypeIDs)
 
 		posts = append(posts, post)
 	}
@@ -349,11 +388,24 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 	}
 	defer tx.Rollback()
 
+	if post.IsPinned {
+		if _, err := tx.ExecContext(
+			ctx,
+			`UPDATE content_post SET is_pinned = FALSE, updated_at = $3 WHERE author_user_id = $1 AND post_id <> $2 AND is_pinned`,
+			post.AuthorUserID,
+			post.PostID,
+			now,
+		); err != nil {
+			return err
+		}
+	}
+
 	const updatePostQuery = `
 		UPDATE content_post
 		SET title = $3,
 			required_subscription_level = $4,
 			sport_type_id = $5,
+			is_pinned = $7,
 			updated_at = $6
 		WHERE post_id = $1
 			AND author_user_id = $2
@@ -368,6 +420,7 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 		nullInt32(post.RequiredSubscriptionLevel),
 		nullInt64(post.SportTypeID),
 		now,
+		post.IsPinned,
 	)
 	if err != nil {
 		return err
@@ -387,6 +440,9 @@ func (repository *Repository) UpdatePost(ctx context.Context, post domain.Post, 
 		if err := insertBlocks(ctx, tx, post.PostID, post.Blocks, now); err != nil {
 			return err
 		}
+	}
+	if err := replacePostSportTypes(ctx, tx, post.PostID, postSportTypeIDs(post), now); err != nil {
+		return err
 	}
 
 	return tx.Commit()
@@ -481,6 +537,51 @@ func insertBlocks(ctx context.Context, tx *sql.Tx, postID int64, blocks []domain
 		); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func replacePostSportTypes(ctx context.Context, tx *sql.Tx, postID int64, sportTypeIDs []int64, now time.Time) error {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM content_post_sport_type WHERE post_id = $1`, postID); err != nil {
+		return err
+	}
+
+	const insertQuery = `
+		INSERT INTO content_post_sport_type (
+			post_id,
+			sport_type_id,
+			created_at
+		) VALUES ($1, $2, $3)
+		ON CONFLICT (post_id, sport_type_id) DO NOTHING
+	`
+
+	for _, sportTypeID := range sportTypeIDs {
+		if _, err := tx.ExecContext(ctx, insertQuery, postID, sportTypeID, now); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func postSportTypeIDs(post domain.Post) []int64 {
+	if len(post.SportTypeIDs) > 0 {
+		return post.SportTypeIDs
+	}
+	if post.SportTypeID == nil {
+		return nil
+	}
+
+	return []int64{*post.SportTypeID}
+}
+
+func sportTypeIDsFromScan(primary sql.NullInt64, scanned pq.Int64Array) []int64 {
+	if len(scanned) > 0 {
+		return []int64(scanned)
+	}
+	if primary.Valid {
+		return []int64{primary.Int64}
 	}
 
 	return nil

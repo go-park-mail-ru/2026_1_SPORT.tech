@@ -9,12 +9,13 @@ import (
 )
 
 type Repositories struct {
-	Posts         PostRepository
-	Money         MonetizationRepository
-	Engagement    EngagementRepository
-	Notifications NotificationRepository
-	Chat          ChatRepository
-	Meeting       MeetingRepository
+	Posts                   PostRepository
+	Money                   MonetizationRepository
+	Engagement              EngagementRepository
+	Notifications           NotificationRepository
+	NotificationPreferences NotificationPreferencesRepository
+	Chat                    ChatRepository
+	Meeting                 MeetingRepository
 }
 
 type PostRepository interface {
@@ -32,18 +33,26 @@ type MonetizationRepository interface {
 	CreateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	UpdateSubscriptionTier(ctx context.Context, tier domain.SubscriptionTier) (domain.SubscriptionTier, error)
 	DeleteSubscriptionTier(ctx context.Context, trainerUserID int64, tierID int64) error
+	ListSubscriptionsAffectedByTierPriceIncrease(ctx context.Context, trainerUserID int64, tierID int64, newPrice int32) ([]domain.Subscription, error)
+	BlockSubscriptionRenewalForPriceIncrease(ctx context.Context, subscriptionID int64) error
 	GetActiveSubscriptionLevel(ctx context.Context, clientUserID int64, trainerUserID int64) (*int32, error)
 	SubscribeToTrainer(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	ListSubscriptions(ctx context.Context, clientUserID int64) ([]domain.Subscription, error)
 	ListTrainerSubscribers(ctx context.Context, trainerUserID int64, limit int32, offset int32) ([]domain.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 	CancelSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) error
+	GetSubscription(ctx context.Context, clientUserID int64, subscriptionID int64) (domain.Subscription, error)
+	SetSubscriptionAutoRenew(ctx context.Context, clientUserID int64, subscriptionID int64, autoRenew bool) error
+	RenewSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string, currentPeriodEnd time.Time) (bool, error)
+	DeactivateSubscriptionByStripeID(ctx context.Context, stripeSubscriptionID string) (bool, error)
 	CreateDonation(ctx context.Context, donation domain.Donation) (domain.Donation, error)
 	CreateDonationPayment(ctx context.Context, payment domain.DonationPayment) (domain.DonationPayment, error)
-	UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error)
 	GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error)
 	ConfirmDonationPayment(ctx context.Context, senderUserID int64, paymentID int64, confirmationToken string) (domain.DonationPayment, bool, error)
-	ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error)
+	ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string, stripeSubscriptionID string) (domain.DonationPayment, bool, error)
+	SetPaymentStatusByProviderID(ctx context.Context, providerPaymentID string, status domain.PaymentStatus) (domain.DonationPayment, bool, error)
+	ListStalePendingPayments(ctx context.Context, olderThan time.Time, limit int32) ([]domain.DonationPayment, error)
+	DeactivateExpiredSubscriptions(ctx context.Context, expiredBefore time.Time) (int64, error)
 	GetBalance(ctx context.Context, trainerUserID int64, currency string) (domain.Balance, error)
 	GetTrainerStatistics(ctx context.Context, trainerUserID int64, currency string, monthStart time.Time) (domain.TrainerStatistics, error)
 	ListReceivedDonations(ctx context.Context, recipientUserID int64, limit, offset int32) ([]domain.Donation, error)
@@ -56,6 +65,9 @@ type EngagementRepository interface {
 	GetPostLikeState(ctx context.Context, postID int64, userID int64) (domain.PostLikeState, error)
 	CreateComment(ctx context.Context, comment domain.Comment) (domain.Comment, error)
 	ListComments(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.Comment, error)
+	GetComment(ctx context.Context, commentID int64) (domain.Comment, error)
+	UpdateComment(ctx context.Context, commentID int64, body string, now time.Time) (domain.Comment, error)
+	DeleteComment(ctx context.Context, commentID int64) error
 	ListPostLikes(ctx context.Context, postID int64, limit int32, offset int32) ([]domain.PostLike, error)
 }
 
@@ -63,6 +75,11 @@ type NotificationRepository interface {
 	CreateNotification(ctx context.Context, notification domain.Notification) (domain.Notification, error)
 	ListNotifications(ctx context.Context, userID int64, limit int32, offset int32) ([]domain.Notification, error)
 	MarkNotificationRead(ctx context.Context, userID int64, notificationID int64) (domain.Notification, error)
+}
+
+type NotificationPreferencesRepository interface {
+	GetNotificationPreferences(ctx context.Context, userID int64) (domain.NotificationPreferences, error)
+	UpsertNotificationPreferences(ctx context.Context, userID int64, preferences domain.NotificationPreferences) error
 }
 
 type ChatRepository interface {
@@ -98,6 +115,7 @@ type PaymentProvider interface {
 	ProviderName() string
 	CreatePayment(ctx context.Context, request PaymentProviderCreateRequest) (PaymentProviderPayment, error)
 	GetPayment(ctx context.Context, providerPaymentID string) (PaymentProviderPayment, error)
+	CancelSubscription(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error
 }
 
 type PaymentProviderCreateRequest struct {
@@ -107,6 +125,7 @@ type PaymentProviderCreateRequest struct {
 	IdempotenceKey string
 	ReturnURL      string
 	CancelURL      string
+	Recurring      bool
 }
 
 type PaymentProviderPayment struct {

@@ -159,6 +159,17 @@ service ContentService {
     option (google.api.http).get = "/v1/posts/{post_id}/comments";
   }
 
+  rpc UpdateComment(UpdateCommentRequest) returns (CommentResponse) {
+    option (google.api.http) = {
+      patch: "/v1/comments/{comment_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = "/v1/comments/{comment_id}";
+  }
+
   rpc ListPostLikes(ListPostLikesRequest) returns (ListPostLikesResponse) {
     option (google.api.http).get = "/v1/posts/{post_id}/likes";
   }
@@ -170,6 +181,17 @@ service ContentService {
   rpc MarkNotificationRead(MarkNotificationReadRequest) returns (NotificationResponse) {
     option (google.api.http) = {
       patch: "/v1/users/{user_id}/notifications/{notification_id}/read"
+      body: "*"
+    };
+  }
+
+  rpc GetNotificationPreferences(GetNotificationPreferencesRequest) returns (NotificationPreferencesResponse) {
+    option (google.api.http).get = "/v1/users/{user_id}/notification-preferences";
+  }
+
+  rpc UpdateNotificationPreferences(UpdateNotificationPreferencesRequest) returns (NotificationPreferencesResponse) {
+    option (google.api.http) = {
+      put: "/v1/users/{user_id}/notification-preferences"
       body: "*"
     };
   }
@@ -251,6 +273,8 @@ message Post {
   int64 comments_count = 10;
   repeated PostBlock blocks = 11;
   optional int64 sport_type_id = 12;
+  bool is_pinned = 13;
+  repeated int64 sport_type_ids = 14;
 }
 
 message PostSummary {
@@ -264,6 +288,8 @@ message PostSummary {
   bool is_liked = 8;
   int64 comments_count = 9;
   optional int64 sport_type_id = 10;
+  bool is_pinned = 11;
+  repeated int64 sport_type_ids = 12;
 }
 
 message Comment {
@@ -332,6 +358,7 @@ message CreatePostRequest {
   optional int32 required_subscription_level = 3;
   repeated PostBlockInput blocks = 4;
   optional int64 sport_type_id = 5;
+  repeated int64 sport_type_ids = 6;
 }
 
 message UploadPostMediaRequest {
@@ -361,6 +388,9 @@ message UpdatePostRequest {
   bool replace_blocks = 7;
   optional int64 sport_type_id = 8;
   bool clear_sport_type_id = 9;
+  optional bool is_pinned = 10;
+  repeated int64 sport_type_ids = 11;
+  bool clear_sport_type_ids = 12;
 }
 
 message SubscriptionTier {
@@ -419,6 +449,10 @@ message Subscription {
   google.protobuf.Timestamp expires_at = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
+  bool auto_renew = 11;
+  string stripe_subscription_id = 12;
+  optional google.protobuf.Timestamp current_period_end = 13;
+  bool price_change_requires_resubscribe = 14;
 }
 
 message SubscribeToTrainerRequest {
@@ -601,6 +635,17 @@ message CreateCommentRequest {
   string body = 4;
 }
 
+message UpdateCommentRequest {
+  int64 comment_id = 1;
+  int64 author_user_id = 2;
+  string body = 3;
+}
+
+message DeleteCommentRequest {
+  int64 comment_id = 1;
+  int64 author_user_id = 2;
+}
+
 message CommentResponse {
   Comment comment = 1;
 }
@@ -626,6 +671,29 @@ message ListNotificationsRequest {
 message MarkNotificationReadRequest {
   int64 user_id = 1;
   int64 notification_id = 2;
+}
+
+message NotificationPreferences {
+  bool comments = 1;
+  bool likes = 2;
+  bool donations = 3;
+  bool posts = 4;
+  bool subscriptions = 5;
+  bool meetings = 6;
+  bool email_digest = 7;
+}
+
+message GetNotificationPreferencesRequest {
+  int64 user_id = 1;
+}
+
+message UpdateNotificationPreferencesRequest {
+  int64 user_id = 1;
+  NotificationPreferences preferences = 2;
+}
+
+message NotificationPreferencesResponse {
+  NotificationPreferences preferences = 1;
 }
 
 message NotificationResponse {

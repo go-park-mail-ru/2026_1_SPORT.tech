@@ -3,7 +3,6 @@ package httpgateway_test
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,21 +13,16 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/infrastructure/httpgateway"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/mocks"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/usecase"
+	"go.uber.org/mock/gomock"
 )
 
 func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	contentUseCase := mocks.ContentUseCase{
-		ListAuthorPostsFunc: func(ctx context.Context, query usecase.ListAuthorPostsQuery) ([]domain.PostSummary, error) {
-			return nil, errors.New("not implemented")
-		},
-		CreatePostFunc: func(ctx context.Context, command usecase.CreatePostCommand) (domain.Post, error) {
-			return domain.Post{}, errors.New("not implemented")
-		},
-		UploadPostMediaFunc: func(ctx context.Context, command usecase.UploadPostMediaCommand) (domain.PostMedia, error) {
-			return domain.PostMedia{}, errors.New("not implemented")
-		},
-		GetPostFunc: func(ctx context.Context, query usecase.GetPostQuery) (domain.Post, error) {
+	ctrl := gomock.NewController(t)
+	contentUseCase := mocks.NewMockContentUseCase(ctrl)
+	contentUseCase.EXPECT().
+		GetPost(gomock.Any(), gomock.Any()).
+		DoAndReturn(func(_ context.Context, query usecase.GetPostQuery) (domain.Post, error) {
 			return domain.Post{
 				PostID:       query.PostID,
 				AuthorUserID: 7,
@@ -37,26 +31,8 @@ func TestNewLocalMuxExposesGeneratedGetPostEndpoint(t *testing.T) {
 				UpdatedAt:    now,
 				CanView:      true,
 			}, nil
-		},
-		UpdatePostFunc: func(ctx context.Context, command usecase.UpdatePostCommand) (domain.Post, error) {
-			return domain.Post{}, errors.New("not implemented")
-		},
-		DeletePostFunc: func(ctx context.Context, command usecase.DeletePostCommand) error {
-			return errors.New("not implemented")
-		},
-		LikePostFunc: func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
-			return domain.PostLikeState{}, errors.New("not implemented")
-		},
-		UnlikePostFunc: func(ctx context.Context, command usecase.LikePostCommand) (domain.PostLikeState, error) {
-			return domain.PostLikeState{}, errors.New("not implemented")
-		},
-		CreateCommentFunc: func(ctx context.Context, command usecase.CreateCommentCommand) (domain.Comment, error) {
-			return domain.Comment{}, errors.New("not implemented")
-		},
-		ListCommentsFunc: func(ctx context.Context, query usecase.ListCommentsQuery) ([]domain.Comment, error) {
-			return nil, errors.New("not implemented")
-		},
-	}
+		})
+
 	handler := grpcadapter.NewServer(grpcadapter.UseCases{
 		Posts:         contentUseCase,
 		PostMedia:     contentUseCase,

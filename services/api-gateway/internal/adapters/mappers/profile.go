@@ -35,6 +35,34 @@ func CreateProfileRequestToProfile(
 	}, nil
 }
 
+func BecomeTrainerRequestToProfile(request *gatewayv1.BecomeTrainerRequest) (*profilev1.TrainerDetails, error) {
+	return trainerDetailsToProfile(request.GetTrainerDetails())
+}
+
+func PrivacySettingsToProfile(settings *gatewayv1.PrivacySettings) *profilev1.PrivacySettings {
+	if settings == nil {
+		return nil
+	}
+
+	return &profilev1.PrivacySettings{
+		ShowProfileInSearch:     settings.GetShowProfileInSearch(),
+		AllowMeasurementSharing: settings.GetAllowMeasurementSharing(),
+		ShowActivityStatus:      settings.GetShowActivityStatus(),
+	}
+}
+
+func PrivacySettingsResponseFromProfile(response *profilev1.PrivacySettingsResponse) *gatewayv1.PrivacySettingsResponse {
+	settings := response.GetSettings()
+
+	return &gatewayv1.PrivacySettingsResponse{
+		Settings: &gatewayv1.PrivacySettings{
+			ShowProfileInSearch:     settings.GetShowProfileInSearch(),
+			AllowMeasurementSharing: settings.GetAllowMeasurementSharing(),
+			ShowActivityStatus:      settings.GetShowActivityStatus(),
+		},
+	}
+}
+
 func UpdateMyProfileRequestToProfile(
 	userID int64,
 	request *gatewayv1.UpdateMyProfileRequest,

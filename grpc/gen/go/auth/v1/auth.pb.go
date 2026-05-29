@@ -565,6 +565,266 @@ func (x *GetSessionResponse) GetSession() *SessionInfo {
 	return nil
 }
 
+type ChangePasswordRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UserId          int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
+	NewPassword     string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ChangePasswordRequest) Reset() {
+	*x = ChangePasswordRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangePasswordRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangePasswordRequest) ProtoMessage() {}
+
+func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
+func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ChangePasswordRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *ChangePasswordRequest) GetCurrentPassword() string {
+	if x != nil {
+		return x.CurrentPassword
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
+type ChangeEmailRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UserId          int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
+	NewEmail        string                 `protobuf:"bytes,3,opt,name=new_email,json=newEmail,proto3" json:"new_email,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ChangeEmailRequest) Reset() {
+	*x = ChangeEmailRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangeEmailRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangeEmailRequest) ProtoMessage() {}
+
+func (x *ChangeEmailRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChangeEmailRequest.ProtoReflect.Descriptor instead.
+func (*ChangeEmailRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ChangeEmailRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *ChangeEmailRequest) GetCurrentPassword() string {
+	if x != nil {
+		return x.CurrentPassword
+	}
+	return ""
+}
+
+func (x *ChangeEmailRequest) GetNewEmail() string {
+	if x != nil {
+		return x.NewEmail
+	}
+	return ""
+}
+
+type PromoteToTrainerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PromoteToTrainerRequest) Reset() {
+	*x = PromoteToTrainerRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromoteToTrainerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromoteToTrainerRequest) ProtoMessage() {}
+
+func (x *PromoteToTrainerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PromoteToTrainerRequest.ProtoReflect.Descriptor instead.
+func (*PromoteToTrainerRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *PromoteToTrainerRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type LogoutAllRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutAllRequest) Reset() {
+	*x = LogoutAllRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutAllRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutAllRequest) ProtoMessage() {}
+
+func (x *LogoutAllRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutAllRequest.ProtoReflect.Descriptor instead.
+func (*LogoutAllRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *LogoutAllRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type DeleteAccountRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UserId          int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DeleteAccountRequest) Reset() {
+	*x = DeleteAccountRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAccountRequest) ProtoMessage() {}
+
+func (x *DeleteAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAccountRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAccountRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DeleteAccountRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *DeleteAccountRequest) GetCurrentPassword() string {
+	if x != nil {
+		return x.CurrentPassword
+	}
+	return ""
+}
+
 var File_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_auth_proto_rawDesc = "" +
@@ -597,7 +857,22 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\asession\x18\x02 \x01(\v2\x1e.sporttech.auth.v1.SessionInfoR\asession\"\x7f\n" +
 	"\x12GetSessionResponse\x12/\n" +
 	"\x04user\x18\x01 \x01(\v2\x1b.sporttech.auth.v1.AuthUserR\x04user\x128\n" +
-	"\asession\x18\x02 \x01(\v2\x1e.sporttech.auth.v1.SessionInfoR\asession*g\n" +
+	"\asession\x18\x02 \x01(\v2\x1e.sporttech.auth.v1.SessionInfoR\asession\"~\n" +
+	"\x15ChangePasswordRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12)\n" +
+	"\x10current_password\x18\x02 \x01(\tR\x0fcurrentPassword\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"u\n" +
+	"\x12ChangeEmailRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12)\n" +
+	"\x10current_password\x18\x02 \x01(\tR\x0fcurrentPassword\x12\x1b\n" +
+	"\tnew_email\x18\x03 \x01(\tR\bnewEmail\"2\n" +
+	"\x17PromoteToTrainerRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"+\n" +
+	"\x10LogoutAllRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"Z\n" +
+	"\x14DeleteAccountRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12)\n" +
+	"\x10current_password\x18\x02 \x01(\tR\x0fcurrentPassword*g\n" +
 	"\bUserRole\x12\x19\n" +
 	"\x15USER_ROLE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10USER_ROLE_CLIENT\x10\x01\x12\x15\n" +
@@ -606,13 +881,18 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\rAccountStatus\x12\x1e\n" +
 	"\x1aACCOUNT_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15ACCOUNT_STATUS_ACTIVE\x10\x01\x12\x1b\n" +
-	"\x17ACCOUNT_STATUS_DISABLED\x10\x022\xd1\x03\n" +
+	"\x17ACCOUNT_STATUS_DISABLED\x10\x022\xdd\b\n" +
 	"\vAuthService\x12t\n" +
 	"\bRegister\x12\".sporttech.auth.v1.RegisterRequest\x1a&.sporttech.auth.v1.AuthSessionResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/auth/register\x12k\n" +
 	"\x05Login\x12\x1f.sporttech.auth.v1.LoginRequest\x1a&.sporttech.auth.v1.AuthSessionResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12^\n" +
 	"\x06Logout\x12 .sporttech.auth.v1.LogoutRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logout\x12\x7f\n" +
 	"\n" +
-	"GetSession\x12$.sporttech.auth.v1.GetSessionRequest\x1a%.sporttech.auth.v1.GetSessionResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/sessions:resolveBIZGgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1;authv1b\x06proto3"
+	"GetSession\x12$.sporttech.auth.v1.GetSessionRequest\x1a%.sporttech.auth.v1.GetSessionResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v1/auth/sessions:resolve\x12\x80\x01\n" +
+	"\x0eChangePassword\x12(.sporttech.auth.v1.ChangePasswordRequest\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&:\x01*\"!/v1/auth/users/{user_id}/password\x12|\n" +
+	"\vChangeEmail\x12%.sporttech.auth.v1.ChangeEmailRequest\x1a\x1b.sporttech.auth.v1.AuthUser\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/v1/auth/users/{user_id}/email\x12\x90\x01\n" +
+	"\x10PromoteToTrainer\x12*.sporttech.auth.v1.PromoteToTrainerRequest\x1a\x1b.sporttech.auth.v1.AuthUser\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/v1/auth/users/{user_id}/promote-trainer\x12x\n" +
+	"\tLogoutAll\x12#.sporttech.auth.v1.LogoutAllRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(:\x01*\"#/v1/auth/users/{user_id}/logout-all\x12|\n" +
+	"\rDeleteAccount\x12'.sporttech.auth.v1.DeleteAccountRequest\x1a\x16.google.protobuf.Empty\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/v1/auth/users/{user_id}:deleteBIZGgithub.com/go-park-mail-ru/2026_1_SPORT.tech/grpc/gen/go/auth/v1;authv1b\x06proto3"
 
 var (
 	file_auth_v1_auth_proto_rawDescOnce sync.Once
@@ -627,25 +907,30 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 }
 
 var file_auth_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_auth_v1_auth_proto_goTypes = []any{
-	(UserRole)(0),                 // 0: sporttech.auth.v1.UserRole
-	(AccountStatus)(0),            // 1: sporttech.auth.v1.AccountStatus
-	(*AuthUser)(nil),              // 2: sporttech.auth.v1.AuthUser
-	(*SessionInfo)(nil),           // 3: sporttech.auth.v1.SessionInfo
-	(*RegisterRequest)(nil),       // 4: sporttech.auth.v1.RegisterRequest
-	(*LoginRequest)(nil),          // 5: sporttech.auth.v1.LoginRequest
-	(*LogoutRequest)(nil),         // 6: sporttech.auth.v1.LogoutRequest
-	(*GetSessionRequest)(nil),     // 7: sporttech.auth.v1.GetSessionRequest
-	(*AuthSessionResponse)(nil),   // 8: sporttech.auth.v1.AuthSessionResponse
-	(*GetSessionResponse)(nil),    // 9: sporttech.auth.v1.GetSessionResponse
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 11: google.protobuf.Empty
+	(UserRole)(0),                   // 0: sporttech.auth.v1.UserRole
+	(AccountStatus)(0),              // 1: sporttech.auth.v1.AccountStatus
+	(*AuthUser)(nil),                // 2: sporttech.auth.v1.AuthUser
+	(*SessionInfo)(nil),             // 3: sporttech.auth.v1.SessionInfo
+	(*RegisterRequest)(nil),         // 4: sporttech.auth.v1.RegisterRequest
+	(*LoginRequest)(nil),            // 5: sporttech.auth.v1.LoginRequest
+	(*LogoutRequest)(nil),           // 6: sporttech.auth.v1.LogoutRequest
+	(*GetSessionRequest)(nil),       // 7: sporttech.auth.v1.GetSessionRequest
+	(*AuthSessionResponse)(nil),     // 8: sporttech.auth.v1.AuthSessionResponse
+	(*GetSessionResponse)(nil),      // 9: sporttech.auth.v1.GetSessionResponse
+	(*ChangePasswordRequest)(nil),   // 10: sporttech.auth.v1.ChangePasswordRequest
+	(*ChangeEmailRequest)(nil),      // 11: sporttech.auth.v1.ChangeEmailRequest
+	(*PromoteToTrainerRequest)(nil), // 12: sporttech.auth.v1.PromoteToTrainerRequest
+	(*LogoutAllRequest)(nil),        // 13: sporttech.auth.v1.LogoutAllRequest
+	(*DeleteAccountRequest)(nil),    // 14: sporttech.auth.v1.DeleteAccountRequest
+	(*timestamppb.Timestamp)(nil),   // 15: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),           // 16: google.protobuf.Empty
 }
 var file_auth_v1_auth_proto_depIdxs = []int32{
 	0,  // 0: sporttech.auth.v1.AuthUser.role:type_name -> sporttech.auth.v1.UserRole
 	1,  // 1: sporttech.auth.v1.AuthUser.status:type_name -> sporttech.auth.v1.AccountStatus
-	10, // 2: sporttech.auth.v1.SessionInfo.expires_at:type_name -> google.protobuf.Timestamp
+	15, // 2: sporttech.auth.v1.SessionInfo.expires_at:type_name -> google.protobuf.Timestamp
 	0,  // 3: sporttech.auth.v1.RegisterRequest.role:type_name -> sporttech.auth.v1.UserRole
 	2,  // 4: sporttech.auth.v1.AuthSessionResponse.user:type_name -> sporttech.auth.v1.AuthUser
 	3,  // 5: sporttech.auth.v1.AuthSessionResponse.session:type_name -> sporttech.auth.v1.SessionInfo
@@ -655,12 +940,22 @@ var file_auth_v1_auth_proto_depIdxs = []int32{
 	5,  // 9: sporttech.auth.v1.AuthService.Login:input_type -> sporttech.auth.v1.LoginRequest
 	6,  // 10: sporttech.auth.v1.AuthService.Logout:input_type -> sporttech.auth.v1.LogoutRequest
 	7,  // 11: sporttech.auth.v1.AuthService.GetSession:input_type -> sporttech.auth.v1.GetSessionRequest
-	8,  // 12: sporttech.auth.v1.AuthService.Register:output_type -> sporttech.auth.v1.AuthSessionResponse
-	8,  // 13: sporttech.auth.v1.AuthService.Login:output_type -> sporttech.auth.v1.AuthSessionResponse
-	11, // 14: sporttech.auth.v1.AuthService.Logout:output_type -> google.protobuf.Empty
-	9,  // 15: sporttech.auth.v1.AuthService.GetSession:output_type -> sporttech.auth.v1.GetSessionResponse
-	12, // [12:16] is the sub-list for method output_type
-	8,  // [8:12] is the sub-list for method input_type
+	10, // 12: sporttech.auth.v1.AuthService.ChangePassword:input_type -> sporttech.auth.v1.ChangePasswordRequest
+	11, // 13: sporttech.auth.v1.AuthService.ChangeEmail:input_type -> sporttech.auth.v1.ChangeEmailRequest
+	12, // 14: sporttech.auth.v1.AuthService.PromoteToTrainer:input_type -> sporttech.auth.v1.PromoteToTrainerRequest
+	13, // 15: sporttech.auth.v1.AuthService.LogoutAll:input_type -> sporttech.auth.v1.LogoutAllRequest
+	14, // 16: sporttech.auth.v1.AuthService.DeleteAccount:input_type -> sporttech.auth.v1.DeleteAccountRequest
+	8,  // 17: sporttech.auth.v1.AuthService.Register:output_type -> sporttech.auth.v1.AuthSessionResponse
+	8,  // 18: sporttech.auth.v1.AuthService.Login:output_type -> sporttech.auth.v1.AuthSessionResponse
+	16, // 19: sporttech.auth.v1.AuthService.Logout:output_type -> google.protobuf.Empty
+	9,  // 20: sporttech.auth.v1.AuthService.GetSession:output_type -> sporttech.auth.v1.GetSessionResponse
+	16, // 21: sporttech.auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
+	2,  // 22: sporttech.auth.v1.AuthService.ChangeEmail:output_type -> sporttech.auth.v1.AuthUser
+	2,  // 23: sporttech.auth.v1.AuthService.PromoteToTrainer:output_type -> sporttech.auth.v1.AuthUser
+	16, // 24: sporttech.auth.v1.AuthService.LogoutAll:output_type -> google.protobuf.Empty
+	16, // 25: sporttech.auth.v1.AuthService.DeleteAccount:output_type -> google.protobuf.Empty
+	17, // [17:26] is the sub-list for method output_type
+	8,  // [8:17] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name
@@ -677,7 +972,7 @@ func file_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_v1_auth_proto_rawDesc), len(file_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

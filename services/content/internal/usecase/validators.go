@@ -1,5 +1,9 @@
 package usecase
 
+import "time"
+
+const commentEditWindow = 15 * time.Minute
+
 const (
 	defaultPageLimit      = 20
 	maxPageLimit          = 100

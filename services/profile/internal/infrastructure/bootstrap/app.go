@@ -50,6 +50,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		return nil, fmt.Errorf("new avatar storage: %w", err)
 	}
 	measurementSharingRepository := postgresadapter.NewMeasurementSharingRepository(database)
+	privacyRepository := postgresadapter.NewPrivacySettingsRepository(database)
 	profileUseCase := usecase.NewService(usecase.Repositories{
 		Profiles:           profileRepository,
 		Authors:            profileRepository,
@@ -57,6 +58,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Sports:             sportTypeRepository,
 		Measurements:       measurementRepository,
 		MeasurementSharing: measurementSharingRepository,
+		Privacy:            privacyRepository,
 	}, avatarStorage)
 
 	metricsSet := metrics.New(cfg.ServiceName)
@@ -66,6 +68,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Avatars:      profileUseCase,
 		Sports:       profileUseCase,
 		Measurements: profileUseCase,
+		Settings:     profileUseCase,
 	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 

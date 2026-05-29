@@ -22,7 +22,8 @@ GRANT USAGE ON TYPE content_block_kind TO :"content_app_user";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_post TO :"content_app_user";
 GRANT SELECT, INSERT, DELETE ON TABLE content_post_block TO :"content_app_user";
-GRANT SELECT, INSERT ON TABLE content_comment TO :"content_app_user";
+GRANT SELECT, INSERT, DELETE ON TABLE content_post_sport_type TO :"content_app_user";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_comment TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_post_like TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_subscription_tier TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE content_subscription TO :"content_app_user";
@@ -33,6 +34,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE content_chat_message TO :"content_app_user
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_meeting_availability_rule TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE content_meeting_slot TO :"content_app_user";
 GRANT SELECT, INSERT, UPDATE ON TABLE content_meeting_booking TO :"content_app_user";
+GRANT SELECT, INSERT, UPDATE ON TABLE notification_preferences TO :"content_app_user";
 
 GRANT USAGE, SELECT ON SEQUENCE content_post_post_id_seq TO :"content_app_user";
 GRANT USAGE, SELECT ON SEQUENCE content_post_block_post_block_id_seq TO :"content_app_user";

@@ -15,14 +15,15 @@ const (
 )
 
 type Service struct {
-	posts           PostRepository
-	money           MonetizationRepository
-	engagement      EngagementRepository
-	notifications   NotificationRepository
-	chat            ChatRepository
-	meeting         MeetingRepository
-	postMedia       PostMediaStorage
-	paymentProvider PaymentProvider
+	posts                   PostRepository
+	money                   MonetizationRepository
+	engagement              EngagementRepository
+	notifications           NotificationRepository
+	notificationPreferences NotificationPreferencesRepository
+	chat                    ChatRepository
+	meeting                 MeetingRepository
+	postMedia               PostMediaStorage
+	paymentProvider         PaymentProvider
 }
 
 func NewService(repositories Repositories, postMediaStorage PostMediaStorage, paymentProviders ...PaymentProvider) *Service {
@@ -32,14 +33,15 @@ func NewService(repositories Repositories, postMediaStorage PostMediaStorage, pa
 	}
 
 	return &Service{
-		posts:           repositories.Posts,
-		money:           repositories.Money,
-		engagement:      repositories.Engagement,
-		notifications:   repositories.Notifications,
-		chat:            repositories.Chat,
-		meeting:         repositories.Meeting,
-		postMedia:       postMediaStorage,
-		paymentProvider: paymentProvider,
+		posts:                   repositories.Posts,
+		money:                   repositories.Money,
+		engagement:              repositories.Engagement,
+		notifications:           repositories.Notifications,
+		notificationPreferences: repositories.NotificationPreferences,
+		chat:                    repositories.Chat,
+		meeting:                 repositories.Meeting,
+		postMedia:               postMediaStorage,
+		paymentProvider:         paymentProvider,
 	}
 }
 
@@ -81,7 +83,8 @@ func buildPost(command CreatePostCommand) (domain.Post, error) {
 		AuthorUserID:              command.AuthorUserID,
 		Title:                     normalizeRequiredText(command.Title),
 		RequiredSubscriptionLevel: normalizeSubscriptionLevel(command.RequiredSubscriptionLevel),
-		SportTypeID:               normalizeSportTypeID(command.SportTypeID),
+		SportTypeID:               normalizePrimarySportTypeID(command.SportTypeID, command.SportTypeIDs),
+		SportTypeIDs:              normalizeSportTypeIDs(command.SportTypeID, command.SportTypeIDs),
 		Blocks:                    normalizeBlocks(command.Blocks),
 	}
 
@@ -137,6 +140,34 @@ func normalizeSportTypeID(value *int64) *int64 {
 	return &sportTypeID
 }
 
+func normalizePrimarySportTypeID(value *int64, values []int64) *int64 {
+	if len(values) > 0 {
+		first := values[0]
+		return &first
+	}
+
+	return normalizeSportTypeID(value)
+}
+
+func normalizeSportTypeIDs(value *int64, values []int64) []int64 {
+	seen := make(map[int64]struct{}, len(values)+1)
+	normalized := make([]int64, 0, len(values)+1)
+
+	for _, sportTypeID := range values {
+		if _, exists := seen[sportTypeID]; exists {
+			continue
+		}
+		seen[sportTypeID] = struct{}{}
+		normalized = append(normalized, sportTypeID)
+	}
+
+	if len(normalized) == 0 && value != nil {
+		normalized = append(normalized, *value)
+	}
+
+	return normalized
+}
+
 func normalizeCurrency(value string) string {
 	value = strings.ToUpper(normalizeRequiredText(value))
 	if value == "" {
@@ -184,6 +215,6 @@ func randomToken(prefix string) (string, error) {
 	return prefix + "_" + base64.RawURLEncoding.EncodeToString(data[:]), nil
 }
 
-func paymentIdempotenceKey(kind string, payment domain.DonationPayment) string {
-	return fmt.Sprintf("content-%s-payment-%d-%s", kind, payment.PaymentID, payment.ConfirmationToken)
+func paymentIdempotenceKey(kind string, confirmationToken string) string {
+	return fmt.Sprintf("content-%s-payment-%s", kind, confirmationToken)
 }

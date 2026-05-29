@@ -14,6 +14,7 @@ type Repositories struct {
 	Sports             SportTypeRepository
 	Measurements       MeasurementRepository
 	MeasurementSharing MeasurementSharingRepository
+	Privacy            PrivacySettingsRepository
 }
 
 type ProfileRepository interface {
@@ -21,6 +22,13 @@ type ProfileRepository interface {
 	GetByID(ctx context.Context, userID int64) (domain.Profile, error)
 	GetByUsername(ctx context.Context, username string) (domain.Profile, error)
 	Update(ctx context.Context, profile domain.Profile) error
+	SetTrainer(ctx context.Context, userID int64, details *domain.TrainerDetails) error
+	Delete(ctx context.Context, userID int64) error
+}
+
+type PrivacySettingsRepository interface {
+	Get(ctx context.Context, userID int64) (domain.PrivacySettings, error)
+	Upsert(ctx context.Context, userID int64, settings domain.PrivacySettings) error
 }
 
 type AuthorRepository interface {
@@ -61,6 +69,16 @@ type UpdateProfileCommand struct {
 	HasBio            bool
 	TrainerDetails    *domain.TrainerDetails
 	HasTrainerDetails bool
+}
+
+type SetTrainerCommand struct {
+	UserID         int64
+	TrainerDetails *domain.TrainerDetails
+}
+
+type UpdatePrivacySettingsCommand struct {
+	UserID   int64
+	Settings domain.PrivacySettings
 }
 
 type SearchAuthorsQuery struct {

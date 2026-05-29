@@ -109,14 +109,9 @@ func (repository *Repository) CreateDonationPayment(ctx context.Context, payment
 	return created, nil
 }
 
-func (repository *Repository) UpdateDonationPaymentProvider(ctx context.Context, paymentID int64, providerPaymentID string, confirmationURL string) (domain.DonationPayment, error) {
+func (repository *Repository) ListStalePendingPayments(ctx context.Context, olderThan time.Time, limit int32) ([]domain.DonationPayment, error) {
 	const query = `
-		UPDATE content_payment
-		SET provider_payment_id = $2::text,
-			confirmation_url = $3::text,
-			updated_at = $4::timestamptz
-		WHERE payment_id = $1::bigint
-		RETURNING
+		SELECT
 			payment_id,
 			provider,
 			provider_payment_id,
@@ -134,17 +129,30 @@ func (repository *Repository) UpdateDonationPaymentProvider(ctx context.Context,
 			created_at,
 			updated_at,
 			confirmed_at
+		FROM content_payment
+		WHERE status = 'pending'
+			AND provider_payment_id IS NOT NULL
+			AND created_at < $1::timestamptz
+		ORDER BY created_at ASC, payment_id ASC
+		LIMIT $2::integer
 	`
 
-	payment, err := scanPayment(repository.db.QueryRowContext(ctx, query, paymentID, providerPaymentID, confirmationURL, time.Now().UTC()))
+	rows, err := repository.db.QueryContext(ctx, query, olderThan, limit)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return domain.DonationPayment{}, domain.ErrPaymentNotFound
+		return nil, err
+	}
+	defer rows.Close()
+
+	payments := make([]domain.DonationPayment, 0)
+	for rows.Next() {
+		payment, err := scanPayment(rows)
+		if err != nil {
+			return nil, err
 		}
-		return domain.DonationPayment{}, err
+		payments = append(payments, payment)
 	}
 
-	return payment, nil
+	return payments, rows.Err()
 }
 
 func (repository *Repository) GetDonationPayment(ctx context.Context, senderUserID int64, paymentID int64) (domain.DonationPayment, error) {
@@ -199,10 +207,10 @@ func (repository *Repository) ConfirmDonationPayment(ctx context.Context, sender
 			return domain.DonationPayment{}, domain.ErrPaymentTokenMismatch
 		}
 		return payment, nil
-	})
+	}, "")
 }
 
-func (repository *Repository) ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string) (domain.DonationPayment, bool, error) {
+func (repository *Repository) ConfirmPaymentByProviderID(ctx context.Context, providerPaymentID string, stripeSubscriptionID string) (domain.DonationPayment, bool, error) {
 	return repository.confirmPayment(ctx, func(ctx context.Context, tx *sql.Tx) (domain.DonationPayment, error) {
 		payment, err := scanPayment(tx.QueryRowContext(ctx, selectPaymentForUpdateByProviderIDQuery, providerPaymentID))
 		if err != nil {
@@ -212,12 +220,61 @@ func (repository *Repository) ConfirmPaymentByProviderID(ctx context.Context, pr
 			return domain.DonationPayment{}, err
 		}
 		return payment, nil
-	})
+	}, stripeSubscriptionID)
+}
+
+func (repository *Repository) SetPaymentStatusByProviderID(ctx context.Context, providerPaymentID string, status domain.PaymentStatus) (domain.DonationPayment, bool, error) {
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return domain.DonationPayment{}, false, err
+	}
+	defer tx.Rollback()
+
+	payment, err := scanPayment(tx.QueryRowContext(ctx, selectPaymentForUpdateByProviderIDQuery, providerPaymentID))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.DonationPayment{}, false, domain.ErrPaymentNotFound
+		}
+		return domain.DonationPayment{}, false, err
+	}
+
+	if payment.Status.IsTerminal() {
+		if err := tx.Commit(); err != nil {
+			return domain.DonationPayment{}, false, err
+		}
+		return payment, false, nil
+	}
+
+	now := time.Now().UTC()
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			UPDATE content_payment
+			SET status = $2::text,
+				updated_at = $3::timestamptz
+			WHERE payment_id = $1::bigint
+		`,
+		payment.PaymentID,
+		string(status),
+		now,
+	); err != nil {
+		return domain.DonationPayment{}, false, err
+	}
+
+	payment.Status = status
+	payment.UpdatedAt = now
+
+	if err := tx.Commit(); err != nil {
+		return domain.DonationPayment{}, false, err
+	}
+
+	return payment, true, nil
 }
 
 func (repository *Repository) confirmPayment(
 	ctx context.Context,
 	lockPayment func(ctx context.Context, tx *sql.Tx) (domain.DonationPayment, error),
+	stripeSubscriptionID string,
 ) (domain.DonationPayment, bool, error) {
 	tx, err := repository.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -286,10 +343,35 @@ func (repository *Repository) confirmPayment(
 			ClientUserID:  payment.SenderUserID,
 			TrainerUserID: payment.RecipientUserID,
 			TierID:        *payment.TierID,
+			Price:         payment.AmountValue,
 			ExpiresAt:     now.AddDate(0, 1, 0),
 		}, now)
 		if err != nil {
 			return domain.DonationPayment{}, false, err
+		}
+		if stripeSubscriptionID != "" {
+			periodEnd := createdSubscription.ExpiresAt
+			if _, err := tx.ExecContext(
+				ctx,
+				`
+					UPDATE content_subscription
+						SET stripe_subscription_id = $2::text,
+							current_period_end = $3::timestamptz,
+							auto_renew = TRUE,
+							price_change_requires_resubscribe = FALSE,
+							updated_at = $4::timestamptz
+					WHERE subscription_id = $1::bigint
+				`,
+				createdSubscription.SubscriptionID,
+				stripeSubscriptionID,
+				periodEnd,
+				now,
+			); err != nil {
+				return domain.DonationPayment{}, false, err
+			}
+			createdSubscription.StripeSubscriptionID = stripeSubscriptionID
+			createdSubscription.CurrentPeriodEnd = &periodEnd
+			createdSubscription.AutoRenew = true
 		}
 		if _, err := tx.ExecContext(
 			ctx,
@@ -472,83 +554,103 @@ func subscribeToTrainerTx(ctx context.Context, tx *sql.Tx, subscription domain.S
 		return scanSubscription(tx.QueryRowContext(
 			ctx,
 			`
-				WITH inserted AS (
-					INSERT INTO content_subscription (
-						client_user_id,
-						trainer_user_id,
-						tier_id,
-						active,
-						expires_at,
-						created_at,
-						updated_at
+					WITH inserted AS (
+						INSERT INTO content_subscription (
+							client_user_id,
+							trainer_user_id,
+							tier_id,
+							active,
+							expires_at,
+							created_at,
+							updated_at,
+							tier_name_snapshot,
+							price_snapshot,
+							price_change_requires_resubscribe
+						)
+						SELECT
+							$1::bigint,
+							$2::bigint,
+							$3::integer,
+							TRUE,
+							$4::timestamptz,
+							$5::timestamptz,
+							$5::timestamptz,
+							COALESCE(NULLIF($6::text, ''), tier.name),
+							CASE WHEN $7::integer > 0 OR tier.price = 0 THEN $7::integer ELSE tier.price END,
+							FALSE
+						FROM content_subscription_tier tier
+						WHERE tier.trainer_user_id = $2::bigint
+							AND tier.tier_id = $3::integer
+						RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, tier_name_snapshot, price_snapshot, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew, price_change_requires_resubscribe
 					)
-					VALUES (
-						$1::bigint,
-						$2::bigint,
-						$3::integer,
-						TRUE,
-						$4::timestamptz,
-						$5::timestamptz,
-						$5::timestamptz
-					)
-					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
-				)
-				SELECT
-					inserted.subscription_id,
-					inserted.client_user_id,
-					inserted.trainer_user_id,
-					inserted.tier_id,
-					tier.name,
-					tier.price,
-					inserted.active,
-					inserted.expires_at,
-					inserted.created_at,
-					inserted.updated_at
-				FROM inserted
-				JOIN content_subscription_tier tier
-					ON tier.trainer_user_id = inserted.trainer_user_id
-					AND tier.tier_id = inserted.tier_id
-			`,
+					SELECT
+						inserted.subscription_id,
+						inserted.client_user_id,
+						inserted.trainer_user_id,
+						inserted.tier_id,
+						inserted.tier_name_snapshot,
+						inserted.price_snapshot,
+						inserted.active,
+						inserted.expires_at,
+						inserted.created_at,
+						inserted.updated_at, inserted.stripe_subscription_id, inserted.current_period_end, inserted.auto_renew, inserted.price_change_requires_resubscribe
+					FROM inserted
+				`,
 			subscription.ClientUserID,
 			subscription.TrainerUserID,
 			subscription.TierID,
 			subscription.ExpiresAt,
 			now,
+			subscription.TierName,
+			subscription.Price,
 		))
 	}
 
 	return scanSubscription(tx.QueryRowContext(
 		ctx,
 		`
-			WITH updated AS (
-				UPDATE content_subscription
-				SET tier_id = $1::integer,
-					active = TRUE,
-					expires_at = $2::timestamptz,
-					updated_at = $3::timestamptz
-				WHERE subscription_id = $4::bigint
-				RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, active, expires_at, created_at, updated_at
-			)
-			SELECT
-				updated.subscription_id,
-				updated.client_user_id,
-				updated.trainer_user_id,
-				updated.tier_id,
-				tier.name,
-				tier.price,
-				updated.active,
-				updated.expires_at,
-				updated.created_at,
-				updated.updated_at
-			FROM updated
-			JOIN content_subscription_tier tier
-				ON tier.trainer_user_id = updated.trainer_user_id
-				AND tier.tier_id = updated.tier_id
-			`,
+				WITH selected_tier AS (
+					SELECT name, price
+					FROM content_subscription_tier
+					WHERE trainer_user_id = $5::bigint
+						AND tier_id = $1::integer
+				),
+				updated AS (
+					UPDATE content_subscription
+					SET tier_id = $1::integer,
+						active = TRUE,
+						expires_at = $2::timestamptz,
+						updated_at = $3::timestamptz,
+						tier_name_snapshot = COALESCE(NULLIF($6::text, ''), selected_tier.name),
+						price_snapshot = CASE WHEN $7::integer > 0 OR selected_tier.price = 0 THEN $7::integer ELSE selected_tier.price END,
+						stripe_subscription_id = CASE WHEN selected_tier.price = 0 THEN NULL ELSE stripe_subscription_id END,
+						current_period_end = CASE WHEN selected_tier.price = 0 THEN NULL ELSE current_period_end END,
+						auto_renew = CASE WHEN selected_tier.price = 0 THEN FALSE ELSE auto_renew END,
+						price_change_requires_resubscribe = FALSE
+					FROM selected_tier
+					WHERE subscription_id = $4::bigint
+					RETURNING subscription_id, client_user_id, trainer_user_id, tier_id, tier_name_snapshot, price_snapshot, active, expires_at, created_at, updated_at, stripe_subscription_id, current_period_end, auto_renew, price_change_requires_resubscribe
+				)
+				SELECT
+					updated.subscription_id,
+					updated.client_user_id,
+					updated.trainer_user_id,
+					updated.tier_id,
+					updated.tier_name_snapshot,
+					updated.price_snapshot,
+					updated.active,
+					updated.expires_at,
+					updated.created_at,
+					updated.updated_at, updated.stripe_subscription_id, updated.current_period_end, updated.auto_renew, updated.price_change_requires_resubscribe
+				FROM updated
+				`,
 		subscription.TierID,
 		subscription.ExpiresAt,
 		now,
 		subscriptionID,
+		subscription.TrainerUserID,
+		subscription.TierName,
+		subscription.Price,
 	))
 }
 
@@ -559,12 +661,12 @@ func (repository *Repository) getSubscriptionTx(ctx context.Context, tx *sql.Tx,
 			subscription.client_user_id,
 			subscription.trainer_user_id,
 			subscription.tier_id,
-			tier.name,
-			tier.price,
+			COALESCE(subscription.tier_name_snapshot, tier.name),
+			COALESCE(subscription.price_snapshot, tier.price),
 			(subscription.active AND subscription.expires_at > now()) AS active,
 			subscription.expires_at,
 			subscription.created_at,
-			subscription.updated_at
+			subscription.updated_at, subscription.stripe_subscription_id, subscription.current_period_end, subscription.auto_renew, subscription.price_change_requires_resubscribe
 		FROM content_subscription subscription
 		JOIN content_subscription_tier tier
 			ON tier.trainer_user_id = subscription.trainer_user_id

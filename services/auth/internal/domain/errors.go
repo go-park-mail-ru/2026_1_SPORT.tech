@@ -12,4 +12,5 @@ var (
 	ErrUsernameTaken      = errors.New("username already taken")
 	ErrSessionNotFound    = errors.New("session not found")
 	ErrSessionExpired     = errors.New("session expired")
+	ErrAlreadyTrainer     = errors.New("account is already a trainer")
 )

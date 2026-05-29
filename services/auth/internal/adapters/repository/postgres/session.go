@@ -95,3 +95,14 @@ func (repository *SessionRepository) RevokeByHash(ctx context.Context, sessionHa
 
 	return nil
 }
+
+func (repository *SessionRepository) RevokeByUserID(ctx context.Context, userID int64) error {
+	const query = `
+		UPDATE auth_session
+		SET revoked_at = NOW(), updated_at = NOW()
+		WHERE user_id = $1 AND revoked_at IS NULL
+	`
+
+	_, err := repository.db.ExecContext(ctx, query, userID)
+	return err
+}

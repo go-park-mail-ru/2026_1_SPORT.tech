@@ -36,6 +36,41 @@ service AuthService {
       body: "*"
     };
   }
+
+  rpc ChangePassword(ChangePasswordRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/users/{user_id}/password"
+      body: "*"
+    };
+  }
+
+  rpc ChangeEmail(ChangeEmailRequest) returns (AuthUser) {
+    option (google.api.http) = {
+      post: "/v1/auth/users/{user_id}/email"
+      body: "*"
+    };
+  }
+
+  rpc PromoteToTrainer(PromoteToTrainerRequest) returns (AuthUser) {
+    option (google.api.http) = {
+      post: "/v1/auth/users/{user_id}/promote-trainer"
+      body: "*"
+    };
+  }
+
+  rpc LogoutAll(LogoutAllRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/users/{user_id}/logout-all"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/users/{user_id}:delete"
+      body: "*"
+    };
+  }
 }
 
 enum UserRole {
@@ -92,4 +127,29 @@ message AuthSessionResponse {
 message GetSessionResponse {
   AuthUser user = 1;
   SessionInfo session = 2;
+}
+
+message ChangePasswordRequest {
+  int64 user_id = 1;
+  string current_password = 2;
+  string new_password = 3;
+}
+
+message ChangeEmailRequest {
+  int64 user_id = 1;
+  string current_password = 2;
+  string new_email = 3;
+}
+
+message PromoteToTrainerRequest {
+  int64 user_id = 1;
+}
+
+message LogoutAllRequest {
+  int64 user_id = 1;
+}
+
+message DeleteAccountRequest {
+  int64 user_id = 1;
+  string current_password = 2;
 }

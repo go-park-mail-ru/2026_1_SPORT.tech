@@ -61,6 +61,9 @@ type PaymentConfig struct {
 	StripeCancelURL     string `yaml:"stripe_cancel_url" env:"STRIPE_CANCEL_URL" env-default:"https://sporteon.ru/payment/cancel"`
 	StripeAPIBaseURL    string `yaml:"stripe_api_base_url" env:"STRIPE_API_BASE_URL" env-default:"https://api.stripe.com/v1"`
 	HTTPTimeout         string `yaml:"http_timeout" env:"CONTENT_PAYMENT_HTTP_TIMEOUT" env-default:"5s" validate:"required"`
+	SweepInterval       string `yaml:"sweep_interval" env:"CONTENT_PAYMENT_SWEEP_INTERVAL" env-default:"5m" validate:"required"`
+	PendingTTL          string `yaml:"pending_ttl" env:"CONTENT_PAYMENT_PENDING_TTL" env-default:"24h" validate:"required"`
+	SubscriptionGrace   string `yaml:"subscription_grace" env:"CONTENT_PAYMENT_SUBSCRIPTION_GRACE" env-default:"72h" validate:"required"`
 }
 
 type OpenAPIConfig struct {
@@ -92,6 +95,18 @@ func (cfg PaymentConfig) HTTPTimeoutDuration() (time.Duration, error) {
 	return time.ParseDuration(cfg.HTTPTimeout)
 }
 
+func (cfg PaymentConfig) SweepIntervalDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.SweepInterval)
+}
+
+func (cfg PaymentConfig) PendingTTLDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.PendingTTL)
+}
+
+func (cfg PaymentConfig) SubscriptionGraceDuration() (time.Duration, error) {
+	return time.ParseDuration(cfg.SubscriptionGrace)
+}
+
 func (cfg PaymentConfig) Validate() error {
 	if cfg.Provider == "stripe" {
 		if cfg.StripeSecretKey == "" {
@@ -111,6 +126,15 @@ func (cfg PaymentConfig) Validate() error {
 		}
 	}
 	if _, err := parsePositiveDuration("payment_http_timeout", cfg.HTTPTimeout); err != nil {
+		return err
+	}
+	if _, err := parsePositiveDuration("payment_sweep_interval", cfg.SweepInterval); err != nil {
+		return err
+	}
+	if _, err := parsePositiveDuration("payment_pending_ttl", cfg.PendingTTL); err != nil {
+		return err
+	}
+	if _, err := parsePositiveDuration("payment_subscription_grace", cfg.SubscriptionGrace); err != nil {
 		return err
 	}
 

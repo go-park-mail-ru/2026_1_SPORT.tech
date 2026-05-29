@@ -147,6 +147,82 @@
         ]
       }
     },
+    "/v1/comments/{comment_id}": {
+      "delete": {
+        "operationId": "ContentService_DeleteComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "author_user_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "patch": {
+        "operationId": "ContentService_UpdateComment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CommentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceUpdateCommentBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/payments/donations": {
       "post": {
         "operationId": "ContentService_CreateDonationPayment",
@@ -1292,6 +1368,74 @@
         ]
       }
     },
+    "/v1/users/{user_id}/notification-preferences": {
+      "get": {
+        "operationId": "ContentService_GetNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationPreferencesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      },
+      "put": {
+        "operationId": "ContentService_UpdateNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1NotificationPreferencesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContentServiceUpdateNotificationPreferencesBody"
+            }
+          }
+        ],
+        "tags": [
+          "ContentService"
+        ]
+      }
+    },
     "/v1/users/{user_id}/notifications": {
       "get": {
         "operationId": "ContentService_ListNotifications",
@@ -1491,6 +1635,26 @@
         }
       }
     },
+    "ContentServiceUpdateCommentBody": {
+      "type": "object",
+      "properties": {
+        "author_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "ContentServiceUpdateNotificationPreferencesBody": {
+      "type": "object",
+      "properties": {
+        "preferences": {
+          "$ref": "#/definitions/v1NotificationPreferences"
+        }
+      }
+    },
     "ContentServiceUpdatePostBody": {
       "type": "object",
       "properties": {
@@ -1523,6 +1687,19 @@
           "format": "int64"
         },
         "clear_sport_type_id": {
+          "type": "boolean"
+        },
+        "is_pinned": {
+          "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "clear_sport_type_ids": {
           "type": "boolean"
         }
       }
@@ -1747,6 +1924,13 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2015,6 +2199,40 @@
         }
       }
     },
+    "v1NotificationPreferences": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "boolean"
+        },
+        "likes": {
+          "type": "boolean"
+        },
+        "donations": {
+          "type": "boolean"
+        },
+        "posts": {
+          "type": "boolean"
+        },
+        "subscriptions": {
+          "type": "boolean"
+        },
+        "meetings": {
+          "type": "boolean"
+        },
+        "email_digest": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1NotificationPreferencesResponse": {
+      "type": "object",
+      "properties": {
+        "preferences": {
+          "$ref": "#/definitions/v1NotificationPreferences"
+        }
+      }
+    },
     "v1NotificationResponse": {
       "type": "object",
       "properties": {
@@ -2138,6 +2356,16 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_pinned": {
+          "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2291,6 +2519,16 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_pinned": {
+          "type": "boolean"
+        },
+        "sport_type_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2420,6 +2658,19 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "auto_renew": {
+          "type": "boolean"
+        },
+        "stripe_subscription_id": {
+          "type": "string"
+        },
+        "current_period_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "price_change_requires_resubscribe": {
+          "type": "boolean"
         }
       }
     },

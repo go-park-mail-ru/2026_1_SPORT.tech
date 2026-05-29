@@ -228,6 +228,13 @@ func (service *Service) BookMeeting(ctx context.Context, command BookMeetingComm
 		Title:       "Новая запись",
 		Body:        "Клиент записался к вам на занятие",
 	})
+	_ = service.createNotification(ctx, domain.Notification{
+		UserID:      booking.ClientUserID,
+		Type:        domain.NotificationTypeMeeting,
+		ActorUserID: booking.TrainerUserID,
+		Title:       "Запись подтверждена",
+		Body:        "Вы записались к тренеру на занятие",
+	})
 
 	return booking, nil
 }

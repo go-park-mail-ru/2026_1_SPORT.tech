@@ -24,12 +24,17 @@ type AccountRepository interface {
 	Create(ctx context.Context, params CreateAccountParams) (domain.Account, error)
 	GetByEmail(ctx context.Context, email string) (domain.Account, error)
 	GetByID(ctx context.Context, userID int64) (domain.Account, error)
+	UpdatePassword(ctx context.Context, userID int64, passwordHash string, now time.Time) error
+	UpdateEmail(ctx context.Context, userID int64, email string, now time.Time) (domain.Account, error)
+	UpdateRole(ctx context.Context, userID int64, role domain.Role, now time.Time) (domain.Account, error)
+	Delete(ctx context.Context, userID int64) error
 }
 
 type SessionRepository interface {
 	Create(ctx context.Context, session domain.Session) error
 	GetByHash(ctx context.Context, sessionHash string) (domain.Session, error)
 	RevokeByHash(ctx context.Context, sessionHash string) error
+	RevokeByUserID(ctx context.Context, userID int64) error
 }
 
 type CreateAccountParams struct {
@@ -59,6 +64,31 @@ type LogoutCommand struct {
 
 type GetSessionQuery struct {
 	SessionToken string
+}
+
+type ChangePasswordCommand struct {
+	UserID          int64
+	CurrentPassword string
+	NewPassword     string
+}
+
+type ChangeEmailCommand struct {
+	UserID          int64
+	CurrentPassword string
+	NewEmail        string
+}
+
+type PromoteToTrainerCommand struct {
+	UserID int64
+}
+
+type LogoutAllCommand struct {
+	UserID int64
+}
+
+type DeleteAccountCommand struct {
+	UserID          int64
+	CurrentPassword string
 }
 
 type AuthResult struct {

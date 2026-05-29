@@ -10,6 +10,7 @@ require (
 	github.com/mailru/easyjson v0.9.2
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/prometheus/client_golang v1.23.2
+	go.uber.org/mock v0.6.0
 	golang.org/x/crypto v0.49.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57
 	google.golang.org/grpc v1.80.0

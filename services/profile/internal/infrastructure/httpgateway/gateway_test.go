@@ -3,7 +3,6 @@ package httpgateway_test
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,38 +12,25 @@ import (
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/infrastructure/httpgateway"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/mocks"
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/usecase"
+	"go.uber.org/mock/gomock"
 )
 
 func TestNewLocalMuxExposesGeneratedGetProfileEndpoint(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	profileUseCase := mocks.ProfileUseCase{
-		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		GetProfileFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
-			return domain.Profile{
-				UserID:    userID,
-				Username:  "coach_john",
-				FirstName: "John",
-				LastName:  "Doe",
-				IsTrainer: true,
-				CreatedAt: now,
-				UpdatedAt: now,
-			}, nil
-		},
-		UpdateProfileFunc: func(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		SearchAuthorsFunc: func(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
-			return nil, errors.New("not implemented")
-		},
-		UploadAvatarFunc: func(ctx context.Context, command usecase.UploadAvatarCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return errors.New("not implemented") },
-		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, errors.New("not implemented") },
-	}
+	ctrl := gomock.NewController(t)
+	profileUseCase := mocks.NewMockProfileUseCase(ctrl)
+	profileUseCase.EXPECT().
+		GetProfile(gomock.Any(), int64(7)).
+		Return(domain.Profile{
+			UserID:    7,
+			Username:  "coach_john",
+			FirstName: "John",
+			LastName:  "Doe",
+			IsTrainer: true,
+			CreatedAt: now,
+			UpdatedAt: now,
+		}, nil)
+
 	handler := grpcadapter.NewServer(grpcadapter.UseCases{
 		Profiles: profileUseCase,
 		Authors:  profileUseCase,

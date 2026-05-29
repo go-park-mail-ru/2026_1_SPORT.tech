@@ -90,6 +90,9 @@ func validateUpdatePostCommand(command UpdatePostCommand) error {
 	if command.SportTypeID != nil && command.ClearSportTypeID {
 		return ErrConflictingSportTypeUpdate
 	}
+	if len(command.SportTypeIDs) > 0 && (command.ClearSportTypeID || command.ClearSportTypeIDs) {
+		return ErrConflictingSportTypeUpdate
+	}
 	if len(command.Blocks) > 0 && !command.ReplaceBlocks {
 		return ErrReplaceBlocksRequired
 	}
@@ -120,6 +123,11 @@ func validatePost(post domain.Post) error {
 	}
 	if post.SportTypeID != nil && *post.SportTypeID < 1 {
 		return ErrInvalidSportTypeID
+	}
+	for _, sportTypeID := range post.SportTypeIDs {
+		if sportTypeID < 1 {
+			return ErrInvalidSportTypeID
+		}
 	}
 	if len(post.Blocks) == 0 {
 		return ErrBlocksRequired

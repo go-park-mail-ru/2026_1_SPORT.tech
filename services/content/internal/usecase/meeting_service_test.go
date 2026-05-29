@@ -292,7 +292,7 @@ func TestListTrainerMeetingAvailabilityInvalidRange(t *testing.T) {
 
 func TestBookMeetingSuccess(t *testing.T) {
 	start := futureHour(24)
-	var notified bool
+	notifications := make([]domain.Notification, 0, 2)
 	service := NewService(Repositories{
 		Meeting: stubMeetingRepository{
 			hasCalendarSubFunc: func(ctx context.Context, clientUserID int64, trainerUserID int64) (bool, error) {
@@ -307,7 +307,7 @@ func TestBookMeetingSuccess(t *testing.T) {
 			},
 		},
 		Notifications: notifyStub{createFunc: func(ctx context.Context, notification domain.Notification) (domain.Notification, error) {
-			notified = true
+			notifications = append(notifications, notification)
 			return notification, nil
 		}},
 	}, nil)
@@ -326,8 +326,19 @@ func TestBookMeetingSuccess(t *testing.T) {
 	if !booking.EndsAt.Equal(start.Add(time.Hour)) {
 		t.Fatalf("expected 1h booking, got %v-%v", booking.StartsAt, booking.EndsAt)
 	}
-	if !notified {
-		t.Fatalf("expected trainer notification")
+	if len(notifications) != 2 {
+		t.Fatalf("expected trainer and client notifications, got %+v", notifications)
+	}
+	if notifications[0].UserID != 1 ||
+		notifications[0].ActorUserID != 2 ||
+		notifications[0].Type != domain.NotificationTypeMeeting {
+		t.Fatalf("unexpected trainer notification: %+v", notifications[0])
+	}
+	if notifications[1].UserID != 2 ||
+		notifications[1].ActorUserID != 1 ||
+		notifications[1].Type != domain.NotificationTypeMeeting ||
+		notifications[1].Title != "Запись подтверждена" {
+		t.Fatalf("unexpected client notification: %+v", notifications[1])
 	}
 }
 

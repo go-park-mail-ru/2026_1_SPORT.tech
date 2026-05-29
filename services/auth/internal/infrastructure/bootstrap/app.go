@@ -65,6 +65,7 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		Registration: authUseCase,
 		Login:        authUseCase,
 		Session:      authUseCase,
+		Account:      authUseCase,
 	})
 	grpcServer := grpcserver.New(grpcHandler, metricsSet)
 

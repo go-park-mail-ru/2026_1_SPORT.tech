@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
 )
@@ -111,6 +112,53 @@ func (service *Service) CreateComment(ctx context.Context, command CreateComment
 	}
 
 	return comment, nil
+}
+
+func (service *Service) UpdateComment(ctx context.Context, command UpdateCommentCommand) (domain.Comment, error) {
+	if command.CommentID <= 0 {
+		return domain.Comment{}, domain.ErrCommentNotFound
+	}
+	if command.AuthorUserID <= 0 {
+		return domain.Comment{}, ErrInvalidUserID
+	}
+	body := normalizeRequiredText(command.Body)
+	if len(body) == 0 || len(body) > 2000 {
+		return domain.Comment{}, ErrInvalidCommentBody
+	}
+
+	comment, err := service.engagement.GetComment(ctx, command.CommentID)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	if comment.AuthorUserID != command.AuthorUserID {
+		return domain.Comment{}, domain.ErrCommentForbidden
+	}
+
+	now := time.Now().UTC()
+	if now.Sub(comment.CreatedAt) > commentEditWindow {
+		return domain.Comment{}, domain.ErrCommentEditWindowExpired
+	}
+
+	return service.engagement.UpdateComment(ctx, command.CommentID, body, now)
+}
+
+func (service *Service) DeleteComment(ctx context.Context, command DeleteCommentCommand) error {
+	if command.CommentID <= 0 {
+		return domain.ErrCommentNotFound
+	}
+	if command.AuthorUserID <= 0 {
+		return ErrInvalidUserID
+	}
+
+	comment, err := service.engagement.GetComment(ctx, command.CommentID)
+	if err != nil {
+		return err
+	}
+	if comment.AuthorUserID != command.AuthorUserID {
+		return domain.ErrCommentForbidden
+	}
+
+	return service.engagement.DeleteComment(ctx, command.CommentID)
 }
 
 func (service *Service) ListComments(ctx context.Context, query ListCommentsQuery) ([]domain.Comment, error) {

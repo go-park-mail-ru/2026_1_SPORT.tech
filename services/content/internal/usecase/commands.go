@@ -1,12 +1,17 @@
 package usecase
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/content/internal/domain"
+)
 
 type CreatePostCommand struct {
 	AuthorUserID              int64
 	Title                     string
 	RequiredSubscriptionLevel *int32
 	SportTypeID               *int64
+	SportTypeIDs              []int64
 	Blocks                    []PostBlockInput
 }
 
@@ -25,8 +30,11 @@ type UpdatePostCommand struct {
 	ClearRequiredSubscriptionLevel bool
 	SportTypeID                    *int64
 	ClearSportTypeID               bool
+	SportTypeIDs                   []int64
+	ClearSportTypeIDs              bool
 	Blocks                         []PostBlockInput
 	ReplaceBlocks                  bool
+	IsPinned                       *bool
 }
 
 type DeletePostCommand struct {
@@ -45,6 +53,26 @@ type CreateCommentCommand struct {
 	AuthorUserID            int64
 	ViewerSubscriptionLevel *int32
 	Body                    string
+}
+
+type UpdateCommentCommand struct {
+	CommentID    int64
+	AuthorUserID int64
+	Body         string
+}
+
+type DeleteCommentCommand struct {
+	CommentID    int64
+	AuthorUserID int64
+}
+
+type GetNotificationPreferencesQuery struct {
+	UserID int64
+}
+
+type UpdateNotificationPreferencesCommand struct {
+	UserID      int64
+	Preferences domain.NotificationPreferences
 }
 
 type CreateSubscriptionTierCommand struct {

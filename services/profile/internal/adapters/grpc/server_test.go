@@ -2,7 +2,6 @@ package grpc_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -10,40 +9,27 @@ import (
 	grpcadapter "github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/adapters/grpc"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/domain"
 	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/mocks"
-	"github.com/go-park-mail-ru/2026_1_SPORT.tech/services/profile/internal/usecase"
+	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func TestServerGetProfile(t *testing.T) {
 	now := time.Date(2026, time.April, 18, 12, 0, 0, 0, time.UTC)
-	profileUseCase := mocks.ProfileUseCase{
-		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		GetProfileFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
-			return domain.Profile{
-				UserID:    userID,
-				Username:  "coach_john",
-				FirstName: "John",
-				LastName:  "Doe",
-				IsTrainer: true,
-				CreatedAt: now,
-				UpdatedAt: now,
-			}, nil
-		},
-		UpdateProfileFunc: func(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		SearchAuthorsFunc: func(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
-			return nil, errors.New("not implemented")
-		},
-		UploadAvatarFunc: func(ctx context.Context, command usecase.UploadAvatarCommand) (domain.Profile, error) {
-			return domain.Profile{}, errors.New("not implemented")
-		},
-		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return errors.New("not implemented") },
-		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, errors.New("not implemented") },
-	}
+	ctrl := gomock.NewController(t)
+	profileUseCase := mocks.NewMockProfileUseCase(ctrl)
+	profileUseCase.EXPECT().
+		GetProfile(gomock.Any(), int64(7)).
+		Return(domain.Profile{
+			UserID:    7,
+			Username:  "coach_john",
+			FirstName: "John",
+			LastName:  "Doe",
+			IsTrainer: true,
+			CreatedAt: now,
+			UpdatedAt: now,
+		}, nil)
+
 	server := grpcadapter.NewServer(grpcadapter.UseCases{
 		Profiles: profileUseCase,
 		Authors:  profileUseCase,
@@ -61,25 +47,12 @@ func TestServerGetProfile(t *testing.T) {
 }
 
 func TestServerGetProfileMapsNotFound(t *testing.T) {
-	profileUseCase := mocks.ProfileUseCase{
-		CreateProfileFunc: func(ctx context.Context, command usecase.CreateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, nil
-		},
-		GetProfileFunc: func(ctx context.Context, userID int64) (domain.Profile, error) {
-			return domain.Profile{}, domain.ErrProfileNotFound
-		},
-		UpdateProfileFunc: func(ctx context.Context, command usecase.UpdateProfileCommand) (domain.Profile, error) {
-			return domain.Profile{}, nil
-		},
-		SearchAuthorsFunc: func(ctx context.Context, query usecase.SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
-			return nil, nil
-		},
-		UploadAvatarFunc: func(ctx context.Context, command usecase.UploadAvatarCommand) (domain.Profile, error) {
-			return domain.Profile{}, nil
-		},
-		DeleteAvatarFunc:   func(ctx context.Context, userID int64) error { return nil },
-		ListSportTypesFunc: func(ctx context.Context) ([]domain.SportType, error) { return nil, nil },
-	}
+	ctrl := gomock.NewController(t)
+	profileUseCase := mocks.NewMockProfileUseCase(ctrl)
+	profileUseCase.EXPECT().
+		GetProfile(gomock.Any(), int64(7)).
+		Return(domain.Profile{}, domain.ErrProfileNotFound)
+
 	server := grpcadapter.NewServer(grpcadapter.UseCases{
 		Profiles: profileUseCase,
 		Authors:  profileUseCase,
@@ -94,11 +67,12 @@ func TestServerGetProfileMapsNotFound(t *testing.T) {
 }
 
 func TestServerGetProfileByUsername(t *testing.T) {
-	profileUseCase := mocks.ProfileUseCase{
-		GetProfileByUsernameFunc: func(ctx context.Context, username string) (domain.Profile, error) {
-			return domain.Profile{UserID: 7, Username: username, FirstName: "John", LastName: "Doe"}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	profileUseCase := mocks.NewMockProfileUseCase(ctrl)
+	profileUseCase.EXPECT().
+		GetProfileByUsername(gomock.Any(), "coach_john").
+		Return(domain.Profile{UserID: 7, Username: "coach_john", FirstName: "John", LastName: "Doe"}, nil)
+
 	server := grpcadapter.NewServer(grpcadapter.UseCases{
 		Profiles: profileUseCase,
 		Authors:  profileUseCase,

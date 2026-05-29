@@ -63,6 +63,55 @@ func (repository *ProfileRepository) Create(ctx context.Context, profile domain.
 	return tx.Commit()
 }
 
+func (repository *ProfileRepository) Delete(ctx context.Context, userID int64) error {
+	const query = `DELETE FROM profile WHERE user_id = $1`
+	result, err := repository.db.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrProfileNotFound
+	}
+	return nil
+}
+
+func (repository *ProfileRepository) SetTrainer(ctx context.Context, userID int64, details *domain.TrainerDetails) error {
+	now := time.Now().UTC()
+	tx, err := repository.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const promoteQuery = `
+		UPDATE profile
+		SET is_trainer = true, updated_at = $2
+		WHERE user_id = $1
+	`
+
+	result, err := tx.ExecContext(ctx, promoteQuery, userID, now)
+	if err != nil {
+		return mapProfileError(err)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrProfileNotFound
+	}
+
+	if err := saveTrainerDetails(ctx, tx, domain.Profile{UserID: userID, IsTrainer: true, TrainerDetails: details}, now); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
 func (repository *ProfileRepository) GetByUsername(ctx context.Context, username string) (domain.Profile, error) {
 	const query = `
 		SELECT

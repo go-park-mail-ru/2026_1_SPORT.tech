@@ -1,0 +1,29 @@
+-- +goose Up
+UPDATE profile
+SET avatar_url = CASE user_id
+    WHEN 1001 THEN 'https://images.pexels.com/photos/8454926/pexels-photo-8454926.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces'
+    WHEN 1003 THEN 'https://images.pexels.com/photos/18167936/pexels-photo-18167936.jpeg?auto=compress&cs=tinysrgb&w=800'
+    WHEN 1004 THEN 'https://images.pexels.com/photos/6697367/pexels-photo-6697367.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces'
+    WHEN 1005 THEN 'https://images.pexels.com/photos/9944859/pexels-photo-9944859.jpeg?auto=compress&cs=tinysrgb&w=800'
+    WHEN 1006 THEN 'https://images.pexels.com/photos/6739931/pexels-photo-6739931.jpeg?auto=compress&cs=tinysrgb&w=800'
+    WHEN 1007 THEN 'https://images.pexels.com/photos/18021124/pexels-photo-18021124.jpeg?auto=compress&cs=tinysrgb&w=800'
+    ELSE avatar_url
+  END,
+  updated_at = NOW()
+WHERE user_id IN (1001, 1003, 1004, 1005, 1006, 1007)
+  AND is_trainer = TRUE
+  AND (avatar_url IS NULL OR avatar_url = '');
+
+-- +goose Down
+UPDATE profile
+SET avatar_url = NULL,
+  updated_at = NOW()
+WHERE user_id IN (1001, 1003, 1004, 1005, 1006, 1007)
+  AND avatar_url IN (
+    'https://images.pexels.com/photos/8454926/pexels-photo-8454926.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces',
+    'https://images.pexels.com/photos/18167936/pexels-photo-18167936.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/6697367/pexels-photo-6697367.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=800&crop=faces',
+    'https://images.pexels.com/photos/9944859/pexels-photo-9944859.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/6739931/pexels-photo-6739931.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/18021124/pexels-photo-18021124.jpeg?auto=compress&cs=tinysrgb&w=800'
+  );

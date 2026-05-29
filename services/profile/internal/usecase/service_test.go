@@ -37,6 +37,14 @@ func (repository stubProfileRepository) Update(ctx context.Context, profile doma
 	return repository.updateFunc(ctx, profile)
 }
 
+func (repository stubProfileRepository) SetTrainer(ctx context.Context, userID int64, details *domain.TrainerDetails) error {
+	return nil
+}
+
+func (repository stubProfileRepository) Delete(ctx context.Context, userID int64) error {
+	return nil
+}
+
 func (repository stubProfileRepository) SearchAuthors(ctx context.Context, query SearchAuthorsQuery) ([]domain.AuthorSummary, error) {
 	return repository.searchAuthorsFunc(ctx, query)
 }

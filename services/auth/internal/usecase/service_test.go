@@ -58,6 +58,22 @@ func (repository stubAccountRepository) GetByID(ctx context.Context, userID int6
 	return repository.getByIDFunc(ctx, userID)
 }
 
+func (repository stubAccountRepository) UpdatePassword(ctx context.Context, userID int64, passwordHash string, now time.Time) error {
+	return nil
+}
+
+func (repository stubAccountRepository) UpdateEmail(ctx context.Context, userID int64, email string, now time.Time) (domain.Account, error) {
+	return domain.Account{}, nil
+}
+
+func (repository stubAccountRepository) UpdateRole(ctx context.Context, userID int64, role domain.Role, now time.Time) (domain.Account, error) {
+	return domain.Account{}, nil
+}
+
+func (repository stubAccountRepository) Delete(ctx context.Context, userID int64) error {
+	return nil
+}
+
 type stubSessionRepository struct {
 	createFunc       func(ctx context.Context, session domain.Session) error
 	getByHashFunc    func(ctx context.Context, sessionHash string) (domain.Session, error)
@@ -74,6 +90,10 @@ func (repository stubSessionRepository) GetByHash(ctx context.Context, sessionHa
 
 func (repository stubSessionRepository) RevokeByHash(ctx context.Context, sessionHash string) error {
 	return repository.revokeByHashFunc(ctx, sessionHash)
+}
+
+func (repository stubSessionRepository) RevokeByUserID(ctx context.Context, userID int64) error {
+	return nil
 }
 
 func TestServiceRegister(t *testing.T) {

@@ -26,6 +26,11 @@ const (
 	AuthService_Login_FullMethodName           = "/sporttech.gateway.v1.AuthService/Login"
 	AuthService_GetMe_FullMethodName           = "/sporttech.gateway.v1.AuthService/GetMe"
 	AuthService_Logout_FullMethodName          = "/sporttech.gateway.v1.AuthService/Logout"
+	AuthService_ChangePassword_FullMethodName  = "/sporttech.gateway.v1.AuthService/ChangePassword"
+	AuthService_ChangeEmail_FullMethodName     = "/sporttech.gateway.v1.AuthService/ChangeEmail"
+	AuthService_BecomeTrainer_FullMethodName   = "/sporttech.gateway.v1.AuthService/BecomeTrainer"
+	AuthService_LogoutAll_FullMethodName       = "/sporttech.gateway.v1.AuthService/LogoutAll"
+	AuthService_DeleteAccount_FullMethodName   = "/sporttech.gateway.v1.AuthService/DeleteAccount"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -38,6 +43,11 @@ type AuthServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AuthResponse, error)
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ChangeEmail(ctx context.Context, in *ChangeEmailRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	BecomeTrainer(ctx context.Context, in *BecomeTrainerRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	LogoutAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authServiceClient struct {
@@ -108,6 +118,56 @@ func (c *authServiceClient) Logout(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ChangeEmail(ctx context.Context, in *ChangeEmailRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthResponse)
+	err := c.cc.Invoke(ctx, AuthService_ChangeEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) BecomeTrainer(ctx context.Context, in *BecomeTrainerRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthResponse)
+	err := c.cc.Invoke(ctx, AuthService_BecomeTrainer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) LogoutAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_LogoutAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_DeleteAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -118,6 +178,11 @@ type AuthServiceServer interface {
 	Login(context.Context, *LoginRequest) (*AuthResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*AuthResponse, error)
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
+	ChangeEmail(context.Context, *ChangeEmailRequest) (*AuthResponse, error)
+	BecomeTrainer(context.Context, *BecomeTrainerRequest) (*AuthResponse, error)
+	LogoutAll(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have
@@ -144,6 +209,21 @@ func (UnimplementedAuthServiceServer) GetMe(context.Context, *emptypb.Empty) (*A
 }
 func (UnimplementedAuthServiceServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAuthServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ChangeEmail(context.Context, *ChangeEmailRequest) (*AuthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ChangeEmail not implemented")
+}
+func (UnimplementedAuthServiceServer) BecomeTrainer(context.Context, *BecomeTrainerRequest) (*AuthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BecomeTrainer not implemented")
+}
+func (UnimplementedAuthServiceServer) LogoutAll(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method LogoutAll not implemented")
+}
+func (UnimplementedAuthServiceServer) DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAccount not implemented")
 }
 func (UnimplementedAuthServiceServer) testEmbeddedByValue() {}
 
@@ -273,6 +353,96 @@ func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ChangeEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ChangeEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ChangeEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ChangeEmail(ctx, req.(*ChangeEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_BecomeTrainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BecomeTrainerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).BecomeTrainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_BecomeTrainer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).BecomeTrainer(ctx, req.(*BecomeTrainerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_LogoutAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).LogoutAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_LogoutAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).LogoutAll(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).DeleteAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_DeleteAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).DeleteAccount(ctx, req.(*DeleteAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +474,26 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Logout",
 			Handler:    _AuthService_Logout_Handler,
 		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _AuthService_ChangePassword_Handler,
+		},
+		{
+			MethodName: "ChangeEmail",
+			Handler:    _AuthService_ChangeEmail_Handler,
+		},
+		{
+			MethodName: "BecomeTrainer",
+			Handler:    _AuthService_BecomeTrainer_Handler,
+		},
+		{
+			MethodName: "LogoutAll",
+			Handler:    _AuthService_LogoutAll_Handler,
+		},
+		{
+			MethodName: "DeleteAccount",
+			Handler:    _AuthService_DeleteAccount_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "gateway/v1/gateway.proto",
@@ -323,6 +513,8 @@ const (
 	ProfileService_DeleteMyMeasurement_FullMethodName     = "/sporttech.gateway.v1.ProfileService/DeleteMyMeasurement"
 	ProfileService_SetMyMeasurementSharing_FullMethodName = "/sporttech.gateway.v1.ProfileService/SetMyMeasurementSharing"
 	ProfileService_GetMyMeasurementSharing_FullMethodName = "/sporttech.gateway.v1.ProfileService/GetMyMeasurementSharing"
+	ProfileService_GetMyPrivacySettings_FullMethodName    = "/sporttech.gateway.v1.ProfileService/GetMyPrivacySettings"
+	ProfileService_UpdateMyPrivacySettings_FullMethodName = "/sporttech.gateway.v1.ProfileService/UpdateMyPrivacySettings"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
@@ -342,6 +534,8 @@ type ProfileServiceClient interface {
 	DeleteMyMeasurement(ctx context.Context, in *DeleteMeasurementRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SetMyMeasurementSharing(ctx context.Context, in *SetMeasurementSharingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetMyMeasurementSharing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeasurementSharingResponse, error)
+	GetMyPrivacySettings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivacySettingsResponse, error)
+	UpdateMyPrivacySettings(ctx context.Context, in *UpdatePrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error)
 }
 
 type profileServiceClient struct {
@@ -482,6 +676,26 @@ func (c *profileServiceClient) GetMyMeasurementSharing(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *profileServiceClient) GetMyPrivacySettings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivacySettingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PrivacySettingsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_GetMyPrivacySettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) UpdateMyPrivacySettings(ctx context.Context, in *UpdatePrivacySettingsRequest, opts ...grpc.CallOption) (*PrivacySettingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PrivacySettingsResponse)
+	err := c.cc.Invoke(ctx, ProfileService_UpdateMyPrivacySettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations should embed UnimplementedProfileServiceServer
 // for forward compatibility.
@@ -499,6 +713,8 @@ type ProfileServiceServer interface {
 	DeleteMyMeasurement(context.Context, *DeleteMeasurementRequest) (*emptypb.Empty, error)
 	SetMyMeasurementSharing(context.Context, *SetMeasurementSharingRequest) (*emptypb.Empty, error)
 	GetMyMeasurementSharing(context.Context, *emptypb.Empty) (*MeasurementSharingResponse, error)
+	GetMyPrivacySettings(context.Context, *emptypb.Empty) (*PrivacySettingsResponse, error)
+	UpdateMyPrivacySettings(context.Context, *UpdatePrivacySettingsRequest) (*PrivacySettingsResponse, error)
 }
 
 // UnimplementedProfileServiceServer should be embedded to have
@@ -546,6 +762,12 @@ func (UnimplementedProfileServiceServer) SetMyMeasurementSharing(context.Context
 }
 func (UnimplementedProfileServiceServer) GetMyMeasurementSharing(context.Context, *emptypb.Empty) (*MeasurementSharingResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyMeasurementSharing not implemented")
+}
+func (UnimplementedProfileServiceServer) GetMyPrivacySettings(context.Context, *emptypb.Empty) (*PrivacySettingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyPrivacySettings not implemented")
+}
+func (UnimplementedProfileServiceServer) UpdateMyPrivacySettings(context.Context, *UpdatePrivacySettingsRequest) (*PrivacySettingsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateMyPrivacySettings not implemented")
 }
 func (UnimplementedProfileServiceServer) testEmbeddedByValue() {}
 
@@ -801,6 +1023,42 @@ func _ProfileService_GetMyMeasurementSharing_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_GetMyPrivacySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetMyPrivacySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_GetMyPrivacySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetMyPrivacySettings(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_UpdateMyPrivacySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePrivacySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).UpdateMyPrivacySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_UpdateMyPrivacySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).UpdateMyPrivacySettings(ctx, req.(*UpdatePrivacySettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -860,6 +1118,14 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetMyMeasurementSharing",
 			Handler:    _ProfileService_GetMyMeasurementSharing_Handler,
 		},
+		{
+			MethodName: "GetMyPrivacySettings",
+			Handler:    _ProfileService_GetMyPrivacySettings_Handler,
+		},
+		{
+			MethodName: "UpdateMyPrivacySettings",
+			Handler:    _ProfileService_UpdateMyPrivacySettings_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "gateway/v1/gateway.proto",
@@ -876,6 +1142,8 @@ const (
 	PostService_UnlikePost_FullMethodName      = "/sporttech.gateway.v1.PostService/UnlikePost"
 	PostService_CreateComment_FullMethodName   = "/sporttech.gateway.v1.PostService/CreateComment"
 	PostService_ListComments_FullMethodName    = "/sporttech.gateway.v1.PostService/ListComments"
+	PostService_UpdateComment_FullMethodName   = "/sporttech.gateway.v1.PostService/UpdateComment"
+	PostService_DeleteComment_FullMethodName   = "/sporttech.gateway.v1.PostService/DeleteComment"
 	PostService_ListPostLikes_FullMethodName   = "/sporttech.gateway.v1.PostService/ListPostLikes"
 )
 
@@ -893,6 +1161,8 @@ type PostServiceClient interface {
 	UnlikePost(ctx context.Context, in *PostLikeRequest, opts ...grpc.CallOption) (*PostLikeResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
+	UpdateComment(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
+	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error)
 }
 
@@ -1004,6 +1274,26 @@ func (c *postServiceClient) ListComments(ctx context.Context, in *ListCommentsRe
 	return out, nil
 }
 
+func (c *postServiceClient) UpdateComment(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommentResponse)
+	err := c.cc.Invoke(ctx, PostService_UpdateComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, PostService_DeleteComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *postServiceClient) ListPostLikes(ctx context.Context, in *ListPostLikesRequest, opts ...grpc.CallOption) (*ListPostLikesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListPostLikesResponse)
@@ -1028,6 +1318,8 @@ type PostServiceServer interface {
 	UnlikePost(context.Context, *PostLikeRequest) (*PostLikeResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
+	UpdateComment(context.Context, *UpdateCommentRequest) (*CommentResponse, error)
+	DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error)
 	ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error)
 }
 
@@ -1067,6 +1359,12 @@ func (UnimplementedPostServiceServer) CreateComment(context.Context, *CreateComm
 }
 func (UnimplementedPostServiceServer) ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListComments not implemented")
+}
+func (UnimplementedPostServiceServer) UpdateComment(context.Context, *UpdateCommentRequest) (*CommentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateComment not implemented")
+}
+func (UnimplementedPostServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteComment not implemented")
 }
 func (UnimplementedPostServiceServer) ListPostLikes(context.Context, *ListPostLikesRequest) (*ListPostLikesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListPostLikes not implemented")
@@ -1271,6 +1569,42 @@ func _PostService_ListComments_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_UpdateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).UpdateComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_UpdateComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).UpdateComment(ctx, req.(*UpdateCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_DeleteComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).DeleteComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_DeleteComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).DeleteComment(ctx, req.(*DeleteCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostService_ListPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListPostLikesRequest)
 	if err := dec(in); err != nil {
@@ -1335,6 +1669,14 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListComments",
 			Handler:    _PostService_ListComments_Handler,
+		},
+		{
+			MethodName: "UpdateComment",
+			Handler:    _PostService_UpdateComment_Handler,
+		},
+		{
+			MethodName: "DeleteComment",
+			Handler:    _PostService_DeleteComment_Handler,
 		},
 		{
 			MethodName: "ListPostLikes",
@@ -2402,8 +2744,10 @@ var StatisticsService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	NotificationService_ListMyNotifications_FullMethodName  = "/sporttech.gateway.v1.NotificationService/ListMyNotifications"
-	NotificationService_MarkNotificationRead_FullMethodName = "/sporttech.gateway.v1.NotificationService/MarkNotificationRead"
+	NotificationService_ListMyNotifications_FullMethodName             = "/sporttech.gateway.v1.NotificationService/ListMyNotifications"
+	NotificationService_MarkNotificationRead_FullMethodName            = "/sporttech.gateway.v1.NotificationService/MarkNotificationRead"
+	NotificationService_GetMyNotificationPreferences_FullMethodName    = "/sporttech.gateway.v1.NotificationService/GetMyNotificationPreferences"
+	NotificationService_UpdateMyNotificationPreferences_FullMethodName = "/sporttech.gateway.v1.NotificationService/UpdateMyNotificationPreferences"
 )
 
 // NotificationServiceClient is the client API for NotificationService service.
@@ -2412,6 +2756,8 @@ const (
 type NotificationServiceClient interface {
 	ListMyNotifications(ctx context.Context, in *ListNotificationsRequest, opts ...grpc.CallOption) (*ListNotificationsResponse, error)
 	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*NotificationResponse, error)
+	GetMyNotificationPreferences(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error)
+	UpdateMyNotificationPreferences(ctx context.Context, in *UpdateNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -2442,12 +2788,34 @@ func (c *notificationServiceClient) MarkNotificationRead(ctx context.Context, in
 	return out, nil
 }
 
+func (c *notificationServiceClient) GetMyNotificationPreferences(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationPreferencesResponse)
+	err := c.cc.Invoke(ctx, NotificationService_GetMyNotificationPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notificationServiceClient) UpdateMyNotificationPreferences(ctx context.Context, in *UpdateNotificationPreferencesRequest, opts ...grpc.CallOption) (*NotificationPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationPreferencesResponse)
+	err := c.cc.Invoke(ctx, NotificationService_UpdateMyNotificationPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations should embed UnimplementedNotificationServiceServer
 // for forward compatibility.
 type NotificationServiceServer interface {
 	ListMyNotifications(context.Context, *ListNotificationsRequest) (*ListNotificationsResponse, error)
 	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error)
+	GetMyNotificationPreferences(context.Context, *emptypb.Empty) (*NotificationPreferencesResponse, error)
+	UpdateMyNotificationPreferences(context.Context, *UpdateNotificationPreferencesRequest) (*NotificationPreferencesResponse, error)
 }
 
 // UnimplementedNotificationServiceServer should be embedded to have
@@ -2462,6 +2830,12 @@ func (UnimplementedNotificationServiceServer) ListMyNotifications(context.Contex
 }
 func (UnimplementedNotificationServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*NotificationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedNotificationServiceServer) GetMyNotificationPreferences(context.Context, *emptypb.Empty) (*NotificationPreferencesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyNotificationPreferences not implemented")
+}
+func (UnimplementedNotificationServiceServer) UpdateMyNotificationPreferences(context.Context, *UpdateNotificationPreferencesRequest) (*NotificationPreferencesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateMyNotificationPreferences not implemented")
 }
 func (UnimplementedNotificationServiceServer) testEmbeddedByValue() {}
 
@@ -2519,6 +2893,42 @@ func _NotificationService_MarkNotificationRead_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_GetMyNotificationPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).GetMyNotificationPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_GetMyNotificationPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).GetMyNotificationPreferences(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NotificationService_UpdateMyNotificationPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNotificationPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).UpdateMyNotificationPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_UpdateMyNotificationPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).UpdateMyNotificationPreferences(ctx, req.(*UpdateNotificationPreferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2533,6 +2943,14 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarkNotificationRead",
 			Handler:    _NotificationService_MarkNotificationRead_Handler,
+		},
+		{
+			MethodName: "GetMyNotificationPreferences",
+			Handler:    _NotificationService_GetMyNotificationPreferences_Handler,
+		},
+		{
+			MethodName: "UpdateMyNotificationPreferences",
+			Handler:    _NotificationService_UpdateMyNotificationPreferences_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

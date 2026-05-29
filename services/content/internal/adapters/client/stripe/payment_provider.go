@@ -58,13 +58,18 @@ func (provider *PaymentProvider) ProviderName() string {
 
 func (provider *PaymentProvider) CreatePayment(ctx context.Context, request usecase.PaymentProviderCreateRequest) (usecase.PaymentProviderPayment, error) {
 	form := url.Values{}
-	form.Set("mode", "payment")
 	form.Set("success_url", absoluteURLOrFallback(request.ReturnURL, provider.returnURL))
 	form.Set("cancel_url", absoluteURLOrFallback(request.CancelURL, provider.cancelURL))
 	form.Set("line_items[0][quantity]", "1")
 	form.Set("line_items[0][price_data][currency]", strings.ToLower(request.Currency))
 	form.Set("line_items[0][price_data][unit_amount]", strconv.FormatInt(stripeMinorUnits(request.AmountValue, request.Currency), 10))
 	form.Set("line_items[0][price_data][product_data][name]", request.Description)
+	if request.Recurring {
+		form.Set("mode", "subscription")
+		form.Set("line_items[0][price_data][recurring][interval]", "month")
+	} else {
+		form.Set("mode", "payment")
+	}
 
 	var response checkoutSessionResponse
 	if err := provider.do(ctx, http.MethodPost, "/checkout/sessions", request.IdempotenceKey, form, &response); err != nil {
@@ -76,6 +81,17 @@ func (provider *PaymentProvider) CreatePayment(ctx context.Context, request usec
 		Status:            stripeStatus(response),
 		ConfirmationURL:   response.URL,
 	}, nil
+}
+
+func (provider *PaymentProvider) CancelSubscription(ctx context.Context, providerSubscriptionID string, atPeriodEnd bool) error {
+	var response checkoutSessionResponse
+	if atPeriodEnd {
+		form := url.Values{}
+		form.Set("cancel_at_period_end", "true")
+		return provider.do(ctx, http.MethodPost, "/subscriptions/"+url.PathEscape(providerSubscriptionID), "", form, &response)
+	}
+
+	return provider.do(ctx, http.MethodDelete, "/subscriptions/"+url.PathEscape(providerSubscriptionID), "", nil, &response)
 }
 
 func (provider *PaymentProvider) GetPayment(ctx context.Context, providerPaymentID string) (usecase.PaymentProviderPayment, error) {

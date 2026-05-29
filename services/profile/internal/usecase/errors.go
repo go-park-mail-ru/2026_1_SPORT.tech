@@ -22,4 +22,6 @@ var (
 	ErrInvalidMeasuredAt       = errors.New("invalid measured_at date")
 	ErrInvalidMeasurementData  = errors.New("at least one measurement value must be provided")
 	ErrMeasurementAccessDenied = errors.New("access to measurements not granted by client")
+
+	ErrPrivacySettingsUnavailable = errors.New("privacy settings storage is unavailable")
 )

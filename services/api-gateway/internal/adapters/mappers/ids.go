@@ -18,6 +18,19 @@ func int32SliceToInt64Slice(values []int32) []int64 {
 	return result
 }
 
+func int64SliceToInt32Slice(field string, values []int64) ([]int32, error) {
+	result := make([]int32, 0, len(values))
+	for _, value := range values {
+		converted, err := int64ToInt32(field, value)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, converted)
+	}
+
+	return result, nil
+}
+
 func optionalInt32ToInt64(value *int32) *int64 {
 	if value == nil {
 		return nil

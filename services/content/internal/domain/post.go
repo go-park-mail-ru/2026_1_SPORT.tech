@@ -25,12 +25,14 @@ type Post struct {
 	Title                     string
 	RequiredSubscriptionLevel *int32
 	SportTypeID               *int64
+	SportTypeIDs              []int64
 	CreatedAt                 time.Time
 	UpdatedAt                 time.Time
 	CanView                   bool
 	LikesCount                int64
 	IsLiked                   bool
 	CommentsCount             int64
+	IsPinned                  bool
 	Blocks                    []PostBlock
 }
 
@@ -40,11 +42,13 @@ type PostSummary struct {
 	Title                     string
 	RequiredSubscriptionLevel *int32
 	SportTypeID               *int64
+	SportTypeIDs              []int64
 	CreatedAt                 time.Time
 	CanView                   bool
 	LikesCount                int64
 	IsLiked                   bool
 	CommentsCount             int64
+	IsPinned                  bool
 }
 
 type PostLikeState struct {
