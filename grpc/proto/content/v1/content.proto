@@ -273,6 +273,7 @@ message Post {
   int64 comments_count = 10;
   repeated PostBlock blocks = 11;
   optional int64 sport_type_id = 12;
+  bool is_pinned = 13;
 }
 
 message PostSummary {
@@ -286,6 +287,7 @@ message PostSummary {
   bool is_liked = 8;
   int64 comments_count = 9;
   optional int64 sport_type_id = 10;
+  bool is_pinned = 11;
 }
 
 message Comment {
@@ -383,6 +385,7 @@ message UpdatePostRequest {
   bool replace_blocks = 7;
   optional int64 sport_type_id = 8;
   bool clear_sport_type_id = 9;
+  optional bool is_pinned = 10;
 }
 
 message SubscriptionTier {
@@ -441,6 +444,9 @@ message Subscription {
   google.protobuf.Timestamp expires_at = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
+  bool auto_renew = 11;
+  string stripe_subscription_id = 12;
+  optional google.protobuf.Timestamp current_period_end = 13;
 }
 
 message SubscribeToTrainerRequest {

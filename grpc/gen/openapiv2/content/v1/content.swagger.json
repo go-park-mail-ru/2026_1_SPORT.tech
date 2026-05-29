@@ -1688,6 +1688,9 @@
         },
         "clear_sport_type_id": {
           "type": "boolean"
+        },
+        "is_pinned": {
+          "type": "boolean"
         }
       }
     },
@@ -2336,6 +2339,9 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_pinned": {
+          "type": "boolean"
         }
       }
     },
@@ -2489,6 +2495,9 @@
         "sport_type_id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_pinned": {
+          "type": "boolean"
         }
       }
     },
@@ -2616,6 +2625,16 @@
           "format": "date-time"
         },
         "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auto_renew": {
+          "type": "boolean"
+        },
+        "stripe_subscription_id": {
+          "type": "string"
+        },
+        "current_period_end": {
           "type": "string",
           "format": "date-time"
         }

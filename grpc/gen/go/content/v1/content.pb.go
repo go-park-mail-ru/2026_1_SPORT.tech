@@ -297,6 +297,7 @@ type Post struct {
 	CommentsCount             int64                  `protobuf:"varint,10,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	Blocks                    []*PostBlock           `protobuf:"bytes,11,rep,name=blocks,proto3" json:"blocks,omitempty"`
 	SportTypeId               *int64                 `protobuf:"varint,12,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	IsPinned                  bool                   `protobuf:"varint,13,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -415,6 +416,13 @@ func (x *Post) GetSportTypeId() int64 {
 	return 0
 }
 
+func (x *Post) GetIsPinned() bool {
+	if x != nil {
+		return x.IsPinned
+	}
+	return false
+}
+
 type PostSummary struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
 	PostId                    int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
@@ -427,6 +435,7 @@ type PostSummary struct {
 	IsLiked                   bool                   `protobuf:"varint,8,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	CommentsCount             int64                  `protobuf:"varint,9,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	SportTypeId               *int64                 `protobuf:"varint,10,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
+	IsPinned                  bool                   `protobuf:"varint,11,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -529,6 +538,13 @@ func (x *PostSummary) GetSportTypeId() int64 {
 		return *x.SportTypeId
 	}
 	return 0
+}
+
+func (x *PostSummary) GetIsPinned() bool {
+	if x != nil {
+		return x.IsPinned
+	}
+	return false
 }
 
 type Comment struct {
@@ -1354,6 +1370,7 @@ type UpdatePostRequest struct {
 	ReplaceBlocks                  bool                   `protobuf:"varint,7,opt,name=replace_blocks,json=replaceBlocks,proto3" json:"replace_blocks,omitempty"`
 	SportTypeId                    *int64                 `protobuf:"varint,8,opt,name=sport_type_id,json=sportTypeId,proto3,oneof" json:"sport_type_id,omitempty"`
 	ClearSportTypeId               bool                   `protobuf:"varint,9,opt,name=clear_sport_type_id,json=clearSportTypeId,proto3" json:"clear_sport_type_id,omitempty"`
+	IsPinned                       *bool                  `protobuf:"varint,10,opt,name=is_pinned,json=isPinned,proto3,oneof" json:"is_pinned,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -1447,6 +1464,13 @@ func (x *UpdatePostRequest) GetSportTypeId() int64 {
 func (x *UpdatePostRequest) GetClearSportTypeId() bool {
 	if x != nil {
 		return x.ClearSportTypeId
+	}
+	return false
+}
+
+func (x *UpdatePostRequest) GetIsPinned() bool {
+	if x != nil && x.IsPinned != nil {
+		return *x.IsPinned
 	}
 	return false
 }
@@ -1884,19 +1908,22 @@ func (x *DeleteSubscriptionTierRequest) GetTierId() int64 {
 }
 
 type Subscription struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId int64                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	ClientUserId   int64                  `protobuf:"varint,2,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
-	TrainerUserId  int64                  `protobuf:"varint,3,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
-	TierId         int64                  `protobuf:"varint,4,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
-	TierName       string                 `protobuf:"bytes,5,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
-	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
-	Active         bool                   `protobuf:"varint,7,opt,name=active,proto3" json:"active,omitempty"`
-	ExpiresAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId       int64                  `protobuf:"varint,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	ClientUserId         int64                  `protobuf:"varint,2,opt,name=client_user_id,json=clientUserId,proto3" json:"client_user_id,omitempty"`
+	TrainerUserId        int64                  `protobuf:"varint,3,opt,name=trainer_user_id,json=trainerUserId,proto3" json:"trainer_user_id,omitempty"`
+	TierId               int64                  `protobuf:"varint,4,opt,name=tier_id,json=tierId,proto3" json:"tier_id,omitempty"`
+	TierName             string                 `protobuf:"bytes,5,opt,name=tier_name,json=tierName,proto3" json:"tier_name,omitempty"`
+	Price                int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
+	Active               bool                   `protobuf:"varint,7,opt,name=active,proto3" json:"active,omitempty"`
+	ExpiresAt            *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	CreatedAt            *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	AutoRenew            bool                   `protobuf:"varint,11,opt,name=auto_renew,json=autoRenew,proto3" json:"auto_renew,omitempty"`
+	StripeSubscriptionId string                 `protobuf:"bytes,12,opt,name=stripe_subscription_id,json=stripeSubscriptionId,proto3" json:"stripe_subscription_id,omitempty"`
+	CurrentPeriodEnd     *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=current_period_end,json=currentPeriodEnd,proto3,oneof" json:"current_period_end,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *Subscription) Reset() {
@@ -1995,6 +2022,27 @@ func (x *Subscription) GetCreatedAt() *timestamppb.Timestamp {
 func (x *Subscription) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Subscription) GetAutoRenew() bool {
+	if x != nil {
+		return x.AutoRenew
+	}
+	return false
+}
+
+func (x *Subscription) GetStripeSubscriptionId() string {
+	if x != nil {
+		return x.StripeSubscriptionId
+	}
+	return ""
+}
+
+func (x *Subscription) GetCurrentPeriodEnd() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CurrentPeriodEnd
 	}
 	return nil
 }
@@ -6243,7 +6291,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x04kind\x18\x02 \x01(\x0e2&.sporttech.content.v1.ContentBlockKindR\x04kind\x12!\n" +
 	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1d\n" +
 	"\n" +
-	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xa8\x04\n" +
+	"size_bytes\x18\x04 \x01(\x03R\tsizeBytes\"\xc5\x04\n" +
 	"\x04Post\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -6260,9 +6308,10 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x0ecomments_count\x18\n" +
 	" \x01(\x03R\rcommentsCount\x127\n" +
 	"\x06blocks\x18\v \x03(\v2\x1f.sporttech.content.v1.PostBlockR\x06blocks\x12'\n" +
-	"\rsport_type_id\x18\f \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	"\rsport_type_id\x18\f \x01(\x03H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
+	"\tis_pinned\x18\r \x01(\bR\bisPinnedB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
-	"\x0e_sport_type_id\"\xbb\x03\n" +
+	"\x0e_sport_type_id\"\xd8\x03\n" +
 	"\vPostSummary\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x14\n" +
@@ -6276,7 +6325,8 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\bis_liked\x18\b \x01(\bR\aisLiked\x12%\n" +
 	"\x0ecomments_count\x18\t \x01(\x03R\rcommentsCount\x12'\n" +
 	"\rsport_type_id\x18\n" +
-	" \x01(\x03H\x01R\vsportTypeId\x88\x01\x01B\x1e\n" +
+	" \x01(\x03H\x01R\vsportTypeId\x88\x01\x01\x12\x1b\n" +
+	"\tis_pinned\x18\v \x01(\bR\bisPinnedB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
 	"\x0e_sport_type_id\"\xf1\x01\n" +
 	"\aComment\x12\x1d\n" +
@@ -6364,7 +6414,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eviewer_user_id\x18\x02 \x01(\x03R\fviewerUserId\x12?\n" +
 	"\x19viewer_subscription_level\x18\x03 \x01(\x05H\x00R\x17viewerSubscriptionLevel\x88\x01\x01B\x1c\n" +
-	"\x1a_viewer_subscription_level\"\xf6\x03\n" +
+	"\x1a_viewer_subscription_level\"\xa6\x04\n" +
 	"\x11UpdatePostRequest\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12$\n" +
 	"\x0eauthor_user_id\x18\x02 \x01(\x03R\fauthorUserId\x12\x19\n" +
@@ -6374,10 +6424,14 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x06blocks\x18\x06 \x03(\v2$.sporttech.content.v1.PostBlockInputR\x06blocks\x12%\n" +
 	"\x0ereplace_blocks\x18\a \x01(\bR\rreplaceBlocks\x12'\n" +
 	"\rsport_type_id\x18\b \x01(\x03H\x02R\vsportTypeId\x88\x01\x01\x12-\n" +
-	"\x13clear_sport_type_id\x18\t \x01(\bR\x10clearSportTypeIdB\b\n" +
+	"\x13clear_sport_type_id\x18\t \x01(\bR\x10clearSportTypeId\x12 \n" +
+	"\tis_pinned\x18\n" +
+	" \x01(\bH\x03R\bisPinned\x88\x01\x01B\b\n" +
 	"\x06_titleB\x1e\n" +
 	"\x1c_required_subscription_levelB\x10\n" +
-	"\x0e_sport_type_id\"\xf8\x02\n" +
+	"\x0e_sport_type_idB\f\n" +
+	"\n" +
+	"_is_pinned\"\xf8\x02\n" +
 	"\x10SubscriptionTier\x12\x17\n" +
 	"\atier_id\x18\x01 \x01(\x03R\x06tierId\x12&\n" +
 	"\x0ftrainer_user_id\x18\x02 \x01(\x03R\rtrainerUserId\x12\x12\n" +
@@ -6419,7 +6473,7 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x11_calendar_enabled\"`\n" +
 	"\x1dDeleteSubscriptionTierRequest\x12&\n" +
 	"\x0ftrainer_user_id\x18\x01 \x01(\x03R\rtrainerUserId\x12\x17\n" +
-	"\atier_id\x18\x02 \x01(\x03R\x06tierId\"\x9a\x03\n" +
+	"\atier_id\x18\x02 \x01(\x03R\x06tierId\"\xd5\x04\n" +
 	"\fSubscription\x12'\n" +
 	"\x0fsubscription_id\x18\x01 \x01(\x03R\x0esubscriptionId\x12$\n" +
 	"\x0eclient_user_id\x18\x02 \x01(\x03R\fclientUserId\x12&\n" +
@@ -6434,7 +6488,12 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x82\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"auto_renew\x18\v \x01(\bR\tautoRenew\x124\n" +
+	"\x16stripe_subscription_id\x18\f \x01(\tR\x14stripeSubscriptionId\x12M\n" +
+	"\x12current_period_end\x18\r \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x10currentPeriodEnd\x88\x01\x01B\x15\n" +
+	"\x13_current_period_end\"\x82\x01\n" +
 	"\x19SubscribeToTrainerRequest\x12$\n" +
 	"\x0eclient_user_id\x18\x01 \x01(\x03R\fclientUserId\x12&\n" +
 	"\x0ftrainer_user_id\x18\x02 \x01(\x03R\rtrainerUserId\x12\x17\n" +
@@ -6967,148 +7026,149 @@ var file_content_v1_content_proto_depIdxs = []int32{
 	96,  // 21: sporttech.content.v1.Subscription.expires_at:type_name -> google.protobuf.Timestamp
 	96,  // 22: sporttech.content.v1.Subscription.created_at:type_name -> google.protobuf.Timestamp
 	96,  // 23: sporttech.content.v1.Subscription.updated_at:type_name -> google.protobuf.Timestamp
-	24,  // 24: sporttech.content.v1.ListMySubscriptionsResponse.subscriptions:type_name -> sporttech.content.v1.Subscription
-	24,  // 25: sporttech.content.v1.ListTrainerSubscribersResponse.subscribers:type_name -> sporttech.content.v1.Subscription
-	96,  // 26: sporttech.content.v1.Donation.created_at:type_name -> google.protobuf.Timestamp
-	32,  // 27: sporttech.content.v1.DonationResponse.donation:type_name -> sporttech.content.v1.Donation
-	32,  // 28: sporttech.content.v1.Payment.donation:type_name -> sporttech.content.v1.Donation
-	96,  // 29: sporttech.content.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
-	96,  // 30: sporttech.content.v1.Payment.updated_at:type_name -> google.protobuf.Timestamp
-	96,  // 31: sporttech.content.v1.Payment.confirmed_at:type_name -> google.protobuf.Timestamp
-	24,  // 32: sporttech.content.v1.Payment.subscription:type_name -> sporttech.content.v1.Subscription
-	35,  // 33: sporttech.content.v1.PaymentResponse.payment:type_name -> sporttech.content.v1.Payment
-	47,  // 34: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
-	96,  // 35: sporttech.content.v1.PostLike.created_at:type_name -> google.protobuf.Timestamp
-	49,  // 36: sporttech.content.v1.ListPostLikesResponse.likes:type_name -> sporttech.content.v1.PostLike
-	6,   // 37: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
-	6,   // 38: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
-	60,  // 39: sporttech.content.v1.UpdateNotificationPreferencesRequest.preferences:type_name -> sporttech.content.v1.NotificationPreferences
-	60,  // 40: sporttech.content.v1.NotificationPreferencesResponse.preferences:type_name -> sporttech.content.v1.NotificationPreferences
-	7,   // 41: sporttech.content.v1.NotificationResponse.notification:type_name -> sporttech.content.v1.Notification
-	7,   // 42: sporttech.content.v1.ListNotificationsResponse.notifications:type_name -> sporttech.content.v1.Notification
-	96,  // 43: sporttech.content.v1.ChatMessage.created_at:type_name -> google.protobuf.Timestamp
-	66,  // 44: sporttech.content.v1.ChatConversation.last_message:type_name -> sporttech.content.v1.ChatMessage
-	66,  // 45: sporttech.content.v1.ListChatMessagesResponse.messages:type_name -> sporttech.content.v1.ChatMessage
-	67,  // 46: sporttech.content.v1.ListChatConversationsResponse.conversations:type_name -> sporttech.content.v1.ChatConversation
-	96,  // 47: sporttech.content.v1.MeetingAvailabilityRule.created_at:type_name -> google.protobuf.Timestamp
-	96,  // 48: sporttech.content.v1.MeetingSlot.starts_at:type_name -> google.protobuf.Timestamp
-	96,  // 49: sporttech.content.v1.MeetingSlot.created_at:type_name -> google.protobuf.Timestamp
-	96,  // 50: sporttech.content.v1.MeetingAvailabilitySlot.starts_at:type_name -> google.protobuf.Timestamp
-	96,  // 51: sporttech.content.v1.MeetingAvailabilitySlot.ends_at:type_name -> google.protobuf.Timestamp
-	96,  // 52: sporttech.content.v1.MeetingBooking.starts_at:type_name -> google.protobuf.Timestamp
-	96,  // 53: sporttech.content.v1.MeetingBooking.ends_at:type_name -> google.protobuf.Timestamp
-	96,  // 54: sporttech.content.v1.MeetingBooking.created_at:type_name -> google.protobuf.Timestamp
-	74,  // 55: sporttech.content.v1.ListMeetingAvailabilityRulesResponse.rules:type_name -> sporttech.content.v1.MeetingAvailabilityRule
-	96,  // 56: sporttech.content.v1.CreateMeetingSlotRequest.starts_at:type_name -> google.protobuf.Timestamp
-	75,  // 57: sporttech.content.v1.ListMeetingSlotsResponse.slots:type_name -> sporttech.content.v1.MeetingSlot
-	76,  // 58: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse.slots:type_name -> sporttech.content.v1.MeetingAvailabilitySlot
-	96,  // 59: sporttech.content.v1.BookMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
-	96,  // 60: sporttech.content.v1.AssignMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
-	77,  // 61: sporttech.content.v1.ListMeetingsResponse.bookings:type_name -> sporttech.content.v1.MeetingBooking
-	93,  // 62: sporttech.content.v1.ListReceivedDonationsResponse.donations:type_name -> sporttech.content.v1.DonationRecord
-	9,   // 63: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
-	11,  // 64: sporttech.content.v1.ContentService.SearchPosts:input_type -> sporttech.content.v1.SearchPostsRequest
-	13,  // 65: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
-	14,  // 66: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
-	16,  // 67: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
-	17,  // 68: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
-	44,  // 69: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
-	19,  // 70: sporttech.content.v1.ContentService.ListSubscriptionTiers:input_type -> sporttech.content.v1.ListSubscriptionTiersRequest
-	21,  // 71: sporttech.content.v1.ContentService.CreateSubscriptionTier:input_type -> sporttech.content.v1.CreateSubscriptionTierRequest
-	22,  // 72: sporttech.content.v1.ContentService.UpdateSubscriptionTier:input_type -> sporttech.content.v1.UpdateSubscriptionTierRequest
-	23,  // 73: sporttech.content.v1.ContentService.DeleteSubscriptionTier:input_type -> sporttech.content.v1.DeleteSubscriptionTierRequest
-	25,  // 74: sporttech.content.v1.ContentService.SubscribeToTrainer:input_type -> sporttech.content.v1.SubscribeToTrainerRequest
-	26,  // 75: sporttech.content.v1.ContentService.ListMySubscriptions:input_type -> sporttech.content.v1.ListMySubscriptionsRequest
-	28,  // 76: sporttech.content.v1.ContentService.ListTrainerSubscribers:input_type -> sporttech.content.v1.ListTrainerSubscribersRequest
-	30,  // 77: sporttech.content.v1.ContentService.UpdateSubscription:input_type -> sporttech.content.v1.UpdateSubscriptionRequest
-	31,  // 78: sporttech.content.v1.ContentService.CancelSubscription:input_type -> sporttech.content.v1.CancelSubscriptionRequest
-	33,  // 79: sporttech.content.v1.ContentService.DonateToProfile:input_type -> sporttech.content.v1.DonateToProfileRequest
-	36,  // 80: sporttech.content.v1.ContentService.CreateDonationPayment:input_type -> sporttech.content.v1.CreateDonationPaymentRequest
-	37,  // 81: sporttech.content.v1.ContentService.CreateSubscriptionPayment:input_type -> sporttech.content.v1.CreateSubscriptionPaymentRequest
-	38,  // 82: sporttech.content.v1.ContentService.ConfirmDonationPayment:input_type -> sporttech.content.v1.ConfirmDonationPaymentRequest
-	40,  // 83: sporttech.content.v1.ContentService.GetBalance:input_type -> sporttech.content.v1.GetBalanceRequest
-	42,  // 84: sporttech.content.v1.ContentService.GetTrainerStatistics:input_type -> sporttech.content.v1.GetTrainerStatisticsRequest
-	94,  // 85: sporttech.content.v1.ContentService.ListReceivedDonations:input_type -> sporttech.content.v1.ListReceivedDonationsRequest
-	45,  // 86: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
-	46,  // 87: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
-	52,  // 88: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
-	56,  // 89: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
-	53,  // 90: sporttech.content.v1.ContentService.UpdateComment:input_type -> sporttech.content.v1.UpdateCommentRequest
-	54,  // 91: sporttech.content.v1.ContentService.DeleteComment:input_type -> sporttech.content.v1.DeleteCommentRequest
-	50,  // 92: sporttech.content.v1.ContentService.ListPostLikes:input_type -> sporttech.content.v1.ListPostLikesRequest
-	58,  // 93: sporttech.content.v1.ContentService.ListNotifications:input_type -> sporttech.content.v1.ListNotificationsRequest
-	59,  // 94: sporttech.content.v1.ContentService.MarkNotificationRead:input_type -> sporttech.content.v1.MarkNotificationReadRequest
-	61,  // 95: sporttech.content.v1.ContentService.GetNotificationPreferences:input_type -> sporttech.content.v1.GetNotificationPreferencesRequest
-	62,  // 96: sporttech.content.v1.ContentService.UpdateNotificationPreferences:input_type -> sporttech.content.v1.UpdateNotificationPreferencesRequest
-	68,  // 97: sporttech.content.v1.ContentService.SendChatMessage:input_type -> sporttech.content.v1.SendChatMessageRequest
-	69,  // 98: sporttech.content.v1.ContentService.ListChatMessages:input_type -> sporttech.content.v1.ListChatMessagesRequest
-	71,  // 99: sporttech.content.v1.ContentService.ListChatConversations:input_type -> sporttech.content.v1.ListChatConversationsRequest
-	73,  // 100: sporttech.content.v1.ContentService.MarkChatMessageRead:input_type -> sporttech.content.v1.MarkChatMessageReadRequest
-	78,  // 101: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:input_type -> sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
-	79,  // 102: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:input_type -> sporttech.content.v1.ListMeetingAvailabilityRulesRequest
-	81,  // 103: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:input_type -> sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
-	82,  // 104: sporttech.content.v1.ContentService.CreateMeetingSlot:input_type -> sporttech.content.v1.CreateMeetingSlotRequest
-	83,  // 105: sporttech.content.v1.ContentService.DeleteMeetingSlot:input_type -> sporttech.content.v1.DeleteMeetingSlotRequest
-	84,  // 106: sporttech.content.v1.ContentService.ListMeetingSlots:input_type -> sporttech.content.v1.ListMeetingSlotsRequest
-	86,  // 107: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:input_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
-	88,  // 108: sporttech.content.v1.ContentService.BookMeeting:input_type -> sporttech.content.v1.BookMeetingRequest
-	89,  // 109: sporttech.content.v1.ContentService.AssignMeeting:input_type -> sporttech.content.v1.AssignMeetingRequest
-	90,  // 110: sporttech.content.v1.ContentService.CancelMeeting:input_type -> sporttech.content.v1.CancelMeetingRequest
-	91,  // 111: sporttech.content.v1.ContentService.ListMeetings:input_type -> sporttech.content.v1.ListMeetingsRequest
-	10,  // 112: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
-	12,  // 113: sporttech.content.v1.ContentService.SearchPosts:output_type -> sporttech.content.v1.SearchPostsResponse
-	8,   // 114: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
-	15,  // 115: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
-	8,   // 116: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
-	8,   // 117: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
-	97,  // 118: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
-	20,  // 119: sporttech.content.v1.ContentService.ListSubscriptionTiers:output_type -> sporttech.content.v1.ListSubscriptionTiersResponse
-	18,  // 120: sporttech.content.v1.ContentService.CreateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
-	18,  // 121: sporttech.content.v1.ContentService.UpdateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
-	97,  // 122: sporttech.content.v1.ContentService.DeleteSubscriptionTier:output_type -> google.protobuf.Empty
-	24,  // 123: sporttech.content.v1.ContentService.SubscribeToTrainer:output_type -> sporttech.content.v1.Subscription
-	27,  // 124: sporttech.content.v1.ContentService.ListMySubscriptions:output_type -> sporttech.content.v1.ListMySubscriptionsResponse
-	29,  // 125: sporttech.content.v1.ContentService.ListTrainerSubscribers:output_type -> sporttech.content.v1.ListTrainerSubscribersResponse
-	24,  // 126: sporttech.content.v1.ContentService.UpdateSubscription:output_type -> sporttech.content.v1.Subscription
-	97,  // 127: sporttech.content.v1.ContentService.CancelSubscription:output_type -> google.protobuf.Empty
-	34,  // 128: sporttech.content.v1.ContentService.DonateToProfile:output_type -> sporttech.content.v1.DonationResponse
-	39,  // 129: sporttech.content.v1.ContentService.CreateDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
-	39,  // 130: sporttech.content.v1.ContentService.CreateSubscriptionPayment:output_type -> sporttech.content.v1.PaymentResponse
-	39,  // 131: sporttech.content.v1.ContentService.ConfirmDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
-	41,  // 132: sporttech.content.v1.ContentService.GetBalance:output_type -> sporttech.content.v1.BalanceResponse
-	43,  // 133: sporttech.content.v1.ContentService.GetTrainerStatistics:output_type -> sporttech.content.v1.TrainerStatisticsResponse
-	95,  // 134: sporttech.content.v1.ContentService.ListReceivedDonations:output_type -> sporttech.content.v1.ListReceivedDonationsResponse
-	48,  // 135: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	48,  // 136: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
-	55,  // 137: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
-	57,  // 138: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
-	55,  // 139: sporttech.content.v1.ContentService.UpdateComment:output_type -> sporttech.content.v1.CommentResponse
-	97,  // 140: sporttech.content.v1.ContentService.DeleteComment:output_type -> google.protobuf.Empty
-	51,  // 141: sporttech.content.v1.ContentService.ListPostLikes:output_type -> sporttech.content.v1.ListPostLikesResponse
-	65,  // 142: sporttech.content.v1.ContentService.ListNotifications:output_type -> sporttech.content.v1.ListNotificationsResponse
-	64,  // 143: sporttech.content.v1.ContentService.MarkNotificationRead:output_type -> sporttech.content.v1.NotificationResponse
-	63,  // 144: sporttech.content.v1.ContentService.GetNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
-	63,  // 145: sporttech.content.v1.ContentService.UpdateNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
-	66,  // 146: sporttech.content.v1.ContentService.SendChatMessage:output_type -> sporttech.content.v1.ChatMessage
-	70,  // 147: sporttech.content.v1.ContentService.ListChatMessages:output_type -> sporttech.content.v1.ListChatMessagesResponse
-	72,  // 148: sporttech.content.v1.ContentService.ListChatConversations:output_type -> sporttech.content.v1.ListChatConversationsResponse
-	97,  // 149: sporttech.content.v1.ContentService.MarkChatMessageRead:output_type -> google.protobuf.Empty
-	74,  // 150: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:output_type -> sporttech.content.v1.MeetingAvailabilityRule
-	80,  // 151: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:output_type -> sporttech.content.v1.ListMeetingAvailabilityRulesResponse
-	97,  // 152: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:output_type -> google.protobuf.Empty
-	75,  // 153: sporttech.content.v1.ContentService.CreateMeetingSlot:output_type -> sporttech.content.v1.MeetingSlot
-	97,  // 154: sporttech.content.v1.ContentService.DeleteMeetingSlot:output_type -> google.protobuf.Empty
-	85,  // 155: sporttech.content.v1.ContentService.ListMeetingSlots:output_type -> sporttech.content.v1.ListMeetingSlotsResponse
-	87,  // 156: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:output_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
-	77,  // 157: sporttech.content.v1.ContentService.BookMeeting:output_type -> sporttech.content.v1.MeetingBooking
-	77,  // 158: sporttech.content.v1.ContentService.AssignMeeting:output_type -> sporttech.content.v1.MeetingBooking
-	97,  // 159: sporttech.content.v1.ContentService.CancelMeeting:output_type -> google.protobuf.Empty
-	92,  // 160: sporttech.content.v1.ContentService.ListMeetings:output_type -> sporttech.content.v1.ListMeetingsResponse
-	112, // [112:161] is the sub-list for method output_type
-	63,  // [63:112] is the sub-list for method input_type
-	63,  // [63:63] is the sub-list for extension type_name
-	63,  // [63:63] is the sub-list for extension extendee
-	0,   // [0:63] is the sub-list for field type_name
+	96,  // 24: sporttech.content.v1.Subscription.current_period_end:type_name -> google.protobuf.Timestamp
+	24,  // 25: sporttech.content.v1.ListMySubscriptionsResponse.subscriptions:type_name -> sporttech.content.v1.Subscription
+	24,  // 26: sporttech.content.v1.ListTrainerSubscribersResponse.subscribers:type_name -> sporttech.content.v1.Subscription
+	96,  // 27: sporttech.content.v1.Donation.created_at:type_name -> google.protobuf.Timestamp
+	32,  // 28: sporttech.content.v1.DonationResponse.donation:type_name -> sporttech.content.v1.Donation
+	32,  // 29: sporttech.content.v1.Payment.donation:type_name -> sporttech.content.v1.Donation
+	96,  // 30: sporttech.content.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 31: sporttech.content.v1.Payment.updated_at:type_name -> google.protobuf.Timestamp
+	96,  // 32: sporttech.content.v1.Payment.confirmed_at:type_name -> google.protobuf.Timestamp
+	24,  // 33: sporttech.content.v1.Payment.subscription:type_name -> sporttech.content.v1.Subscription
+	35,  // 34: sporttech.content.v1.PaymentResponse.payment:type_name -> sporttech.content.v1.Payment
+	47,  // 35: sporttech.content.v1.PostLikeStateResponse.state:type_name -> sporttech.content.v1.PostLikeState
+	96,  // 36: sporttech.content.v1.PostLike.created_at:type_name -> google.protobuf.Timestamp
+	49,  // 37: sporttech.content.v1.ListPostLikesResponse.likes:type_name -> sporttech.content.v1.PostLike
+	6,   // 38: sporttech.content.v1.CommentResponse.comment:type_name -> sporttech.content.v1.Comment
+	6,   // 39: sporttech.content.v1.ListCommentsResponse.comments:type_name -> sporttech.content.v1.Comment
+	60,  // 40: sporttech.content.v1.UpdateNotificationPreferencesRequest.preferences:type_name -> sporttech.content.v1.NotificationPreferences
+	60,  // 41: sporttech.content.v1.NotificationPreferencesResponse.preferences:type_name -> sporttech.content.v1.NotificationPreferences
+	7,   // 42: sporttech.content.v1.NotificationResponse.notification:type_name -> sporttech.content.v1.Notification
+	7,   // 43: sporttech.content.v1.ListNotificationsResponse.notifications:type_name -> sporttech.content.v1.Notification
+	96,  // 44: sporttech.content.v1.ChatMessage.created_at:type_name -> google.protobuf.Timestamp
+	66,  // 45: sporttech.content.v1.ChatConversation.last_message:type_name -> sporttech.content.v1.ChatMessage
+	66,  // 46: sporttech.content.v1.ListChatMessagesResponse.messages:type_name -> sporttech.content.v1.ChatMessage
+	67,  // 47: sporttech.content.v1.ListChatConversationsResponse.conversations:type_name -> sporttech.content.v1.ChatConversation
+	96,  // 48: sporttech.content.v1.MeetingAvailabilityRule.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 49: sporttech.content.v1.MeetingSlot.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 50: sporttech.content.v1.MeetingSlot.created_at:type_name -> google.protobuf.Timestamp
+	96,  // 51: sporttech.content.v1.MeetingAvailabilitySlot.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 52: sporttech.content.v1.MeetingAvailabilitySlot.ends_at:type_name -> google.protobuf.Timestamp
+	96,  // 53: sporttech.content.v1.MeetingBooking.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 54: sporttech.content.v1.MeetingBooking.ends_at:type_name -> google.protobuf.Timestamp
+	96,  // 55: sporttech.content.v1.MeetingBooking.created_at:type_name -> google.protobuf.Timestamp
+	74,  // 56: sporttech.content.v1.ListMeetingAvailabilityRulesResponse.rules:type_name -> sporttech.content.v1.MeetingAvailabilityRule
+	96,  // 57: sporttech.content.v1.CreateMeetingSlotRequest.starts_at:type_name -> google.protobuf.Timestamp
+	75,  // 58: sporttech.content.v1.ListMeetingSlotsResponse.slots:type_name -> sporttech.content.v1.MeetingSlot
+	76,  // 59: sporttech.content.v1.ListTrainerMeetingAvailabilityResponse.slots:type_name -> sporttech.content.v1.MeetingAvailabilitySlot
+	96,  // 60: sporttech.content.v1.BookMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
+	96,  // 61: sporttech.content.v1.AssignMeetingRequest.starts_at:type_name -> google.protobuf.Timestamp
+	77,  // 62: sporttech.content.v1.ListMeetingsResponse.bookings:type_name -> sporttech.content.v1.MeetingBooking
+	93,  // 63: sporttech.content.v1.ListReceivedDonationsResponse.donations:type_name -> sporttech.content.v1.DonationRecord
+	9,   // 64: sporttech.content.v1.ContentService.ListAuthorPosts:input_type -> sporttech.content.v1.ListAuthorPostsRequest
+	11,  // 65: sporttech.content.v1.ContentService.SearchPosts:input_type -> sporttech.content.v1.SearchPostsRequest
+	13,  // 66: sporttech.content.v1.ContentService.CreatePost:input_type -> sporttech.content.v1.CreatePostRequest
+	14,  // 67: sporttech.content.v1.ContentService.UploadPostMedia:input_type -> sporttech.content.v1.UploadPostMediaRequest
+	16,  // 68: sporttech.content.v1.ContentService.GetPost:input_type -> sporttech.content.v1.GetPostRequest
+	17,  // 69: sporttech.content.v1.ContentService.UpdatePost:input_type -> sporttech.content.v1.UpdatePostRequest
+	44,  // 70: sporttech.content.v1.ContentService.DeletePost:input_type -> sporttech.content.v1.DeletePostRequest
+	19,  // 71: sporttech.content.v1.ContentService.ListSubscriptionTiers:input_type -> sporttech.content.v1.ListSubscriptionTiersRequest
+	21,  // 72: sporttech.content.v1.ContentService.CreateSubscriptionTier:input_type -> sporttech.content.v1.CreateSubscriptionTierRequest
+	22,  // 73: sporttech.content.v1.ContentService.UpdateSubscriptionTier:input_type -> sporttech.content.v1.UpdateSubscriptionTierRequest
+	23,  // 74: sporttech.content.v1.ContentService.DeleteSubscriptionTier:input_type -> sporttech.content.v1.DeleteSubscriptionTierRequest
+	25,  // 75: sporttech.content.v1.ContentService.SubscribeToTrainer:input_type -> sporttech.content.v1.SubscribeToTrainerRequest
+	26,  // 76: sporttech.content.v1.ContentService.ListMySubscriptions:input_type -> sporttech.content.v1.ListMySubscriptionsRequest
+	28,  // 77: sporttech.content.v1.ContentService.ListTrainerSubscribers:input_type -> sporttech.content.v1.ListTrainerSubscribersRequest
+	30,  // 78: sporttech.content.v1.ContentService.UpdateSubscription:input_type -> sporttech.content.v1.UpdateSubscriptionRequest
+	31,  // 79: sporttech.content.v1.ContentService.CancelSubscription:input_type -> sporttech.content.v1.CancelSubscriptionRequest
+	33,  // 80: sporttech.content.v1.ContentService.DonateToProfile:input_type -> sporttech.content.v1.DonateToProfileRequest
+	36,  // 81: sporttech.content.v1.ContentService.CreateDonationPayment:input_type -> sporttech.content.v1.CreateDonationPaymentRequest
+	37,  // 82: sporttech.content.v1.ContentService.CreateSubscriptionPayment:input_type -> sporttech.content.v1.CreateSubscriptionPaymentRequest
+	38,  // 83: sporttech.content.v1.ContentService.ConfirmDonationPayment:input_type -> sporttech.content.v1.ConfirmDonationPaymentRequest
+	40,  // 84: sporttech.content.v1.ContentService.GetBalance:input_type -> sporttech.content.v1.GetBalanceRequest
+	42,  // 85: sporttech.content.v1.ContentService.GetTrainerStatistics:input_type -> sporttech.content.v1.GetTrainerStatisticsRequest
+	94,  // 86: sporttech.content.v1.ContentService.ListReceivedDonations:input_type -> sporttech.content.v1.ListReceivedDonationsRequest
+	45,  // 87: sporttech.content.v1.ContentService.LikePost:input_type -> sporttech.content.v1.LikePostRequest
+	46,  // 88: sporttech.content.v1.ContentService.UnlikePost:input_type -> sporttech.content.v1.UnlikePostRequest
+	52,  // 89: sporttech.content.v1.ContentService.CreateComment:input_type -> sporttech.content.v1.CreateCommentRequest
+	56,  // 90: sporttech.content.v1.ContentService.ListComments:input_type -> sporttech.content.v1.ListCommentsRequest
+	53,  // 91: sporttech.content.v1.ContentService.UpdateComment:input_type -> sporttech.content.v1.UpdateCommentRequest
+	54,  // 92: sporttech.content.v1.ContentService.DeleteComment:input_type -> sporttech.content.v1.DeleteCommentRequest
+	50,  // 93: sporttech.content.v1.ContentService.ListPostLikes:input_type -> sporttech.content.v1.ListPostLikesRequest
+	58,  // 94: sporttech.content.v1.ContentService.ListNotifications:input_type -> sporttech.content.v1.ListNotificationsRequest
+	59,  // 95: sporttech.content.v1.ContentService.MarkNotificationRead:input_type -> sporttech.content.v1.MarkNotificationReadRequest
+	61,  // 96: sporttech.content.v1.ContentService.GetNotificationPreferences:input_type -> sporttech.content.v1.GetNotificationPreferencesRequest
+	62,  // 97: sporttech.content.v1.ContentService.UpdateNotificationPreferences:input_type -> sporttech.content.v1.UpdateNotificationPreferencesRequest
+	68,  // 98: sporttech.content.v1.ContentService.SendChatMessage:input_type -> sporttech.content.v1.SendChatMessageRequest
+	69,  // 99: sporttech.content.v1.ContentService.ListChatMessages:input_type -> sporttech.content.v1.ListChatMessagesRequest
+	71,  // 100: sporttech.content.v1.ContentService.ListChatConversations:input_type -> sporttech.content.v1.ListChatConversationsRequest
+	73,  // 101: sporttech.content.v1.ContentService.MarkChatMessageRead:input_type -> sporttech.content.v1.MarkChatMessageReadRequest
+	78,  // 102: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:input_type -> sporttech.content.v1.CreateMeetingAvailabilityRuleRequest
+	79,  // 103: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:input_type -> sporttech.content.v1.ListMeetingAvailabilityRulesRequest
+	81,  // 104: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:input_type -> sporttech.content.v1.DeleteMeetingAvailabilityRuleRequest
+	82,  // 105: sporttech.content.v1.ContentService.CreateMeetingSlot:input_type -> sporttech.content.v1.CreateMeetingSlotRequest
+	83,  // 106: sporttech.content.v1.ContentService.DeleteMeetingSlot:input_type -> sporttech.content.v1.DeleteMeetingSlotRequest
+	84,  // 107: sporttech.content.v1.ContentService.ListMeetingSlots:input_type -> sporttech.content.v1.ListMeetingSlotsRequest
+	86,  // 108: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:input_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityRequest
+	88,  // 109: sporttech.content.v1.ContentService.BookMeeting:input_type -> sporttech.content.v1.BookMeetingRequest
+	89,  // 110: sporttech.content.v1.ContentService.AssignMeeting:input_type -> sporttech.content.v1.AssignMeetingRequest
+	90,  // 111: sporttech.content.v1.ContentService.CancelMeeting:input_type -> sporttech.content.v1.CancelMeetingRequest
+	91,  // 112: sporttech.content.v1.ContentService.ListMeetings:input_type -> sporttech.content.v1.ListMeetingsRequest
+	10,  // 113: sporttech.content.v1.ContentService.ListAuthorPosts:output_type -> sporttech.content.v1.ListAuthorPostsResponse
+	12,  // 114: sporttech.content.v1.ContentService.SearchPosts:output_type -> sporttech.content.v1.SearchPostsResponse
+	8,   // 115: sporttech.content.v1.ContentService.CreatePost:output_type -> sporttech.content.v1.PostResponse
+	15,  // 116: sporttech.content.v1.ContentService.UploadPostMedia:output_type -> sporttech.content.v1.PostMediaResponse
+	8,   // 117: sporttech.content.v1.ContentService.GetPost:output_type -> sporttech.content.v1.PostResponse
+	8,   // 118: sporttech.content.v1.ContentService.UpdatePost:output_type -> sporttech.content.v1.PostResponse
+	97,  // 119: sporttech.content.v1.ContentService.DeletePost:output_type -> google.protobuf.Empty
+	20,  // 120: sporttech.content.v1.ContentService.ListSubscriptionTiers:output_type -> sporttech.content.v1.ListSubscriptionTiersResponse
+	18,  // 121: sporttech.content.v1.ContentService.CreateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	18,  // 122: sporttech.content.v1.ContentService.UpdateSubscriptionTier:output_type -> sporttech.content.v1.SubscriptionTier
+	97,  // 123: sporttech.content.v1.ContentService.DeleteSubscriptionTier:output_type -> google.protobuf.Empty
+	24,  // 124: sporttech.content.v1.ContentService.SubscribeToTrainer:output_type -> sporttech.content.v1.Subscription
+	27,  // 125: sporttech.content.v1.ContentService.ListMySubscriptions:output_type -> sporttech.content.v1.ListMySubscriptionsResponse
+	29,  // 126: sporttech.content.v1.ContentService.ListTrainerSubscribers:output_type -> sporttech.content.v1.ListTrainerSubscribersResponse
+	24,  // 127: sporttech.content.v1.ContentService.UpdateSubscription:output_type -> sporttech.content.v1.Subscription
+	97,  // 128: sporttech.content.v1.ContentService.CancelSubscription:output_type -> google.protobuf.Empty
+	34,  // 129: sporttech.content.v1.ContentService.DonateToProfile:output_type -> sporttech.content.v1.DonationResponse
+	39,  // 130: sporttech.content.v1.ContentService.CreateDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
+	39,  // 131: sporttech.content.v1.ContentService.CreateSubscriptionPayment:output_type -> sporttech.content.v1.PaymentResponse
+	39,  // 132: sporttech.content.v1.ContentService.ConfirmDonationPayment:output_type -> sporttech.content.v1.PaymentResponse
+	41,  // 133: sporttech.content.v1.ContentService.GetBalance:output_type -> sporttech.content.v1.BalanceResponse
+	43,  // 134: sporttech.content.v1.ContentService.GetTrainerStatistics:output_type -> sporttech.content.v1.TrainerStatisticsResponse
+	95,  // 135: sporttech.content.v1.ContentService.ListReceivedDonations:output_type -> sporttech.content.v1.ListReceivedDonationsResponse
+	48,  // 136: sporttech.content.v1.ContentService.LikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	48,  // 137: sporttech.content.v1.ContentService.UnlikePost:output_type -> sporttech.content.v1.PostLikeStateResponse
+	55,  // 138: sporttech.content.v1.ContentService.CreateComment:output_type -> sporttech.content.v1.CommentResponse
+	57,  // 139: sporttech.content.v1.ContentService.ListComments:output_type -> sporttech.content.v1.ListCommentsResponse
+	55,  // 140: sporttech.content.v1.ContentService.UpdateComment:output_type -> sporttech.content.v1.CommentResponse
+	97,  // 141: sporttech.content.v1.ContentService.DeleteComment:output_type -> google.protobuf.Empty
+	51,  // 142: sporttech.content.v1.ContentService.ListPostLikes:output_type -> sporttech.content.v1.ListPostLikesResponse
+	65,  // 143: sporttech.content.v1.ContentService.ListNotifications:output_type -> sporttech.content.v1.ListNotificationsResponse
+	64,  // 144: sporttech.content.v1.ContentService.MarkNotificationRead:output_type -> sporttech.content.v1.NotificationResponse
+	63,  // 145: sporttech.content.v1.ContentService.GetNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
+	63,  // 146: sporttech.content.v1.ContentService.UpdateNotificationPreferences:output_type -> sporttech.content.v1.NotificationPreferencesResponse
+	66,  // 147: sporttech.content.v1.ContentService.SendChatMessage:output_type -> sporttech.content.v1.ChatMessage
+	70,  // 148: sporttech.content.v1.ContentService.ListChatMessages:output_type -> sporttech.content.v1.ListChatMessagesResponse
+	72,  // 149: sporttech.content.v1.ContentService.ListChatConversations:output_type -> sporttech.content.v1.ListChatConversationsResponse
+	97,  // 150: sporttech.content.v1.ContentService.MarkChatMessageRead:output_type -> google.protobuf.Empty
+	74,  // 151: sporttech.content.v1.ContentService.CreateMeetingAvailabilityRule:output_type -> sporttech.content.v1.MeetingAvailabilityRule
+	80,  // 152: sporttech.content.v1.ContentService.ListMeetingAvailabilityRules:output_type -> sporttech.content.v1.ListMeetingAvailabilityRulesResponse
+	97,  // 153: sporttech.content.v1.ContentService.DeleteMeetingAvailabilityRule:output_type -> google.protobuf.Empty
+	75,  // 154: sporttech.content.v1.ContentService.CreateMeetingSlot:output_type -> sporttech.content.v1.MeetingSlot
+	97,  // 155: sporttech.content.v1.ContentService.DeleteMeetingSlot:output_type -> google.protobuf.Empty
+	85,  // 156: sporttech.content.v1.ContentService.ListMeetingSlots:output_type -> sporttech.content.v1.ListMeetingSlotsResponse
+	87,  // 157: sporttech.content.v1.ContentService.ListTrainerMeetingAvailability:output_type -> sporttech.content.v1.ListTrainerMeetingAvailabilityResponse
+	77,  // 158: sporttech.content.v1.ContentService.BookMeeting:output_type -> sporttech.content.v1.MeetingBooking
+	77,  // 159: sporttech.content.v1.ContentService.AssignMeeting:output_type -> sporttech.content.v1.MeetingBooking
+	97,  // 160: sporttech.content.v1.ContentService.CancelMeeting:output_type -> google.protobuf.Empty
+	92,  // 161: sporttech.content.v1.ContentService.ListMeetings:output_type -> sporttech.content.v1.ListMeetingsResponse
+	113, // [113:162] is the sub-list for method output_type
+	64,  // [64:113] is the sub-list for method input_type
+	64,  // [64:64] is the sub-list for extension type_name
+	64,  // [64:64] is the sub-list for extension extendee
+	0,   // [0:64] is the sub-list for field type_name
 }
 
 func init() { file_content_v1_content_proto_init() }
@@ -7129,6 +7189,7 @@ func file_content_v1_content_proto_init() {
 	file_content_v1_content_proto_msgTypes[17].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[20].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[21].OneofWrappers = []any{}
+	file_content_v1_content_proto_msgTypes[23].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[31].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[32].OneofWrappers = []any{}
 	file_content_v1_content_proto_msgTypes[34].OneofWrappers = []any{}

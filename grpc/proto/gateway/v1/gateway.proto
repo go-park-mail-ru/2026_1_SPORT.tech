@@ -640,6 +640,7 @@ message UpdatePostRequest {
   bool clear_min_tier_id = 6;
   optional int32 sport_type_id = 7;
   bool clear_sport_type_id = 8;
+  optional bool is_pinned = 9;
 }
 
 message PostBlock {
@@ -661,6 +662,7 @@ message PostListItem {
   bool is_liked = 8;
   int32 comments_count = 9;
   optional int32 sport_type_id = 10;
+  bool is_pinned = 11;
 }
 
 message ProfilePostsResponse {
@@ -698,6 +700,7 @@ message PostResponse {
   bool can_view = 10;
   int32 comments_count = 11;
   optional int32 sport_type_id = 12;
+  bool is_pinned = 13;
 }
 
 message GetPostRequest {
@@ -826,6 +829,9 @@ message Subscription {
   google.protobuf.Timestamp expires_at = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
+  bool auto_renew = 10;
+  string stripe_subscription_id = 11;
+  optional google.protobuf.Timestamp current_period_end = 12;
 }
 
 message SubscriptionsResponse {
