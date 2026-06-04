@@ -1,0 +1,8 @@
+# Генерируемые таргеты (большие, восстанавливаются gen_targets.py)
+create_targets.json
+read_targets.txt
+
+# Сырые результаты vegeta (десятки МБ) — в репозиторий не кладём,
+# в results/ оставляем только текстовые отчёты.
+results/*.bin
+results/*.html
