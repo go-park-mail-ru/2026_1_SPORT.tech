@@ -1,0 +1,12 @@
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Index Only Scan using content_post_pkey on content_post p  (cost=0.29..4.31 rows=1 width=8) (actual time=0.102..0.103 rows=1 loops=1)
+   Index Cond: (post_id = 50000)
+   Heap Fetches: 0
+   Buffers: shared hit=6
+ Planning:
+   Buffers: shared hit=118
+ Planning Time: 0.418 ms
+ Execution Time: 0.153 ms
+(8 rows)
+
